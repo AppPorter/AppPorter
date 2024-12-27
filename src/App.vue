@@ -4,7 +4,7 @@ import { invoke } from "@tauri-apps/api/core"
 </script>
 
 <template>
-  <main class="container"></main>
+  <main class="container">Ok</main>
 </template>
 
 <style scoped></style>

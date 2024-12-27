@@ -1,0 +1,40 @@
+[Installation]
+    default_install_mode = "All_Users"
+    default_zip_path = ''
+    [Installation.All_Users]
+        create_desktop_shortcut = false
+        create_start_menu_shortcut = true
+        create_taskbar_shortcut = false
+        enable_installation_screen = true
+        install_path = 'C:\Program Files'
+        [Installation.All_Users.Registry]
+            create_Comments = false
+            create_DisplayIcon = true
+            create_DisplayName = true
+            create_DisplayVersion = true
+            create_EstimatedSize = true
+            create_InstallLocation = true
+            create_NoModify = true
+            create_NoRemove = false
+            create_NoRepair = true
+            create_Publisher = true
+            create_UninstallString = true
+    [Installation.Current_User]
+        create_desktop_shortcut = false
+        create_start_menu_shortcut = true
+        create_taskbar_shortcut = false
+        enable_installation_screen = true
+        install_path = ''
+        [Installation.Current_User.Registry]
+            create_Comments = false
+            create_DisplayIcon = true
+            create_DisplayName = true
+            create_DisplayVersion = true
+            create_EstimatedSize = true
+            create_InstallLocation = true
+            create_NoModify = true
+            create_NoRemove = false
+            create_NoRepair = true
+            create_Publisher = true
+            create_UninstallString = true
+[Uninstallation]
