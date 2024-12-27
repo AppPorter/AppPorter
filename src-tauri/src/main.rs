@@ -1,5 +1,8 @@
-// Prevents additional console window on Windows in release, DO NOT REMOVE!!
-#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+#![cfg_attr(
+    not(debug_assertions),
+    windows_subsystem = "windows",
+    target_os = "windows"
+)]
 
 fn main() {
     app_porter_lib::run()
