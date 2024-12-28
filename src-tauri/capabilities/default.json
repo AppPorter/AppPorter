@@ -5,6 +5,9 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "opener:default",
+    "process:default",
+    "core:app:allow-default-window-icon",
+    "core:window:allow-show"
   ]
 }
