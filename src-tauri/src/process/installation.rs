@@ -1,8 +1,8 @@
-use mslnk::ShellLink; //https://crates.io/crates/mslnk
+use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, fs::File, path::Path, result::Result};
-use zip::read::ZipArchive; //https://crates.io/crates/zip
-use zip_extensions::read::ZipArchiveExtensions; //https://crates.io/crates/zip-extensions
+use zip::read::ZipArchive;
+use zip_extensions::read::ZipArchiveExtensions;
 
 fn installation() -> Result<(), Box<dyn Error>> {
     let file = File::open(r"")?;

@@ -1,40 +1,43 @@
-[Installation]
+[installation]
     default_install_mode = "All_Users"
-    default_zip_path = ''
-    [Installation.All_Users]
+    default_zip_path = ""
+
+    [installation.all_users]
         create_desktop_shortcut = false
         create_start_menu_shortcut = true
         create_taskbar_shortcut = false
         enable_installation_screen = true
-        install_path = 'C:\Program Files'
-        [Installation.All_Users.Registry]
-            create_Comments = false
-            create_DisplayIcon = true
-            create_DisplayName = true
-            create_DisplayVersion = true
-            create_EstimatedSize = true
-            create_InstallLocation = true
-            create_NoModify = true
-            create_NoRemove = false
-            create_NoRepair = true
-            create_Publisher = true
-            create_UninstallString = true
-    [Installation.Current_User]
+        install_path = "C:\\Program Files"
+
+        [installation.all_users.registry]
+            create_comments = false
+            create_display_icon = true
+            create_display_name = true
+            create_display_version = true
+            create_estimated_size = true
+            create_install_location = true
+            create_no_modify = true
+            create_no_remove = false
+            create_no_repair = true
+            create_publisher = true
+            create_uninstall_string = true
+
+    [installation.current_user]
         create_desktop_shortcut = false
         create_start_menu_shortcut = true
         create_taskbar_shortcut = false
         enable_installation_screen = true
-        install_path = ''
-        [Installation.Current_User.Registry]
-            create_Comments = false
-            create_DisplayIcon = true
-            create_DisplayName = true
-            create_DisplayVersion = true
-            create_EstimatedSize = true
-            create_InstallLocation = true
-            create_NoModify = true
-            create_NoRemove = false
-            create_NoRepair = true
-            create_Publisher = true
-            create_UninstallString = true
-[Uninstallation]
+        install_path = ""
+
+        [installation.current_user.registry]
+            create_comments = false
+            create_display_icon = true
+            create_display_name = true
+            create_display_version = true
+            create_estimated_size = true
+            create_install_location = true
+            create_no_modify = true
+            create_no_remove = false
+            create_no_repair = true
+            create_publisher = true
+            create_uninstall_string = true

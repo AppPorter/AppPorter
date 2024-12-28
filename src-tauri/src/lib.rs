@@ -1,11 +1,12 @@
 mod process;
+pub mod settings;
 
-use mslnk::ShellLink; //https://crates.io/crates/mslnk
+use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path, result::Result};
-use windows_registry::*; //https://crates.io/crates/windows-registry
-use zip::read::ZipArchive; //https://crates.io/crates/zip
-use zip_extensions::read::ZipArchiveExtensions; //https://crates.io/crates/zip-extensions
+use windows_registry::*;
+use zip::read::ZipArchive;
+use zip_extensions::read::ZipArchiveExtensions;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct ZipEntry {

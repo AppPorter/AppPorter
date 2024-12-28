@@ -4,12 +4,7 @@
     target_os = "windows"
 )]
 
-use config::Config;
-use serde::Deserialize;
 use std::{error::Error, result::Result};
-
-#[derive(Debug, Deserialize)]
-struct Settings {}
 
 fn main() {
     match run() {
@@ -24,13 +19,6 @@ fn main() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
-    println!(
-        "{:#?}",
-        Config::builder()
-            .add_source(config::File::with_name("Settings"))
-            .build()?
-            .try_deserialize::<Settings>()?
-    );
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![])
