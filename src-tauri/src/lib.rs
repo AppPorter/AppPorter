@@ -1,12 +1,12 @@
 mod process;
 pub mod settings;
 
-use mslnk::ShellLink;
+//use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path, result::Result};
-use windows_registry::*;
+//use windows_registry::*;
 use zip::read::ZipArchive;
-use zip_extensions::read::ZipArchiveExtensions;
+//use zip_extensions::read::ZipArchiveExtensions;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct ZipEntry {

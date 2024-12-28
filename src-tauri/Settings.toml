@@ -1,14 +1,13 @@
 [installation]
-    default_install_mode = "All_Users"
-    default_zip_path = ""
+    install_mode = "AllUsers"
+    start_path = ""
 
     [installation.all_users]
         create_desktop_shortcut = false
+        create_registry_key = true
         create_start_menu_shortcut = true
-        create_taskbar_shortcut = false
         enable_installation_screen = true
         install_path = "C:\\Program Files"
-
         [installation.all_users.registry]
             create_comments = false
             create_display_icon = true
@@ -24,8 +23,8 @@
 
     [installation.current_user]
         create_desktop_shortcut = false
+        create_registry_key = true
         create_start_menu_shortcut = true
-        create_taskbar_shortcut = false
         enable_installation_screen = true
         install_path = ""
 
