@@ -14,6 +14,7 @@ const menu = await Menu.new({
       id: 'open',
       text: 'Open',
       action: () => {
+        window.show()
         window.unminimize()
         window.setFocus()
       },
@@ -35,9 +36,7 @@ const options = {
     switch (event.type) {
       case 'Click':
         if (event.button == 'Left' && event.buttonState == 'Down') {
-          console.log(
-            `mouse ${event.button} button pressed, state: ${event.buttonState}`
-          )
+          window.show()
           window.unminimize()
           window.setFocus()
         }
@@ -47,5 +46,9 @@ const options = {
 }
 
 await TrayIcon.new(options)
+
+await window.onCloseRequested(async () => {
+  window.hide()
+})
 
 createApp(App).mount('#app')

@@ -1,16 +1,17 @@
 pub(crate) use config::Config;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::{error::Error, result::Result};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     pub download_dir: String,
+    pub minimize_to_tray_on_close: bool,
     pub system_drive_letter: String,
     pub username: String,
     pub installation: Installation,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct Installation {
     pub install_mode: InstallMode,
     pub start_path: String,
@@ -18,7 +19,7 @@ pub struct Installation {
     pub current_user: InstallSettings,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct InstallSettings {
     pub create_desktop_shortcut: bool,
     pub create_registry_key: bool,
@@ -28,13 +29,13 @@ pub struct InstallSettings {
     pub registry: RegistrySettings,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub enum InstallMode {
     AllUsers,
     CurrentUser,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct RegistrySettings {
     pub create_comments: bool,
     pub create_display_icon: bool,
@@ -110,4 +111,9 @@ impl Settings {
 
         Ok(())
     }
+}
+
+pub fn read_settings() -> Result<Settings, Box<dyn Error>> {
+    let settings = Settings::read()?;
+    Ok(settings)
 }

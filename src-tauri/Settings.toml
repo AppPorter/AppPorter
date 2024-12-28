@@ -1,4 +1,5 @@
 download_dir = ''
+minimize_to_tray_on_close = true
 system_drive_letter = 'C'
 username = 'Administrator'
 [installation]
