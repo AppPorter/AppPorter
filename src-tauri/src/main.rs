@@ -4,6 +4,8 @@
     target_os = "windows"
 )]
 
+mod settings;
+use settings::Settings;
 use std::{error::Error, result::Result};
 
 fn main() {
@@ -19,6 +21,7 @@ fn main() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
+    Settings::read()?.complete()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![])

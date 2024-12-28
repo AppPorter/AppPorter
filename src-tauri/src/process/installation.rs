@@ -12,7 +12,7 @@ fn installation(zip_path: String, settings: Settings) -> Result<(), Box<dyn Erro
 
     let file = File::open(zip_path)?;
     let mut archive = zip::ZipArchive::new(file)?;
-    archive.extract(specific_settings.install_path)?;
+    archive.extract(&specific_settings.install_path)?;
 
     if specific_settings.create_registry_key {
         let key_path = format!(
@@ -59,18 +59,28 @@ fn installation(zip_path: String, settings: Settings) -> Result<(), Box<dyn Erro
     if specific_settings.create_start_menu_shortcut
         && matches!(settings.installation.install_mode, InstallMode::AllUsers)
     {
-        ShellLink::new(r"")?.create_lnk(r"C:\ProgramData\Microsoft\Windows\Start Menu\Programs")?;
+        ShellLink::new(&specific_settings.install_path)?.create_lnk(format!(
+            r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs",
+            settings.system_drive_letter
+        ))?;
     }
 
     if specific_settings.create_start_menu_shortcut
         && matches!(settings.installation.install_mode, InstallMode::CurrentUser)
     {
-        ShellLink::new(r"")?
-            .create_lnk(r"C:\Users\_\AppData\Roaming\Microsoft\Windows\Start Menu\Programs")?;
+        ShellLink::new(&specific_settings.install_path)?.create_lnk(format!(
+            r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs",
+            settings.system_drive_letter, settings.username,
+        ))?;
     }
 
     if specific_settings.create_desktop_shortcut {
-        ShellLink::new(r"")?.create_lnk(r"")?;
+        ShellLink::new(specific_settings.install_path)?.create_lnk(
+            dirs::desktop_dir()
+                .ok_or("Failed to get desktop directory")?
+                .to_string_lossy()
+                .to_string(),
+        )?;
     }
 
     Ok(())

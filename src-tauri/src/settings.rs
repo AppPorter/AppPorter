@@ -4,6 +4,9 @@ use std::{error::Error, result::Result};
 
 #[derive(Debug, Deserialize)]
 pub struct Settings {
+    pub download_dir: String,
+    pub system_drive_letter: String,
+    pub username: String,
     pub installation: Installation,
 }
 
@@ -53,5 +56,58 @@ impl Settings {
             .build()?
             .try_deserialize::<Settings>()?;
         Ok(settings)
+    }
+    pub fn complete(&mut self) -> Result<(), Box<dyn Error>> {
+        let system_drive_letter = &std::env::var("windir")?[..1];
+        let username = &std::env::var("USERNAME")?;
+
+        let download_dir = dirs::download_dir()
+            .ok_or("Failed to get download directory")?
+            .to_string_lossy()
+            .to_string();
+        if self.installation.start_path.is_empty()
+            || ((self.installation.start_path == self.download_dir)
+                && self.download_dir != download_dir)
+        {
+            Config::builder()
+                .set_override("download_dir", &*download_dir)?
+                .set_override("installation.start_path", download_dir)?
+                .build()?;
+        }
+
+        if self.installation.all_users.install_path
+            == format!(r"{}:\Program Files", self.system_drive_letter)
+            && self.system_drive_letter != system_drive_letter
+        {
+            Config::builder()
+                .set_override(
+                    "installation.all_users.install_path",
+                    format!(r"{}:\Program Files", system_drive_letter),
+                )?
+                .set_override(r"system_drive_letter", system_drive_letter)?
+                .build()?;
+        }
+
+        if self.installation.current_user.install_path
+            == format!(
+                r"{}:\Users\{}\AppData\Local\Programs",
+                self.system_drive_letter, self.username
+            )
+            && (self.system_drive_letter != system_drive_letter || &self.username != username)
+        {
+            Config::builder()
+                .set_override(
+                    "installation.current_user.install_path",
+                    format!(
+                        r"{}:\Users\{}\AppData\Local\Programs",
+                        system_drive_letter, username
+                    ),
+                )?
+                .set_override(r"system_drive_letter", system_drive_letter)?
+                .set_override(r"username", username.as_str())?
+                .build()?;
+        }
+
+        Ok(())
     }
 }

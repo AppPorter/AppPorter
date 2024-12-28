@@ -34,6 +34,7 @@
     tauri-plugin-opener = "2"
 
     config = "0.15.4"
+    dirs = "5.0.1"
     mslnk = "0.1.8"
     windows-registry = "0.3.0"
     zip = "2.2.2"

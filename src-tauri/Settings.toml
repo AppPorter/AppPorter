@@ -1,13 +1,15 @@
+download_dir = ''
+system_drive_letter = 'C'
+username = 'Administrator'
 [installation]
-    install_mode = "AllUsers"
-    start_path = ""
-
+    install_mode = 'AllUsers'
+    start_path = ''
     [installation.all_users]
         create_desktop_shortcut = false
         create_registry_key = true
         create_start_menu_shortcut = true
         enable_installation_screen = true
-        install_path = "C:\\Program Files"
+        install_path = 'C:\Program Files'
         [installation.all_users.registry]
             create_comments = false
             create_display_icon = true
@@ -26,7 +28,7 @@
         create_registry_key = true
         create_start_menu_shortcut = true
         enable_installation_screen = true
-        install_path = ""
+        install_path = ''
 
         [installation.current_user.registry]
             create_comments = false
