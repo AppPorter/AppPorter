@@ -6,6 +6,6 @@ import { invoke } from '@tauri-apps/api/core'
 
 <template>
     Main
-    <button class="btn btn-square"><span v-svg="'setting'"></span></button>
-
+    <button class="btn btn-square absolute top-2 right-2"><span v-svg="'setting'"></span></button>
+    <RouterView></RouterView>
 </template>

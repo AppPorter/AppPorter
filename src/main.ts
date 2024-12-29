@@ -6,6 +6,7 @@ import { Menu } from '@tauri-apps/api/menu'
 import { exit } from '@tauri-apps/plugin-process'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import router from './router.ts'
+import i18n from './i18n'
 import './assets/main.css'
 
 const window = await getCurrentWindow()
@@ -53,7 +54,8 @@ await window.onCloseRequested(async () => {
   window.hide()
 })
 
-async function loadSvg(path: string): Promise<string> {
+async function loadSvg(name: string): Promise<string> {
+  const path = `/src/assets/icons/${name}.svg`
   try {
     const response = await fetch(path)
     return await response.text()
@@ -65,19 +67,14 @@ async function loadSvg(path: string): Promise<string> {
 
 createApp(Main)
   .use(router)
+  .use(i18n)
   .directive('svg', {
     async mounted(el, binding) {
-      const path = binding.value.startsWith('/')
-        ? binding.value
-        : `/src/assets/icons/${binding.value}.svg`
-      const svgContent = await loadSvg(path)
+      const svgContent = await loadSvg(binding.value)
       el.innerHTML = svgContent
     },
     async updated(el, binding) {
-      const path = binding.value.startsWith('/')
-        ? binding.value
-        : `/src/assets/icons/${binding.value}.svg`
-      const svgContent = await loadSvg(path)
+      const svgContent = await loadSvg(binding.value)
       el.innerHTML = svgContent
     },
   })

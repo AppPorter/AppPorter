@@ -5,4 +5,5 @@ import { invoke } from '@tauri-apps/api/core'
 
 <template>
     Start
+    {{ $t('message.hello') }}
 </template>
