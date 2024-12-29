@@ -63,6 +63,22 @@ async function loadSvg(path: string): Promise<string> {
   }
 }
 
-export { loadSvg }
-
-createApp(Main).use(router).mount('#app')
+createApp(Main)
+  .use(router)
+  .directive('svg', {
+    async mounted(el, binding) {
+      const path = binding.value.startsWith('/')
+        ? binding.value
+        : `/src/assets/icons/${binding.value}.svg`
+      const svgContent = await loadSvg(path)
+      el.innerHTML = svgContent
+    },
+    async updated(el, binding) {
+      const path = binding.value.startsWith('/')
+        ? binding.value
+        : `/src/assets/icons/${binding.value}.svg`
+      const svgContent = await loadSvg(path)
+      el.innerHTML = svgContent
+    },
+  })
+  .mount('#app')
