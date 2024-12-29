@@ -9,7 +9,6 @@ username = 'Administrator'
         create_desktop_shortcut = false
         create_registry_key = true
         create_start_menu_shortcut = true
-        enable_installation_screen = true
         install_path = 'C:\Program Files'
         [installation.all_users.registry]
             create_comments = false
@@ -28,7 +27,6 @@ username = 'Administrator'
         create_desktop_shortcut = false
         create_registry_key = true
         create_start_menu_shortcut = true
-        enable_installation_screen = true
         install_path = ''
 
         [installation.current_user.registry]

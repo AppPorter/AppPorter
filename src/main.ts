@@ -1,10 +1,11 @@
 import { createApp } from 'vue'
-import App from './App.vue'
+import Main from './Main.vue'
 import { TrayIcon, TrayIconEvent } from '@tauri-apps/api/tray'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
 import { Menu } from '@tauri-apps/api/menu'
 import { exit } from '@tauri-apps/plugin-process'
 import { getCurrentWindow } from '@tauri-apps/api/window'
+import router from './router.ts'
 
 const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'
@@ -51,4 +52,4 @@ await window.onCloseRequested(async () => {
   window.hide()
 })
 
-createApp(App).mount('#app')
+createApp(Main).use(router).mount('#app')

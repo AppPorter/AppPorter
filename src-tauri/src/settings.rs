@@ -24,7 +24,6 @@ pub struct InstallSettings {
     pub create_desktop_shortcut: bool,
     pub create_registry_key: bool,
     pub create_start_menu_shortcut: bool,
-    pub enable_installation_screen: bool,
     pub install_path: String,
     pub registry: RegistrySettings,
 }

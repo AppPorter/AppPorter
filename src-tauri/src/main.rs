@@ -4,8 +4,8 @@
     target_os = "windows"
 )]
 
-use app_porter_lib::*;
-use settings::Settings;
+use app_porter_lib::{command, result_process, settings};
+use settings::read_settings;
 use std::{error::Error, result::Result};
 
 fn main() {
@@ -14,7 +14,7 @@ fn main() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
-    Settings::read()?.complete()?;
+    read_settings()?.complete()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
