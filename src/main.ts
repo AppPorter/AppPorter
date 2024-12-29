@@ -6,6 +6,7 @@ import { Menu } from '@tauri-apps/api/menu'
 import { exit } from '@tauri-apps/plugin-process'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import router from './router.ts'
+import './assets/main.css'
 
 const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'

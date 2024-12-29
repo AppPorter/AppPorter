@@ -4,12 +4,5 @@ import { invoke } from '@tauri-apps/api/core'
 </script>
 
 <template>
-  <main class="container">Main</main>
-  <RouterLink to="/Settings">Settings</RouterLink>
-  <RouterLink to="/Installation/Config">Config</RouterLink>
-  <RouterView></RouterView>
+  <button class="btn">Button</button>
 </template>
-
-<style scoped></style>
-
-<style></style>
