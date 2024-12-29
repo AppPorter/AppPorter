@@ -4,9 +4,5 @@ import { invoke } from '@tauri-apps/api/core'
 </script>
 
 <template>
-  <main class="container">Config</main>
+    Config
 </template>
-
-<style scoped></style>
-
-<style></style>

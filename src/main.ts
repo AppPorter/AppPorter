@@ -53,4 +53,16 @@ await window.onCloseRequested(async () => {
   window.hide()
 })
 
+async function loadSvg(path: string): Promise<string> {
+  try {
+    const response = await fetch(path)
+    return await response.text()
+  } catch (error) {
+    console.error('Failed to load SVG:', error)
+    return ''
+  }
+}
+
+export { loadSvg }
+
 createApp(Main).use(router).mount('#app')
