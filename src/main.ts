@@ -65,6 +65,10 @@ async function loadSvg(name: string): Promise<string> {
   }
 }
 
+export function goTo(path: string) {
+  router.push(path)
+}
+
 createApp(Main)
   .use(router)
   .use(i18n)

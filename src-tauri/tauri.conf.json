@@ -15,7 +15,8 @@
         "title": "AppPorter",
         "width": 800,
         "height": 600,
-        "maximizable": false
+        "maximizable": false,
+        "decorations": false
       }
     ],
     "security": {
