@@ -41,3 +41,4 @@
     zip = "2.2.2"
     zip-extensions = "0.8.1"
 tauri-plugin-process = "2"
+tauri-plugin-dialog = "2"

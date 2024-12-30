@@ -5,8 +5,10 @@ use std::{error::Error, result::Result};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     pub download_dir: String,
+    pub language: String,
     pub minimize_to_tray_on_close: bool,
     pub system_drive_letter: String,
+    pub theme: String,
     pub username: String,
     pub installation: Installation,
 }

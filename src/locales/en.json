@@ -1,1 +1,3 @@
-{ "message.hello": "Hello World!" }
+{
+  "select_file": "Select file"
+}
