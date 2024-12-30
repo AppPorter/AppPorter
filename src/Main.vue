@@ -13,5 +13,6 @@ const goToSettings = () => {
     <p class='absolute bottom-2 left-2'>{{ $route.fullPath }}</p>
     <button v-if="$route.fullPath != '/Settings'" class="btn btn-square absolute top-2 right-2"
         @click="goToSettings"><span v-svg="'setting'"></span></button>
+    <RouterLink class="btn absolute bottom-2 right-2" to="/Installation/Option">Go to Option</RouterLink>
     <RouterView></RouterView>
 </template>

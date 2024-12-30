@@ -3,7 +3,7 @@ use mslnk::ShellLink;
 use std::{error::Error, fs::File, result::Result};
 use zip::read::ZipArchive;
 
-fn installation(zip_path: String, settings: Installation) -> Result<(), Box<dyn Error>> {
+fn installation(zip_path: String, settings: Settings) -> Result<(), Box<dyn Error>> {
     let install_mode: InstallMode;
     let specific_settings = match settings.installation.install_mode {
         InstallMode::AllUsers => {
