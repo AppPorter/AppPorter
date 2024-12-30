@@ -14,6 +14,10 @@ fn main() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
+    println!(
+        "{:#?}",
+        app_porter_lib::installation::setup::preview_zip("D:/_u/do/UniExtractRC3.zip")?
+    );
     read_settings()?.complete()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())

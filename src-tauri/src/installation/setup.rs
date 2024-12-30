@@ -3,13 +3,13 @@ use std::{error::Error, path::Path, result::Result};
 use zip::read::ZipArchive;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct ZipEntry {
+pub struct ZipEntry {
     name: String,
     size: u64,
 }
 
-fn preview_zip(zip_path: &Path) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
-    let file = std::fs::File::open(zip_path)?;
+pub fn preview_zip(zip_path: &str) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
+    let file = std::fs::File::open(Path::new(zip_path))?;
     let mut archive = ZipArchive::new(file)?;
     let mut file_list = Vec::new();
     for i in 0..archive.len() {
