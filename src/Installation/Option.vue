@@ -8,7 +8,7 @@ const install_mode = ref('AllUser');
 
 <template>
     <h1 class="text-4xl">Installation Option</h1>
-
+    <!--
     <form>
         <div class="join">
             <input type="radio" name="install_mode" class="btn join-item" aria-label="All User" value="AllUsers"
@@ -33,6 +33,6 @@ const install_mode = ref('AllUser');
             </label>
         </div>
     </form>
-
-    <button class="btn" @click="install">Install</button>
+    -->
+    <button class="" @click="install">Install</button>
 </template>

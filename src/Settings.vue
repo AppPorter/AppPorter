@@ -10,5 +10,5 @@ const goBack = () => {
 </script>
 
 <template>
-    <button class="btn btn-square absolute top-2 left-2" @click="goBack"><span v-svg="'left_arrow'"></span></button>
+    <button class="absolute top-2 left-2" @click="goBack"><span v-svg="'left_arrow'"></span></button>
 </template>
