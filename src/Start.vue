@@ -16,5 +16,5 @@ function select_file(): Promise<string | null> {
 </script>
 
 <template>
-    <button class="" @click="select_file">{{ $t('select_file') }}</button>
+    <Button class="" @click="select_file">{{ $t('select_file') }}</Button>
 </template>
