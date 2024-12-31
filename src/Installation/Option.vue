@@ -7,7 +7,7 @@ const install_mode = ref("AllUser");
 </script>
 
 <template>
-  <h1 class="text-2xl">Installation Option</h1>
+  <h1 class="text-2xl relative">Installation Option</h1>
 
-  <Button class="" @click="">Install</Button>
+  <Button class="relative" @click="">Install</Button>
 </template>

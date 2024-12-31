@@ -15,11 +15,13 @@ import {
 </script>
 
 <template>
-  <div class="absolute top-8 left-8 w-max">
-    <h1 class="text-3xl" style="-webkit-app-region: drag">AppPorter</h1>
-    <div class="absolute top-1 right-1">a</div>
-    <div class="relative top-2">
-      <NavigationMenu>
+  <div class="fixed top-1 right-1 h-auto">control</div>
+  <div class="fixed w-full">
+    <div style="-webkit-app-region: drag" class="w-full border-b-2">
+      <h1 class="text-3xl relative pt-8 pl-8 pb-4">AppPorter</h1>
+    </div>
+    <div class="relative left-8">
+      <NavigationMenu class="relative top-2">
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink
@@ -46,9 +48,11 @@ import {
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
+      <div class="relative top-6">
+        <RouterView class="relative"></RouterView>
+      </div>
     </div>
-    <RouterView class="relative top-4"></RouterView>
   </div>
 
-  <p class="absolute bottom-2 left-2">{{ $route.fullPath }}</p>
+  <p class="fixed bottom-2 left-2">{{ $route.fullPath }}</p>
 </template>
