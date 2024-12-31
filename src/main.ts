@@ -1,13 +1,13 @@
-import { createApp } from 'vue'
-import Main from './Main.vue'
-import { TrayIcon, TrayIconEvent } from '@tauri-apps/api/tray'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
 import { Menu } from '@tauri-apps/api/menu'
-import { exit } from '@tauri-apps/plugin-process'
+import { TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import router from './router.ts'
-import i18n from './i18n'
+import { exit } from '@tauri-apps/plugin-process'
+import { createApp } from 'vue'
 import './assets/index.css'
+import i18n from './i18n'
+import Main from './Main.vue'
+import router from './router.ts'
 
 const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'
@@ -48,7 +48,7 @@ const options = {
   },
 }
 
-await TrayIcon.new(options)
+//await TrayIcon.new(options)
 
 await window.onCloseRequested(async () => {
   window.hide()
@@ -63,10 +63,6 @@ async function loadSvg(name: string): Promise<string> {
     console.error('Failed to load SVG:', error)
     return ''
   }
-}
-
-export function goTo(path: string) {
-  router.push(path)
 }
 
 createApp(Main)
