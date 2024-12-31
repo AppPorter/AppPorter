@@ -7,7 +7,12 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "ff": "prettier -w \"**/*.{js,ts,vue,html,css,json,md}\"",
+    "bf": "cd src-tauri && cargo fmt",
+    "f": "pnpm ff && pnpm bf",
+    "d": "pnpm tauri dev",
+    "b": "pnpm tauri build"
   },
   "dependencies": {
     "@tauri-apps/api": "2.1.1",

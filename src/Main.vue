@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
-import { Button } from '@/components/ui/button'
-import { goTo } from '@/router'
+import { ref, onMounted } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { Button } from "@/components/ui/button";
+import { goTo } from "@/router";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -11,7 +11,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
-} from '@/components/ui/navigation-menu'
+} from "@/components/ui/navigation-menu";
 </script>
 
 <template>

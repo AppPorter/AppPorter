@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { invoke } from '@tauri-apps/api/core'
-import { Button } from '@/components/ui/button'
+import { ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { Button } from "@/components/ui/button";
 
-const install_mode = ref('AllUser')
+const install_mode = ref("AllUser");
 </script>
 
 <template>
