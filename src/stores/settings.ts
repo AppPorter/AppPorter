@@ -1,5 +1,5 @@
 import { Channel, invoke } from "@tauri-apps/api/core";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { Ref, ref } from "vue";
 
 interface Settings {
@@ -106,7 +106,6 @@ export const useSettingsStore = defineStore("settings", {
 
         settings_channel.onmessage = (message) => {
           settings.value = message;
-          console.log(settings.value);
         };
 
         invoke("execute_command", {
@@ -117,8 +116,10 @@ export const useSettingsStore = defineStore("settings", {
           e.value.push(e as string);
           console.error(e);
         });
-
+        console.log("0" + settings.value.minimize_to_tray_on_close); //undefined
+        console.log("1" + storeToRefs(this).minimize_to_tray_on_close.value); //false
         this.$patch(settings.value);
+        console.log("2" + storeToRefs(this).minimize_to_tray_on_close.value); //false
       } catch (error) {
         console.error("Failed to load settings:", error);
       }

@@ -1,6 +1,6 @@
 download_dir = ''
 language = 'en'
-minimize_to_tray_on_close = false
+minimize_to_tray_on_close = true
 system_drive_letter = 'C'
 theme = 'system'
 username = 'Administrator'

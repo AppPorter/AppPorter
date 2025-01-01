@@ -1,9 +1,9 @@
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";
-import { TrayIconEvent } from "@tauri-apps/api/tray";
+import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
-import { createPinia } from "pinia";
+import { createPinia, storeToRefs } from "pinia";
 import { createApp, Ref, ref } from "vue";
 import "./assets/index.css";
 import i18n from "./i18n";
@@ -50,8 +50,6 @@ const options = {
   },
 };
 
-//await TrayIcon.new(options)
-
 await window.onCloseRequested(async () => {
   window.hide();
 });
@@ -69,7 +67,9 @@ async function loadSvg(name: string): Promise<string> {
 
 const pinia = createPinia();
 
-createApp(Main)
+const app = createApp(Main);
+
+app
   .use(router)
   .use(i18n)
   .use(pinia)
@@ -82,9 +82,22 @@ createApp(Main)
       const svgContent = await loadSvg(binding.value);
       el.innerHTML = svgContent;
     },
-  })
-  .mount("#app");
+  });
 
 export let error: Ref<string[]> = ref([]);
 
-useSettingsStore().loadSettings();
+const settingsStore = useSettingsStore();
+await settingsStore.loadSettings();
+const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
+console.log(minimize_to_tray_on_close.value); //false
+
+if (minimize_to_tray_on_close.value) {
+  try {
+    await TrayIcon.new(options);
+  } catch (err) {
+    console.error("Failed to create tray icon:", err);
+    error.value.push(`Failed to create tray icon: ${err}`);
+  }
+}
+
+app.mount("#app");
