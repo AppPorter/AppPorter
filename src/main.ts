@@ -9,19 +9,21 @@ import "./assets/index.css";
 import i18n from "./i18n";
 import Main from "./Main.vue";
 import router from "./router.ts";
+import { Settings } from "./settings.ts";
 
-let channel = new Channel<String>();
-
-channel.onmessage = (message) => {
-  console.log(message);
-};
-
+const settings_channel = new Channel<Settings>();
 let error: Ref<string[]> = ref([]);
+let settings: Ref<Settings> = ref({} as Settings);
+
+settings_channel.onmessage = (message) => {
+  settings.value = message;
+  console.log(settings.value);
+};
 
 invoke("execute_command", {
   command: "ReadSettings",
   arg: null,
-  channel: channel,
+  channel: settings_channel,
 }).catch((e) => {
   error.value.push(e as string);
   console.error(e);
