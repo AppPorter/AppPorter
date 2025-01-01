@@ -1,13 +1,31 @@
 import { defaultWindowIcon } from "@tauri-apps/api/app";
+import { Channel, invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
 import { TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
-import { createApp } from "vue";
+import { createApp, Ref, ref } from "vue";
 import "./assets/index.css";
 import i18n from "./i18n";
 import Main from "./Main.vue";
 import router from "./router.ts";
+
+let channel = new Channel<String>();
+
+channel.onmessage = (message) => {
+  console.log(message);
+};
+
+let error: Ref<string[]> = ref([]);
+
+invoke("execute_command", {
+  command: "ReadSettings",
+  arg: null,
+  channel: channel,
+}).catch((e) => {
+  error.value.push(e as string);
+  console.error(e);
+});
 
 const window = await getCurrentWindow();
 const icon = (await defaultWindowIcon()) || "src-tauri\\icons\\icon.ico";

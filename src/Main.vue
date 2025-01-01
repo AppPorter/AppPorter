@@ -1,25 +1,20 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { invoke } from "@tauri-apps/api/core";
-import { Button } from "@/components/ui/button";
-import { goTo } from "@/router";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { goTo } from "@/router";
 </script>
 
 <template>
   <div class="fixed top-0 right-0 h-auto z-50">
-    <button class="px-2 py-1 hover:bg-gray-500">
+    <button class="px-2 py-1 hover:bg-[#d7d7d7]">
       <span v-svg="'minimize'"></span>
     </button>
-    <button class="px-2 py-1 hover:bg-red-500">
+    <button class="px-2 py-1 hover:bg-[#e81123]">
       <span v-svg="'close'"></span>
     </button>
   </div>

@@ -1,18 +1,18 @@
-use crate::result_process;
+use crate::result_send;
 use crate::settings::*;
-use serde::Deserialize;
+use std::result;
 use std::{error::Error, result::Result};
 
-#[derive(Deserialize)]
-pub enum Commands {
-    ReadSettings,
-}
-
 #[tauri::command]
-pub fn execute_command(command: Commands) -> Result<(), tauri::Error> {
-    let result: Result<Settings, Box<dyn Error>> = match command {
-        Commands::ReadSettings => read_settings(),
+pub fn execute_command<T>(
+    command: String,
+    arg: T,
+    channel: tauri::ipc::Channel<String>,
+) -> Result<(), tauri::Error> {
+    let result: Result<Settings, Box<dyn Error>> = match command.as_str() {
+        "ReadSettings" => read_settings(),
+        _ => Err("Unknown command".into()),
     };
-    result_process(result);
+    result_send(result, channel);
     Ok(())
 }
