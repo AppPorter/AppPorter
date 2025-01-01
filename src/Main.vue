@@ -15,7 +15,18 @@ import {
 </script>
 
 <template>
-  <div class="fixed top-1 right-1 h-auto">control</div>
+  <div class="fixed top-1 right-1 h-auto">
+    <button
+      variant="outline"
+      size="icon"
+      class="pl-2 pr-2 pt-2 pb-2 hover:bg-gray-500"
+    >
+      <span v-svg="'minimize'"></span>
+    </button>
+    <button variant="outline" size="icon" class="pl-2 pr-2 pt-2 pb-2">
+      <span v-svg="'close'"></span>
+    </button>
+  </div>
   <div class="fixed w-full">
     <div style="-webkit-app-region: drag" class="w-full border-b-2">
       <h1 class="text-3xl relative pt-8 pl-8 pb-4">AppPorter</h1>
