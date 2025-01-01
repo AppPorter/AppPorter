@@ -15,15 +15,11 @@ import {
 </script>
 
 <template>
-  <div class="fixed top-1 right-1 h-auto">
-    <button
-      variant="outline"
-      size="icon"
-      class="pl-2 pr-2 pt-2 pb-2 hover:bg-gray-500"
-    >
+  <div class="fixed top-0 right-0 h-auto z-50">
+    <button class="px-2 py-1 hover:bg-gray-500">
       <span v-svg="'minimize'"></span>
     </button>
-    <button variant="outline" size="icon" class="pl-2 pr-2 pt-2 pb-2">
+    <button class="px-2 py-1 hover:bg-red-500">
       <span v-svg="'close'"></span>
     </button>
   </div>
