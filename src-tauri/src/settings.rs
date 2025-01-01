@@ -114,7 +114,7 @@ impl Settings {
     }
 }
 
-pub fn read_settings() -> Result<Settings, Box<dyn Error>> {
+pub fn load_settings() -> Result<Settings, Box<dyn Error>> {
     let settings = Settings::read()?;
     Ok(settings)
 }

@@ -1,33 +1,15 @@
 import { defaultWindowIcon } from "@tauri-apps/api/app";
-import { Channel, invoke } from "@tauri-apps/api/core";
 import { Menu } from "@tauri-apps/api/menu";
 import { TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
+import { createPinia } from "pinia";
 import { createApp, Ref, ref } from "vue";
 import "./assets/index.css";
 import i18n from "./i18n";
 import Main from "./Main.vue";
 import router from "./router.ts";
-import { Settings } from "./settings.ts";
-
-const settings_channel = new Channel<Settings>();
-let error: Ref<string[]> = ref([]);
-let settings: Ref<Settings> = ref({} as Settings);
-
-settings_channel.onmessage = (message) => {
-  settings.value = message;
-  console.log(settings.value);
-};
-
-invoke("execute_command", {
-  command: "ReadSettings",
-  arg: null,
-  channel: settings_channel,
-}).catch((e) => {
-  error.value.push(e as string);
-  console.error(e);
-});
+import { useSettingsStore } from "./stores/settings";
 
 const window = await getCurrentWindow();
 const icon = (await defaultWindowIcon()) || "src-tauri\\icons\\icon.ico";
@@ -85,9 +67,12 @@ async function loadSvg(name: string): Promise<string> {
   }
 }
 
+const pinia = createPinia();
+
 createApp(Main)
   .use(router)
   .use(i18n)
+  .use(pinia)
   .directive("svg", {
     async mounted(el, binding) {
       const svgContent = await loadSvg(binding.value);
@@ -99,3 +84,7 @@ createApp(Main)
     },
   })
   .mount("#app");
+
+export let error: Ref<string[]> = ref([]);
+
+useSettingsStore().loadSettings();

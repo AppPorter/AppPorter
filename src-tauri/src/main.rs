@@ -5,7 +5,7 @@
 )]
 
 use app_porter_lib::{command, result_process, settings};
-use settings::read_settings;
+use settings::load_settings;
 use std::{error::Error, result::Result};
 
 fn main() {
@@ -18,7 +18,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         "{:#?}",
         app_porter_lib::installation::setup::preview_zip("D:/_u/do/UniExtractRC3.zip")?
     );
-    read_settings()?.complete()?;
+    load_settings()?.complete()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())

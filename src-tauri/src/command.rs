@@ -10,7 +10,7 @@ pub fn execute_command<T>(
     channel: tauri::ipc::Channel<String>,
 ) -> Result<(), tauri::Error> {
     let result: Result<Settings, Box<dyn Error>> = match command.as_str() {
-        "ReadSettings" => read_settings(),
+        "LoadSettings" => load_settings(),
         _ => Err("Unknown command".into()),
     };
     result_send(result, channel);
