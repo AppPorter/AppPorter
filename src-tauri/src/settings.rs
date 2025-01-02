@@ -17,6 +17,7 @@ pub struct Settings {
 pub struct Installation {
     pub install_mode: InstallMode,
     pub start_path: String,
+    pub zip_path: String,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
 }
@@ -27,28 +28,12 @@ pub struct InstallSettings {
     pub create_registry_key: bool,
     pub create_start_menu_shortcut: bool,
     pub install_path: String,
-    pub registry: RegistrySettings,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub enum InstallMode {
     AllUsers,
     CurrentUser,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub struct RegistrySettings {
-    pub create_comments: bool,
-    pub create_display_icon: bool,
-    pub create_display_name: bool,
-    pub create_display_version: bool,
-    pub create_estimated_size: bool,
-    pub create_install_location: bool,
-    pub create_no_modify: bool,
-    pub create_no_remove: bool,
-    pub create_no_repair: bool,
-    pub create_publisher: bool,
-    pub create_uninstall_string: bool,
 }
 
 impl Settings {
@@ -67,20 +52,14 @@ impl Settings {
             .ok_or("Failed to get download directory")?
             .to_string_lossy()
             .to_string();
-        if self.installation.start_path.is_empty()
-            || ((self.installation.start_path == self.download_dir)
-                && self.download_dir != download_dir)
-        {
+        if self.installation.start_path.is_empty() {
             Config::builder()
                 .set_override("download_dir", &*download_dir)?
                 .set_override("installation.start_path", download_dir)?
                 .build()?;
         }
 
-        if self.installation.all_users.install_path
-            == format!(r"{}:\Program Files", self.system_drive_letter)
-            && self.system_drive_letter != system_drive_letter
-        {
+        if self.installation.all_users.install_path.is_empty() {
             Config::builder()
                 .set_override(
                     "installation.all_users.install_path",
@@ -90,13 +69,7 @@ impl Settings {
                 .build()?;
         }
 
-        if self.installation.current_user.install_path
-            == format!(
-                r"{}:\Users\{}\AppData\Local\Programs",
-                self.system_drive_letter, self.username
-            )
-            && (self.system_drive_letter != system_drive_letter || &self.username != username)
-        {
+        if self.installation.current_user.install_path.is_empty() {
             Config::builder()
                 .set_override(
                     "installation.current_user.install_path",

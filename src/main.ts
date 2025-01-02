@@ -3,7 +3,7 @@ import { Menu } from "@tauri-apps/api/menu";
 import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
-import { createPinia, storeToRefs } from "pinia";
+import { createPinia } from "pinia";
 import { createApp, Ref, ref } from "vue";
 import "./assets/index.css";
 import i18n from "./i18n";
@@ -11,7 +11,7 @@ import Main from "./Main.vue";
 import router from "./router.ts";
 import { useSettingsStore } from "./stores/settings";
 
-const window = await getCurrentWindow();
+export const window = await getCurrentWindow();
 const icon = (await defaultWindowIcon()) || "src-tauri\\icons\\icon.ico";
 const menu = await Menu.new({
   items: [
@@ -88,10 +88,7 @@ export let error: Ref<string[]> = ref([]);
 
 const settingsStore = useSettingsStore();
 await settingsStore.loadSettings();
-const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
-console.log(minimize_to_tray_on_close.value);
-console.log(storeToRefs(settingsStore));
-if (minimize_to_tray_on_close.value) {
+if (settingsStore.minimize_to_tray_on_close) {
   try {
     await TrayIcon.new(options);
   } catch (err) {

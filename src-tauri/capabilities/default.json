@@ -12,6 +12,7 @@
     "core:window:allow-set-focus",
     "core:window:allow-hide",
     "core:window:allow-show",
-    "dialog:default"
+    "dialog:default",
+    "core:window:allow-minimize"
   ]
 }

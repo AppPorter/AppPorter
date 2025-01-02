@@ -13,11 +13,11 @@ pub fn handle_error<T>(result: Result<T, Box<dyn std::error::Error>>) {
     }
 }
 
-pub fn format_result<T: std::fmt::Debug>(
+pub fn format_result<T: serde::Serialize>(
     result: Result<T, Box<dyn std::error::Error>>,
 ) -> Result<String, tauri::Error> {
     let output = match result {
-        Ok(result) => format!("{:#?}", result),
+        Ok(value) => serde_json::to_string(&value)?,
         Err(error) => error.to_string(),
     };
     Ok(output)

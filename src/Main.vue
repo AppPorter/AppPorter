@@ -6,15 +6,32 @@ import {
   NavigationMenuList,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { window } from "@/main";
 import { goTo } from "@/router";
+import { exit } from "@tauri-apps/plugin-process";
+import { storeToRefs } from "pinia";
+import { useSettingsStore } from "./stores/settings";
+
+const settingsStore = useSettingsStore();
+const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
+function close_button() {
+  if (minimize_to_tray_on_close.value) {
+    window.hide();
+  } else {
+    exit(0);
+  }
+}
+function minimize_button() {
+  window.minimize();
+}
 </script>
 
 <template>
   <div class="fixed top-0 right-0 h-auto z-50">
-    <button class="px-2 py-1 hover:bg-[#d7d7d7]">
+    <button class="px-2 py-1 hover:bg-[#d7d7d7]" @click="minimize_button()">
       <span v-svg="'minimize'"></span>
     </button>
-    <button class="px-2 py-1 hover:bg-[#e81123]">
+    <button class="px-2 py-1 hover:bg-[#e81123]" @click="close_button()">
       <span v-svg="'close'"></span>
     </button>
   </div>

@@ -1,45 +1,20 @@
 download_dir = ''
 language = 'en'
-minimize_to_tray_on_close = true
+minimize_to_tray_on_close = false
 system_drive_letter = 'C'
 theme = 'system'
 username = 'Administrator'
 [installation]
     install_mode = 'AllUsers'
     start_path = ''
+    zip_path = ''
     [installation.all_users]
         create_desktop_shortcut = false
         create_registry_key = true
         create_start_menu_shortcut = true
-        install_path = 'C:\Program Files'
-        [installation.all_users.registry]
-            create_comments = false
-            create_display_icon = true
-            create_display_name = true
-            create_display_version = true
-            create_estimated_size = true
-            create_install_location = true
-            create_no_modify = true
-            create_no_remove = false
-            create_no_repair = true
-            create_publisher = true
-            create_uninstall_string = true
-
+        install_path = ''
     [installation.current_user]
         create_desktop_shortcut = false
         create_registry_key = true
         create_start_menu_shortcut = true
         install_path = ''
-
-        [installation.current_user.registry]
-            create_comments = false
-            create_display_icon = true
-            create_display_name = true
-            create_display_version = true
-            create_estimated_size = true
-            create_install_location = true
-            create_no_modify = true
-            create_no_remove = false
-            create_no_repair = true
-            create_publisher = true
-            create_uninstall_string = true

@@ -2,8 +2,9 @@
 import { ref } from "vue";
 import { invoke } from "@tauri-apps/api/core";
 import { Button } from "@/components/ui/button";
+import { useSettingsStore } from "../stores/settings";
 
-const install_mode = ref("AllUser");
+let settingsStore = useSettingsStore();
 </script>
 
 <template>

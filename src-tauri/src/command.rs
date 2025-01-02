@@ -1,6 +1,5 @@
 use crate::format_result;
 use crate::settings::*;
-use std::result;
 use std::{error::Error, result::Result};
 
 #[tauri::command]
