@@ -1,8 +1,4 @@
-#![cfg_attr(
-    not(debug_assertions),
-    windows_subsystem = "windows",
-    target_os = "windows"
-)]
+#![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app_porter_lib::{command, handle_error, settings};
 use settings::load_settings;

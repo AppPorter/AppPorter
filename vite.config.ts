@@ -1,8 +1,8 @@
-import { defineConfig } from "vite";
-import autoprefixer from "autoprefixer";
-import tailwind from "tailwindcss";
-import { fileURLToPath, URL } from "node:url";
 import vue from "@vitejs/plugin-vue";
+import autoprefixer from "autoprefixer";
+import { fileURLToPath, URL } from "node:url";
+import tailwind from "tailwindcss";
+import { defineConfig } from "vite";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -14,6 +14,9 @@ export default defineConfig(async () => ({
     },
   },
   plugins: [vue()],
+  build: {
+    target: "esnext",
+  },
   resolve: {
     alias: {
       "@": fileURLToPath(new URL("./src", import.meta.url)),
