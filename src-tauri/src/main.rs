@@ -4,12 +4,12 @@
     target_os = "windows"
 )]
 
-use app_porter_lib::{command, result_process, settings};
+use app_porter_lib::{command, handle_error, settings};
 use settings::load_settings;
 use std::{error::Error, result::Result};
 
 fn main() {
-    result_process(run());
+    handle_error(run());
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

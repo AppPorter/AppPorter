@@ -2,7 +2,7 @@ pub mod command;
 pub mod installation;
 pub mod settings;
 
-pub fn result_process<T>(result: Result<T, Box<dyn std::error::Error>>) {
+pub fn handle_error<T>(result: Result<T, Box<dyn std::error::Error>>) {
     match result {
         Ok(_) => {}
         Err(e) => {
@@ -13,13 +13,12 @@ pub fn result_process<T>(result: Result<T, Box<dyn std::error::Error>>) {
     }
 }
 
-pub fn result_send<T: std::fmt::Debug>(
+pub fn format_result<T: std::fmt::Debug>(
     result: Result<T, Box<dyn std::error::Error>>,
-    channel: tauri::ipc::Channel<String>,
-) {
+) -> Result<String, tauri::Error> {
     let output = match result {
         Ok(result) => format!("{:#?}", result),
         Err(error) => error.to_string(),
     };
-    channel.send(output);
+    Ok(output)
 }

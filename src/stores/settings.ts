@@ -1,6 +1,5 @@
-import { Channel, invoke } from "@tauri-apps/api/core";
-import { defineStore, storeToRefs } from "pinia";
-import { Ref, ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
+import { defineStore } from "pinia";
 
 interface Settings {
   download_dir: string;
@@ -100,26 +99,55 @@ export const useSettingsStore = defineStore("settings", {
 
   actions: {
     async loadSettings() {
+      let result: any;
       try {
-        const settings_channel = new Channel<Settings>();
-        let settings: Ref<Settings> = ref({} as Settings);
-
-        settings_channel.onmessage = (message) => {
-          settings.value = message;
-        };
-
-        invoke("execute_command", {
+        result = await invoke("execute_command", {
           command: "LoadSettings",
           arg: null,
-          channel: settings_channel,
-        }).catch((e) => {
-          e.value.push(e as string);
-          console.error(e);
         });
-        console.log("0" + settings.value.minimize_to_tray_on_close); //undefined
-        console.log("1" + storeToRefs(this).minimize_to_tray_on_close.value); //false
-        this.$patch(settings.value);
-        console.log("2" + storeToRefs(this).minimize_to_tray_on_close.value); //false
+
+        // Convert Rust debug format to JSON
+        const processString = (str: string) => {
+          // Extract and process paths first
+          const paths: string[] = [];
+          let json = str
+            // Extract paths with proper escaping
+            .replace(
+              /install_path:\s*"([A-Z]):\\([^"]+)"/g,
+              (_, drive, path) => {
+                const processed = `"${drive}:\\\\${path.replace(/\\/g, "\\\\")}"`;
+                paths.push(processed);
+                return `"install_path":__PATH${paths.length - 1}__`;
+              },
+            )
+            // Remove Rust type names
+            .replace(
+              /(?:Settings|Installation|InstallSettings|RegistrySettings)\s*{/g,
+              "{",
+            )
+            .replace(/:\s*(?:Install|Registry)\s*{/g, ": {")
+            // Handle enum values
+            .replace(/:\s*(AllUsers|CurrentUser)(?=[,}\s])/g, ':"$1"')
+            // Format JSON structure
+            .replace(/([a-zA-Z_]+)(?=\s*:)/g, '"$1"')
+            .replace(/[\n\s]+/g, "")
+            .replace(/,\s*}/g, "}");
+
+          // Restore paths and return
+          return json.replace(/__PATH(\d+)__/g, (_, i) => paths[parseInt(i)]);
+        };
+
+        // Parse and validate
+        const jsonStr = processString(result as string);
+        const settings = JSON.parse(jsonStr) as Settings;
+
+        // Handle enum
+        settings.installation.install_mode =
+          settings.installation.install_mode === "CurrentUser"
+            ? InstallMode.CurrentUser
+            : InstallMode.AllUsers;
+
+        this.$patch(settings);
       } catch (error) {
         console.error("Failed to load settings:", error);
       }

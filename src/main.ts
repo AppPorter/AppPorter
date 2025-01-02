@@ -89,8 +89,8 @@ export let error: Ref<string[]> = ref([]);
 const settingsStore = useSettingsStore();
 await settingsStore.loadSettings();
 const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
-console.log(minimize_to_tray_on_close.value); //false
-
+console.log(minimize_to_tray_on_close.value);
+console.log(storeToRefs(settingsStore));
 if (minimize_to_tray_on_close.value) {
   try {
     await TrayIcon.new(options);
