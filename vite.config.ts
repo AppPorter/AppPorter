@@ -3,6 +3,7 @@ import autoprefixer from "autoprefixer";
 import { fileURLToPath, URL } from "node:url";
 import tailwind from "tailwindcss";
 import { defineConfig } from "vite";
+import vueDevTools from "vite-plugin-vue-devtools";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -13,7 +14,7 @@ export default defineConfig(async () => ({
       plugins: [tailwind(), autoprefixer()],
     },
   },
-  plugins: [vue()],
+  plugins: [vue(), vueDevTools()],
   build: {
     target: "esnext",
   },

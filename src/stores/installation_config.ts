@@ -9,7 +9,7 @@ interface Installation_Config {
   create_registry_key: boolean; //configurable
   create_start_menu_shortcut: boolean; //configurable
   install_path: string; //configurable
-  publisher: String; //auto + configurable
+  publisher: string; //auto + configurable
   zip_path: string;
 }
 

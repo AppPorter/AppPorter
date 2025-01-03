@@ -9,6 +9,7 @@ import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
 import { ref } from "vue";
+import { storeToRefs } from "pinia";
 
 const settingsStore = useSettingsStore();
 const {
@@ -28,13 +29,16 @@ const {
     },
   },
 } = settingsStore;
+
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = installationConfig;
-let current_user_only = ref(settings_current_user_only);
-let create_desktop_shortcut = ref(false);
-let create_registry_key = ref(false);
-let create_start_menu_shortcut = ref(false);
-let install_path = ref("");
+const {
+  current_user_only,
+  create_desktop_shortcut,
+  create_registry_key,
+  create_start_menu_shortcut,
+  install_path,
+} = storeToRefs(installationConfig);
 
 function load_settings() {
   if (current_user_only.value) {
@@ -58,6 +62,8 @@ async function select_install_path() {
   });
   install_path.value = String(path);
 }
+
+function start_installation() {}
 </script>
 
 <template>
@@ -148,7 +154,7 @@ async function select_install_path() {
 
         <!-- Install Button -->
         <div class="flex justify-end pt-2">
-          <Button class="w-28">Install</Button>
+          <Button class="w-28" @click="start_installation">Install</Button>
         </div>
       </CardContent>
     </Card>
