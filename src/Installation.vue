@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
 import { goTo } from "@/router";
+import { useInstallationConfigStore } from "@/stores/installation_config";
 import { open } from "@tauri-apps/plugin-dialog";
-import { useSettingsStore } from "./stores/settings";
 
-const settingsStore = useSettingsStore();
+const installationConfig = useInstallationConfigStore();
 let path;
 async function select_file() {
   path = await open({
@@ -12,7 +12,7 @@ async function select_file() {
     directory: false,
     filters: [{ name: "Zip", extensions: ["zip"] }],
   });
-  settingsStore.installation.zip_path = path;
+  installationConfig.zip_path = path;
 }
 </script>
 

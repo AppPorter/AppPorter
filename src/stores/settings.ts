@@ -2,7 +2,6 @@ import { invoke } from "@tauri-apps/api/core";
 import { defineStore } from "pinia";
 
 interface Settings {
-  download_dir: string;
   language: string;
   minimize_to_tray_on_close: boolean;
   system_drive_letter: string;
@@ -13,8 +12,6 @@ interface Settings {
 
 interface Installation {
   install_mode: InstallMode;
-  start_path: string;
-  zip_path: string;
   all_users: InstallSettings;
   current_user: InstallSettings;
 }
@@ -33,7 +30,6 @@ enum InstallMode {
 
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
-    download_dir: "",
     language: "",
     minimize_to_tray_on_close: false,
     system_drive_letter: "",
@@ -41,8 +37,6 @@ export const useSettingsStore = defineStore("settings", {
     username: "",
     installation: {
       install_mode: InstallMode.CurrentUser,
-      start_path: "",
-      zip_path: "",
       all_users: {
         create_desktop_shortcut: false,
         create_registry_key: false,

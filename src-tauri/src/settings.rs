@@ -4,7 +4,6 @@ use std::{error::Error, result::Result};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
-    pub download_dir: String,
     pub language: String,
     pub minimize_to_tray_on_close: bool,
     pub system_drive_letter: String,
@@ -16,8 +15,6 @@ pub struct Settings {
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Installation {
     pub install_mode: InstallMode,
-    pub start_path: String,
-    pub zip_path: String,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
 }
@@ -47,18 +44,6 @@ impl Settings {
     pub fn complete(&mut self) -> Result<(), Box<dyn Error>> {
         let system_drive_letter = &std::env::var("windir")?[..1];
         let username = &std::env::var("USERNAME")?;
-
-        let download_dir = dirs::download_dir()
-            .ok_or("Failed to get download directory")?
-            .to_string_lossy()
-            .to_string();
-        if self.installation.start_path.is_empty() {
-            Config::builder()
-                .set_override("download_dir", &*download_dir)?
-                .set_override("installation.start_path", download_dir)?
-                .build()?;
-        }
-
         if self.installation.all_users.install_path.is_empty() {
             Config::builder()
                 .set_override(
@@ -68,7 +53,6 @@ impl Settings {
                 .set_override(r"system_drive_letter", system_drive_letter)?
                 .build()?;
         }
-
         if self.installation.current_user.install_path.is_empty() {
             Config::builder()
                 .set_override(
@@ -82,7 +66,6 @@ impl Settings {
                 .set_override(r"username", username.as_str())?
                 .build()?;
         }
-
         Ok(())
     }
 }

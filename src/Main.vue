@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/navigation-menu";
 import { window } from "@/main";
 import { goTo } from "@/router";
+import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
 import { storeToRefs } from "pinia";
-import { useSettingsStore } from "./stores/settings";
 
 const settingsStore = useSettingsStore();
 const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
