@@ -8,6 +8,7 @@ interface Installation_Config {
   create_desktop_shortcut: boolean; //configurable
   create_registry_key: boolean; //configurable
   create_start_menu_shortcut: boolean; //configurable
+  executable: string; //auto + configurable
   install_path: string; //configurable
   publisher: string; //auto + configurable
   zip_path: string;
@@ -22,6 +23,7 @@ export const useInstallationConfigStore = defineStore("installation_config", {
     create_desktop_shortcut: false,
     create_registry_key: true,
     create_start_menu_shortcut: true,
+    executable: "",
     install_path: "",
     publisher: "",
     zip_path: "",

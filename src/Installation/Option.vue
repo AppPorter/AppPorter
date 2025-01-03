@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
-import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted } from "vue";
@@ -15,22 +14,7 @@ import { nextTick, onMounted } from "vue";
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = installationConfig;
 
-interface ZipEntry {
-  name: string;
-  size: number;
-}
-
-try {
-  const result = await invoke("execute_command", {
-    command: "PreviewZip",
-    arg: zip_path,
-  });
-
-  const zip_content = JSON.parse(result as string) as ZipEntry[];
-  console.dir(zip_content);
-} catch (error) {
-  console.error("Failed to load zip:", error);
-}
+//write zip preview code here
 
 const settingsStore = useSettingsStore();
 const {
@@ -58,6 +42,8 @@ const {
   create_start_menu_shortcut,
   install_path,
 } = storeToRefs(installationConfig);
+
+current_user_only.value = settings_current_user_only;
 
 function updateConfigByMode(isCurrentUser: boolean) {
   const source = isCurrentUser
