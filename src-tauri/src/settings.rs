@@ -113,8 +113,8 @@ impl Settings {
     }
 }
 
-pub fn load_settings() -> Result<Settings, Box<dyn Error>> {
+pub fn load_settings() -> Result<String, Box<dyn Error>> {
     let mut settings = Settings::read()?;
     settings.initialization()?;
-    Ok(settings)
+    Ok(serde_json::to_string(&settings)?)
 }

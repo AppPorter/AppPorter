@@ -11,12 +11,19 @@ export default [
   ...tseslint.configs.recommended,
   ...pluginVue.configs["flat/essential"],
   {
-    files: ["**/*.vue"],
+    files: ["**/*.vue", "**/*.ts", "**/*.js"],
     languageOptions: { parserOptions: { parser: tseslint.parser } },
     rules: {
-      "@typescript-eslint/no-unused-vars": ["warn"],
       "vue/valid-template-root": ["off"],
       "vue/multi-word-component-names": ["off"],
+      "@typescript-eslint/no-unused-vars": ["warn"],
+      "prefer-const": [
+        "warn",
+        {
+          destructuring: "any",
+          ignoreReadBeforeAssign: false,
+        },
+      ],
     },
   },
 ];

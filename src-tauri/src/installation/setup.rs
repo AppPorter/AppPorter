@@ -8,7 +8,7 @@ pub struct ZipEntry {
     size: u64,
 }
 
-pub fn preview_zip(zip_path: &str) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
+pub fn preview_zip(zip_path: &str) -> Result<String, Box<dyn Error>> {
     let file = std::fs::File::open(Path::new(zip_path))?;
     let mut archive = ZipArchive::new(file)?;
     let mut file_list = Vec::new();
@@ -20,5 +20,5 @@ pub fn preview_zip(zip_path: &str) -> Result<Vec<ZipEntry>, Box<dyn Error>> {
         };
         file_list.push(file_entry)
     }
-    Ok(file_list)
+    Ok(serde_json::to_string(&file_list)?)
 }

@@ -1,20 +1,22 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{command, handle_error, settings};
+use app_porter_lib::{command, settings};
 use settings::load_settings;
 use std::{error::Error, result::Result};
 
 fn main() {
-    handle_error(run());
+    match run() {
+        Ok(_) => {}
+        Err(e) => {
+            #[cfg(debug_assertions)]
+            eprintln!("{}", e.to_string());
+        }
+    }
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
-    println!(
-        "{:#?}",
-        app_porter_lib::installation::setup::preview_zip("D:/_u/do/UniExtractRC3.zip")?
-    );
-    load_settings()?.initialization()?;
+    load_settings()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
