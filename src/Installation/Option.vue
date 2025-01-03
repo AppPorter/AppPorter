@@ -8,8 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
-import { ref } from "vue";
 import { storeToRefs } from "pinia";
+import { nextTick, onMounted } from "vue";
 
 const settingsStore = useSettingsStore();
 const {
@@ -40,20 +40,36 @@ const {
   install_path,
 } = storeToRefs(installationConfig);
 
-function load_settings() {
-  if (current_user_only.value) {
-    create_desktop_shortcut.value = current_create_desktop_shortcut;
-    create_registry_key.value = current_create_registry_key;
-    create_start_menu_shortcut.value = current_create_start_menu_shortcut;
-    install_path.value = current_install_path;
-  } else {
-    create_desktop_shortcut.value = all_create_desktop_shortcut;
-    create_registry_key.value = all_create_registry_key;
-    create_start_menu_shortcut.value = all_create_start_menu_shortcut;
-    install_path.value = all_install_path;
-  }
+function updateConfigByMode(isCurrentUser: boolean) {
+  const source = isCurrentUser
+    ? {
+        create_desktop_shortcut: current_create_desktop_shortcut,
+        create_registry_key: current_create_registry_key,
+        create_start_menu_shortcut: current_create_start_menu_shortcut,
+        install_path: current_install_path,
+      }
+    : {
+        create_desktop_shortcut: all_create_desktop_shortcut,
+        create_registry_key: all_create_registry_key,
+        create_start_menu_shortcut: all_create_start_menu_shortcut,
+        install_path: all_install_path,
+      };
+
+  create_desktop_shortcut.value = source.create_desktop_shortcut;
+  create_registry_key.value = source.create_registry_key;
+  create_start_menu_shortcut.value = source.create_start_menu_shortcut;
+  install_path.value = source.install_path;
 }
-load_settings();
+
+onMounted(async () => {
+  await nextTick();
+  updateConfigByMode(current_user_only.value);
+});
+
+function handleInstallModeChange(checked: boolean) {
+  current_user_only.value = checked;
+  updateConfigByMode(checked);
+}
 
 async function select_install_path() {
   const path = await open({
@@ -84,12 +100,7 @@ function start_installation() {}
             <Switch
               id="install_mode"
               :checked="current_user_only"
-              @update:checked="
-                (checked) => {
-                  current_user_only = checked;
-                  load_settings();
-                }
-              "
+              @update:checked="handleInstallModeChange"
             />
             <Label for="install_mode">Current User</Label>
           </div>

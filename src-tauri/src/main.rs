@@ -14,7 +14,7 @@ fn run() -> Result<(), Box<dyn Error>> {
         "{:#?}",
         app_porter_lib::installation::setup::preview_zip("D:/_u/do/UniExtractRC3.zip")?
     );
-    load_settings()?.complete()?;
+    load_settings()?.initialization()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
