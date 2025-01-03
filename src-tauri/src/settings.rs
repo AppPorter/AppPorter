@@ -14,7 +14,7 @@ pub struct Settings {
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Installation {
-    pub install_mode: InstallMode,
+    pub current_user_only: bool,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
 }
@@ -25,12 +25,6 @@ pub struct InstallSettings {
     pub create_registry_key: bool,
     pub create_start_menu_shortcut: bool,
     pub install_path: String,
-}
-
-#[derive(Debug, Deserialize, Serialize)]
-pub enum InstallMode {
-    AllUsers,
-    CurrentUser,
 }
 
 impl Settings {

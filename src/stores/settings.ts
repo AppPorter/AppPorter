@@ -11,7 +11,7 @@ interface Settings {
 }
 
 interface Installation {
-  install_mode: InstallMode;
+  current_user_only: boolean;
   all_users: InstallSettings;
   current_user: InstallSettings;
 }
@@ -23,11 +23,6 @@ interface InstallSettings {
   install_path: string;
 }
 
-enum InstallMode {
-  AllUsers = "AllUsers",
-  CurrentUser = "CurrentUser",
-}
-
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
     language: "",
@@ -36,7 +31,7 @@ export const useSettingsStore = defineStore("settings", {
     theme: "",
     username: "",
     installation: {
-      install_mode: InstallMode.CurrentUser,
+      current_user_only: false,
       all_users: {
         create_desktop_shortcut: false,
         create_registry_key: false,

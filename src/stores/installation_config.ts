@@ -1,20 +1,16 @@
 import { defineStore } from "pinia";
 
 interface Installation_Config {
-  app_icon: string;
-  app_name: string;
-  app_version: string;
-  install_mode: InstallMode;
-  create_desktop_shortcut: boolean;
-  create_registry_key: boolean;
-  create_start_menu_shortcut: boolean;
-  install_path: string;
-  publisher: String;
+  app_icon: string; //auto
+  app_name: string; //auto + configurable
+  app_version: string; //auto + configurable
+  current_user_only: boolean; //configurable
+  create_desktop_shortcut: boolean; //configurable
+  create_registry_key: boolean; //configurable
+  create_start_menu_shortcut: boolean; //configurable
+  install_path: string; //configurable
+  publisher: String; //auto + configurable
   zip_path: string;
-}
-enum InstallMode {
-  AllUsers = "AllUsers",
-  CurrentUser = "CurrentUser",
 }
 
 export const useInstallationConfigStore = defineStore("installation_config", {
@@ -22,7 +18,7 @@ export const useInstallationConfigStore = defineStore("installation_config", {
     app_icon: "",
     app_name: "",
     app_version: "",
-    install_mode: InstallMode.AllUsers,
+    current_user_only: false,
     create_desktop_shortcut: false,
     create_registry_key: true,
     create_start_menu_shortcut: true,

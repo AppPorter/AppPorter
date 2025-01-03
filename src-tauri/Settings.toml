@@ -4,7 +4,7 @@ system_drive_letter = 'C'
 theme = 'system'
 username = 'Administrator'
 [installation]
-    install_mode = 'AllUsers'
+    current_user_only = false
     [installation.all_users]
         create_desktop_shortcut = false
         create_registry_key = true

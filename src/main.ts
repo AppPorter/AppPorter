@@ -54,6 +54,9 @@ await window.onCloseRequested(async () => {
   window.hide();
 });
 
+const pinia = createPinia();
+const app = createApp(Main);
+
 async function loadSvg(name: string): Promise<string> {
   const path = `/src/assets/icons/${name}.svg`;
   try {
@@ -64,10 +67,6 @@ async function loadSvg(name: string): Promise<string> {
     return "";
   }
 }
-
-const pinia = createPinia();
-
-const app = createApp(Main);
 
 app
   .use(router)

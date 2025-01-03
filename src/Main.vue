@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Card } from "@/components/ui/card";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -27,51 +28,66 @@ function minimize_button() {
 </script>
 
 <template>
-  <div class="fixed top-0 right-0 h-auto z-50">
-    <button class="px-2 py-1 hover:bg-[#d7d7d7]" @click="minimize_button()">
-      <span v-svg="'minimize'"></span>
+  <!-- Window Controls -->
+  <div class="fixed top-0 right-0 h-auto z-50 flex">
+    <button
+      class="px-3 py-1.5 hover:bg-[#d7d7d7] transition-colors"
+      @click="minimize_button()"
+    >
+      <span v-svg="'minimize'" class="w-3 h-3"></span>
     </button>
-    <button class="px-2 py-1 hover:bg-[#e81123]" @click="close_button()">
-      <span v-svg="'close'"></span>
+    <button
+      class="px-3 py-1.5 hover:bg-[#e81123] transition-colors"
+      @click="close_button()"
+    >
+      <span v-svg="'close'" class="w-3 h-3"></span>
     </button>
   </div>
-  <div class="fixed w-full">
-    <div style="-webkit-app-region: drag" class="w-full border-b-2">
-      <h1 class="text-3xl relative pt-8 pl-8 pb-4">AppPorter</h1>
+
+  <!-- Title Bar -->
+  <div
+    class="fixed w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+  >
+    <div style="-webkit-app-region: drag" class="w-full border-b">
+      <h1 class="text-lg font-semibold relative pt-3 pl-6 pb-2">AppPorter</h1>
     </div>
-    <div class="relative left-8">
-      <NavigationMenu class="relative top-2">
+
+    <!-- Navigation -->
+    <div class="px-6 py-1">
+      <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
             <NavigationMenuLink
-              :class="navigationMenuTriggerStyle()"
+              :class="[navigationMenuTriggerStyle(), 'px-4']"
               @click="goTo('/Installation')"
             >
-              Installation</NavigationMenuLink
-            >
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              :class="navigationMenuTriggerStyle()"
-              @click="goTo('/Installation/Option')"
-            >
-              Installation/Option
+              Installation
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
             <NavigationMenuLink
-              :class="navigationMenuTriggerStyle()"
+              :class="[navigationMenuTriggerStyle(), 'px-4']"
               @click="goTo('/Settings')"
-              >Settings
+            >
+              Settings
             </NavigationMenuLink>
           </NavigationMenuItem>
         </NavigationMenuList>
       </NavigationMenu>
-      <div class="relative top-6">
-        <RouterView class="relative"></RouterView>
-      </div>
     </div>
   </div>
 
-  <p class="fixed bottom-2 left-2">{{ $route.fullPath }}</p>
+  <!-- Main Content -->
+  <div class="pt-20 px-6 pb-8">
+    <Card class="h-[calc(100vh-120px)] overflow-y-auto">
+      <RouterView></RouterView>
+    </Card>
+  </div>
+
+  <!-- Status Bar -->
+  <div
+    class="fixed bottom-0 left-0 right-0 h-6 border-t bg-muted/50 px-4 flex items-center text-xs"
+  >
+    <p class="text-sm text-muted-foreground">{{ $route.fullPath }}</p>
+  </div>
 </template>
