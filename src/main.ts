@@ -1,7 +1,7 @@
 import "@/assets/index.css";
-import i18n from "@/i18n";
+import i18n from "@/plugin/i18n";
 import Main from "@/Main.vue";
-import router from "@/router.ts";
+import router from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";

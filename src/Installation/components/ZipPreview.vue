@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 import { watchEffect, ref, watch } from "vue";
 import JSZip from "jszip";
 import { readFile } from "@tauri-apps/plugin-fs";
-import TreeView from "./components/TreeView.vue";
+import TreeView from "./TreeView.vue";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
@@ -134,7 +134,10 @@ watch(filterMode, () => {
 <template>
   <Card>
     <CardHeader>
-      <CardTitle class="text-sm">Files in Archive</CardTitle>
+      <CardTitle class="text-sm flex items-center gap-2">
+        <span v-svg="'zip'" class="w-4 h-4"></span>
+        Files in Archive
+      </CardTitle>
     </CardHeader>
     <CardContent class="space-y-4">
       <!-- File tree -->
@@ -162,10 +165,22 @@ watch(filterMode, () => {
         <div
           v-for="mode in filterModes"
           :key="mode.value"
-          class="flex items-center space-x-2"
+          class="flex items-center gap-2"
         >
           <RadioGroupItem :value="mode.value" :id="'filter-' + mode.value" />
-          <Label :for="'filter-' + mode.value">{{ mode.label }}</Label>
+          <Label :for="'filter-' + mode.value" class="flex items-center gap-2">
+            <span
+              v-svg="
+                mode.value === 'exe'
+                  ? 'executable'
+                  : mode.value === 'executable'
+                    ? 'script'
+                    : 'file'
+              "
+              class="w-4 h-4"
+            ></span>
+            {{ mode.label }}
+          </Label>
         </div>
       </RadioGroup>
     </CardContent>

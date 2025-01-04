@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { goTo } from "@/router";
+import { goTo } from "@/plugin/router";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { open } from "@tauri-apps/plugin-dialog";
 
@@ -37,8 +37,15 @@ async function select_file() {
         placeholder="Select a ZIP file to install"
         readonly
         class="flex-1 text-sm"
-      />
-      <Button variant="secondary" @click="select_file">Browse</Button>
+      >
+        <template #prefix>
+          <span v-svg="'zip'" class="w-4 h-4 mr-2 opacity-70"></span>
+        </template>
+      </Input>
+      <Button variant="secondary" @click="select_file">
+        <span v-svg="'open_folder'" class="w-4 h-4 mr-2"></span>
+        Browse
+      </Button>
     </div>
   </CardContent>
 

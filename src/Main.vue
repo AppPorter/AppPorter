@@ -8,7 +8,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 import { window } from "@/main";
-import { goTo } from "@/router";
+import { goTo } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
 import { storeToRefs } from "pinia";

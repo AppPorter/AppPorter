@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ChevronRight } from "lucide-vue-next";
+// Remove ChevronRight import as we'll use our own icons
+// import { ChevronRight } from "lucide-vue-next";
 import { ref, watch } from "vue";
 
 interface TreeNode {
@@ -51,14 +52,19 @@ function toggleDir(path: string) {
       <!-- Directory node -->
       <div
         v-if="item.type === 'directory'"
-        class="flex items-center gap-1 py-1 px-2 text-sm text-gray-600 cursor-pointer rounded transition-colors hover:bg-gray-100 hover:text-gray-900"
+        class="flex items-center gap-2 py-1 px-2 text-sm text-gray-600 cursor-pointer rounded transition-colors hover:bg-gray-100 hover:text-gray-900"
         :class="{ 'bg-gray-200': expandedDirs.has(item.path) }"
         @click="toggleDir(item.path)"
       >
-        <ChevronRight
-          class="h-4 w-4 transition-transform shrink-0"
+        <span
+          class="w-4 h-4 shrink-0 flex items-center justify-center -ml-0.5"
           :class="{ 'rotate-90': expandedDirs.has(item.path) }"
-        />
+          >▸</span
+        >
+        <span
+          v-svg="expandedDirs.has(item.path) ? 'open_folder' : 'folder'"
+          class="w-4 h-4 shrink-0"
+        ></span>
         <span class="truncate">{{ item.name }}</span>
       </div>
 
@@ -76,6 +82,10 @@ function toggleDir(path: string) {
         ]"
         @click="item.isExecutable && $emit('select', item.path)"
       >
+        <span
+          v-svg="item.isExecutable ? 'executable' : 'file'"
+          class="w-4 h-4 shrink-0 opacity-70 mr-1"
+        ></span>
         <span class="truncate">{{ item.name }}</span>
       </div>
 

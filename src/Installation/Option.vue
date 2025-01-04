@@ -10,7 +10,12 @@ import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted } from "vue";
-import ZipPreview from "./ZipPreview.vue";
+import ZipPreview from "./components/ZipPreview.vue";
+
+// Add these icons to your /src/assets/icons/ directory if not exists:
+// folder.svg - A folder icon
+// shortcut.svg - A shortcut/link icon
+// registry.svg - A registry/settings icon
 
 const settingsStore = useSettingsStore();
 const {
@@ -123,10 +128,15 @@ function start_installation() {}
               placeholder="Choose installation directory"
               readonly
               class="text-sm"
-            />
-            <Button variant="secondary" @click="select_install_path"
-              >Browse</Button
             >
+              <template #prefix>
+                <span v-svg="'folder'" class="w-4 h-4 mr-2 opacity-70"></span>
+              </template>
+            </Input>
+            <Button variant="secondary" @click="select_install_path">
+              <span v-svg="'open_folder'" class="w-4 h-4 mr-2"></span>
+              Browse
+            </Button>
           </div>
         </div>
 
@@ -142,9 +152,9 @@ function start_installation() {}
                   (checked) => (create_desktop_shortcut = checked)
                 "
               />
-              <Label for="create_desktop_shortcut"
-                >Create Desktop Shortcut</Label
-              >
+              <Label for="create_desktop_shortcut">
+                Create Desktop Shortcut
+              </Label>
             </div>
             <div class="flex items-center space-x-2">
               <Checkbox
@@ -154,9 +164,9 @@ function start_installation() {}
                   (checked) => (create_start_menu_shortcut = checked)
                 "
               />
-              <Label for="create_start_menu_shortcut"
-                >Create Start Menu Shortcut</Label
-              >
+              <Label for="create_start_menu_shortcut">
+                Create Start Menu Shortcut
+              </Label>
             </div>
             <div class="flex items-center space-x-2">
               <Checkbox
@@ -164,14 +174,20 @@ function start_installation() {}
                 :checked="create_registry_key"
                 @update:checked="(checked) => (create_registry_key = checked)"
               />
-              <Label for="create_registry_key">Create Registry Entry</Label>
+              <Label for="create_registry_key"> Create Registry Entry </Label>
             </div>
           </div>
         </div>
 
         <!-- Install Button -->
         <div class="flex justify-end pt-2">
-          <Button class="w-28" @click="start_installation">Install</Button>
+          <Button
+            class="w-28 flex items-center justify-center gap-2"
+            @click="start_installation"
+          >
+            <span v-svg="'install'" class="w-4 h-4"></span>
+            Install
+          </Button>
         </div>
       </CardContent>
     </Card>
