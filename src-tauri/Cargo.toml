@@ -44,3 +44,4 @@
     windows-registry = "0.3.0"
     zip = "2.2.2"
     zip-extensions = "0.8.1"
+tauri-plugin-fs = "2"

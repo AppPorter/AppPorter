@@ -10,11 +10,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import { nextTick, onMounted } from "vue";
-
-const installationConfig = useInstallationConfigStore();
-const { zip_path } = installationConfig;
-
-//write zip preview code here
+import ZipPreview from "./ZipPreview.vue";
 
 const settingsStore = useSettingsStore();
 const {
@@ -35,6 +31,8 @@ const {
   },
 } = settingsStore;
 
+const installationConfig = useInstallationConfigStore();
+const { zip_path } = installationConfig;
 const {
   current_user_only,
   create_desktop_shortcut,
@@ -89,6 +87,9 @@ function start_installation() {}
 
 <template>
   <div class="p-4 space-y-4">
+    <!-- Add ZipPreview component -->
+    <ZipPreview :zip-path="zip_path" />
+
     <Card>
       <CardHeader class="pb-3">
         <CardTitle class="text-lg">Installation Options</CardTitle>
