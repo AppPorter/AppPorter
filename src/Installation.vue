@@ -10,40 +10,37 @@ import { Input } from "@/components/ui/input";
 import { goTo } from "@/plugin/router";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { open } from "@tauri-apps/plugin-dialog";
+import { storeToRefs } from "pinia";
 
 const installationConfig = useInstallationConfigStore();
-let path;
-async function select_file() {
-  path = await open({
+const { zip_path } = storeToRefs(installationConfig);
+async function select_zip_file() {
+  zip_path.value = await open({
     multiple: false,
     directory: false,
     filters: [{ name: "Zip", extensions: ["zip"] }],
   });
-  installationConfig.zip_path = path;
 }
 </script>
 
 <template>
   <CardHeader class="pb-3">
     <CardTitle class="text-lg">Select Installation Package</CardTitle>
-    <p class="text-xs text-muted-foreground">Choose a ZIP file to install</p>
+    <p class="text-xs text-muted-foreground">Choose a zip file to install</p>
   </CardHeader>
 
   <CardContent class="space-y-4">
     <div class="flex items-center gap-2">
       <Input
-        :value="installationConfig.zip_path"
+        v-model="zip_path"
         type="text"
-        placeholder="Select a ZIP file to install"
-        readonly
+        placeholder="Select a zip file to install"
         class="flex-1 text-sm"
       >
-        <template #prefix>
-          <span v-svg="'zip'" class="w-4 h-4 mr-2 opacity-70"></span>
-        </template>
+        <span v-svg="'zip'" class="w-4 h-4 mr-2 opacity-70"></span>
       </Input>
-      <Button variant="secondary" @click="select_file">
-        <span v-svg="'open_folder'" class="w-4 h-4 mr-2"></span>
+      <Button variant="secondary" @click="select_zip_file">
+        <span v-svg="'open_folder'" class="w-4 h-4"></span>
         Browse
       </Button>
     </div>

@@ -11,12 +11,10 @@ import { window } from "@/main";
 import { goTo } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
-import { storeToRefs } from "pinia";
 
 const settingsStore = useSettingsStore();
-const { minimize_to_tray_on_close } = storeToRefs(settingsStore);
 function close_button() {
-  if (minimize_to_tray_on_close.value) {
+  if (settingsStore.minimize_to_tray_on_close) {
     window.hide();
   } else {
     exit(0);
@@ -45,9 +43,7 @@ function minimize_button() {
   </div>
 
   <!-- Title Bar -->
-  <div
-    class="fixed w-full bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-  >
+  <div class="fixed w-full bg-background/95 backdrop-blur-lg z-40">
     <div style="-webkit-app-region: drag" class="w-full border-b">
       <h1 class="text-lg font-semibold relative pt-3 pl-6 pb-2">AppPorter</h1>
     </div>
@@ -86,8 +82,8 @@ function minimize_button() {
 
   <!-- Status Bar -->
   <div
-    class="fixed bottom-0 left-0 right-0 h-6 border-t bg-muted/50 px-4 flex items-center text-xs"
+    class="fixed bottom-0 left-0 right-0 h-6 border-t px-4 flex items-center text-xs z-40"
   >
-    <p class="text-sm text-muted-foreground">{{ $route.fullPath }}</p>
+    <p class="text-sm">{{ $route.fullPath }}</p>
   </div>
 </template>

@@ -12,11 +12,6 @@ import { storeToRefs } from "pinia";
 import { nextTick, onMounted } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
-// Add these icons to your /src/assets/icons/ directory if not exists:
-// folder.svg - A folder icon
-// shortcut.svg - A shortcut/link icon
-// registry.svg - A registry/settings icon
-
 const settingsStore = useSettingsStore();
 const {
   installation: {
@@ -49,24 +44,17 @@ const {
 current_user_only.value = settings_current_user_only;
 
 function updateConfigByMode(isCurrentUser: boolean) {
-  const source = isCurrentUser
-    ? {
-        create_desktop_shortcut: current_create_desktop_shortcut,
-        create_registry_key: current_create_registry_key,
-        create_start_menu_shortcut: current_create_start_menu_shortcut,
-        install_path: current_install_path,
-      }
-    : {
-        create_desktop_shortcut: all_create_desktop_shortcut,
-        create_registry_key: all_create_registry_key,
-        create_start_menu_shortcut: all_create_start_menu_shortcut,
-        install_path: all_install_path,
-      };
-
-  create_desktop_shortcut.value = source.create_desktop_shortcut;
-  create_registry_key.value = source.create_registry_key;
-  create_start_menu_shortcut.value = source.create_start_menu_shortcut;
-  install_path.value = source.install_path;
+  if (isCurrentUser) {
+    create_desktop_shortcut.value = current_create_desktop_shortcut;
+    create_registry_key.value = current_create_registry_key;
+    create_start_menu_shortcut.value = current_create_start_menu_shortcut;
+    install_path.value = current_install_path;
+  } else {
+    create_desktop_shortcut.value = all_create_desktop_shortcut;
+    create_registry_key.value = all_create_registry_key;
+    create_start_menu_shortcut.value = all_create_start_menu_shortcut;
+    install_path.value = all_install_path;
+  }
 }
 
 onMounted(async () => {
@@ -98,8 +86,8 @@ function start_installation() {}
     <Card>
       <CardHeader class="pb-3">
         <CardTitle class="text-lg">Installation Options</CardTitle>
-        <p class="text-xs text-muted-foreground">
-          Selected file: {{ zip_path }}
+        <p class="text-xs">
+          Selected file: <b>{{ zip_path }}</b>
         </p>
       </CardHeader>
       <CardContent class="space-y-4">
@@ -122,19 +110,15 @@ function start_installation() {}
           <Label class="w-24 text-sm">Install Path</Label>
           <div class="flex-1 flex gap-2">
             <Input
-              :value="install_path"
-              @update:modelValue="(value) => (install_path = String(value))"
+              v-model="install_path"
               type="text"
               placeholder="Choose installation directory"
-              readonly
               class="text-sm"
             >
-              <template #prefix>
-                <span v-svg="'folder'" class="w-4 h-4 mr-2 opacity-70"></span>
-              </template>
+              <span v-svg="'folder'" class="w-4 h-4 opacity-70"></span>
             </Input>
             <Button variant="secondary" @click="select_install_path">
-              <span v-svg="'open_folder'" class="w-4 h-4 mr-2"></span>
+              <span v-svg="'open_folder'" class="w-4 h-4"></span>
               Browse
             </Button>
           </div>
