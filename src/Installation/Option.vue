@@ -111,7 +111,7 @@ function start_installation() {}
               >
               </Input>
               <Button variant="secondary" @click="select_install_path">
-                <span v-svg="'open_folder'" class="w-4 h-4"></span>
+                <span v-svg="'folder_open'" class="w-4 h-4"></span>
                 Browse
               </Button>
             </div>

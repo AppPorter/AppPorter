@@ -40,7 +40,7 @@ async function select_zip_file() {
         <span v-svg="'zip'" class="w-4 h-4 mr-2 opacity-70"></span>
       </Input>
       <Button variant="secondary" @click="select_zip_file">
-        <span v-svg="'open_folder'" class="w-4 h-4"></span>
+        <span v-svg="'folder_open'" class="w-4 h-4"></span>
         Browse
       </Button>
     </div>

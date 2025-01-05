@@ -57,12 +57,11 @@ function toggleDir(path: string) {
         @click="toggleDir(item.path)"
       >
         <span
+          v-svg="expandedDirs.has(item.path) ? 'caret-down' : 'caret-right'"
           class="w-4 h-4 shrink-0 flex items-center justify-center -ml-0.5"
-          :class="{ 'rotate-90': expandedDirs.has(item.path) }"
-          >▸</span
-        >
+        ></span>
         <span
-          v-svg="expandedDirs.has(item.path) ? 'open_folder' : 'folder'"
+          v-svg="expandedDirs.has(item.path) ? 'folder_open' : 'folder'"
           class="w-5 h-5 shrink-0 overflow-hidden flex items-center justify-center"
         ></span>
         <span class="truncate">{{ item.name }}</span>

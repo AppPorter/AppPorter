@@ -8,6 +8,7 @@ import { readFile } from "@tauri-apps/plugin-fs";
 import TreeView from "./TreeView.vue";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 
 // Define tree node type
 interface TreeNode {
@@ -129,6 +130,23 @@ watch(filterMode, () => {
     fileTree.value = pathsToTree(filteredPaths);
   }
 });
+
+// Add confirmation state
+const isConfirmed = ref(false);
+
+// Modify confirmation handler
+function confirmSelection() {
+  if (executable_path.value) {
+    isConfirmed.value = true;
+    // TODO: Add your confirmation logic here
+    console.log("Confirmed executable:", executable_path.value);
+  }
+}
+
+// Reset confirmation when executable changes
+watch(executable_path, () => {
+  isConfirmed.value = false;
+});
 </script>
 
 <template>
@@ -164,29 +182,54 @@ watch(filterMode, () => {
         />
       </div>
 
-      <!-- Filter options at bottom -->
-      <RadioGroup v-model="filterMode" class="shrink-0 space-y-1 py-1">
-        <div
-          v-for="mode in filterModes"
-          :key="mode.value"
-          class="flex items-center gap-2"
-        >
-          <RadioGroupItem :value="mode.value" :id="'filter-' + mode.value" />
-          <Label :for="'filter-' + mode.value" class="flex items-center gap-2">
+      <!-- Bottom section with filter and confirm -->
+      <div class="shrink-0 space-y-1 py-1">
+        <!-- Filter options -->
+        <RadioGroup v-model="filterMode" class="space-y-1">
+          <div
+            v-for="mode in filterModes"
+            :key="mode.value"
+            class="flex items-center gap-2"
+          >
+            <RadioGroupItem :value="mode.value" :id="'filter-' + mode.value" />
+            <Label
+              :for="'filter-' + mode.value"
+              class="flex items-center gap-2"
+            >
+              <span
+                v-svg="
+                  mode.value === 'exe'
+                    ? 'executable'
+                    : mode.value === 'executable'
+                      ? 'script'
+                      : 'file'
+                "
+                class="w-5 h-5 overflow-hidden flex items-center justify-center"
+              ></span>
+              {{ mode.label }}
+            </Label>
+          </div>
+        </RadioGroup>
+
+        <!-- Confirm button -->
+        <div class="flex justify-end pt-2">
+          <Button
+            :variant="isConfirmed ? 'default' : 'outline'"
+            :disabled="!executable_path"
+            :class="[
+              'w-24',
+              isConfirmed && 'bg-green-600 hover:bg-green-700 text-white',
+            ]"
+            @click="confirmSelection"
+          >
             <span
-              v-svg="
-                mode.value === 'exe'
-                  ? 'executable'
-                  : mode.value === 'executable'
-                    ? 'script'
-                    : 'file'
-              "
-              class="w-5 h-5 overflow-hidden flex items-center justify-center"
+              v-svg="'confirm'"
+              class="w-5 h-5 flex items-center justify-center"
             ></span>
-            {{ mode.label }}
-          </Label>
+            Confirm
+          </Button>
         </div>
-      </RadioGroup>
+      </div>
     </CardContent>
   </Card>
 </template>
