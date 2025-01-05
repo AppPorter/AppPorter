@@ -9,7 +9,6 @@ import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
-import { nextTick, onMounted } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
 const settingsStore = useSettingsStore();
@@ -41,9 +40,7 @@ const {
   install_path,
 } = storeToRefs(installationConfig);
 
-current_user_only.value = settings_current_user_only;
-
-function updateConfigByMode(isCurrentUser: boolean) {
+function updateConfig(isCurrentUser: boolean) {
   if (isCurrentUser) {
     create_desktop_shortcut.value = current_create_desktop_shortcut;
     create_registry_key.value = current_create_registry_key;
@@ -57,14 +54,12 @@ function updateConfigByMode(isCurrentUser: boolean) {
   }
 }
 
-onMounted(async () => {
-  await nextTick();
-  updateConfigByMode(current_user_only.value);
-});
+current_user_only.value = settings_current_user_only;
+updateConfig(current_user_only.value);
 
 function handleInstallModeChange(checked: boolean) {
   current_user_only.value = checked;
-  updateConfigByMode(checked);
+  updateConfig(checked);
 }
 
 async function select_install_path() {
@@ -115,7 +110,6 @@ function start_installation() {}
               placeholder="Choose installation directory"
               class="text-sm"
             >
-              <span v-svg="'folder'" class="w-4 h-4 opacity-70"></span>
             </Input>
             <Button variant="secondary" @click="select_install_path">
               <span v-svg="'open_folder'" class="w-4 h-4"></span>

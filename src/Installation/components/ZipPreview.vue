@@ -22,7 +22,7 @@ type FilterMode = "exe" | "executable" | "all";
 
 // Define filter modes
 const filterModes = {
-  exe: { value: "exe", label: "EXE Only" },
+  exe: { value: "exe", label: ".exe Only" },
   executable: { value: "executable", label: "Executable Files" },
   all: { value: "all", label: "All Files" },
 } as const;
@@ -135,7 +135,10 @@ watch(filterMode, () => {
   <Card>
     <CardHeader>
       <CardTitle class="text-sm flex items-center gap-2">
-        <span v-svg="'zip'" class="w-4 h-4"></span>
+        <span
+          v-svg="'zip'"
+          class="w-6 h-6 overflow-hidden flex items-center justify-center"
+        ></span>
         Files in Archive
       </CardTitle>
     </CardHeader>
@@ -177,7 +180,7 @@ watch(filterMode, () => {
                     ? 'script'
                     : 'file'
               "
-              class="w-4 h-4"
+              class="w-5 h-5 overflow-hidden flex items-center justify-center"
             ></span>
             {{ mode.label }}
           </Label>

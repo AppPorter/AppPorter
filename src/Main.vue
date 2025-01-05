@@ -32,13 +32,19 @@ function minimize_button() {
       class="px-3 py-1.5 hover:bg-[#d7d7d7] transition-colors"
       @click="minimize_button()"
     >
-      <span v-svg="'minimize'" class="w-3 h-3"></span>
+      <span
+        v-svg="'minimize'"
+        class="w-3 h-3 overflow-hidden flex items-center justify-center"
+      ></span>
     </button>
     <button
       class="px-3 py-1.5 hover:bg-[#e81123] transition-colors"
       @click="close_button()"
     >
-      <span v-svg="'close'" class="w-3 h-3"></span>
+      <span
+        v-svg="'close'"
+        class="w-3 h-3 overflow-hidden flex items-center justify-center"
+      ></span>
     </button>
   </div>
 

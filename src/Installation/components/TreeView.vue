@@ -63,7 +63,7 @@ function toggleDir(path: string) {
         >
         <span
           v-svg="expandedDirs.has(item.path) ? 'open_folder' : 'folder'"
-          class="w-4 h-4 shrink-0"
+          class="w-5 h-5 shrink-0 overflow-hidden flex items-center justify-center"
         ></span>
         <span class="truncate">{{ item.name }}</span>
       </div>
@@ -77,14 +77,14 @@ function toggleDir(path: string) {
             ? 'cursor-pointer hover:bg-gray-100 hover:text-gray-900 text-gray-800 font-medium'
             : 'text-gray-500',
           {
-            'bg-blue-50 text-blue-700 font-medium': selectedPath === item.path,
+            'bg-blue-50 text-blue-600 font-medium': selectedPath === item.path,
           },
         ]"
         @click="item.isExecutable && $emit('select', item.path)"
       >
         <span
           v-svg="item.isExecutable ? 'executable' : 'file'"
-          class="w-4 h-4 shrink-0 opacity-70 mr-1"
+          class="w-5 h-5 shrink-0 overflow-hidden flex items-center justify-center opacity-70 mr-1"
         ></span>
         <span class="truncate">{{ item.name }}</span>
       </div>
