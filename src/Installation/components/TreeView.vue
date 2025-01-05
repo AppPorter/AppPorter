@@ -77,7 +77,7 @@ function toggleDir(path: string) {
             ? 'cursor-pointer hover:bg-gray-100 hover:text-gray-900 text-gray-800 font-medium'
             : 'text-gray-500',
           {
-            'bg-blue-50 text-blue-600 font-medium': selectedPath === item.path,
+            'bg-blue-50 text-blue-700 font-medium': selectedPath === item.path,
           },
         ]"
         @click="item.isExecutable && $emit('select', item.path)"

@@ -74,100 +74,106 @@ function start_installation() {}
 </script>
 
 <template>
-  <div class="p-4 space-y-4">
-    <!-- Add ZipPreview component -->
-    <ZipPreview :zip-path="zip_path" />
-
-    <Card>
-      <CardHeader class="pb-3">
-        <CardTitle class="text-lg">Installation Options</CardTitle>
-        <p class="text-xs">
-          Selected file: <b>{{ zip_path }}</b>
-        </p>
-      </CardHeader>
-      <CardContent class="space-y-4">
-        <!-- Install Mode -->
-        <div class="flex items-center gap-3">
-          <Label class="w-24 text-sm">Install Mode</Label>
-          <div class="flex items-center gap-2">
-            <Label for="install_mode">All Users</Label>
-            <Switch
-              id="install_mode"
-              :checked="current_user_only"
-              @update:checked="handleInstallModeChange"
-            />
-            <Label for="install_mode">Current User</Label>
-          </div>
-        </div>
-
-        <!-- Install Path -->
-        <div class="flex items-center gap-3">
-          <Label class="w-24 text-sm">Install Path</Label>
-          <div class="flex-1 flex gap-2">
-            <Input
-              v-model="install_path"
-              type="text"
-              placeholder="Choose installation directory"
-              class="text-sm"
-            >
-            </Input>
-            <Button variant="secondary" @click="select_install_path">
-              <span v-svg="'open_folder'" class="w-4 h-4"></span>
-              Browse
-            </Button>
-          </div>
-        </div>
-
-        <!-- Shortcuts -->
-        <div class="flex items-start gap-3">
-          <Label class="w-24 mt-1 text-sm">Shortcuts</Label>
-          <div class="space-y-1.5">
-            <div class="flex items-center space-x-2">
-              <Checkbox
-                id="create_desktop_shortcut"
-                :checked="create_desktop_shortcut"
-                @update:checked="
-                  (checked) => (create_desktop_shortcut = checked)
-                "
+  <div class="h-[calc(100vh-144px)] p-4 pb-16 flex gap-4">
+    <!-- Left Column -->
+    <div class="flex-1 min-w-[400px]">
+      <Card>
+        <CardHeader class="pb-3">
+          <CardTitle class="text-lg">Installation Options</CardTitle>
+          <p class="text-xs">
+            Selected file: <b>{{ zip_path }}</b>
+          </p>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <!-- Install Mode -->
+          <div class="flex items-center gap-3">
+            <Label class="w-24 text-sm">Install Mode</Label>
+            <div class="flex items-center gap-2">
+              <Label for="install_mode">All Users</Label>
+              <Switch
+                id="install_mode"
+                :checked="current_user_only"
+                @update:checked="handleInstallModeChange"
               />
-              <Label for="create_desktop_shortcut">
-                Create Desktop Shortcut
-              </Label>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Checkbox
-                id="create_start_menu_shortcut"
-                :checked="create_start_menu_shortcut"
-                @update:checked="
-                  (checked) => (create_start_menu_shortcut = checked)
-                "
-              />
-              <Label for="create_start_menu_shortcut">
-                Create Start Menu Shortcut
-              </Label>
-            </div>
-            <div class="flex items-center space-x-2">
-              <Checkbox
-                id="create_registry_key"
-                :checked="create_registry_key"
-                @update:checked="(checked) => (create_registry_key = checked)"
-              />
-              <Label for="create_registry_key"> Create Registry Entry </Label>
+              <Label for="install_mode">Current User</Label>
             </div>
           </div>
-        </div>
 
-        <!-- Install Button -->
-        <div class="flex justify-end pt-2">
-          <Button
-            class="w-28 flex items-center justify-center gap-2"
-            @click="start_installation"
-          >
-            <span v-svg="'install'" class="w-4 h-4"></span>
-            Install
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+          <!-- Install Path -->
+          <div class="flex items-center gap-3">
+            <Label class="w-24 text-sm">Install Path</Label>
+            <div class="flex-1 flex gap-2">
+              <Input
+                v-model="install_path"
+                type="text"
+                placeholder="Choose installation directory"
+                class="text-sm"
+              >
+              </Input>
+              <Button variant="secondary" @click="select_install_path">
+                <span v-svg="'open_folder'" class="w-4 h-4"></span>
+                Browse
+              </Button>
+            </div>
+          </div>
+
+          <!-- Shortcuts -->
+          <div class="flex items-start gap-3">
+            <Label class="w-24 mt-1 text-sm">Shortcuts</Label>
+            <div class="space-y-1.5">
+              <div class="flex items-center space-x-2">
+                <Checkbox
+                  id="create_desktop_shortcut"
+                  :checked="create_desktop_shortcut"
+                  @update:checked="
+                    (checked) => (create_desktop_shortcut = checked)
+                  "
+                />
+                <Label for="create_desktop_shortcut">
+                  Create Desktop Shortcut
+                </Label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Checkbox
+                  id="create_start_menu_shortcut"
+                  :checked="create_start_menu_shortcut"
+                  @update:checked="
+                    (checked) => (create_start_menu_shortcut = checked)
+                  "
+                />
+                <Label for="create_start_menu_shortcut">
+                  Create Start Menu Shortcut
+                </Label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <Checkbox
+                  id="create_registry_key"
+                  :checked="create_registry_key"
+                  @update:checked="(checked) => (create_registry_key = checked)"
+                />
+                <Label for="create_registry_key"> Create Registry Entry </Label>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+
+    <!-- Right Column -->
+    <div class="min-w-[320px] w-[30%]">
+      <ZipPreview :zip-path="zip_path" />
+    </div>
+  </div>
+
+  <!-- Install Button -->
+  <div class="fixed bottom-12 right-14 z-40">
+    <Button
+      size="lg"
+      class="w-32 flex items-center justify-center gap-2"
+      @click="start_installation"
+    >
+      <span v-svg="'install'" class="w-4 h-4"></span>
+      Install
+    </Button>
   </div>
 </template>

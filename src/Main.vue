@@ -28,22 +28,16 @@ function minimize_button() {
 <template>
   <!-- Window Controls -->
   <div class="fixed top-0 right-0 h-auto z-50 flex">
-    <button
-      class="px-3 py-1.5 hover:bg-[#d7d7d7] transition-colors"
-      @click="minimize_button()"
-    >
+    <button class="px-3 py-1.5 hover:bg-[#e9e9e9]" @click="minimize_button()">
       <span
         v-svg="'minimize'"
-        class="w-3 h-3 overflow-hidden flex items-center justify-center"
+        class="w-5 h-5 overflow-hidden flex items-center justify-center"
       ></span>
     </button>
-    <button
-      class="px-3 py-1.5 hover:bg-[#e81123] transition-colors"
-      @click="close_button()"
-    >
+    <button class="px-3 py-1.5 hover:bg-[#c42b1c]" @click="close_button()">
       <span
         v-svg="'close'"
-        class="w-3 h-3 overflow-hidden flex items-center justify-center"
+        class="w-5 h-5 overflow-hidden flex items-center justify-center"
       ></span>
     </button>
   </div>
@@ -80,8 +74,8 @@ function minimize_button() {
   </div>
 
   <!-- Main Content -->
-  <div class="pt-20 px-6 pb-8">
-    <Card class="h-[calc(100vh-120px)] overflow-y-auto">
+  <div class="pt-24 px-6 pb-6">
+    <Card class="h-[calc(100vh-130px)] overflow-y-auto">
       <RouterView></RouterView>
     </Card>
   </div>

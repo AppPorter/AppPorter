@@ -132,19 +132,19 @@ watch(filterMode, () => {
 </script>
 
 <template>
-  <Card>
-    <CardHeader>
+  <Card class="h-full flex flex-col">
+    <CardHeader class="shrink-0 pb-2">
       <CardTitle class="text-sm flex items-center gap-2">
         <span
           v-svg="'zip'"
-          class="w-6 h-6 overflow-hidden flex items-center justify-center"
+          class="w-5 h-5 overflow-hidden flex items-center justify-center"
         ></span>
         Files in Archive
       </CardTitle>
     </CardHeader>
-    <CardContent class="space-y-4">
-      <!-- File tree -->
-      <div class="h-[200px] overflow-y-auto border rounded-md">
+    <CardContent class="flex-1 flex flex-col min-h-0 space-y-3 pt-0">
+      <!-- File tree takes all remaining space -->
+      <div class="flex-1 min-h-0 border rounded-md overflow-hidden">
         <div v-if="loading" class="text-sm text-muted-foreground p-2">
           Loading...
         </div>
@@ -160,11 +160,12 @@ watch(filterMode, () => {
           :selected-path="executable_path"
           :auto-expand-root="true"
           @select="(path) => (executable_path = path)"
+          class="h-full overflow-auto"
         />
       </div>
 
-      <!-- Filter options -->
-      <RadioGroup v-model="filterMode" class="flex items-center gap-4">
+      <!-- Filter options at bottom -->
+      <RadioGroup v-model="filterMode" class="shrink-0 space-y-1 py-1">
         <div
           v-for="mode in filterModes"
           :key="mode.value"
