@@ -3,15 +3,18 @@ import { defineStore } from "pinia";
 
 interface Settings {
   language: string;
-  minimize_to_tray_on_close: boolean;
-  system_drive_letter: string;
   theme: string;
+  minimize_to_tray_on_close: boolean;
+
+  system_drive_letter: string;
   username: string;
+
   installation: Installation;
 }
 
 interface Installation {
   current_user_only: boolean;
+
   all_users: InstallSettings;
   current_user: InstallSettings;
 }
@@ -26,10 +29,12 @@ interface InstallSettings {
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
     language: "",
-    minimize_to_tray_on_close: false,
-    system_drive_letter: "",
     theme: "",
+    minimize_to_tray_on_close: false,
+
+    system_drive_letter: "",
     username: "",
+
     installation: {
       current_user_only: false,
       all_users: {

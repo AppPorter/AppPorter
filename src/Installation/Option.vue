@@ -33,6 +33,10 @@ const {
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = installationConfig;
 const {
+  app_icon,
+  app_name,
+  app_publisher,
+  app_version,
   current_user_only,
   create_desktop_shortcut,
   create_registry_key,
@@ -76,7 +80,7 @@ function start_installation() {}
 <template>
   <div class="h-[calc(100vh-144px)] p-4 pb-16 flex gap-4">
     <!-- Left Column -->
-    <div class="flex-1 min-w-[400px]">
+    <div class="flex-1 min-w-[400px] space-y-4">
       <Card>
         <CardHeader class="pb-3">
           <CardTitle class="text-lg">Installation Options</CardTitle>
@@ -154,6 +158,53 @@ function start_installation() {}
                 <Label for="create_registry_key"> Create Registry Entry </Label>
               </div>
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- App Details Card -->
+      <Card>
+        <CardHeader class="pb-3">
+          <CardTitle class="text-lg">App Details</CardTitle>
+        </CardHeader>
+        <CardContent class="space-y-2">
+          <!-- App Name -->
+          <div class="flex items-center gap-3">
+            <Label class="w-24 text-sm">App Name</Label>
+            <Input
+              v-model="app_name"
+              type="text"
+              placeholder="Application Name"
+              class="text-sm"
+            />
+          </div>
+
+          <!-- Publisher -->
+          <div class="flex items-center gap-3">
+            <div class="w-24">
+              <Label class="text-sm">Publisher</Label>
+              <p class="text-xs text-muted-foreground">(Optional)</p>
+            </div>
+            <Input
+              v-model="app_publisher"
+              type="text"
+              placeholder="Publisher Name"
+              class="text-sm"
+            />
+          </div>
+
+          <!-- Version -->
+          <div class="flex items-center gap-3">
+            <div class="w-24">
+              <Label class="text-sm">Version</Label>
+              <p class="text-xs text-muted-foreground">(Optional)</p>
+            </div>
+            <Input
+              v-model="app_version"
+              type="text"
+              placeholder="1.0.0"
+              class="text-sm"
+            />
           </div>
         </CardContent>
       </Card>

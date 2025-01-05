@@ -1,32 +1,38 @@
 import { defineStore } from "pinia";
 
 interface Installation_Config {
-  app_icon: string; //auto
-  app_name: string; //auto + configurable
-  app_version: string; //auto + configurable
+  zip_path: string;
+
   current_user_only: boolean; //configurable
   create_desktop_shortcut: boolean; //configurable
   create_registry_key: boolean; //configurable
   create_start_menu_shortcut: boolean; //configurable
-  executable_path: string; //auto + configurable
   install_path: string; //configurable
-  publisher: string; //auto + configurable
-  zip_path: string;
+
+  executable_path: string; //auto + configurable
+
+  app_icon: string; //auto
+  app_name: string; //auto + configurable
+  app_publisher: string; //auto + configurable
+  app_version: string; //auto + configurable
 }
 
 export const useInstallationConfigStore = defineStore("installation_config", {
   state: (): Installation_Config => ({
-    app_icon: "",
-    app_name: "",
-    app_version: "",
+    zip_path: "",
+
     current_user_only: false,
     create_desktop_shortcut: false,
     create_registry_key: true,
     create_start_menu_shortcut: true,
-    executable_path: "",
     install_path: "",
-    publisher: "",
-    zip_path: "",
+
+    executable_path: "",
+
+    app_icon: "",
+    app_name: "",
+    app_publisher: "",
+    app_version: "",
   }),
 
   actions: {},

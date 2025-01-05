@@ -5,16 +5,19 @@ use std::{error::Error, path::PathBuf};
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
     pub language: String,
-    pub minimize_to_tray_on_close: bool,
-    pub system_drive_letter: String,
     pub theme: String,
+    pub minimize_to_tray_on_close: bool,
+
+    pub system_drive_letter: String,
     pub username: String,
+
     pub installation: Installation,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Installation {
     pub current_user_only: bool,
+
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
 }
@@ -39,10 +42,12 @@ impl Settings {
     fn create_default_config() -> Result<Self, Box<dyn Error>> {
         let default_settings = Self {
             language: String::from("en"),
-            minimize_to_tray_on_close: false,
-            system_drive_letter: String::new(),
             theme: String::from("system"),
+            minimize_to_tray_on_close: false,
+
+            system_drive_letter: String::new(),
             username: String::new(),
+
             installation: Installation {
                 current_user_only: false,
                 all_users: InstallSettings {
