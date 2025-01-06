@@ -44,11 +44,44 @@ function toggleDir(path: string) {
     expandedDirs.value.add(path);
   }
 }
+
+// Add sorting function
+function getFileTypePriority(filename: string): number {
+  const ext = filename.toLowerCase().split('.').pop() || '';
+  // Priority order: exe > bat > ps1 > others
+  switch (ext) {
+    case 'exe': return 0;
+    case 'bat': return 1;
+    case 'ps1': return 2;
+    default: return 3;
+  }
+}
+
+function sortItems(items: TreeNode[]): TreeNode[] {
+  return [...items].sort((a, b) => {
+    // First sort by type (files first)
+    if (a.type !== b.type) {
+      return a.type === "file" ? -1 : 1;
+    }
+    
+    // If both are files, sort by file type priority
+    if (a.type === "file") {
+      const priorityA = getFileTypePriority(a.name);
+      const priorityB = getFileTypePriority(b.name);
+      if (priorityA !== priorityB) {
+        return priorityA - priorityB;
+      }
+    }
+    
+    // Finally sort alphabetically
+    return a.name.localeCompare(b.name);
+  });
+}
 </script>
 
 <template>
   <div class="pl-2">
-    <template v-for="item in items" :key="item.path">
+    <template v-for="item in sortItems(items)" :key="item.path">
       <!-- Directory node -->
       <div
         v-if="item.type === 'directory'"
@@ -92,7 +125,7 @@ function toggleDir(path: string) {
       <TreeView
         v-if="item.children && expandedDirs.has(item.path)"
         class="pl-4"
-        :items="item.children"
+        :items="sortItems(item.children)"
         :selected-path="selectedPath"
         :auto-expand-root="false"
         @select="$emit('select', $event)"

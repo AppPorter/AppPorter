@@ -35,5 +35,22 @@ export const useInstallationConfigStore = defineStore("installation_config", {
     app_version: "",
   }),
 
-  actions: {},
+  actions: {
+    // Custom reset method if needed
+    customReset() {
+      // Reset specific fields while keeping others
+      this.$patch({
+        current_user_only: false,
+        create_desktop_shortcut: false,
+        create_registry_key: true,
+        create_start_menu_shortcut: true,
+        install_path: "",
+        executable_path: "",
+        app_icon: "",
+        app_name: "",
+        app_publisher: "",
+        app_version: "",
+      });
+    },
+  },
 });

@@ -41,9 +41,10 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
     let icon_base64 = STANDARD.encode(&raw_icon);
     let icon_data_url = format!("data:image/png;base64,{}", icon_base64);
 
-    // Prepare PowerShell command with error handling
+    // Prepare PowerShell command with error handling and UTF-8 encoding
     let ps_command = format!(
-        "$ErrorActionPreference = 'Stop';
+        r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
+        $ErrorActionPreference = 'Stop';
         try {{
             $file_path = '{}';
             $version_info = (Get-Item $file_path).VersionInfo;
@@ -62,7 +63,8 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
                 '' 
             }};
             $copyright = if ($version_info.LegalCopyright -and $version_info.LegalCopyright.Trim()) {{ 
-                $version_info.LegalCopyright.Trim() 
+                # Only keep the most common case: (c) -> ©
+                $version_info.LegalCopyright.Trim() -replace '\(c\)', '©'
             }} else {{ 
                 '' 
             }};
@@ -71,7 +73,7 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
                product_name=$product_name;
                product_version=$product_version;
                copyright=$copyright;
-            }}
+            }} -Depth 1 -Compress
         }} catch {{
             ConvertTo-Json @{{
                error=$_.Exception.Message;
@@ -79,28 +81,30 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
                product_version='Unknown Version';
                copyright='';
             }}
-        }}",
+        }}"#,
         temp_exe_path.to_string_lossy().replace("'", "''")
     );
 
-    // Execute PowerShell command
+    // Execute PowerShell command with UTF-8 output
     let output = Command::new("powershell")
-        .args(["-NoProfile", "-Command", &ps_command])
+        .args([
+            "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+            "-Command",
+            &ps_command,
+        ])
         .output()?;
 
     // Parse the raw JSON response
     let details: Value = serde_json::from_slice(&output.stdout)?;
 
-    // Convert to simple array format with icon
+    // Convert to simple array format with icon, properly handle UTF-8 copyright text
     let simplified = json!([
         details["product_name"].as_str().unwrap_or("").trim(),
         details["product_version"].as_str().unwrap_or("").trim(),
-        details["copyright"]
-            .as_str()
-            .unwrap_or("")
-            .trim_start_matches("(C)")
-            .trim_start_matches("©")
-            .trim(),
+        details["copyright"].as_str().unwrap_or("").trim(), // Remove redundant replacements here
         icon_data_url
     ]);
 

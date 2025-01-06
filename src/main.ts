@@ -1,7 +1,7 @@
 import "@/assets/index.css";
 import i18n from "@/plugin/i18n";
 import Main from "@/Main.vue";
-import router from "@/plugin/router";
+import router, { setupRouterGuards } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";
@@ -69,19 +69,22 @@ async function loadSvg(name: string): Promise<string> {
 }
 
 app
-  .use(router)
-  .use(i18n)
-  .use(pinia)
-  .directive("svg", {
-    async mounted(el, binding) {
-      const svgContent = await loadSvg(binding.value);
-      el.innerHTML = svgContent;
-    },
-    async updated(el, binding) {
-      const svgContent = await loadSvg(binding.value);
-      el.innerHTML = svgContent;
-    },
-  });
+  .use(pinia) // First initialize pinia
+  .use(router); // Then initialize router
+setupRouterGuards(router); // Finally setup router guards
+
+router.push("/Installation"); // Move initial navigation here
+
+app.use(i18n).directive("svg", {
+  async mounted(el, binding) {
+    const svgContent = await loadSvg(binding.value);
+    el.innerHTML = svgContent;
+  },
+  async updated(el, binding) {
+    const svgContent = await loadSvg(binding.value);
+    el.innerHTML = svgContent;
+  },
+});
 
 export let error: Ref<string[]> = ref([]);
 
