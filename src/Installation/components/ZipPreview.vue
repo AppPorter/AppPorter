@@ -72,7 +72,8 @@ const props = defineProps<{
 }>();
 
 const installationConfig = useInstallationConfigStore();
-const { executable_path } = storeToRefs(installationConfig);
+const { app_icon, app_name, app_publisher, app_version, executable_path } =
+  storeToRefs(installationConfig);
 const fileTree = ref<TreeNode[]>([]);
 const loading = ref(false);
 
@@ -138,12 +139,27 @@ const isConfirmed = ref(false);
 // Modify confirmation handler
 async function confirmSelection() {
   isConfirmed.value = true;
-  console.log(props.zipPath, executable_path.value);
-  const result = await invoke("execute_command", {
-    command: "GetDetails",
-    arg: [props.zipPath, executable_path.value],
-  });
-  console.log(result);
+  try {
+    const result = await invoke("execute_command", {
+      command: "GetDetails",
+      arg: [props.zipPath, executable_path.value],
+    });
+    const details = JSON.parse(result as string) as string[];
+
+    // Only set values if they are empty
+    if (app_name.value === "") {
+      app_name.value = details[0];
+    }
+    if (app_version.value === "") {
+      app_version.value = details[1];
+    }
+    if (app_publisher.value === "") {
+      app_publisher.value = details[2] || "";
+    }
+  } catch (error) {
+    console.error("Failed to get details:", error);
+    isConfirmed.value = false;
+  }
 }
 
 // Reset confirmation when executable changes
