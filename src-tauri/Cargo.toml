@@ -34,9 +34,11 @@
     ] }
     tauri-plugin-opener = "2.2.2"
 
+    base64 = "0.22.1"
     config = "0.15.4"
     dirs = "5.0.1"
     mslnk = "0.1.8"
+    systemicons = "0.9.13"
     tauri-plugin-dialog = "2.2.0"
     tauri-plugin-fs = "2.2.0"
     tauri-plugin-process = "2.2.0"

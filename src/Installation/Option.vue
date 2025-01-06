@@ -10,6 +10,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import ZipPreview from "./components/ZipPreview.vue";
+import { ref } from "vue";
 
 const settingsStore = useSettingsStore();
 const {
@@ -75,6 +76,8 @@ async function select_install_path() {
 }
 
 function start_installation() {}
+
+const detailsLoading = ref(false);
 </script>
 
 <template>
@@ -163,11 +166,27 @@ function start_installation() {}
       </Card>
 
       <!-- App Details Card -->
-      <Card>
+      <Card class="relative">
         <CardHeader class="pb-3">
-          <CardTitle class="text-lg">App Details</CardTitle>
+          <div class="flex justify-between items-center">
+            <CardTitle class="text-lg">App Details</CardTitle>
+            <div
+              class="w-12 h-12 rounded-md overflow-hidden shrink-0"
+              :class="[
+                !app_icon &&
+                  'border-2 border-dashed border-muted-foreground/25',
+              ]"
+            >
+              <img
+                v-if="app_icon"
+                :src="app_icon"
+                class="w-full h-full object-contain"
+                alt="App Icon"
+              />
+            </div>
+          </div>
         </CardHeader>
-        <CardContent class="space-y-2">
+        <CardContent class="space-y-4">
           <!-- App Name -->
           <div class="flex items-center gap-3">
             <Label class="w-24 text-sm">App Name</Label>
@@ -207,12 +226,24 @@ function start_installation() {}
             />
           </div>
         </CardContent>
+
+        <!-- Loading Overlay -->
+        <div
+          v-if="detailsLoading"
+          class="absolute inset-0 backdrop-blur-sm bg-background/50 flex flex-col items-center justify-center"
+        >
+          <h3 class="text-lg font-semibold">App Details</h3>
+          <p class="text-sm text-muted-foreground">Loading...</p>
+        </div>
       </Card>
     </div>
 
     <!-- Right Column -->
     <div class="min-w-[320px] w-[30%]">
-      <ZipPreview :zip-path="zip_path" />
+      <ZipPreview
+        :zip-path="zip_path"
+        @loading="(value) => (detailsLoading = value)"
+      />
     </div>
   </div>
 
@@ -228,3 +259,19 @@ function start_installation() {}
     </Button>
   </div>
 </template>
+
+<style scoped>
+.border-dashed {
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(0, 0, 0, 0.03) 5px,
+    rgba(0, 0, 0, 0.03) 10px
+  );
+}
+.backdrop-blur-sm {
+  backdrop-filter: blur(4px);
+  transition: all 0.2s ease;
+}
+</style>

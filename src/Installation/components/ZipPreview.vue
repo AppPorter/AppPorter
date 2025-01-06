@@ -71,6 +71,10 @@ const props = defineProps<{
   zipPath: string;
 }>();
 
+const emit = defineEmits<{
+  (e: "loading", value: boolean): void;
+}>();
+
 const installationConfig = useInstallationConfigStore();
 const { app_icon, app_name, app_publisher, app_version, executable_path } =
   storeToRefs(installationConfig);
@@ -94,6 +98,14 @@ function filterPaths(paths: string[], mode: FilterMode): string[] {
   });
 }
 
+// Add new function to check if path is in first two levels
+function isInFirstTwoLevels(path: string): boolean {
+  return path.split("/").length <= 2;
+}
+
+// Add auto confirmed state
+const autoConfirmed = ref(false);
+
 // Modified watch effect
 watchEffect(async () => {
   if (!props.zipPath) return;
@@ -112,10 +124,31 @@ watchEffect(async () => {
     const filteredPaths = filterPaths(zipContent.value.paths, filterMode.value);
     fileTree.value = pathsToTree(filteredPaths);
 
-    // Auto select if only one executable
-    const executables = filterPaths(zipContent.value.paths, "exe");
-    if (executables.length === 1) {
-      executable_path.value = executables[0];
+    // Check for executables in first two levels
+    const topLevelExecutables = zipContent.value.paths.filter(
+      (path) => /\.(exe|bat|ps1)$/i.test(path) && isInFirstTwoLevels(path),
+    );
+
+    // If there's exactly one exe and no other executables in top levels
+    const topLevelExes = topLevelExecutables.filter((path) =>
+      path.toLowerCase().endsWith(".exe"),
+    );
+    if (topLevelExes.length === 1 && topLevelExecutables.length === 1) {
+      executable_path.value = topLevelExes[0];
+      // Auto confirm after small delay to ensure UI is ready
+      setTimeout(() => {
+        if (!isConfirmed.value) {
+          autoConfirmed.value = true; // Set auto confirmed state
+          confirmSelection();
+        }
+      }, 100);
+    } else {
+      autoConfirmed.value = false; // Reset auto confirmed state
+      // Auto select if only one exe exists anywhere
+      const allExecutables = filterPaths(zipContent.value.paths, "exe");
+      if (allExecutables.length === 1) {
+        executable_path.value = allExecutables[0];
+      }
     }
   } catch (error) {
     console.error("Failed to read zip:", error);
@@ -139,6 +172,12 @@ const isConfirmed = ref(false);
 // Modify confirmation handler
 async function confirmSelection() {
   isConfirmed.value = true;
+  emit("loading", true);
+
+  // Add loading state class before async operation
+  const appDetailsCard = document.querySelector(".app-details-card");
+  appDetailsCard?.classList.add("loading");
+
   try {
     const result = await invoke("execute_command", {
       command: "GetDetails",
@@ -146,30 +185,32 @@ async function confirmSelection() {
     });
     const details = JSON.parse(result as string) as string[];
 
-    // Only set values if they are empty
-    if (app_name.value === "") {
-      app_name.value = details[0];
-    }
-    if (app_version.value === "") {
-      app_version.value = details[1];
-    }
-    if (app_publisher.value === "") {
-      app_publisher.value = details[2] || "";
-    }
+    // Add small delay for smooth transition
+    await new Promise((resolve) => setTimeout(resolve, 100));
+
+    app_name.value = details[0];
+    app_version.value = details[1];
+    app_publisher.value = details[2] || "";
+    app_icon.value = details[3] || "";
   } catch (error) {
     console.error("Failed to get details:", error);
     isConfirmed.value = false;
+  } finally {
+    emit("loading", false);
+    // Remove loading state class after operation
+    appDetailsCard?.classList.remove("loading");
   }
 }
 
 // Reset confirmation when executable changes
 watch(executable_path, () => {
   isConfirmed.value = false;
+  autoConfirmed.value = false;
 });
 </script>
 
 <template>
-  <Card class="h-full flex flex-col">
+  <Card class="h-full flex flex-col app-details-card">
     <CardHeader class="shrink-0 pb-2">
       <CardTitle class="text-sm flex items-center gap-2">
         <span
@@ -233,22 +274,39 @@ watch(executable_path, () => {
         <!-- Confirm button -->
         <div class="flex justify-end pt-2">
           <Button
-            :variant="isConfirmed ? 'default' : 'outline'"
-            :disabled="!executable_path"
+            :variant="isConfirmed || autoConfirmed ? 'default' : 'outline'"
             :class="[
-              'w-24',
-              isConfirmed && 'bg-green-600 hover:bg-green-700 text-white',
+              autoConfirmed ? 'w-40' : 'w-32', // Changed: wider button for auto confirmed state
+              !executable_path && 'opacity-50 cursor-not-allowed',
+              autoConfirmed &&
+                'bg-blue-600 hover:bg-blue-600 pointer-events-none',
+              isConfirmed &&
+                !autoConfirmed &&
+                'bg-green-600 hover:bg-green-700',
+              (isConfirmed || autoConfirmed) && 'text-white',
             ]"
-            @click="confirmSelection"
+            @click="!autoConfirmed && executable_path && confirmSelection"
           >
             <span
               v-svg="'confirm'"
               class="w-5 h-5 flex items-center justify-center"
             ></span>
-            Confirm
+            {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}
           </Button>
         </div>
       </div>
     </CardContent>
   </Card>
 </template>
+
+<style scoped>
+.loading {
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.loading * {
+  transition: all 0.2s ease-in-out;
+}
+</style>

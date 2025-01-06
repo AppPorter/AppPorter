@@ -1,7 +1,10 @@
+use base64::{engine::general_purpose::STANDARD, Engine};
 use serde_json::{json, Value};
 use std::error::Error;
 use std::fs::File;
+use std::io::Cursor;
 use std::process::Command;
+use systemicons::get_icon;
 use tempfile::Builder;
 use zip::ZipArchive;
 
@@ -14,14 +17,29 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
 
     // Create temp directory
     let temp_dir = Builder::new().prefix("appporter").tempdir()?;
+    let temp_exe_path = temp_dir.path().join(exe_path_in_zip);
 
-    // Extract the whole zip to temp directory using direct ZipArchive extract
+    // Read zip file
     let file = File::open(zip_path)?;
     let mut archive = ZipArchive::new(file)?;
-    archive.extract(temp_dir.path())?;
 
-    // Get the path of extracted exe
-    let temp_exe_path = temp_dir.path().join(exe_path_in_zip);
+    // Extract only the target executable
+    if let Ok(mut exe_file) = archive.by_name(exe_path_in_zip) {
+        // Create parent directories if they don't exist
+        if let Some(parent) = temp_exe_path.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+
+        // Extract the exe file
+        let mut outfile = File::create(&temp_exe_path)?;
+        std::io::copy(&mut exe_file, &mut outfile)?;
+    } else {
+        return Err("Failed to find executable in archive".into());
+    }
+
+    let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
+    let icon_base64 = STANDARD.encode(&raw_icon);
+    let icon_data_url = format!("data:image/png;base64,{}", icon_base64);
 
     // Prepare PowerShell command with error handling
     let ps_command = format!(
@@ -41,12 +59,12 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
             }} elseif ($version_info.FileVersion -and $version_info.FileVersion.Trim()) {{ 
                 $version_info.FileVersion.Trim() 
             }} else {{ 
-                'Unknown Version' 
+                '' 
             }};
             $copyright = if ($version_info.LegalCopyright -and $version_info.LegalCopyright.Trim()) {{ 
                 $version_info.LegalCopyright.Trim() 
             }} else {{ 
-                'No Copyright Information' 
+                '' 
             }};
             
             ConvertTo-Json @{{
@@ -59,7 +77,7 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
                error=$_.Exception.Message;
                product_name=[System.IO.Path]::GetFileNameWithoutExtension($file_path);
                product_version='Unknown Version';
-               copyright='No Copyright Information';
+               copyright='';
             }}
         }}",
         temp_exe_path.to_string_lossy().replace("'", "''")
@@ -73,7 +91,7 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
     // Parse the raw JSON response
     let details: Value = serde_json::from_slice(&output.stdout)?;
 
-    // Convert to simple array format
+    // Convert to simple array format with icon
     let simplified = json!([
         details["product_name"].as_str().unwrap_or("").trim(),
         details["product_version"].as_str().unwrap_or("").trim(),
@@ -82,7 +100,8 @@ pub fn get_details(arg: Vec<String>) -> Result<String, Box<dyn Error>> {
             .unwrap_or("")
             .trim_start_matches("(C)")
             .trim_start_matches("©")
-            .trim()
+            .trim(),
+        icon_data_url
     ]);
 
     Ok(simplified.to_string())

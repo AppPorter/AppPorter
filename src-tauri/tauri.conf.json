@@ -14,11 +14,11 @@
       {
         "title": "AppPorter",
         "width": 900,
-        "height": 750,
+        "height": 800,
         "minWidth": 900,
-        "minHeight": 750,
-        "maxWidth": 1000,
-        "maxHeight": 850,
+        "minHeight": 800,
+        "maxWidth": 1200,
+        "maxHeight": 1000,
         "maximizable": false,
         "decorations": false
       }
