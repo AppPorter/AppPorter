@@ -9,6 +9,7 @@ import TreeView from "./TreeView.vue";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { invoke } from "@tauri-apps/api/core";
 
 // Define tree node type
 interface TreeNode {
@@ -135,12 +136,14 @@ watch(filterMode, () => {
 const isConfirmed = ref(false);
 
 // Modify confirmation handler
-function confirmSelection() {
-  if (executable_path.value) {
-    isConfirmed.value = true;
-    // TODO: Add your confirmation logic here
-    console.log("Confirmed executable:", executable_path.value);
-  }
+async function confirmSelection() {
+  isConfirmed.value = true;
+  console.log(props.zipPath, executable_path.value);
+  const result = await invoke("execute_command", {
+    command: "GetDetails",
+    arg: [props.zipPath, executable_path.value],
+  });
+  console.log(result);
 }
 
 // Reset confirmation when executable changes
