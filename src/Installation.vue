@@ -15,11 +15,15 @@ import { storeToRefs } from "pinia";
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = storeToRefs(installationConfig);
 async function select_zip_file() {
-  zip_path.value = await open({
+  const selected = await open({
     multiple: false,
     directory: false,
     filters: [{ name: "Zip", extensions: ["zip"] }],
   });
+  // Only update if a file was selected
+  if (selected) {
+    zip_path.value = selected;
+  }
 }
 </script>
 

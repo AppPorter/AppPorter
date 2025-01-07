@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 
-interface Installation_Config {
+interface InstallationConfig {
   zip_path: string;
 
   current_user_only: boolean; //configurable
@@ -18,7 +18,7 @@ interface Installation_Config {
 }
 
 export const useInstallationConfigStore = defineStore("installation_config", {
-  state: (): Installation_Config => ({
+  state: (): InstallationConfig => ({
     zip_path: "",
 
     current_user_only: false,

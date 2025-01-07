@@ -11,6 +11,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import ZipPreview from "./components/ZipPreview.vue";
 import { ref } from "vue";
+import { invoke } from "@tauri-apps/api/core";
 
 const settingsStore = useSettingsStore();
 const {
@@ -68,14 +69,31 @@ function handleInstallModeChange(checked: boolean) {
 }
 
 async function select_install_path() {
-  const path = await open({
+  const selected = await open({
     directory: true,
     multiple: false,
   });
-  install_path.value = String(path);
+  // Only update if a directory was selected
+  if (selected) {
+    install_path.value = String(selected);
+  }
 }
 
-function start_installation() {}
+async function start_installation() {
+  try {
+    const args = JSON.stringify({
+      installationConfig,
+    });
+    console.log(args);
+    const result = await invoke("execute_command", {
+      command: "GetDetails",
+      args,
+    });
+    console.log(result);
+  } catch (error) {
+    console.error("Failed to get details:", error);
+  }
+}
 
 const detailsLoading = ref(false);
 </script>

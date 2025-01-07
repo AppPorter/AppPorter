@@ -1,4 +1,4 @@
-pub(crate) use config::Config;
+use config::Config;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::PathBuf};
 

@@ -1,8 +1,8 @@
 [package]
     authors = [
-        "you",
+        "u3l6",
     ]
-    description = "A Tauri App"
+    description = "AppPorter"
     edition = "2021"
     name = "app-porter"
     version = "0.1.0"

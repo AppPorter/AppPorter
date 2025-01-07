@@ -174,30 +174,46 @@ async function confirmSelection() {
   isConfirmed.value = true;
   emit("loading", true);
 
-  // Add loading state class before async operation
   const appDetailsCard = document.querySelector(".app-details-card");
   appDetailsCard?.classList.add("loading");
 
   try {
+    const args = JSON.stringify({
+      zip_path: props.zipPath,
+      executable_path: executable_path.value,
+    });
+
     const result = await invoke("execute_command", {
       command: "GetDetails",
-      arg: [props.zipPath, executable_path.value],
+      arg: args,
     });
-    const details = JSON.parse(result as string) as string[];
 
-    // Add small delay for smooth transition
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    if (typeof result === "string") {
+      const parsedResult = JSON.parse(result);
 
-    app_name.value = details[0];
-    app_version.value = details[1];
-    app_publisher.value = details[2] || "";
-    app_icon.value = details[3] || "";
+      if ("error" in parsedResult) {
+        throw new Error(parsedResult.error);
+      }
+
+      const details = Array.isArray(parsedResult) ? parsedResult : null;
+      if (!details) {
+        throw new Error("Invalid response format");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      app_name.value = details[0];
+      app_version.value = details[1];
+      app_publisher.value = details[2] || "";
+      app_icon.value = details[3] || "";
+    } else {
+      throw new Error("Unexpected response type");
+    }
   } catch (error) {
     console.error("Failed to get details:", error);
     isConfirmed.value = false;
   } finally {
     emit("loading", false);
-    // Remove loading state class after operation
     appDetailsCard?.classList.remove("loading");
   }
 }
@@ -276,16 +292,16 @@ watch(executable_path, () => {
           <Button
             :variant="isConfirmed || autoConfirmed ? 'default' : 'outline'"
             :class="[
-              autoConfirmed ? 'w-40' : 'w-32', // Changed: wider button for auto confirmed state
-              !executable_path && 'opacity-50 cursor-not-allowed',
+              autoConfirmed ? 'w-40' : 'w-32',
+              !executable_path && 'opacity-50',
               autoConfirmed &&
-                'bg-blue-600 hover:bg-blue-600 pointer-events-none',
+                'bg-blue-600 hover:bg-blue-700 pointer-events-none',
               isConfirmed &&
                 !autoConfirmed &&
                 'bg-green-600 hover:bg-green-700',
               (isConfirmed || autoConfirmed) && 'text-white',
             ]"
-            @click="!autoConfirmed && executable_path && confirmSelection"
+            @click="executable_path && !autoConfirmed && confirmSelection()"
           >
             <span
               v-svg="'confirm'"
