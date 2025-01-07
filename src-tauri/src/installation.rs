@@ -9,7 +9,7 @@ use systemicons::get_icon;
 use tempfile::Builder;
 use zip::ZipArchive;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct ExePath {
     pub zip_path: String,
     pub executable_path: String,
@@ -118,7 +118,7 @@ pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
     Ok(response.to_string())
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Debug)]
 pub struct InstallationConfig {
     zip_path: String,
 
@@ -137,6 +137,7 @@ pub struct InstallationConfig {
 }
 
 pub fn installation(installation_config: InstallationConfig) -> Result<String, Box<dyn Error>> {
+    println!("1_{:?}", installation_config);
     let file = File::open(installation_config.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
@@ -148,7 +149,9 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
         app_path,
         installation_config.executable_path.replace("/", r"\")
     );
+    println!("2_{:?}", full_executable_path);
     archive.extract(&app_path)?;
+    println!("3_");
 
     let settings = crate::settings::Settings::read()?;
     if installation_config.create_start_menu_shortcut {
@@ -174,7 +177,7 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
                 .to_string(),
         )?;
     }
-
+    println!("4_");
     if installation_config.create_registry_key {
         let key: windows_registry::Key;
         if installation_config.current_user_only {
@@ -203,6 +206,6 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
             &std::env::current_exe()?.to_string_lossy().to_string(),
         )?;
     }
-
+    println!("5_");
     Ok("".to_owned())
 }

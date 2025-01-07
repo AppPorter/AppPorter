@@ -81,17 +81,40 @@ async function select_install_path() {
 
 async function start_installation() {
   try {
-    const args = JSON.stringify({
-      installationConfig,
+    const {
+      app_icon,
+      app_name,
+      app_publisher,
+      app_version,
+      current_user_only,
+      create_desktop_shortcut,
+      create_registry_key,
+      create_start_menu_shortcut,
+      install_path,
+      executable_path,
+      zip_path,
+    } = installationConfig;
+    const arg = JSON.stringify({
+      app_icon,
+      app_name,
+      app_publisher,
+      app_version,
+      current_user_only,
+      create_desktop_shortcut,
+      create_registry_key,
+      create_start_menu_shortcut,
+      install_path,
+      executable_path,
+      zip_path,
     });
-    console.log(args);
+    console.log(arg);
     const result = await invoke("execute_command", {
-      command: "GetDetails",
-      args,
+      command: "Installation",
+      arg: arg,
     });
     console.log(result);
   } catch (error) {
-    console.error("Failed to get details:", error);
+    console.error("Failed to install:", error);
   }
 }
 
