@@ -47,13 +47,17 @@ function toggleDir(path: string) {
 
 // Add sorting function
 function getFileTypePriority(filename: string): number {
-  const ext = filename.toLowerCase().split('.').pop() || '';
+  const ext = filename.toLowerCase().split(".").pop() || "";
   // Priority order: exe > bat > ps1 > others
   switch (ext) {
-    case 'exe': return 0;
-    case 'bat': return 1;
-    case 'ps1': return 2;
-    default: return 3;
+    case "exe":
+      return 0;
+    case "bat":
+      return 1;
+    case "ps1":
+      return 2;
+    default:
+      return 3;
   }
 }
 
@@ -63,7 +67,7 @@ function sortItems(items: TreeNode[]): TreeNode[] {
     if (a.type !== b.type) {
       return a.type === "file" ? -1 : 1;
     }
-    
+
     // If both are files, sort by file type priority
     if (a.type === "file") {
       const priorityA = getFileTypePriority(a.name);
@@ -72,7 +76,7 @@ function sortItems(items: TreeNode[]): TreeNode[] {
         return priorityA - priorityB;
       }
     }
-    
+
     // Finally sort alphabetically
     return a.name.localeCompare(b.name);
   });
