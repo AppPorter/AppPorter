@@ -137,7 +137,6 @@ pub struct InstallationConfig {
 }
 
 pub fn installation(installation_config: InstallationConfig) -> Result<String, Box<dyn Error>> {
-    println!("1_{:?}", installation_config);
     let file = File::open(installation_config.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
@@ -149,47 +148,46 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
         app_path,
         installation_config.executable_path.replace("/", r"\")
     );
-    println!("2_{:?}", full_executable_path);
     archive.extract(&app_path)?;
-    println!("3_");
 
     let settings = crate::settings::Settings::read()?;
     if installation_config.create_start_menu_shortcut {
         let lnk_path = if installation_config.current_user_only {
-            format![
+            format!(
                 r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
                 settings.system_drive_letter, settings.username, installation_config.app_name
-            ]
+            )
         } else {
-            format![
+            format!(
                 r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
                 settings.system_drive_letter, installation_config.app_name
-            ]
+            )
         };
         ShellLink::new(&full_executable_path)?.create_lnk(lnk_path)?;
     }
 
     if installation_config.create_desktop_shortcut {
-        ShellLink::new(&full_executable_path)?.create_lnk(
+        ShellLink::new(&full_executable_path)?.create_lnk(format!(
+            r"{}\{}.lnk",
             dirs::desktop_dir()
                 .ok_or("Failed to get desktop directory")?
                 .to_string_lossy()
                 .to_string(),
-        )?;
+            installation_config.app_name
+        ))?;
     }
-    println!("4_");
     if installation_config.create_registry_key {
         let key: windows_registry::Key;
         if installation_config.current_user_only {
-            key = windows_registry::CURRENT_USER.create(format![
+            key = windows_registry::CURRENT_USER.create(format!(
                 r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
                 installation_config.app_name
-            ])?;
+            ))?;
         } else {
-            key = windows_registry::LOCAL_MACHINE.create(format![
+            key = windows_registry::LOCAL_MACHINE.create(format!(
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
                 installation_config.app_name
-            ])?;
+            ))?;
         }
 
         key.set_string("Comments", "Installed with AppPorter")?;
@@ -206,6 +204,5 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
             &std::env::current_exe()?.to_string_lossy().to_string(),
         )?;
     }
-    println!("5_");
     Ok("".to_owned())
 }
