@@ -141,14 +141,79 @@ pub fn installation(installation_config: InstallationConfig) -> Result<String, B
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
         r"{}\{}",
-        installation_config.install_path, installation_config.app_name
+        installation_config.install_path,
+        installation_config.app_name.replace(" ", "-")
     );
-    let full_executable_path = format!(
-        r"{}\{}",
-        app_path,
-        installation_config.executable_path.replace("/", r"\")
-    );
-    archive.extract(&app_path)?;
+
+    // Check if the zip has only one root directory
+    let mut root_entries = std::collections::HashSet::new();
+    for i in 0..archive.len() {
+        let file = archive.by_index(i)?;
+        let name = file.name();
+        let root = name.split('/').next().unwrap_or("");
+        if !root.is_empty() {
+            root_entries.insert(root.to_string());
+        }
+    }
+
+    // If there's exactly one root directory, we'll extract contents directly
+    let single_root = if root_entries.len() == 1 {
+        Some(root_entries.into_iter().next().unwrap())
+    } else {
+        None
+    };
+
+    // Extract files
+    for i in 0..archive.len() {
+        let mut file = archive.by_index(i)?;
+        let name = file.name();
+
+        // Skip if it's a directory entry
+        if name.ends_with('/') {
+            continue;
+        }
+
+        let outpath = if let Some(root) = &single_root {
+            // Remove the root directory from the path
+            if name.starts_with(&format!("{}/", root)) {
+                let relative_path = name.strip_prefix(&format!("{}/", root)).unwrap();
+                std::path::Path::new(&app_path).join(relative_path)
+            } else {
+                std::path::Path::new(&app_path).join(name)
+            }
+        } else {
+            std::path::Path::new(&app_path).join(name)
+        };
+
+        if let Some(parent) = outpath.parent() {
+            std::fs::create_dir_all(parent)?;
+        }
+        let mut outfile = std::fs::File::create(&outpath)?;
+        std::io::copy(&mut file, &mut outfile)?;
+    }
+
+    let full_executable_path = if let Some(root) = &single_root {
+        // If the executable path starts with the root directory, remove it
+        let exe_path = if installation_config
+            .executable_path
+            .starts_with(&format!("{}/", root))
+        {
+            installation_config
+                .executable_path
+                .strip_prefix(&format!("{}/", root))
+                .unwrap_or(&installation_config.executable_path)
+                .to_string()
+        } else {
+            installation_config.executable_path.clone()
+        };
+        format!(r"{}\{}", app_path, exe_path.replace("/", r"\"))
+    } else {
+        format!(
+            r"{}\{}",
+            app_path,
+            installation_config.executable_path.replace("/", r"\")
+        )
+    };
 
     let settings = crate::settings::Settings::read()?;
     if installation_config.create_start_menu_shortcut {
