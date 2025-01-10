@@ -10,6 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 
 // Define tree node type
 interface TreeNode {
@@ -73,6 +74,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: "loading", value: boolean): void;
+  (e: "progress", value: number): void; // Add this line
 }>();
 
 const installationConfig = useInstallationConfigStore();
@@ -183,10 +185,15 @@ async function confirmSelection() {
       executable_path: executable_path.value,
     });
 
+    listen("get_details", (event) => {
+      console.log(event.payload);
+    });
+
     const result = await invoke("execute_command", {
       command: "GetDetails",
       arg: arg,
     });
+    listen("get_details", () => {});
 
     if (typeof result === "string") {
       const parsedResult = JSON.parse(result);
@@ -318,6 +325,7 @@ watch(executable_path, () => {
 <style scoped>
 .loading {
   transition: opacity 0.2s ease-in-out;
+
   opacity: 0.7;
   pointer-events: none;
 }

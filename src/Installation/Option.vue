@@ -119,6 +119,12 @@ async function start_installation() {
 }
 
 const detailsLoading = ref(false);
+const detailsLoadingProgress = ref(0);
+
+function handleDetailsProgress(value: number) {
+  detailsLoadingProgress.value = value;
+  console.log("Progress update:", value); // Add logging for debugging
+}
 </script>
 
 <template>
@@ -271,10 +277,27 @@ const detailsLoading = ref(false);
         <!-- Loading Overlay -->
         <div
           v-if="detailsLoading"
-          class="absolute inset-0 backdrop-blur-sm bg-background/50 flex flex-col items-center justify-center"
+          class="absolute inset-0 backdrop-blur-sm bg-background/50 flex flex-col items-center justify-center gap-2"
         >
           <h3 class="text-lg font-semibold">App Details</h3>
-          <p class="text-sm text-muted-foreground">Loading...</p>
+          <div
+            v-if="detailsLoadingProgress > 0"
+            class="w-48 h-2 bg-muted rounded-full overflow-hidden"
+          >
+            <div
+              class="h-full bg-primary transition-all duration-300 ease-out"
+              :style="{ width: `${(detailsLoadingProgress / 4) * 100}%` }"
+            ></div>
+          </div>
+          <p class="text-sm text-muted-foreground">
+            {{
+              detailsLoadingProgress > 0
+                ? ["Preparing", "Extracting", "Reading", "Processing"][
+                    detailsLoadingProgress - 1
+                  ]
+                : "Loading..."
+            }}
+          </p>
         </div>
       </Card>
     </div>
@@ -284,6 +307,7 @@ const detailsLoading = ref(false);
       <ZipPreview
         :zip-path="zip_path"
         @loading="(value) => (detailsLoading = value)"
+        @progress="handleDetailsProgress"
       />
     </div>
   </div>

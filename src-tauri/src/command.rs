@@ -1,25 +1,35 @@
 use crate::installation::{get_details, installation, ExePath, InstallationConfig};
 use crate::settings::load_settings;
-use std::result::Result;
+use serde_json::json;
+use tauri::AppHandle;
 
-#[tauri::command]
-pub fn execute_command(command: String, arg: Option<String>) -> Result<String, tauri::Error> {
+#[tauri::command(async)]
+pub async fn execute_command(
+    command: String,
+    arg: Option<String>,
+    app: AppHandle,
+) -> Result<String, String> {
     let result = match command.as_str() {
         "LoadSettings" => load_settings(),
-        "GetDetails" => get_details(serde_json::from_str::<ExePath>(&arg.unwrap_or_default())?),
-        "Installation" => installation(serde_json::from_str::<InstallationConfig>(
-            &arg.unwrap_or_default(),
-        )?),
+        "GetDetails" => {
+            let exe_path = serde_json::from_str::<ExePath>(&arg.ok_or("Arguments not found")?)
+                .map_err(|e| e.to_string())?;
+            get_details(exe_path, app)
+        }
+        "Installation" => {
+            let config =
+                serde_json::from_str::<InstallationConfig>(&arg.ok_or("Arguments not found")?)
+                    .map_err(|e| e.to_string())?;
+            installation(config, app)
+        }
         _ => Err("Unknown command".into()),
     };
 
-    let output = match result {
-        Ok(value) => value,
-        Err(error) => serde_json::json!({
+    match result {
+        Ok(value) => Ok(value),
+        Err(error) => Ok(json!({
             "error": error.to_string()
         })
-        .to_string(),
-    };
-
-    Ok(output)
+        .to_string()),
+    }
 }

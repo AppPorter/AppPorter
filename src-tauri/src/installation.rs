@@ -6,6 +6,7 @@ use std::error::Error;
 use std::fs::File;
 use std::process::Command;
 use systemicons::get_icon;
+use tauri::{AppHandle, Emitter};
 use tempfile::Builder;
 use zip::ZipArchive;
 
@@ -15,25 +16,25 @@ pub struct ExePath {
     pub executable_path: String,
 }
 
-pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
+pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
+    let timer = std::time::Instant::now();
     // Create temp directory
     let temp_dir = Builder::new().prefix("appporter").tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
-
     // Read zip file
     let file = File::open(&req.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
-
     // Extract only the target executable
     if let Ok(mut exe_file) = archive.by_name(&req.executable_path) {
         // Create parent directories if they don't exist
         if let Some(parent) = temp_exe_path.parent() {
             std::fs::create_dir_all(parent)?;
         }
-
         // Extract the exe file
         let mut outfile = File::create(&temp_exe_path)?;
+        app.emit("get_details", 1)?;
         std::io::copy(&mut exe_file, &mut outfile)?;
+        app.emit("get_details", 2)?;
     } else {
         return Err(format!(
             "Failed to find executable '{}' in archive",
@@ -41,11 +42,9 @@ pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
         )
         .into());
     }
-
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
     let icon_base64 = STANDARD.encode(&raw_icon);
     let icon_data_url = format!("data:image/png;base64,{}", icon_base64);
-
     // Prepare PowerShell command
     let ps_command = format!(
         r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
@@ -86,7 +85,7 @@ pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
         }}"#,
         temp_exe_path.to_string_lossy().replace("'", "''")
     );
-
+    app.emit("get_details", 3)?;
     // Execute PowerShell command
     let output = Command::new("powershell")
         .args([
@@ -98,7 +97,7 @@ pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
             &ps_command,
         ])
         .output()?;
-
+    app.emit("get_details", 4)?;
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
@@ -114,7 +113,6 @@ pub fn get_details(req: ExePath) -> Result<String, Box<dyn Error>> {
         details["copyright"].as_str().unwrap_or(""),
         icon_data_url
     ]);
-
     Ok(response.to_string())
 }
 
@@ -136,7 +134,10 @@ pub struct InstallationConfig {
     app_version: String,
 }
 
-pub fn installation(installation_config: InstallationConfig) -> Result<String, Box<dyn Error>> {
+pub fn installation(
+    installation_config: InstallationConfig,
+    app: AppHandle,
+) -> Result<String, Box<dyn Error>> {
     let file = File::open(installation_config.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
