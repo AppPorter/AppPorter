@@ -61,7 +61,7 @@ const menu_items = [
       <h1 class="text-lg font-semibold relative pt-3 pl-6 pb-2">AppPorter</h1>
     </div>
 
-    <Menubar :model="menu_items" class="flex">
+    <Menubar :model="menu_items">
       <template #item="{ item }">
         <a href="#">
           <span class="material-symbols-rounded">{{ item.icon }}</span>
@@ -72,9 +72,9 @@ const menu_items = [
   </div>
 
   <!-- Main Content -->
-  <div class="pt-24 px-6 pb-6">
-    <Card class="h-[calc(100vh-130px)] overflow-y-auto">
-      <RouterView></RouterView>
+  <div class="pt-28 px-6 pb-6">
+    <Card class="h-[calc(100vh-150px)] overflow-y-auto">
+      <template #content><RouterView class="z-40"></RouterView></template>
     </Card>
   </div>
 

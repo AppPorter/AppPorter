@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import {
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { goTo } from "@/plugin/router";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
+import Button from "primevue/button";
 
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = storeToRefs(installationConfig);
@@ -28,35 +21,25 @@ async function select_zip_file() {
 </script>
 
 <template>
-  <CardHeader class="pb-3">
-    <CardTitle class="text-lg">Select Installation Package</CardTitle>
-    <p class="text-xs text-muted-foreground">Choose a zip file to install</p>
-  </CardHeader>
+  <h1 class="text-lg">Select Installation Package</h1>
+  <p class="text-xs text-muted-foreground">Choose a zip file to install</p>
 
-  <CardContent class="space-y-4">
-    <div class="flex items-center gap-2">
-      <Input
-        v-model="zip_path"
-        type="text"
-        placeholder="Select a zip file to install"
-        class="flex-1 text-sm"
-      >
-        <span v-svg="'zip'" class="w-4 h-4 mr-2 opacity-70"></span>
-      </Input>
-      <Button variant="secondary" @click="select_zip_file">
-        <span v-svg="'folder_open'" class="w-4 h-4"></span>
-        Browse
-      </Button>
-    </div>
-  </CardContent>
+  <div class="flex items-center gap-2">
+    <InputText
+      type="text"
+      v-model="zip_path"
+      placeholder="Select a zip file to install"
+      class="flex-1 text-sm"
+    />
+    <Button label="Browse" severity="secondary" @click="select_zip_file" />
+  </div>
 
   <CardFooter class="flex justify-end">
     <Button
-      class="w-28"
       @click="goTo('/Installation/Option')"
       :disabled="!installationConfig.zip_path"
+      label="Next"
     >
-      Next
     </Button>
   </CardFooter>
 </template>
