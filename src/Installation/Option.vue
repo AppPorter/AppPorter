@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
+import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
-import ZipPreview from "./components/ZipPreview.vue";
+import Button from "primevue/button";
+import Checkbox from "primevue/checkbox";
+import InputSwitch from "primevue/inputswitch";
+import InputText from "primevue/inputtext";
+import Panel from "primevue/panel";
+import ProgressBar from "primevue/progressbar";
 import { ref } from "vue";
-import { invoke } from "@tauri-apps/api/core";
+import ZipPreview from "./components/ZipPreview.vue";
 
 const settingsStore = useSettingsStore();
 const {
@@ -63,7 +63,8 @@ function updateConfig(isCurrentUser: boolean) {
 current_user_only.value = settings_current_user_only;
 updateConfig(current_user_only.value);
 
-function handleInstallModeChange(checked: boolean) {
+function handleInstallModeChange(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked;
   current_user_only.value = checked;
   updateConfig(checked);
 }
@@ -128,100 +129,109 @@ function handleDetailsProgress(value: number) {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-144px)] p-4 pb-16 flex gap-4">
+  <div class="h-[calc(100vh-144px)] p-4 pb-16 flex gap-6">
     <!-- Left Column -->
-    <div class="flex-1 min-w-[400px] space-y-4">
-      <Card>
-        <CardHeader class="pb-3">
-          <CardTitle class="text-lg">Installation Options</CardTitle>
-          <p class="text-xs">
-            Selected file: <b>{{ zip_path }}</b>
-          </p>
-        </CardHeader>
-        <CardContent class="space-y-4">
+    <div class="flex-1 min-w-[400px] space-y-6">
+      <!-- Installation Options Panel -->
+      <Panel class="shadow-sm border border-gray-200 overflow-hidden">
+        <template #header>
+          <div class="flex flex-col py-1">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-rounded text-xl text-gray-600"
+                >settings</span
+              >
+              <h2 class="text-lg font-medium">Installation Options</h2>
+            </div>
+            <p class="text-xs text-gray-500 mt-1 ml-9">
+              Selected file: <span class="font-medium">{{ zip_path }}</span>
+            </p>
+          </div>
+        </template>
+
+        <div class="space-y-6 p-6 bg-gradient-to-b from-white to-gray-50/50">
           <!-- Install Mode -->
           <div class="flex items-center gap-3">
-            <Label class="w-24 text-sm">Install Mode</Label>
-            <div class="flex items-center gap-2">
-              <Label for="install_mode">All Users</Label>
-              <Switch
-                id="install_mode"
-                :checked="current_user_only"
-                @update:checked="handleInstallModeChange"
+            <span class="w-28 text-sm font-medium">Install Mode</span>
+            <div
+              class="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-lg"
+            >
+              <span class="text-sm">All Users</span>
+              <InputSwitch
+                v-model="current_user_only"
+                @change="handleInstallModeChange"
+                class="mx-1"
               />
-              <Label for="install_mode">Current User</Label>
+              <span class="text-sm">Current User</span>
             </div>
           </div>
 
           <!-- Install Path -->
           <div class="flex items-center gap-3">
-            <Label class="w-24 text-sm">Install Path</Label>
+            <span class="w-24 text-sm font-medium">Install Path</span>
             <div class="flex-1 flex gap-2">
-              <Input
+              <InputText
                 v-model="install_path"
-                type="text"
                 placeholder="Choose installation directory"
-                class="text-sm"
-              >
-              </Input>
-              <Button variant="secondary" @click="select_install_path">
-                <span v-svg="'folder_open'" class="w-4 h-4"></span>
+                class="w-full text-sm"
+              />
+              <Button class="p-button-secondary" @click="select_install_path">
+                <span class="material-symbols-rounded mr-2">folder_open</span>
                 Browse
               </Button>
             </div>
           </div>
 
-          <!-- Shortcuts -->
+          <!-- Shortcuts Section -->
           <div class="flex items-start gap-3">
-            <Label class="w-24 mt-1 text-sm">Shortcuts</Label>
-            <div class="space-y-1.5">
-              <div class="flex items-center space-x-2">
+            <span class="w-28 mt-1 text-sm font-medium">Shortcuts</span>
+            <div class="space-y-3 bg-gray-50 p-3 rounded-lg flex-1">
+              <div class="flex items-center gap-2">
                 <Checkbox
-                  id="create_desktop_shortcut"
-                  :checked="create_desktop_shortcut"
-                  @update:checked="
-                    (checked) => (create_desktop_shortcut = checked)
-                  "
+                  v-model="create_desktop_shortcut"
+                  :binary="true"
+                  inputId="desktop_shortcut"
                 />
-                <Label for="create_desktop_shortcut">
-                  Create Desktop Shortcut
-                </Label>
+                <label for="desktop_shortcut">Create Desktop Shortcut</label>
               </div>
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center gap-2">
                 <Checkbox
-                  id="create_start_menu_shortcut"
-                  :checked="create_start_menu_shortcut"
-                  @update:checked="
-                    (checked) => (create_start_menu_shortcut = checked)
-                  "
+                  v-model="create_start_menu_shortcut"
+                  :binary="true"
+                  inputId="start_menu_shortcut"
                 />
-                <Label for="create_start_menu_shortcut">
-                  Create Start Menu Shortcut
-                </Label>
+                <label for="start_menu_shortcut"
+                  >Create Start Menu Shortcut</label
+                >
               </div>
-              <div class="flex items-center space-x-2">
+              <div class="flex items-center gap-2">
                 <Checkbox
-                  id="create_registry_key"
-                  :checked="create_registry_key"
-                  @update:checked="(checked) => (create_registry_key = checked)"
+                  v-model="create_registry_key"
+                  :binary="true"
+                  inputId="registry_key"
                 />
-                <Label for="create_registry_key"> Create Registry Entry </Label>
+                <label for="registry_key">Create Registry Entry</label>
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </Panel>
 
-      <!-- App Details Card -->
-      <Card class="relative">
-        <CardHeader class="pb-3">
-          <div class="flex justify-between items-center">
-            <CardTitle class="text-lg">App Details</CardTitle>
+      <!-- App Details Panel -->
+      <Panel class="shadow-sm border border-gray-200 relative overflow-hidden">
+        <template #header>
+          <div class="flex justify-between items-center w-full py-1">
+            <div class="flex items-center gap-3">
+              <span class="material-symbols-rounded text-xl text-gray-600"
+                >apps</span
+              >
+              <h2 class="text-lg font-medium">App Details</h2>
+            </div>
             <div
-              class="w-12 h-12 rounded-md overflow-hidden shrink-0"
+              class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2"
               :class="[
-                !app_icon &&
-                  'border-2 border-dashed border-muted-foreground/25',
+                !app_icon
+                  ? 'border-dashed border-gray-300 bg-gray-50'
+                  : 'border-transparent',
               ]"
             >
               <img
@@ -230,66 +240,66 @@ function handleDetailsProgress(value: number) {
                 class="w-full h-full object-contain"
                 alt="App Icon"
               />
+              <span
+                v-else
+                class="material-symbols-rounded w-full h-full flex items-center justify-center text-gray-400"
+              >
+                image
+              </span>
             </div>
           </div>
-        </CardHeader>
-        <CardContent class="space-y-4">
+        </template>
+
+        <div class="space-y-6 p-6 bg-gradient-to-b from-white to-gray-50/50">
           <!-- App Name -->
           <div class="flex items-center gap-3">
-            <Label class="w-24 text-sm">App Name</Label>
-            <Input
+            <span class="w-24 text-sm font-medium">App Name</span>
+            <InputText
               v-model="app_name"
-              type="text"
               placeholder="Application Name"
-              class="text-sm"
+              class="w-full text-sm"
             />
           </div>
 
           <!-- Publisher -->
           <div class="flex items-center gap-3">
             <div class="w-24">
-              <Label class="text-sm">Publisher</Label>
-              <p class="text-xs text-muted-foreground">(Optional)</p>
+              <span class="text-sm font-medium">Publisher</span>
+              <p class="text-xs text-gray-500">(Optional)</p>
             </div>
-            <Input
+            <InputText
               v-model="app_publisher"
-              type="text"
               placeholder="Publisher Name"
-              class="text-sm"
+              class="w-full text-sm"
             />
           </div>
 
           <!-- Version -->
           <div class="flex items-center gap-3">
             <div class="w-24">
-              <Label class="text-sm">Version</Label>
-              <p class="text-xs text-muted-foreground">(Optional)</p>
+              <span class="text-sm font-medium">Version</span>
+              <p class="text-xs text-gray-500">(Optional)</p>
             </div>
-            <Input
+            <InputText
               v-model="app_version"
-              type="text"
               placeholder="1.0.0"
-              class="text-sm"
+              class="w-full text-sm"
             />
           </div>
-        </CardContent>
+        </div>
 
-        <!-- Loading Overlay -->
+        <!-- Loading Overlay with improved visuals -->
         <div
           v-if="detailsLoading"
-          class="absolute inset-0 backdrop-blur-sm bg-background/50 flex flex-col items-center justify-center gap-2"
+          class="absolute inset-0 backdrop-blur-[2px] bg-white/60 flex flex-col items-center justify-center gap-3 transition-all duration-300"
         >
           <h3 class="text-lg font-semibold">App Details</h3>
-          <div
+          <ProgressBar
             v-if="detailsLoadingProgress > 0"
-            class="w-48 h-2 bg-muted rounded-full overflow-hidden"
-          >
-            <div
-              class="h-full bg-primary transition-all duration-300 ease-out"
-              :style="{ width: `${(detailsLoadingProgress / 4) * 100}%` }"
-            ></div>
-          </div>
-          <p class="text-sm text-muted-foreground">
+            :value="(detailsLoadingProgress / 4) * 100"
+            class="w-48"
+          />
+          <p class="text-sm text-gray-600">
             {{
               detailsLoadingProgress > 0
                 ? ["Preparing", "Extracting", "Reading", "Processing"][
@@ -299,44 +309,30 @@ function handleDetailsProgress(value: number) {
             }}
           </p>
         </div>
-      </Card>
+      </Panel>
     </div>
 
     <!-- Right Column -->
-    <div class="min-w-[320px] w-[30%]">
+    <div class="min-w-[340px] w-[32%]">
       <ZipPreview
         :zip-path="zip_path"
+        :details-loading="detailsLoading"
         @loading="(value) => (detailsLoading = value)"
         @progress="handleDetailsProgress"
       />
     </div>
   </div>
 
-  <!-- Install Button -->
+  <!-- Install Button with improved visuals -->
   <div class="fixed bottom-12 right-14 z-40">
     <Button
-      size="lg"
-      class="w-32 flex items-center justify-center gap-2"
+      severity="primary"
+      size="large"
+      class="w-40 h-12 text-base shadow-lg hover:shadow-xl transition-all duration-300"
       @click="start_installation"
     >
-      <span v-svg="'install'" class="w-4 h-4"></span>
+      <span class="material-symbols-rounded text-xl mr-2">download</span>
       Install
     </Button>
   </div>
 </template>
-
-<style scoped>
-.border-dashed {
-  background: repeating-linear-gradient(
-    45deg,
-    transparent,
-    transparent 5px,
-    rgba(0, 0, 0, 0.03) 5px,
-    rgba(0, 0, 0, 0.03) 10px
-  );
-}
-.backdrop-blur-sm {
-  backdrop-filter: blur(4px);
-  transition: all 0.2s ease;
-}
-</style>

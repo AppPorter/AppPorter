@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useInstallationConfigStore } from "@/stores/installation_config";
-import { storeToRefs } from "pinia";
-import { watchEffect, ref, watch } from "vue";
-import JSZip from "jszip";
-import { readFile } from "@tauri-apps/plugin-fs";
-import TreeView from "./TreeView.vue";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { readFile } from "@tauri-apps/plugin-fs";
+import JSZip from "jszip";
+import { storeToRefs } from "pinia";
+import Button from "primevue/button";
+import Panel from "primevue/panel";
+import RadioButton from "primevue/radiobutton";
+import { ref, watch, watchEffect } from "vue";
+import TreeView from "./TreeView.vue";
 
 // Define tree node type
 interface TreeNode {
@@ -70,11 +69,12 @@ function pathsToTree(paths: string[]): TreeNode[] {
 
 const props = defineProps<{
   zipPath: string;
+  detailsLoading?: boolean; // Add this prop
 }>();
 
 const emit = defineEmits<{
   (e: "loading", value: boolean): void;
-  (e: "progress", value: number): void; // Add this line
+  (e: "progress", value: number): void;
 }>();
 
 const installationConfig = useInstallationConfigStore();
@@ -233,25 +233,28 @@ watch(executable_path, () => {
 </script>
 
 <template>
-  <Card class="h-full flex flex-col app-details-card">
-    <CardHeader class="shrink-0 pb-2">
-      <CardTitle class="text-sm flex items-center gap-2">
-        <span
-          v-svg="'zip'"
-          class="w-5 h-5 overflow-hidden flex items-center justify-center"
-        ></span>
-        Files in Archive
-      </CardTitle>
-    </CardHeader>
-    <CardContent class="flex-1 flex flex-col min-h-0 space-y-3 pt-0">
-      <!-- File tree takes all remaining space -->
-      <div class="flex-1 min-h-0 border rounded-md overflow-hidden">
-        <div v-if="loading" class="text-sm text-muted-foreground p-2">
-          Loading...
-        </div>
+  <Panel
+    class="h-full flex flex-col shadow-sm border rounded-md overflow-hidden"
+    :class="[
+      props.detailsLoading ? 'opacity-60 pointer-events-none' : 'opacity-100',
+    ]"
+  >
+    <template #header>
+      <div class="flex items-center gap-2 py-1">
+        <span class="material-symbols-rounded text-lg text-gray-600"
+          >folder_zip</span
+        >
+        <span class="text-base font-medium">Files in Archive</span>
+      </div>
+    </template>
+
+    <div class="flex-1 flex flex-col min-h-0 space-y-3 p-4">
+      <!-- File tree container -->
+      <div class="flex-1 min-h-0 border rounded-md overflow-hidden bg-white">
+        <div v-if="loading" class="text-sm text-gray-500 p-2">Loading...</div>
         <div
           v-else-if="fileTree.length === 0"
-          class="text-sm text-muted-foreground p-2"
+          class="text-sm text-gray-500 p-2"
         >
           No files found in archive
         </div>
@@ -265,72 +268,55 @@ watch(executable_path, () => {
         />
       </div>
 
-      <!-- Bottom section with filter and confirm -->
-      <div class="shrink-0 space-y-1 py-1">
-        <!-- Filter options -->
-        <RadioGroup v-model="filterMode" class="space-y-1">
+      <!-- Filter options -->
+      <div class="shrink-0 space-y-3">
+        <div class="bg-gray-50/80 rounded-md p-2.5 space-y-1.5">
           <div
             v-for="mode in filterModes"
             :key="mode.value"
             class="flex items-center gap-2"
           >
-            <RadioGroupItem :value="mode.value" :id="'filter-' + mode.value" />
-            <Label
+            <RadioButton
+              v-model="filterMode"
+              :value="mode.value"
+              :inputId="'filter-' + mode.value"
+            />
+            <label
               :for="'filter-' + mode.value"
-              class="flex items-center gap-2"
+              class="flex items-center gap-2 cursor-pointer"
             >
-              <span
-                v-svg="
-                  mode.value === 'exe'
-                    ? 'executable'
-                    : mode.value === 'executable'
-                      ? 'script'
-                      : 'file'
-                "
-                class="w-5 h-5 overflow-hidden flex items-center justify-center"
-              ></span>
-              {{ mode.label }}
-            </Label>
+              <span class="material-symbols-rounded">
+                {{
+                  mode.value === "exe"
+                    ? "terminal"
+                    : mode.value === "executable"
+                      ? "code"
+                      : "description"
+                }}
+              </span>
+              <span>{{ mode.label }}</span>
+            </label>
           </div>
-        </RadioGroup>
+        </div>
 
         <!-- Confirm button -->
-        <div class="flex justify-end pt-2">
+        <div class="flex justify-end">
           <Button
-            :variant="isConfirmed || autoConfirmed ? 'default' : 'outline'"
+            :severity="isConfirmed || autoConfirmed ? 'success' : 'secondary'"
+            class="h-9 text-sm min-w-[8rem] transition-all duration-200"
             :class="[
-              autoConfirmed ? 'w-40' : 'w-32',
-              !executable_path && 'opacity-50',
-              autoConfirmed &&
-                'bg-blue-600 hover:bg-blue-700 pointer-events-none',
-              isConfirmed &&
-                !autoConfirmed &&
-                'bg-green-600 hover:bg-green-700',
-              (isConfirmed || autoConfirmed) && 'text-white',
+              !isConfirmed && !autoConfirmed && 'bg-white hover:bg-gray-50',
             ]"
+            :disabled="!executable_path || isConfirmed"
             @click="executable_path && !autoConfirmed && confirmSelection()"
           >
-            <span
-              v-svg="'confirm'"
-              class="w-5 h-5 flex items-center justify-center"
-            ></span>
+            <span class="material-symbols-rounded text-lg mr-1.5">
+              {{ isConfirmed || autoConfirmed ? "check_circle" : "task_alt" }}
+            </span>
             {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}
           </Button>
         </div>
       </div>
-    </CardContent>
-  </Card>
+    </div>
+  </Panel>
 </template>
-
-<style scoped>
-.loading {
-  transition: opacity 0.2s ease-in-out;
-
-  opacity: 0.7;
-  pointer-events: none;
-}
-
-.loading * {
-  transition: all 0.2s ease-in-out;
-}
-</style>

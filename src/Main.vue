@@ -7,6 +7,7 @@ import Menubar from "primevue/menubar";
 import { goTo } from "./plugin/router";
 
 const settingsStore = useSettingsStore();
+
 function close_button() {
   if (settingsStore.minimize_to_tray_on_close) {
     window.hide();
@@ -14,6 +15,7 @@ function close_button() {
     exit(0);
   }
 }
+
 function minimize_button() {
   window.minimize();
 }
@@ -21,17 +23,15 @@ function minimize_button() {
 const menu_items = [
   {
     label: "Installation",
-    icon: "install_desktop",
-    command: () => {
-      goTo("/installation");
-    },
+    icon: "material-symbols-rounded text-xl",
+    iconClass: "install_desktop",
+    command: () => goTo("/installation"),
   },
   {
     label: "Settings",
-    icon: "settings",
-    command: () => {
-      goTo("/settings");
-    },
+    icon: "material-symbols-rounded text-xl",
+    iconClass: "settings",
+    command: () => goTo("/settings"),
   },
 ];
 </script>
@@ -39,49 +39,47 @@ const menu_items = [
 <template>
   <!-- Window Controls -->
   <div class="fixed top-0 right-0 h-auto z-50 flex">
-    <button class="px-3 py-1.5 hover:bg-[#e9e9e9]" @click="minimize_button()">
-      <span
-        class="material-symbols-rounded w-5 h-5 flex items-center justify-center"
-      >
-        remove
-      </span>
+    <button
+      class="px-3 py-1.5 hover:bg-gray-200 transition-colors"
+      @click="minimize_button"
+    >
+      <span class="material-symbols-rounded">remove</span>
     </button>
-    <button class="px-3 py-1.5 hover:bg-[#c42b1c]" @click="close_button()">
-      <span
-        class="material-symbols-rounded w-5 h-5 flex items-center justify-center"
-      >
-        close
-      </span>
+    <button
+      class="px-3 py-1.5 hover:bg-red-600 hover:text-white transition-colors"
+      @click="close_button"
+    >
+      <span class="material-symbols-rounded">close</span>
     </button>
   </div>
 
   <!-- Title Bar -->
-  <div class="fixed w-full bg-background/95 backdrop-blur-lg z-40">
-    <div style="-webkit-app-region: drag" class="w-full border-b">
-      <h1 class="text-lg font-semibold relative pt-3 pl-6 pb-2">AppPorter</h1>
+  <div class="fixed w-full bg-white/95 backdrop-blur-lg z-40 border-b">
+    <div style="-webkit-app-region: drag" class="w-full">
+      <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
     </div>
 
-    <Menubar :model="menu_items">
+    <Menubar :model="menu_items" class="border-none shadow-none">
       <template #item="{ item }">
-        <a href="#">
-          <span class="material-symbols-rounded">{{ item.icon }}</span>
-          <span>{{ item.label }}</span>
-        </a>
+        <span :class="item.icon">{{ item.iconClass }}</span>
+        <span class="ml-2">{{ item.label }}</span>
       </template>
     </Menubar>
   </div>
 
   <!-- Main Content -->
   <div class="pt-28 px-6 pb-6">
-    <Card class="h-[calc(100vh-150px)] overflow-y-auto">
-      <template #content><RouterView class="z-40"></RouterView></template>
+    <Card class="h-[calc(100vh-150px)] overflow-y-auto border shadow-sm">
+      <template #content>
+        <RouterView class="z-40" />
+      </template>
     </Card>
   </div>
 
   <!-- Status Bar -->
   <div
-    class="fixed bottom-0 left-0 right-0 h-6 border-t px-4 flex items-center text-xs z-40"
+    class="fixed bottom-0 left-0 right-0 h-6 border-t px-4 flex items-center text-xs text-gray-500 bg-gray-50"
   >
-    <p class="text-sm">{{ $route.fullPath }}</p>
+    <p>{{ $route.fullPath }}</p>
   </div>
 </template>

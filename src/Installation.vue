@@ -4,16 +4,18 @@ import { useInstallationConfigStore } from "@/stores/installation_config";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
+import Card from "primevue/card";
+import InputText from "primevue/inputtext";
 
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = storeToRefs(installationConfig);
+
 async function select_zip_file() {
   const selected = await open({
     multiple: false,
     directory: false,
     filters: [{ name: "Zip", extensions: ["zip"] }],
   });
-  // Only update if a file was selected
   if (selected) {
     zip_path.value = selected;
   }
@@ -21,25 +23,64 @@ async function select_zip_file() {
 </script>
 
 <template>
-  <h1 class="text-lg">Select Installation Package</h1>
-  <p class="text-xs text-muted-foreground">Choose a zip file to install</p>
+  <Card class="border shadow-sm">
+    <template #title>
+      <div class="flex items-center gap-2.5">
+        <div class="p-1.5 rounded-md bg-blue-50/80">
+          <span class="material-symbols-rounded text-xl text-blue-600"
+            >folder_zip</span
+          >
+        </div>
+        <div>
+          <h2 class="text-lg font-medium leading-tight">
+            Select Installation Package
+          </h2>
+          <p class="text-xs text-gray-500 mt-0.5">
+            Choose a zip file to install
+          </p>
+        </div>
+      </div>
+    </template>
 
-  <div class="flex items-center gap-2">
-    <InputText
-      type="text"
-      v-model="zip_path"
-      placeholder="Select a zip file to install"
-      class="flex-1 text-sm"
-    />
-    <Button label="Browse" severity="secondary" @click="select_zip_file" />
-  </div>
+    <template #content>
+      <div class="flex flex-col gap-4 py-3">
+        <div class="flex items-center gap-2">
+          <InputText
+            v-model="zip_path"
+            placeholder="Select a zip file to install"
+            class="flex-1 text-sm h-10"
+            readonly
+          />
+          <Button
+            @click="select_zip_file"
+            severity="secondary"
+            class="min-w-28 h-10 bg-white hover:bg-gray-50"
+          >
+            <span class="material-symbols-rounded mr-1.5 text-lg"
+              >folder_open</span
+            >
+            Browse
+          </Button>
+        </div>
+      </div>
+    </template>
 
-  <CardFooter class="flex justify-end">
-    <Button
-      @click="goTo('/Installation/Option')"
-      :disabled="!installationConfig.zip_path"
-      label="Next"
-    >
-    </Button>
-  </CardFooter>
+    <template #footer>
+      <div
+        class="flex justify-end border-t -mx-4 -mb-4 px-4 pt-4 bg-gray-50/50"
+      >
+        <Button
+          @click="goTo('/Installation/Option')"
+          :disabled="!zip_path"
+          severity="primary"
+          class="min-w-28 h-10"
+        >
+          <span class="material-symbols-rounded mr-1.5 text-lg"
+            >navigate_next</span
+          >
+          Next
+        </Button>
+      </div>
+    </template>
+  </Card>
 </template>

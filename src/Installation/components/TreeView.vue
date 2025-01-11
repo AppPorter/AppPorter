@@ -89,46 +89,41 @@ function sortItems(items: TreeNode[]): TreeNode[] {
       <!-- Directory node -->
       <div
         v-if="item.type === 'directory'"
-        class="flex items-center gap-2 py-1 px-2 text-sm text-gray-600 cursor-pointer rounded transition-colors hover:bg-gray-100 hover:text-gray-900"
-        :class="{ 'bg-gray-200': expandedDirs.has(item.path) }"
+        class="flex items-center gap-2 py-1 px-2 text-sm text-gray-600 cursor-pointer rounded-sm transition-colors hover:bg-gray-100"
+        :class="{ 'bg-gray-100': expandedDirs.has(item.path) }"
         @click="toggleDir(item.path)"
       >
-        <span
-          v-svg="expandedDirs.has(item.path) ? 'caret-down' : 'caret-right'"
-          class="w-4 h-4 shrink-0 flex items-center justify-center -ml-0.5"
-        ></span>
-        <span
-          v-svg="expandedDirs.has(item.path) ? 'folder_open' : 'folder'"
-          class="w-5 h-5 shrink-0 overflow-hidden flex items-center justify-center"
-        ></span>
+        <span class="material-symbols-rounded text-lg">
+          {{ expandedDirs.has(item.path) ? "expand_more" : "navigate_next" }}
+        </span>
+        <span class="material-symbols-rounded">
+          {{ expandedDirs.has(item.path) ? "folder_open" : "folder" }}
+        </span>
         <span class="truncate">{{ item.name }}</span>
       </div>
 
       <!-- File node -->
       <div
         v-else
-        class="flex items-center gap-1 py-1 px-2 pl-6 text-sm rounded transition-colors"
+        class="flex items-center gap-2 py-1 px-2 pl-9 text-sm rounded-sm transition-colors"
         :class="[
           item.isExecutable
-            ? 'cursor-pointer hover:bg-gray-100 hover:text-gray-900 text-gray-800 font-medium'
+            ? 'cursor-pointer hover:bg-blue-50 text-gray-800'
             : 'text-gray-500',
-          {
-            'bg-blue-50 text-blue-700 font-medium': selectedPath === item.path,
-          },
+          selectedPath === item.path && 'bg-blue-100 text-blue-800',
         ]"
         @click="item.isExecutable && $emit('select', item.path)"
       >
-        <span
-          v-svg="item.isExecutable ? 'executable' : 'file'"
-          class="w-5 h-5 shrink-0 overflow-hidden flex items-center justify-center opacity-70 mr-1"
-        ></span>
+        <span class="material-symbols-rounded">
+          {{ item.isExecutable ? "terminal" : "description" }}
+        </span>
         <span class="truncate">{{ item.name }}</span>
       </div>
 
       <!-- Recursive children -->
       <TreeView
         v-if="item.children && expandedDirs.has(item.path)"
-        class="pl-4"
+        class="pl-6"
         :items="sortItems(item.children)"
         :selected-path="selectedPath"
         :auto-expand-root="false"
