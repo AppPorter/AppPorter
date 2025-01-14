@@ -66,8 +66,12 @@ const menu_items = [
           class="border-none shadow-none w-[calc(100vw-40px)]"
         >
           <template #item="{ item }">
-            <span :class="item.icon">{{ item.iconClass }}</span>
-            <span class="ml-2">{{ item.label }}</span>
+            <div class="flex items-center">
+              <span :class="[item.icon, 'flex items-center']">{{
+                item.iconClass
+              }}</span>
+              <span class="ml-2">{{ item.label }}</span>
+            </div>
           </template>
         </Menubar>
       </div>
@@ -84,7 +88,7 @@ const menu_items = [
 
     <!-- Status Bar -->
     <div
-      class="fixed bottom-0 left-0 right-0 h-6 px-4 flex items-center text-xs"
+      class="fixed bottom-0 left-0 right-0 h-6 px-4 flex items-center text-sm"
     >
       <p>{{ $route.fullPath }}</p>
     </div>
