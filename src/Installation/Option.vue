@@ -133,27 +133,31 @@ function handleDetailsProgress(value: number) {
     <!-- Left Column -->
     <div class="flex-1 min-w-[400px] space-y-6">
       <!-- Installation Options Panel -->
-      <Panel class="shadow-sm border border-gray-200 overflow-hidden">
+      <Panel
+        class="shadow-sm border border-gray-200/80 dark:border-gray-800/80"
+      >
         <template #header>
           <div class="flex flex-col py-1">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-rounded text-xl text-gray-600"
+              <span class="material-symbols-rounded text-xl opacity-80"
                 >settings</span
               >
               <h2 class="text-lg font-medium">Installation Options</h2>
             </div>
-            <p class="text-xs text-gray-500 mt-1 ml-9">
+            <p class="text-xs opacity-60 mt-1 ml-9">
               Selected file: <span class="font-medium">{{ zip_path }}</span>
             </p>
           </div>
         </template>
 
-        <div class="space-y-6 p-6 bg-gradient-to-b from-white to-gray-50/50">
+        <div
+          class="space-y-6 p-6 bg-gradient-to-b from-transparent to-gray-50/5"
+        >
           <!-- Install Mode -->
           <div class="flex items-center gap-3">
             <span class="w-28 text-sm font-medium">Install Mode</span>
             <div
-              class="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-lg"
+              class="flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50 px-4 py-2 rounded-lg"
             >
               <span class="text-sm">All Users</span>
               <InputSwitch
@@ -184,7 +188,9 @@ function handleDetailsProgress(value: number) {
           <!-- Shortcuts Section -->
           <div class="flex items-start gap-3">
             <span class="w-28 mt-1 text-sm font-medium">Shortcuts</span>
-            <div class="space-y-3 bg-gray-50 p-3 rounded-lg flex-1">
+            <div
+              class="space-y-3 bg-gray-50/50 dark:bg-gray-900/50 p-3 rounded-lg flex-1"
+            >
               <div class="flex items-center gap-2">
                 <Checkbox
                   v-model="create_desktop_shortcut"
@@ -323,7 +329,7 @@ function handleDetailsProgress(value: number) {
     </div>
   </div>
 
-  <!-- Install Button with improved visuals -->
+  <!-- Install Button -->
   <div class="fixed bottom-12 right-14 z-40">
     <Button
       severity="primary"

@@ -13,10 +13,17 @@ const statusMessage = ref("");
 </script>
 
 <template>
-  <Panel class="border shadow-sm">
+  <Panel class="border border-gray-200/80 dark:border-gray-800/80 shadow-sm">
     <template #header>
       <div class="flex items-center gap-2">
-        <span class="material-symbols-rounded text-2xl">
+        <span
+          class="material-symbols-rounded text-2xl"
+          :class="{
+            'text-blue-500': status === 'progress',
+            'text-green-500': status === 'success',
+            'text-red-500': status === 'error',
+          }"
+        >
           {{
             status === "success"
               ? "task_alt"
@@ -30,24 +37,21 @@ const statusMessage = ref("");
     </template>
 
     <div class="p-4 space-y-4">
-      <!-- Progress bar -->
       <ProgressBar
         :value="progress"
         class="h-2"
         :class="{
-          'bg-blue-100': status === 'progress',
-          'bg-green-100': status === 'success',
-          'bg-red-100': status === 'error',
+          'surface-200 dark:surface-700': status === 'progress',
+          'bg-green-100 dark:bg-green-900/30': status === 'success',
+          'bg-red-100 dark:bg-red-900/30': status === 'error',
         }"
       />
 
-      <!-- Current step -->
       <div class="text-center">
         <p class="text-sm font-medium">{{ currentStep }}</p>
-        <p class="text-xs text-gray-500">{{ statusMessage }}</p>
+        <p class="text-xs opacity-60">{{ statusMessage }}</p>
       </div>
 
-      <!-- Action buttons -->
       <div class="flex justify-end gap-2">
         <Button v-if="status === 'success'" severity="success">
           <span class="material-symbols-rounded mr-2">done</span>

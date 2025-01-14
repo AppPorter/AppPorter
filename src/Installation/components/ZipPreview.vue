@@ -342,14 +342,14 @@ function onNodeSelect(node: PrimeTreeNode) {
 
 <template>
   <Panel
-    class="h-full flex flex-col shadow-sm border rounded-md overflow-hidden"
+    class="h-full flex flex-col shadow-sm border border-gray-200/80 dark:border-gray-800/80 rounded-md overflow-hidden"
     :class="[
       props.detailsLoading ? 'opacity-60 pointer-events-none' : 'opacity-100',
     ]"
   >
     <template #header>
       <div class="flex items-center gap-2 py-1">
-        <span class="material-symbols-rounded text-lg text-gray-600"
+        <span class="material-symbols-rounded text-lg opacity-80"
           >folder_zip</span
         >
         <span class="text-base font-medium">Files in Archive</span>
@@ -357,13 +357,11 @@ function onNodeSelect(node: PrimeTreeNode) {
     </template>
 
     <div class="flex-1 flex flex-col min-h-0 space-y-3 p-4">
-      <!-- Replace TreeView with PrimeVue Tree -->
-      <div class="flex-1 min-h-0 border rounded-md overflow-hidden bg-white">
-        <div v-if="loading" class="text-sm text-gray-500 p-2">Loading...</div>
-        <div
-          v-else-if="fileTree.length === 0"
-          class="text-sm text-gray-500 p-2"
-        >
+      <div
+        class="flex-1 min-h-0 border border-gray-200/80 dark:border-gray-800/80 rounded-md overflow-hidden"
+      >
+        <div v-if="loading" class="text-sm opacity-60 p-2">Loading...</div>
+        <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-2">
           No files found in archive
         </div>
         <Tree
@@ -371,7 +369,7 @@ function onNodeSelect(node: PrimeTreeNode) {
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
-          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-2 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-tree-container_.p-treenode_.p-treenode-content.p-highlight]:!bg-transparent [&_.p-tree-container_.p-treenode_.p-treenode-content]:transition-colors hover:[&_.p-tree-container_.p-treenode_.p-treenode-content:not(.p-highlight)]:bg-gray-50/80"
+          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-2 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm"
           selectionMode="single"
           @node-select="onNodeSelect"
         >
@@ -389,7 +387,9 @@ function onNodeSelect(node: PrimeTreeNode) {
 
       <!-- Filter options -->
       <div class="shrink-0 space-y-3">
-        <div class="bg-gray-50/80 rounded-md p-2.5 space-y-1.5">
+        <div
+          class="bg-gray-50/50 dark:bg-gray-900/50 rounded-md p-2.5 space-y-1.5"
+        >
           <div
             v-for="mode in filterModes"
             :key="mode.value"
@@ -423,9 +423,6 @@ function onNodeSelect(node: PrimeTreeNode) {
           <Button
             :severity="isConfirmed || autoConfirmed ? 'success' : 'secondary'"
             class="h-9 text-sm min-w-[8rem] transition-all duration-200"
-            :class="[
-              !isConfirmed && !autoConfirmed && 'bg-white hover:bg-gray-50',
-            ]"
             :disabled="!executable_path || isConfirmed"
             @click="executable_path && !autoConfirmed && confirmSelection()"
           >

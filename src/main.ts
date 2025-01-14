@@ -77,7 +77,9 @@ app
     theme: {
       preset: Lara,
       options: {
+        prefix: "p",
         darkModeSelector: "system",
+        cssLayer: false,
       },
     },
   });
