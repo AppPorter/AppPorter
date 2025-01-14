@@ -498,7 +498,7 @@ const expandNode = async (node: CustomTreeNode) => {
                       : "description"
                 }}
               </span>
-              <span>{{ mode.label }}</span>
+              <span class="text-sm">{{ mode.label }}</span>
             </label>
           </div>
         </div>

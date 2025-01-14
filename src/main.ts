@@ -3,7 +3,7 @@ import Main from "@/Main.vue";
 import i18n from "@/plugin/i18n";
 import router, { setupRouterGuards } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
-import Lara from "@primevue/themes/lara";
+import Aura from "@primevue/themes/aura";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";
 import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
@@ -75,7 +75,7 @@ app
   .use(router) // Then initialize router
   .use(PrimeVue, {
     theme: {
-      preset: Lara,
+      preset: Aura,
       options: {
         prefix: "p",
         darkModeSelector: "system",

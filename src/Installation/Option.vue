@@ -255,7 +255,7 @@ function handleDetailsProgress(value: number) {
               </h2>
             </div>
             <div
-              class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border-2"
+              class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2"
               :class="[
                 !app_icon
                   ? 'border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800'
