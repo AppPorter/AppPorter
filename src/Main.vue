@@ -40,7 +40,7 @@ const menu_items = [
   <!-- Window Controls -->
   <div class="fixed top-0 right-0 h-auto z-50 flex">
     <button
-      class="px-3 py-1.5 hover:bg-gray-200 transition-colors"
+      class="px-3 py-1.5 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
       @click="minimize_button"
     >
       <span class="material-symbols-rounded">remove</span>
@@ -54,7 +54,9 @@ const menu_items = [
   </div>
 
   <!-- Title Bar -->
-  <div class="fixed w-full bg-white/95 backdrop-blur-lg z-40 border-b">
+  <div
+    class="fixed w-full bg-surface-0/95 dark:bg-surface-900/95 backdrop-blur-lg z-40 border-b border-surface-200 dark:border-surface-700"
+  >
     <div style="-webkit-app-region: drag" class="w-full">
       <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
     </div>
@@ -78,7 +80,7 @@ const menu_items = [
 
   <!-- Status Bar -->
   <div
-    class="fixed bottom-0 left-0 right-0 h-6 border-t px-4 flex items-center text-xs text-gray-500 bg-gray-50"
+    class="fixed bottom-0 left-0 right-0 h-6 border-t border-surface-200 dark:border-surface-700 px-4 flex items-center text-xs text-surface-600 dark:text-surface-400 bg-surface-50 dark:bg-surface-900"
   >
     <p>{{ $route.fullPath }}</p>
   </div>

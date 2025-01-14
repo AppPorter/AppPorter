@@ -134,30 +134,38 @@ function handleDetailsProgress(value: number) {
     <div class="flex-1 min-w-[400px] space-y-6">
       <!-- Installation Options Panel -->
       <Panel
-        class="shadow-sm border border-gray-200/80 dark:border-gray-800/80"
+        class="shadow-sm border border-surface-200 dark:border-surface-700"
       >
         <template #header>
           <div class="flex flex-col py-1">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-rounded text-xl opacity-80"
+              <span
+                class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
                 >settings</span
               >
-              <h2 class="text-lg font-medium">Installation Options</h2>
+              <h2
+                class="text-lg font-medium text-surface-900 dark:text-surface-0"
+              >
+                Installation Options
+              </h2>
             </div>
-            <p class="text-xs opacity-60 mt-1 ml-9">
+            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1 ml-9">
               Selected file: <span class="font-medium">{{ zip_path }}</span>
             </p>
           </div>
         </template>
 
         <div
-          class="space-y-6 p-6 bg-gradient-to-b from-transparent to-gray-50/5"
+          class="space-y-6 p-6 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
         >
           <!-- Install Mode -->
           <div class="flex items-center gap-3">
-            <span class="w-28 text-sm font-medium">Install Mode</span>
+            <span
+              class="w-28 text-sm font-medium text-surface-900 dark:text-surface-0"
+              >Install Mode</span
+            >
             <div
-              class="flex items-center gap-3 bg-gray-50/50 dark:bg-gray-900/50 px-4 py-2 rounded-lg"
+              class="flex items-center gap-3 bg-surface-50 dark:bg-surface-800 px-4 py-2 rounded-lg"
             >
               <span class="text-sm">All Users</span>
               <InputSwitch
@@ -187,9 +195,12 @@ function handleDetailsProgress(value: number) {
 
           <!-- Shortcuts Section -->
           <div class="flex items-start gap-3">
-            <span class="w-28 mt-1 text-sm font-medium">Shortcuts</span>
+            <span
+              class="w-28 mt-1 text-sm font-medium text-surface-900 dark:text-surface-0"
+              >Shortcuts</span
+            >
             <div
-              class="space-y-3 bg-gray-50/50 dark:bg-gray-900/50 p-3 rounded-lg flex-1"
+              class="space-y-3 bg-surface-50 dark:bg-surface-800 p-3 rounded-lg flex-1"
             >
               <div class="flex items-center gap-2">
                 <Checkbox
@@ -223,20 +234,27 @@ function handleDetailsProgress(value: number) {
       </Panel>
 
       <!-- App Details Panel -->
-      <Panel class="shadow-sm border border-gray-200 relative overflow-hidden">
+      <Panel
+        class="shadow-sm border border-surface-200 dark:border-surface-700 relative overflow-hidden"
+      >
         <template #header>
           <div class="flex justify-between items-center w-full py-1">
             <div class="flex items-center gap-3">
-              <span class="material-symbols-rounded text-xl text-gray-600"
+              <span
+                class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
                 >apps</span
               >
-              <h2 class="text-lg font-medium">App Details</h2>
+              <h2
+                class="text-lg font-medium text-surface-900 dark:text-surface-0"
+              >
+                App Details
+              </h2>
             </div>
             <div
               class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2"
               :class="[
                 !app_icon
-                  ? 'border-dashed border-gray-300 bg-gray-50'
+                  ? 'border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800'
                   : 'border-transparent',
               ]"
             >
@@ -248,7 +266,7 @@ function handleDetailsProgress(value: number) {
               />
               <span
                 v-else
-                class="material-symbols-rounded w-full h-full flex items-center justify-center text-gray-400"
+                class="material-symbols-rounded w-full h-full flex items-center justify-center text-surface-400 dark:text-surface-500"
               >
                 image
               </span>
@@ -256,7 +274,9 @@ function handleDetailsProgress(value: number) {
           </div>
         </template>
 
-        <div class="space-y-6 p-6 bg-gradient-to-b from-white to-gray-50/50">
+        <div
+          class="space-y-6 p-6 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
+        >
           <!-- App Name -->
           <div class="flex items-center gap-3">
             <span class="w-24 text-sm font-medium">App Name</span>
@@ -270,8 +290,13 @@ function handleDetailsProgress(value: number) {
           <!-- Publisher -->
           <div class="flex items-center gap-3">
             <div class="w-24">
-              <span class="text-sm font-medium">Publisher</span>
-              <p class="text-xs text-gray-500">(Optional)</p>
+              <span
+                class="text-sm font-medium text-surface-900 dark:text-surface-0"
+                >Publisher</span
+              >
+              <p class="text-xs text-surface-500 dark:text-surface-400">
+                (Optional)
+              </p>
             </div>
             <InputText
               v-model="app_publisher"
@@ -283,8 +308,13 @@ function handleDetailsProgress(value: number) {
           <!-- Version -->
           <div class="flex items-center gap-3">
             <div class="w-24">
-              <span class="text-sm font-medium">Version</span>
-              <p class="text-xs text-gray-500">(Optional)</p>
+              <span
+                class="text-sm font-medium text-surface-900 dark:text-surface-0"
+                >Version</span
+              >
+              <p class="text-xs text-surface-500 dark:text-surface-400">
+                (Optional)
+              </p>
             </div>
             <InputText
               v-model="app_version"
@@ -297,15 +327,19 @@ function handleDetailsProgress(value: number) {
         <!-- Loading Overlay with improved visuals -->
         <div
           v-if="detailsLoading"
-          class="absolute inset-0 backdrop-blur-[2px] bg-white/60 flex flex-col items-center justify-center gap-3 transition-all duration-300"
+          class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-3 transition-all duration-300"
         >
-          <h3 class="text-lg font-semibold">App Details</h3>
+          <h3
+            class="text-lg font-semibold text-surface-900 dark:text-surface-0"
+          >
+            App Details
+          </h3>
           <ProgressBar
             v-if="detailsLoadingProgress > 0"
             :value="(detailsLoadingProgress / 4) * 100"
             class="w-48"
           />
-          <p class="text-sm text-gray-600">
+          <p class="text-sm text-surface-600 dark:text-surface-400">
             {{
               detailsLoadingProgress > 0
                 ? ["Preparing", "Extracting", "Reading", "Processing"][

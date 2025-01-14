@@ -26,16 +26,19 @@ async function select_zip_file() {
   <Card class="border shadow-sm">
     <template #title>
       <div class="flex items-center gap-2.5">
-        <div class="p-1.5 rounded-md bg-blue-50/80">
-          <span class="material-symbols-rounded text-xl text-blue-600"
-            >folder_zip</span
-          >
+        <!-- 使用 surface 和 primary 语义化颜色 -->
+        <div class="p-1.5 rounded-md bg-primary-50">
+          <span class="material-symbols-rounded text-xl text-primary-600">
+            folder_zip
+          </span>
         </div>
         <div>
-          <h2 class="text-lg font-medium leading-tight">
+          <h2
+            class="text-lg font-medium leading-tight text-surface-900 dark:text-surface-0"
+          >
             Select Installation Package
           </h2>
-          <p class="text-xs text-gray-500 mt-0.5">
+          <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
             Choose a zip file to install
           </p>
         </div>
@@ -67,7 +70,7 @@ async function select_zip_file() {
 
     <template #footer>
       <div
-        class="flex justify-end border-t -mx-4 -mb-4 px-4 pt-4 bg-gray-50/50"
+        class="flex justify-end border-t border-surface-200 dark:border-surface-700 -mx-4 -mb-4 px-4 pt-4 bg-surface-50 dark:bg-surface-800"
       >
         <Button
           @click="goTo('/Installation/Option')"

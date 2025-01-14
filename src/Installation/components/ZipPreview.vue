@@ -342,7 +342,7 @@ function onNodeSelect(node: PrimeTreeNode) {
 
 <template>
   <Panel
-    class="h-full flex flex-col shadow-sm border border-gray-200/80 dark:border-gray-800/80 rounded-md overflow-hidden"
+    class="h-full flex flex-col shadow-sm border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
     :class="[
       props.detailsLoading ? 'opacity-60 pointer-events-none' : 'opacity-100',
     ]"
@@ -358,7 +358,7 @@ function onNodeSelect(node: PrimeTreeNode) {
 
     <div class="flex-1 flex flex-col min-h-0 space-y-3 p-4">
       <div
-        class="flex-1 min-h-0 border border-gray-200/80 dark:border-gray-800/80 rounded-md overflow-hidden"
+        class="flex-1 min-h-0 border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
       >
         <div v-if="loading" class="text-sm opacity-60 p-2">Loading...</div>
         <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-2">
@@ -388,7 +388,7 @@ function onNodeSelect(node: PrimeTreeNode) {
       <!-- Filter options -->
       <div class="shrink-0 space-y-3">
         <div
-          class="bg-gray-50/50 dark:bg-gray-900/50 rounded-md p-2.5 space-y-1.5"
+          class="bg-surface-50 dark:bg-surface-800 rounded-md p-2.5 space-y-1.5"
         >
           <div
             v-for="mode in filterModes"

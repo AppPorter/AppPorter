@@ -13,15 +13,15 @@ const statusMessage = ref("");
 </script>
 
 <template>
-  <Panel class="border border-gray-200/80 dark:border-gray-800/80 shadow-sm">
+  <Panel class="border border-surface-200 dark:border-surface-700 shadow-sm">
     <template #header>
       <div class="flex items-center gap-2">
         <span
           class="material-symbols-rounded text-2xl"
           :class="{
-            'text-blue-500': status === 'progress',
-            'text-green-500': status === 'success',
-            'text-red-500': status === 'error',
+            'text-primary-500 dark:text-primary-400': status === 'progress',
+            'text-green-500 dark:text-green-400': status === 'success',
+            'text-red-500 dark:text-red-400': status === 'error',
           }"
         >
           {{
@@ -32,7 +32,9 @@ const statusMessage = ref("");
                 : "pending"
           }}
         </span>
-        <span class="font-medium">Installation Progress</span>
+        <span class="font-medium text-surface-900 dark:text-surface-0"
+          >Installation Progress</span
+        >
       </div>
     </template>
 
@@ -41,15 +43,19 @@ const statusMessage = ref("");
         :value="progress"
         class="h-2"
         :class="{
-          'surface-200 dark:surface-700': status === 'progress',
+          'bg-surface-200 dark:bg-surface-700': status === 'progress',
           'bg-green-100 dark:bg-green-900/30': status === 'success',
           'bg-red-100 dark:bg-red-900/30': status === 'error',
         }"
       />
 
       <div class="text-center">
-        <p class="text-sm font-medium">{{ currentStep }}</p>
-        <p class="text-xs opacity-60">{{ statusMessage }}</p>
+        <p class="text-sm font-medium text-surface-900 dark:text-surface-0">
+          {{ currentStep }}
+        </p>
+        <p class="text-xs text-surface-600 dark:text-surface-400">
+          {{ statusMessage }}
+        </p>
       </div>
 
       <div class="flex justify-end gap-2">

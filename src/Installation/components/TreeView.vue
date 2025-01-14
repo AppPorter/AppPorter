@@ -89,8 +89,10 @@ function sortItems(items: TreeNode[]): TreeNode[] {
       <!-- Directory node -->
       <div
         v-if="item.type === 'directory'"
-        class="flex items-center gap-2 py-1 px-2 text-sm text-gray-600 cursor-pointer rounded-sm transition-colors hover:bg-gray-100"
-        :class="{ 'bg-gray-100': expandedDirs.has(item.path) }"
+        class="flex items-center gap-2 py-1 px-2 text-sm text-surface-600 dark:text-surface-400 cursor-pointer rounded-sm transition-colors hover:bg-surface-100 dark:hover:bg-surface-800"
+        :class="{
+          'bg-surface-100 dark:bg-surface-800': expandedDirs.has(item.path),
+        }"
         @click="toggleDir(item.path)"
       >
         <span class="material-symbols-rounded text-lg">
@@ -108,9 +110,10 @@ function sortItems(items: TreeNode[]): TreeNode[] {
         class="flex items-center gap-2 py-1 px-2 pl-9 text-sm rounded-sm transition-colors"
         :class="[
           item.isExecutable
-            ? 'cursor-pointer hover:bg-blue-50 text-gray-800'
-            : 'text-gray-500',
-          selectedPath === item.path && 'bg-blue-100 text-blue-800',
+            ? 'cursor-pointer hover:bg-primary-50 dark:hover:bg-primary-900/20 text-surface-800 dark:text-surface-200'
+            : 'text-surface-500 dark:text-surface-400',
+          selectedPath === item.path &&
+            'bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200',
         ]"
         @click="item.isExecutable && $emit('select', item.path)"
       >
