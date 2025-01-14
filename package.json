@@ -8,11 +8,12 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "ff": "prettier -w \"**/*.{js,ts,vue,html,css,json,md}\"",
-    "bf": "cd src-tauri && cargo fmt",
+    "frontf": "prettier -w \"**/*.{js,ts,vue,html,css,json,md}\"",
+    "backf": "cd src-tauri && cargo fmt",
     "f": "pnpm ff && pnpm bf",
     "d": "pnpm tauri dev",
-    "b": "pnpm tauri build"
+    "b": "pnpm tauri build",
+    "check-deps": "depcheck"
   },
   "dependencies": {
     "@primevue/themes": "4.2.5",

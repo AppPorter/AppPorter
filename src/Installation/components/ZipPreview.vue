@@ -8,25 +8,37 @@ import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import RadioButton from "primevue/radiobutton";
-import { ref, watch, watchEffect } from "vue";
-import TreeView from "./TreeView.vue";
+import Tree from "primevue/tree"; // Add this import
+import type { TreeNode as PrimeTreeNode } from "primevue/treenode";
+import { computed, ref, watch, watchEffect } from "vue";
 
-// Define tree node type
-interface TreeNode {
-  name: string;
+// Define our custom node data type
+interface CustomNodeData {
   path: string;
-  type: "file" | "directory";
-  children?: TreeNode[];
   isExecutable?: boolean;
 }
 
+// Define our custom tree node interface
+interface CustomTreeNode {
+  key: string;
+  label: string;
+  icon?: string;
+  children?: CustomTreeNode[];
+  selectable?: boolean;
+  data?: CustomNodeData;
+}
+
+// Use type assertion for tree data
+const fileTree = ref<CustomTreeNode[]>([]);
+
+// Add FilterMode type definition
 type FilterMode = "exe" | "executable" | "all";
 
 // Define filter modes
 const filterModes = {
-  exe: { value: "exe", label: ".exe Only" },
-  executable: { value: "executable", label: "Executable Files" },
-  all: { value: "all", label: "All Files" },
+  exe: { value: "exe" as const, label: ".exe Only" },
+  executable: { value: "executable" as const, label: "Executable Files" },
+  all: { value: "all" as const, label: "All Files" },
 } as const;
 
 // Change default filter mode
@@ -35,10 +47,22 @@ const filterMode = ref<FilterMode>(filterModes.exe.value);
 // Cached zip content
 const zipContent = ref<{ paths: string[]; zip: JSZip } | null>(null);
 
-// Convert flat paths to tree structure
-function pathsToTree(paths: string[]): TreeNode[] {
-  const root: TreeNode[] = [];
+// Add expanded keys state for PrimeVue Tree
+const expandedKeys = ref<{ [key: string]: boolean }>({});
 
+// Add function to get file type priority
+function getFilePriority(name: string): number {
+  if (name.toLowerCase().endsWith(".exe")) return 0;
+  if (name.toLowerCase().endsWith(".bat")) return 1;
+  if (name.toLowerCase().endsWith(".ps1")) return 2;
+  return 3;
+}
+
+// Updated pathsToTree function with auto-expand and better sorting
+function pathsToTree(paths: string[]): CustomTreeNode[] {
+  const root: CustomTreeNode[] = [];
+
+  // First pass: build tree structure
   paths.forEach((path) => {
     const parts = path.split("/");
     let current = root;
@@ -46,23 +70,71 @@ function pathsToTree(paths: string[]): TreeNode[] {
     parts.forEach((part, index) => {
       const isLast = index === parts.length - 1;
       const isExecutable = isLast && /\.(exe|bat|ps1)$/i.test(part);
-      const existingNode = current.find((node) => node.name === part);
+      const currentPath = parts.slice(0, index + 1).join("/");
+      const existingNode = current.find((node) => node.label === part);
 
       if (existingNode) {
         current = existingNode.children || [];
       } else {
-        const newNode: TreeNode = {
-          name: part,
-          path: parts.slice(0, index + 1).join("/"),
-          type: isLast ? "file" : "directory",
+        const newNode: CustomTreeNode = {
+          key: currentPath,
+          label: part,
+          icon: isLast
+            ? isExecutable
+              ? "material-symbols-rounded terminal"
+              : "material-symbols-rounded description"
+            : "material-symbols-rounded folder",
           children: isLast ? undefined : [],
-          isExecutable,
+          selectable: isExecutable,
+          data: {
+            path: currentPath,
+            isExecutable,
+          },
         };
         current.push(newNode);
         current = newNode.children || [];
       }
     });
   });
+
+  // Second pass: sort nodes recursively
+  function sortNodes(nodes: CustomTreeNode[]): void {
+    nodes.sort((a, b) => {
+      const aHasChildren = !!a.children?.length;
+      const bHasChildren = !!b.children?.length;
+
+      // Files before folders
+      if (aHasChildren !== bHasChildren) {
+        return aHasChildren ? 1 : -1;
+      }
+
+      // For files, sort by priority then name
+      if (!aHasChildren && !bHasChildren) {
+        const priorityA = getFilePriority(a.label);
+        const priorityB = getFilePriority(b.label);
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+      }
+
+      // Finally sort by name
+      return a.label.localeCompare(b.label);
+    });
+
+    // Recursively sort children
+    nodes.forEach((node) => {
+      if (node.children?.length) {
+        sortNodes(node.children);
+      }
+    });
+  }
+
+  sortNodes(root);
+
+  // Auto-expand logic for single root folder
+  if (root.length === 1 && root[0].children) {
+    expandedKeys.value[root[0].key] = true;
+  }
 
   return root;
 }
@@ -80,7 +152,6 @@ const emit = defineEmits<{
 const installationConfig = useInstallationConfigStore();
 const { app_icon, app_name, app_publisher, app_version, executable_path } =
   storeToRefs(installationConfig);
-const fileTree = ref<TreeNode[]>([]);
 const loading = ref(false);
 
 // Filter paths based on mode
@@ -107,6 +178,28 @@ function isInFirstTwoLevels(path: string): boolean {
 
 // Add auto confirmed state
 const autoConfirmed = ref(false);
+
+// Add selected class state
+const selectedClass = computed(() => {
+  if (!executable_path.value) return "";
+  return autoConfirmed.value
+    ? "bg-blue-100 text-blue-800"
+    : "bg-green-100 text-green-800";
+});
+
+// Add selection style computing
+const getNodeClass = computed(() => (node: PrimeTreeNode) => {
+  const customNode = node as unknown as CustomTreeNode;
+  if (
+    !customNode.data?.isExecutable ||
+    customNode.data.path !== executable_path.value
+  )
+    return "";
+
+  return autoConfirmed.value
+    ? "bg-[#e8f0fe] outline outline-1 outline-[#1a73e8]"
+    : "bg-[#e8f0fe]";
+});
 
 // Modified watch effect
 watchEffect(async () => {
@@ -137,6 +230,8 @@ watchEffect(async () => {
     );
     if (topLevelExes.length === 1 && topLevelExecutables.length === 1) {
       executable_path.value = topLevelExes[0];
+      // Update to use proper selection format
+      selectedNode.value = { [topLevelExes[0]]: true };
       // Auto confirm after small delay to ensure UI is ready
       setTimeout(() => {
         if (!isConfirmed.value) {
@@ -230,6 +325,19 @@ watch(executable_path, () => {
   isConfirmed.value = false;
   autoConfirmed.value = false;
 });
+
+// Add tree selection handling
+const selectedNode = ref<{ [key: string]: boolean }>({});
+
+// Update onNodeSelect handler to use PrimeVue's type first then cast to our type
+function onNodeSelect(node: PrimeTreeNode) {
+  const customNode = node as unknown as CustomTreeNode;
+  if (customNode.data?.isExecutable) {
+    executable_path.value = customNode.data.path;
+  } else {
+    selectedNode.value = {}; // Clear selection if not executable
+  }
+}
 </script>
 
 <template>
@@ -249,7 +357,7 @@ watch(executable_path, () => {
     </template>
 
     <div class="flex-1 flex flex-col min-h-0 space-y-3 p-4">
-      <!-- File tree container -->
+      <!-- Replace TreeView with PrimeVue Tree -->
       <div class="flex-1 min-h-0 border rounded-md overflow-hidden bg-white">
         <div v-if="loading" class="text-sm text-gray-500 p-2">Loading...</div>
         <div
@@ -258,14 +366,25 @@ watch(executable_path, () => {
         >
           No files found in archive
         </div>
-        <TreeView
+        <Tree
           v-else
-          :items="fileTree"
-          :selected-path="executable_path"
-          :auto-expand-root="true"
-          @select="(path) => (executable_path = path)"
-          class="h-full overflow-auto"
-        />
+          :value="fileTree"
+          v-model:selectionKeys="selectedNode"
+          v-model:expandedKeys="expandedKeys"
+          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-2 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-tree-container_.p-treenode_.p-treenode-content.p-highlight]:!bg-transparent [&_.p-tree-container_.p-treenode_.p-treenode-content]:transition-colors hover:[&_.p-tree-container_.p-treenode_.p-treenode-content:not(.p-highlight)]:bg-gray-50/80"
+          selectionMode="single"
+          @node-select="onNodeSelect"
+        >
+          <template #default="{ node }">
+            <div
+              class="flex items-center gap-2 rounded px-1"
+              :class="getNodeClass(node)"
+            >
+              <span :class="node.icon"></span>
+              <span>{{ node.label }}</span>
+            </div>
+          </template>
+        </Tree>
       </div>
 
       <!-- Filter options -->
