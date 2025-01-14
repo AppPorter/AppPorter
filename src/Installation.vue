@@ -23,7 +23,7 @@ async function select_zip_file() {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-150px)] flex items-center justify-center">
+  <div class="mt-32 flex items-center justify-center">
     <Panel
       class="w-full max-w-3xl mx-auto shadow-sm border border-surface-200 dark:border-surface-700"
     >
