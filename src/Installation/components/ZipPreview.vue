@@ -473,12 +473,12 @@ const expandNode = async (node: CustomTreeNode) => {
       <!-- Filter options -->
       <div class="shrink-0 mt-1 space-y-1">
         <div
-          class="bg-surface-50 dark:bg-surface-800 rounded-md p-1 space-y-0.5"
+          class="bg-surface-50 dark:bg-surface-800 rounded-md p-2 space-y-1.5"
         >
           <div
             v-for="mode in filterModes"
             :key="mode.value"
-            class="flex items-center gap-1.5"
+            class="flex items-center gap-2 px-1.5 py-0.5"
           >
             <RadioButton
               v-model="filterMode"
@@ -487,7 +487,7 @@ const expandNode = async (node: CustomTreeNode) => {
             />
             <label
               :for="'filter-' + mode.value"
-              class="flex items-center gap-2 cursor-pointer"
+              class="flex items-center gap-2.5 cursor-pointer"
             >
               <span class="material-symbols-rounded">
                 {{
@@ -513,11 +513,11 @@ const expandNode = async (node: CustomTreeNode) => {
                   : 'success'
                 : 'secondary'
             "
-            class="h-7 text-sm min-w-[6rem] transition-all duration-200"
+            class="h-8 text-sm min-w-[7rem] transition-all duration-200"
             :disabled="!executable_path || isConfirmed"
             @click="executable_path && !autoConfirmed && confirmSelection()"
           >
-            <span class="material-symbols-rounded text-lg mr-0.5">
+            <span class="material-symbols-rounded text-lg mr-1">
               {{ isConfirmed || autoConfirmed ? "check_circle" : "task_alt" }}
             </span>
             {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}

@@ -70,8 +70,8 @@ const menu_items = [
   </div>
 
   <!-- Main Content -->
-  <div class="pt-28 px-6 pb-6">
-    <Card class="h-[calc(100vh-150px)] overflow-y-auto border shadow-sm">
+  <div class="pt-28 px-4 pb-6">
+    <Card class="h-[calc(100vh-150px)] overflow-y-auto">
       <template #content>
         <RouterView class="z-40" />
       </template>

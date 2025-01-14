@@ -130,28 +130,28 @@ function handleDetailsProgress(value: number) {
 
 <template>
   <!-- 减小整体页面边距和间距 -->
-  <div class="h-[calc(100vh-144px)] p-2 pb-12 flex gap-3">
+  <div class="h-[calc(100vh-144px)] p-1.5 pb-12 flex gap-2">
     <!-- Left Column -->
-    <div class="flex-1 min-w-[400px] space-y-3">
+    <div class="flex-1 min-w-[400px] space-y-2">
       <!-- Installation Options Panel -->
       <Panel
         class="shadow-sm border border-surface-200 dark:border-surface-700"
       >
         <template #header>
-          <div class="flex flex-col py-0.5">
-            <div class="flex items-center gap-2">
+          <div class="flex flex-col py-0">
+            <div class="flex items-center gap-1.5">
               <span
-                class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
+                class="material-symbols-rounded text-lg text-surface-600 dark:text-surface-400"
                 >settings</span
               >
               <h2
-                class="text-lg font-medium text-surface-900 dark:text-surface-0"
+                class="text-base font-medium text-surface-900 dark:text-surface-0"
               >
                 Installation Options
               </h2>
             </div>
             <p
-              class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 ml-7"
+              class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 ml-6"
             >
               Selected file: <span class="font-medium">{{ zip_path }}</span>
             </p>
@@ -159,13 +159,13 @@ function handleDetailsProgress(value: number) {
         </template>
 
         <div
-          class="space-y-3 p-3 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
+          class="space-y-2 p-2 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
         >
           <!-- Install Mode -->
           <div class="flex items-center gap-2">
             <span class="w-24 text-sm font-medium">Install Mode</span>
             <div
-              class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 px-3 py-1.5 rounded-lg"
+              class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 px-2 py-1 rounded-lg"
             >
               <span class="text-sm">All Users</span>
               <InputSwitch
@@ -180,14 +180,17 @@ function handleDetailsProgress(value: number) {
           <!-- Install Path -->
           <div class="flex items-center gap-2">
             <span class="w-24 text-sm font-medium">Install Path</span>
-            <div class="flex-1 flex gap-1.5">
+            <div class="flex-1 flex gap-1">
               <InputText
                 v-model="install_path"
                 placeholder="Choose installation directory"
-                class="w-full text-sm"
+                class="w-full text-sm h-8"
               />
-              <Button class="p-button-secondary" @click="select_install_path">
-                <span class="material-symbols-rounded mr-2">folder_open</span>
+              <Button
+                class="p-button-secondary h-8"
+                @click="select_install_path"
+              >
+                <span class="material-symbols-rounded">folder_open</span>
                 Browse
               </Button>
             </div>
@@ -197,7 +200,7 @@ function handleDetailsProgress(value: number) {
           <div class="flex items-start gap-2">
             <span class="w-24 mt-1 text-sm font-medium">Shortcuts</span>
             <div
-              class="space-y-1.5 bg-surface-50 dark:bg-surface-800 p-2 rounded-lg flex-1"
+              class="space-y-1 bg-surface-50 dark:bg-surface-800 p-1.5 rounded-lg flex-1"
             >
               <div class="flex items-center gap-2">
                 <Checkbox
@@ -205,7 +208,9 @@ function handleDetailsProgress(value: number) {
                   :binary="true"
                   inputId="desktop_shortcut"
                 />
-                <label for="desktop_shortcut">Create Desktop Shortcut</label>
+                <label for="desktop_shortcut" class="text-sm"
+                  >Create Desktop Shortcut</label
+                >
               </div>
               <div class="flex items-center gap-2">
                 <Checkbox
@@ -213,7 +218,7 @@ function handleDetailsProgress(value: number) {
                   :binary="true"
                   inputId="start_menu_shortcut"
                 />
-                <label for="start_menu_shortcut"
+                <label for="start_menu_shortcut" class="text-sm"
                   >Create Start Menu Shortcut</label
                 >
               </div>
@@ -223,7 +228,9 @@ function handleDetailsProgress(value: number) {
                   :binary="true"
                   inputId="registry_key"
                 />
-                <label for="registry_key">Create Registry Entry</label>
+                <label for="registry_key" class="text-sm"
+                  >Create Registry Entry</label
+                >
               </div>
             </div>
           </div>
@@ -235,20 +242,20 @@ function handleDetailsProgress(value: number) {
         class="shadow-sm border border-surface-200 dark:border-surface-700 relative overflow-hidden"
       >
         <template #header>
-          <div class="flex justify-between items-center w-full py-0.5">
-            <div class="flex items-center gap-2">
+          <div class="flex justify-between items-center w-full py-0">
+            <div class="flex items-center gap-1.5">
               <span
-                class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
+                class="material-symbols-rounded text-lg text-surface-600 dark:text-surface-400"
                 >apps</span
               >
               <h2
-                class="text-lg font-medium text-surface-900 dark:text-surface-0"
+                class="text-base font-medium text-surface-900 dark:text-surface-0"
               >
                 App Details
               </h2>
             </div>
             <div
-              class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border-2"
+              class="w-8 h-8 rounded-lg overflow-hidden shrink-0 border-2"
               :class="[
                 !app_icon
                   ? 'border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800'
@@ -272,20 +279,20 @@ function handleDetailsProgress(value: number) {
         </template>
 
         <div
-          class="space-y-4 p-4 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
+          class="space-y-3 p-3 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
         >
           <!-- App Name -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <span class="w-24 text-sm font-medium">App Name</span>
             <InputText
               v-model="app_name"
               placeholder="Application Name"
-              class="w-full text-sm"
+              class="w-full text-sm h-8"
             />
           </div>
 
           <!-- Publisher -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <div class="w-24">
               <span
                 class="text-sm font-medium text-surface-900 dark:text-surface-0"
@@ -298,12 +305,12 @@ function handleDetailsProgress(value: number) {
             <InputText
               v-model="app_publisher"
               placeholder="Publisher Name"
-              class="w-full text-sm"
+              class="w-full text-sm h-8"
             />
           </div>
 
           <!-- Version -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <div class="w-24">
               <span
                 class="text-sm font-medium text-surface-900 dark:text-surface-0"
@@ -316,25 +323,25 @@ function handleDetailsProgress(value: number) {
             <InputText
               v-model="app_version"
               placeholder="1.0.0"
-              class="w-full text-sm"
+              class="w-full text-sm h-8"
             />
           </div>
         </div>
 
-        <!-- Loading Overlay with improved visuals -->
+        <!-- Loading Overlay -->
         <div
           v-if="detailsLoading"
-          class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-3 transition-all duration-300"
+          class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
         >
           <h3
-            class="text-lg font-semibold text-surface-900 dark:text-surface-0"
+            class="text-base font-semibold text-surface-900 dark:text-surface-0"
           >
             App Details
           </h3>
           <ProgressBar
             v-if="detailsLoadingProgress > 0"
             :value="(detailsLoadingProgress / 4) * 100"
-            class="w-48"
+            class="w-40"
           />
           <p class="text-sm text-surface-600 dark:text-surface-400">
             {{
@@ -350,7 +357,7 @@ function handleDetailsProgress(value: number) {
     </div>
 
     <!-- Right Column -->
-    <div class="min-w-[320px] w-[30%]">
+    <div class="min-w-[350px] w-[40%]">
       <ZipPreview
         :zip-path="zip_path"
         :details-loading="detailsLoading"
@@ -361,14 +368,14 @@ function handleDetailsProgress(value: number) {
   </div>
 
   <!-- Install Button -->
-  <div class="fixed bottom-8 right-8 z-40">
+  <div class="fixed bottom-6 right-6 z-40">
     <Button
       severity="primary"
       size="large"
-      class="w-32 h-9 text-base shadow-lg hover:shadow-xl transition-all duration-300"
+      class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
       @click="start_installation"
     >
-      <span class="material-symbols-rounded text-xl mr-1">download</span>
+      <span class="material-symbols-rounded text-lg mr-1">download</span>
       Install
     </Button>
   </div>
