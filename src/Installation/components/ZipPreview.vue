@@ -478,7 +478,7 @@ const expandNode = async (node: CustomTreeNode) => {
           <div
             v-for="mode in filterModes"
             :key="mode.value"
-            class="flex items-center gap-2 px-1.5 py-0.5"
+            class="flex items-center gap-2"
           >
             <RadioButton
               v-model="filterMode"

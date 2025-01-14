@@ -2,7 +2,6 @@
 import { window } from "@/main";
 import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
-import Card from "primevue/card";
 import Menubar from "primevue/menubar";
 import { goTo } from "./plugin/router";
 
@@ -79,11 +78,7 @@ const menu_items = [
 
     <!-- Main Content -->
     <div class="pt-28 px-4 pb-6">
-      <Card class="h-[calc(100vh-150px)] overflow-y-auto">
-        <template #content>
-          <RouterView class="z-40" />
-        </template>
-      </Card>
+      <RouterView class="z-40" />
     </div>
 
     <!-- Status Bar -->

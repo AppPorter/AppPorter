@@ -1,6 +1,6 @@
-import { createMemoryHistory, createRouter } from "vue-router";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import type { Router } from "vue-router";
+import { createMemoryHistory, createRouter } from "vue-router";
 
 import Installation from "@/Installation.vue";
 import Installation_Option from "@/Installation/Option.vue";
@@ -33,20 +33,11 @@ export function setupRouterGuards(router: Router) {
   router.beforeEach((to) => {
     const installationConfig = useInstallationConfigStore();
 
-    switch (to.path) {
-      case "/Installation":
-        installationConfig.$reset();
-        break;
-      case "/Installation/Option":
-        // Keep zip_path but reset other fields
-        break;
-      case "/Installation/Progress":
-        // Keep installation config
-        break;
-      case "/Settings":
-        // No need to clear anything
-        break;
+    // Reset store data when navigation happens through menubar
+    if (to.path === "/Installation" || to.path === "/Settings") {
+      installationConfig.$reset();
     }
+
     return true;
   });
 }
