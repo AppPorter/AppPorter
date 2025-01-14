@@ -1,7 +1,9 @@
+import { PrimeVueResolver } from "@primevue/auto-import-resolver";
 import vue from "@vitejs/plugin-vue";
 import autoprefixer from "autoprefixer";
 import { fileURLToPath, URL } from "node:url";
 import tailwind from "tailwindcss";
+import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import vueDevTools from "vite-plugin-vue-devtools";
 
@@ -14,7 +16,13 @@ export default defineConfig(async () => ({
       plugins: [tailwind(), autoprefixer()],
     },
   },
-  plugins: [vue(), vueDevTools()],
+  plugins: [
+    vue(),
+    vueDevTools(),
+    Components({
+      resolvers: [PrimeVueResolver()],
+    }),
+  ],
   build: {
     target: "esnext",
   },

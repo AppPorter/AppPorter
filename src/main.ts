@@ -1,14 +1,16 @@
 import "@/assets/index.css";
-import i18n from "@/plugin/i18n";
 import Main from "@/Main.vue";
+import i18n from "@/plugin/i18n";
 import router, { setupRouterGuards } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
+import Aura from "@primevue/themes/aura";
 import { defaultWindowIcon } from "@tauri-apps/api/app";
 import { Menu } from "@tauri-apps/api/menu";
 import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
 import { createPinia } from "pinia";
+import PrimeVue from "primevue/config";
 import { createApp, Ref, ref } from "vue";
 
 export const window = await getCurrentWindow();
@@ -70,7 +72,17 @@ async function loadSvg(name: string): Promise<string> {
 
 app
   .use(pinia) // First initialize pinia
-  .use(router); // Then initialize router
+  .use(router) // Then initialize router
+  .use(PrimeVue, {
+    theme: {
+      preset: Aura,
+      options: {
+        prefix: "p",
+        darkModeSelector: "system",
+        cssLayer: false,
+      },
+    },
+  });
 setupRouterGuards(router); // Finally setup router guards
 
 router.push("/Installation"); // Move initial navigation here
@@ -86,7 +98,7 @@ app.use(i18n).directive("svg", {
   },
 });
 
-export let error: Ref<string[]> = ref([]);
+export const error: Ref<string[]> = ref([]);
 
 const settingsStore = useSettingsStore();
 await settingsStore.loadSettings();
