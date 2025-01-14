@@ -10,7 +10,7 @@ import Panel from "primevue/panel";
 import RadioButton from "primevue/radiobutton";
 import Tree from "primevue/tree"; // Add this import
 import type { TreeNode as PrimeTreeNode } from "primevue/treenode";
-import { computed, ref, watch, watchEffect } from "vue";
+import { computed, nextTick, ref, watch, watchEffect } from "vue";
 
 // Define our custom node data type
 interface CustomNodeData {
@@ -58,6 +58,18 @@ function getFilePriority(name: string): number {
   return 3;
 }
 
+// Update getFileIcon function
+function getFileIcon(fileName: string): string {
+  const lowerName = fileName.toLowerCase();
+  if (lowerName.endsWith(".exe")) {
+    return "terminal";
+  }
+  if (lowerName.endsWith(".zip") || lowerName.endsWith(".ps1")) {
+    return "code";
+  }
+  return "draft";
+}
+
 // Updated pathsToTree function with auto-expand and better sorting
 function pathsToTree(paths: string[]): CustomTreeNode[] {
   const root: CustomTreeNode[] = [];
@@ -79,13 +91,9 @@ function pathsToTree(paths: string[]): CustomTreeNode[] {
         const newNode: CustomTreeNode = {
           key: currentPath,
           label: part,
-          icon: isLast
-            ? isExecutable
-              ? "material-symbols-rounded terminal"
-              : "material-symbols-rounded description"
-            : "material-symbols-rounded folder",
+          icon: isLast ? getFileIcon(part) : "folder",
           children: isLast ? undefined : [],
-          selectable: isExecutable,
+          selectable: true, // Keep all nodes selectable
           data: {
             path: currentPath,
             isExecutable,
@@ -179,14 +187,6 @@ function isInFirstTwoLevels(path: string): boolean {
 // Add auto confirmed state
 const autoConfirmed = ref(false);
 
-// Add selected class state
-const selectedClass = computed(() => {
-  if (!executable_path.value) return "";
-  return autoConfirmed.value
-    ? "bg-blue-100 text-blue-800"
-    : "bg-green-100 text-green-800";
-});
-
 // Add selection style computing
 const getNodeClass = computed(() => (node: PrimeTreeNode) => {
   const customNode = node as unknown as CustomTreeNode;
@@ -196,9 +196,7 @@ const getNodeClass = computed(() => (node: PrimeTreeNode) => {
   )
     return "";
 
-  return autoConfirmed.value
-    ? "bg-[#e8f0fe] outline outline-1 outline-[#1a73e8]"
-    : "bg-[#e8f0fe]";
+  return ""; // Remove text color effect
 });
 
 // Modified watch effect
@@ -329,39 +327,123 @@ watch(executable_path, () => {
 // Add tree selection handling
 const selectedNode = ref<{ [key: string]: boolean }>({});
 
-// Update onNodeSelect handler to use PrimeVue's type first then cast to our type
+// Update onNodeSelect handler to handle both files and folders
 function onNodeSelect(node: PrimeTreeNode) {
   const customNode = node as unknown as CustomTreeNode;
+
+  if (node.children) {
+    // For folders, convert selection to expand/collapse
+    expandedKeys.value[node.key as string] =
+      !expandedKeys.value[node.key as string];
+    expandedKeys.value = { ...expandedKeys.value }; // Trigger reactivity
+    nextTick(() => {
+      selectedNode.value = {}; // Clear selection for folder
+    });
+    return;
+  }
+
   if (customNode.data?.isExecutable) {
+    // For executable files, handle normally
     executable_path.value = customNode.data.path;
+    selectedNode.value = { [node.key as string]: true };
   } else {
-    selectedNode.value = {}; // Clear selection if not executable
+    // For non-executable files, clear selection
+    selectedNode.value = {};
   }
 }
+
+// Add loading states for expand/collapse
+const isExpanding = ref(false);
+const isCollapsing = ref(false);
+
+// Modify expand/collapse functions with loading states
+const expandAll = async () => {
+  if (isExpanding.value) return;
+  isExpanding.value = true;
+  try {
+    for (const node of fileTree.value) {
+      await expandNode(node);
+    }
+    expandedKeys.value = { ...expandedKeys.value };
+  } finally {
+    isExpanding.value = false;
+  }
+};
+
+const collapseAll = async () => {
+  if (isCollapsing.value) return;
+  isCollapsing.value = true;
+  try {
+    expandedKeys.value = {};
+    await nextTick();
+  } finally {
+    isCollapsing.value = false;
+  }
+};
+
+const expandNode = async (node: CustomTreeNode) => {
+  if (node.children && node.children.length) {
+    expandedKeys.value[node.key] = true;
+    for (const child of node.children) {
+      await expandNode(child);
+    }
+  }
+};
 </script>
 
 <template>
   <Panel
     class="h-full flex flex-col shadow-sm border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
-    :class="[
-      props.detailsLoading ? 'opacity-60 pointer-events-none' : 'opacity-100',
-    ]"
   >
     <template #header>
-      <div class="flex items-center gap-2 py-1">
-        <span class="material-symbols-rounded text-lg opacity-80"
-          >folder_zip</span
-        >
-        <span class="text-base font-medium">Files in Archive</span>
+      <div class="flex justify-between items-center w-full">
+        <div class="flex items-center gap-1 flex-1 min-w-0">
+          <span class="material-symbols-rounded text-lg opacity-80"
+            >folder_zip</span
+          >
+          <span class="text-base font-medium truncate">Files in Archive</span>
+        </div>
+        <div class="flex gap-1 ml-2 shrink-0">
+          <Button
+            type="button"
+            class="p-1 h-6 min-w-0 hover:bg-surface-100 dark:hover:bg-surface-600"
+            severity="secondary"
+            :disabled="isExpanding"
+            v-tooltip.bottom="'Expand All'"
+            @click="expandAll"
+          >
+            <span
+              class="material-symbols-rounded text-base"
+              :class="{ 'animate-spin': isExpanding }"
+            >
+              {{ isExpanding ? "progress_activity" : "unfold_more" }}
+            </span>
+          </Button>
+          <Button
+            type="button"
+            class="p-1 h-6 min-w-0 hover:bg-surface-100 dark:hover:bg-surface-600"
+            severity="secondary"
+            :disabled="isCollapsing"
+            v-tooltip.bottom="'Collapse All'"
+            @click="collapseAll"
+          >
+            <span
+              class="material-symbols-rounded text-base"
+              :class="{ 'animate-spin': isCollapsing }"
+            >
+              {{ isCollapsing ? "progress_activity" : "unfold_less" }}
+            </span>
+          </Button>
+        </div>
       </div>
     </template>
 
-    <div class="flex-1 flex flex-col min-h-0 space-y-3 p-4">
+    <div class="flex-1 flex flex-col min-h-0 p-1">
       <div
         class="flex-1 min-h-0 border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
       >
-        <div v-if="loading" class="text-sm opacity-60 p-2">Loading...</div>
-        <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-2">
+        <div v-if="loading" class="text-sm opacity-60 p-1.5">Loading...</div>
+        <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-1.5">
           No files found in archive
         </div>
         <Tree
@@ -369,16 +451,19 @@ function onNodeSelect(node: PrimeTreeNode) {
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
-          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-2 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-1 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm"
+          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-1.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-treenode-content.p-highlight]:bg-green-50 cursor-pointer"
           selectionMode="single"
+          toggleOnClick
           @node-select="onNodeSelect"
         >
           <template #default="{ node }">
             <div
-              class="flex items-center gap-2 rounded px-1"
+              class="flex items-center gap-1.5 rounded px-1"
               :class="getNodeClass(node)"
             >
-              <span :class="node.icon"></span>
+              <span class="material-symbols-rounded text-lg">{{
+                node.icon
+              }}</span>
               <span>{{ node.label }}</span>
             </div>
           </template>
@@ -386,14 +471,14 @@ function onNodeSelect(node: PrimeTreeNode) {
       </div>
 
       <!-- Filter options -->
-      <div class="shrink-0 space-y-3">
+      <div class="shrink-0 mt-1 space-y-1">
         <div
-          class="bg-surface-50 dark:bg-surface-800 rounded-md p-2.5 space-y-1.5"
+          class="bg-surface-50 dark:bg-surface-800 rounded-md p-1 space-y-0.5"
         >
           <div
             v-for="mode in filterModes"
             :key="mode.value"
-            class="flex items-center gap-2"
+            class="flex items-center gap-1.5"
           >
             <RadioButton
               v-model="filterMode"
@@ -421,12 +506,18 @@ function onNodeSelect(node: PrimeTreeNode) {
         <!-- Confirm button -->
         <div class="flex justify-end">
           <Button
-            :severity="isConfirmed || autoConfirmed ? 'success' : 'secondary'"
-            class="h-9 text-sm min-w-[8rem] transition-all duration-200"
+            :severity="
+              isConfirmed || autoConfirmed
+                ? autoConfirmed
+                  ? 'info'
+                  : 'success'
+                : 'secondary'
+            "
+            class="h-7 text-sm min-w-[6rem] transition-all duration-200"
             :disabled="!executable_path || isConfirmed"
             @click="executable_path && !autoConfirmed && confirmSelection()"
           >
-            <span class="material-symbols-rounded text-lg mr-1.5">
+            <span class="material-symbols-rounded text-lg mr-0.5">
               {{ isConfirmed || autoConfirmed ? "check_circle" : "task_alt" }}
             </span>
             {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}

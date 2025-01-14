@@ -25,9 +25,9 @@ async function select_zip_file() {
 <template>
   <Card class="border shadow-sm">
     <template #title>
-      <div class="flex items-center gap-2.5">
+      <div class="flex items-center gap-2">
         <!-- 使用 surface 和 primary 语义化颜色 -->
-        <div class="p-1.5 rounded-md bg-primary-50">
+        <div class="p-1 rounded-md bg-primary-50">
           <span class="material-symbols-rounded text-xl text-primary-600">
             folder_zip
           </span>
@@ -46,20 +46,20 @@ async function select_zip_file() {
     </template>
 
     <template #content>
-      <div class="flex flex-col gap-4 py-3">
+      <div class="flex flex-col gap-3 py-2">
         <div class="flex items-center gap-2">
           <InputText
             v-model="zip_path"
             placeholder="Select a zip file to install"
-            class="flex-1 text-sm h-10"
+            class="flex-1 text-sm h-9"
             readonly
           />
           <Button
             @click="select_zip_file"
             severity="secondary"
-            class="min-w-28 h-10 bg-white hover:bg-gray-50"
+            class="min-w-24 h-9 bg-white hover:bg-gray-50"
           >
-            <span class="material-symbols-rounded mr-1.5 text-lg"
+            <span class="material-symbols-rounded mr-1 text-lg"
               >folder_open</span
             >
             Browse
@@ -70,15 +70,15 @@ async function select_zip_file() {
 
     <template #footer>
       <div
-        class="flex justify-end border-t border-surface-200 dark:border-surface-700 -mx-4 -mb-4 px-4 pt-4 bg-surface-50 dark:bg-surface-800"
+        class="flex justify-end border-t border-surface-200 dark:border-surface-700 -mx-3 -mb-3 px-3 pt-3 bg-surface-50 dark:bg-surface-800"
       >
         <Button
           @click="goTo('/Installation/Option')"
           :disabled="!zip_path"
           severity="primary"
-          class="min-w-28 h-10"
+          class="min-w-24 h-9"
         >
-          <span class="material-symbols-rounded mr-1.5 text-lg"
+          <span class="material-symbols-rounded mr-1 text-lg"
             >navigate_next</span
           >
           Next

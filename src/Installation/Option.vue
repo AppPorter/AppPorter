@@ -129,16 +129,17 @@ function handleDetailsProgress(value: number) {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-144px)] p-4 pb-16 flex gap-6">
+  <!-- 减小整体页面边距和间距 -->
+  <div class="h-[calc(100vh-144px)] p-2 pb-12 flex gap-3">
     <!-- Left Column -->
-    <div class="flex-1 min-w-[400px] space-y-6">
+    <div class="flex-1 min-w-[400px] space-y-3">
       <!-- Installation Options Panel -->
       <Panel
         class="shadow-sm border border-surface-200 dark:border-surface-700"
       >
         <template #header>
-          <div class="flex flex-col py-1">
-            <div class="flex items-center gap-3">
+          <div class="flex flex-col py-0.5">
+            <div class="flex items-center gap-2">
               <span
                 class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
                 >settings</span
@@ -149,23 +150,22 @@ function handleDetailsProgress(value: number) {
                 Installation Options
               </h2>
             </div>
-            <p class="text-xs text-surface-500 dark:text-surface-400 mt-1 ml-9">
+            <p
+              class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 ml-7"
+            >
               Selected file: <span class="font-medium">{{ zip_path }}</span>
             </p>
           </div>
         </template>
 
         <div
-          class="space-y-6 p-6 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
+          class="space-y-3 p-3 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
         >
           <!-- Install Mode -->
-          <div class="flex items-center gap-3">
-            <span
-              class="w-28 text-sm font-medium text-surface-900 dark:text-surface-0"
-              >Install Mode</span
-            >
+          <div class="flex items-center gap-2">
+            <span class="w-24 text-sm font-medium">Install Mode</span>
             <div
-              class="flex items-center gap-3 bg-surface-50 dark:bg-surface-800 px-4 py-2 rounded-lg"
+              class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 px-3 py-1.5 rounded-lg"
             >
               <span class="text-sm">All Users</span>
               <InputSwitch
@@ -178,9 +178,9 @@ function handleDetailsProgress(value: number) {
           </div>
 
           <!-- Install Path -->
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
             <span class="w-24 text-sm font-medium">Install Path</span>
-            <div class="flex-1 flex gap-2">
+            <div class="flex-1 flex gap-1.5">
               <InputText
                 v-model="install_path"
                 placeholder="Choose installation directory"
@@ -194,13 +194,10 @@ function handleDetailsProgress(value: number) {
           </div>
 
           <!-- Shortcuts Section -->
-          <div class="flex items-start gap-3">
-            <span
-              class="w-28 mt-1 text-sm font-medium text-surface-900 dark:text-surface-0"
-              >Shortcuts</span
-            >
+          <div class="flex items-start gap-2">
+            <span class="w-24 mt-1 text-sm font-medium">Shortcuts</span>
             <div
-              class="space-y-3 bg-surface-50 dark:bg-surface-800 p-3 rounded-lg flex-1"
+              class="space-y-1.5 bg-surface-50 dark:bg-surface-800 p-2 rounded-lg flex-1"
             >
               <div class="flex items-center gap-2">
                 <Checkbox
@@ -238,8 +235,8 @@ function handleDetailsProgress(value: number) {
         class="shadow-sm border border-surface-200 dark:border-surface-700 relative overflow-hidden"
       >
         <template #header>
-          <div class="flex justify-between items-center w-full py-1">
-            <div class="flex items-center gap-3">
+          <div class="flex justify-between items-center w-full py-0.5">
+            <div class="flex items-center gap-2">
               <span
                 class="material-symbols-rounded text-xl text-surface-600 dark:text-surface-400"
                 >apps</span
@@ -251,7 +248,7 @@ function handleDetailsProgress(value: number) {
               </h2>
             </div>
             <div
-              class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2"
+              class="w-10 h-10 rounded-lg overflow-hidden shrink-0 border-2"
               :class="[
                 !app_icon
                   ? 'border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800'
@@ -275,7 +272,7 @@ function handleDetailsProgress(value: number) {
         </template>
 
         <div
-          class="space-y-6 p-6 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
+          class="space-y-4 p-4 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
         >
           <!-- App Name -->
           <div class="flex items-center gap-3">
@@ -353,7 +350,7 @@ function handleDetailsProgress(value: number) {
     </div>
 
     <!-- Right Column -->
-    <div class="min-w-[340px] w-[32%]">
+    <div class="min-w-[320px] w-[30%]">
       <ZipPreview
         :zip-path="zip_path"
         :details-loading="detailsLoading"
@@ -364,14 +361,14 @@ function handleDetailsProgress(value: number) {
   </div>
 
   <!-- Install Button -->
-  <div class="fixed bottom-12 right-14 z-40">
+  <div class="fixed bottom-8 right-8 z-40">
     <Button
       severity="primary"
       size="large"
-      class="w-40 h-12 text-base shadow-lg hover:shadow-xl transition-all duration-300"
+      class="w-32 h-9 text-base shadow-lg hover:shadow-xl transition-all duration-300"
       @click="start_installation"
     >
-      <span class="material-symbols-rounded text-xl mr-2">download</span>
+      <span class="material-symbols-rounded text-xl mr-1">download</span>
       Install
     </Button>
   </div>
