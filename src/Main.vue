@@ -4,6 +4,7 @@ import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
 import ContextMenu from "primevue/contextmenu";
 import Menubar from "primevue/menubar";
+import { MenuItem } from "primevue/menuitem";
 import { ref } from "vue";
 import { goTo } from "./plugin/router";
 
@@ -37,7 +38,8 @@ const menu_items = [
 ];
 
 const contextMenu = ref();
-const editMenuItems = ref([
+
+const editMenuItems = ref<MenuItem[]>([
   {
     label: "Cut",
     icon: "material-symbols-rounded text-base",
@@ -83,13 +85,13 @@ function handleContextMenu(event: MouseEvent) {
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">
       <button
-        class="px-3 py-1.5 hover:bg-surface-200 dark:hover:bg-surface-700 transition-colors"
+        class="w-12 h-8 hover:bg-[#363636] hover:text-white flex items-center justify-center"
         @click="minimize_button"
       >
         <span class="material-symbols-rounded">remove</span>
       </button>
       <button
-        class="px-3 py-1.5 hover:bg-red-600 hover:text-white transition-colors"
+        class="w-12 h-8 hover:bg-[#c42b1c] hover:text-white flex items-center justify-center"
         @click="close_button"
       >
         <span class="material-symbols-rounded">close</span>

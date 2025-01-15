@@ -393,7 +393,7 @@ const expandNode = async (node: CustomTreeNode) => {
 
 <template>
   <Panel
-    class="h-full flex flex-col shadow-sm border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
+    class="h-full flex flex-col shadow-sm border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden relative"
   >
     <template #header>
       <div class="flex justify-between items-center w-full">
@@ -438,9 +438,9 @@ const expandNode = async (node: CustomTreeNode) => {
       </div>
     </template>
 
-    <div class="flex-1 flex flex-col min-h-0 p-1">
+    <div class="flex-1 flex flex-col p-1">
       <div
-        class="flex-1 min-h-0 border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden"
+        class="h-[22rem] border border-surface-200 dark:border-surface-700 rounded-md overflow-auto"
       >
         <div v-if="loading" class="text-sm opacity-60 p-1.5">Loading...</div>
         <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-1.5">
@@ -451,7 +451,7 @@ const expandNode = async (node: CustomTreeNode) => {
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
-          class="h-full overflow-auto border-none [&_.p-tree-container_.p-treenode]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-1.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-treenode-content.p-highlight]:bg-green-50 cursor-pointer"
+          class="h-full border-none [&_.p-tree-container_.p-treenode]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-1.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-treenode-content.p-highlight]:bg-green-50 cursor-pointer"
           selectionMode="single"
           toggleOnClick
           @node-select="onNodeSelect"
@@ -470,8 +470,7 @@ const expandNode = async (node: CustomTreeNode) => {
         </Tree>
       </div>
 
-      <!-- Filter options -->
-      <div class="shrink-0 mt-1 space-y-1">
+      <div class="absolute bottom-2 left-2 flex flex-col space-y-1 items-start">
         <div
           class="bg-surface-50 dark:bg-surface-800 rounded-md p-2 space-y-1.5"
         >
@@ -502,9 +501,10 @@ const expandNode = async (node: CustomTreeNode) => {
             </label>
           </div>
         </div>
+      </div>
 
-        <!-- Confirm button -->
-        <div class="flex justify-end">
+      <div class="absolute bottom-2 right-2 flex flex-col space-y-1 items-end">
+        <div class="flex justify-end w-full">
           <Button
             :severity="
               isConfirmed || autoConfirmed
