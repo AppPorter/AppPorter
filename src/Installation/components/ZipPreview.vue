@@ -8,18 +8,25 @@ import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
 import RadioButton from "primevue/radiobutton";
-import Tree from "primevue/tree"; // Add this import
-import type { TreeNode as PrimeTreeNode } from "primevue/treenode";
-import { computed, nextTick, ref, watch, watchEffect } from "vue";
+import Tree from "primevue/tree";
+import type { TreeNode } from "primevue/treenode";
+import { computed, nextTick, ref, watchEffect } from "vue";
 
-// Define our custom node data type
+// Types
+type FilterMode = "exe" | "executable" | "all";
+type FileStatus = "loading" | "ready" | "error";
+
+interface Props {
+  zipPath: string;
+  detailsLoading?: boolean;
+}
+
 interface CustomNodeData {
   path: string;
   isExecutable?: boolean;
 }
 
-// Define our custom tree node interface
-interface CustomTreeNode {
+interface CustomTreeNode extends TreeNode {
   key: string;
   label: string;
   icon?: string;
@@ -28,53 +35,84 @@ interface CustomTreeNode {
   data?: CustomNodeData;
 }
 
-// Use type assertion for tree data
-const fileTree = ref<CustomTreeNode[]>([]);
-
-// Add FilterMode type definition
-type FilterMode = "exe" | "executable" | "all";
-
-// Define filter modes
-const filterModes = {
-  exe: { value: "exe" as const, label: ".exe Only" },
-  executable: { value: "executable" as const, label: "Executable Files" },
-  all: { value: "all" as const, label: "All Files" },
+// Core constants
+const FILTER_MODES = {
+  exe: { value: "exe", label: ".exe Only", icon: "terminal" },
+  executable: { value: "executable", label: "Executable Files", icon: "code" },
+  all: { value: "all", label: "All Files", icon: "description" },
 } as const;
 
-// Change default filter mode
-const filterMode = ref<FilterMode>(filterModes.exe.value);
+const FILE_PRIORITIES = {
+  exe: 0,
+  bat: 1,
+  ps1: 2,
+  other: 3,
+} as const;
 
-// Cached zip content
-const zipContent = ref<{ paths: string[]; zip: JSZip } | null>(null);
+// Props & emits
+const props = defineProps<Props>();
+const emit = defineEmits<{
+  (event: "loading", value: boolean): void;
+  (event: "progress", value: number): void;
+}>();
 
-// Add expanded keys state for PrimeVue Tree
-const expandedKeys = ref<{ [key: string]: boolean }>({});
+// Core states
+const status = ref<FileStatus>("ready");
+const filterMode = ref<FilterMode>("exe");
+const expandedKeys = ref<Record<string, boolean>>({});
+const selectedNode = ref<Record<string, boolean>>({});
+const fileTree = ref<CustomTreeNode[]>([]);
+const isConfirmed = ref(false);
+const autoConfirmed = ref(false);
+const isExpanding = ref(false);
+const isCollapsing = ref(false);
 
-// Add function to get file type priority
+// Store
+const store = useInstallationConfigStore();
+const { app_icon, app_name, app_publisher, app_version, executable_path } =
+  storeToRefs(store);
+
+// Cache
+const zipCache = ref<{ paths: string[]; zip: JSZip } | null>(null);
+
+// Computed
+const filteredPaths = computed(() => {
+  if (!zipCache.value) return [];
+  return filterFilesByMode(zipCache.value.paths, filterMode.value);
+});
+
+const isLoading = computed(() => status.value === "loading");
+const isEmpty = computed(() => fileTree.value.length === 0);
+
+// Core functions
 function getFilePriority(name: string): number {
-  if (name.toLowerCase().endsWith(".exe")) return 0;
-  if (name.toLowerCase().endsWith(".bat")) return 1;
-  if (name.toLowerCase().endsWith(".ps1")) return 2;
-  return 3;
+  const ext = name.toLowerCase().split(".").pop() || "";
+  return ext in FILE_PRIORITIES
+    ? FILE_PRIORITIES[ext as keyof typeof FILE_PRIORITIES]
+    : FILE_PRIORITIES.other;
 }
 
-// Update getFileIcon function
 function getFileIcon(fileName: string): string {
-  const lowerName = fileName.toLowerCase();
-  if (lowerName.endsWith(".exe")) {
-    return "terminal";
-  }
-  if (lowerName.endsWith(".zip") || lowerName.endsWith(".ps1")) {
-    return "code";
-  }
-  return "draft";
+  const ext = fileName.toLowerCase();
+  return ext.endsWith(".exe")
+    ? "terminal"
+    : ext.endsWith(".ps1") || ext.endsWith(".bat")
+      ? "code"
+      : "draft";
 }
 
-// Updated pathsToTree function with auto-expand and better sorting
-function pathsToTree(paths: string[]): CustomTreeNode[] {
+function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
+  return paths.filter((path) => {
+    const isExe = path.toLowerCase().endsWith(".exe");
+    const isExecutable = isExe || /\.(bat|ps1)$/i.test(path);
+    return mode === "exe" ? isExe : mode === "executable" ? isExecutable : true;
+  });
+}
+
+// Tree operations
+function buildFileTree(paths: string[]): CustomTreeNode[] {
   const root: CustomTreeNode[] = [];
 
-  // First pass: build tree structure
   paths.forEach((path) => {
     const parts = path.split("/");
     let current = root;
@@ -93,11 +131,8 @@ function pathsToTree(paths: string[]): CustomTreeNode[] {
           label: part,
           icon: isLast ? getFileIcon(part) : "folder",
           children: isLast ? undefined : [],
-          selectable: true, // Keep all nodes selectable
-          data: {
-            path: currentPath,
-            isExecutable,
-          },
+          selectable: true,
+          data: { path: currentPath, isExecutable },
         };
         current.push(newNode);
         current = newNode.children || [];
@@ -105,41 +140,23 @@ function pathsToTree(paths: string[]): CustomTreeNode[] {
     });
   });
 
-  // Second pass: sort nodes recursively
-  function sortNodes(nodes: CustomTreeNode[]): void {
+  // Sort nodes recursively
+  const sortNodes = (nodes: CustomTreeNode[]): void => {
     nodes.sort((a, b) => {
       const aHasChildren = !!a.children?.length;
       const bHasChildren = !!b.children?.length;
-
-      // Files before folders
-      if (aHasChildren !== bHasChildren) {
-        return aHasChildren ? 1 : -1;
-      }
-
-      // For files, sort by priority then name
+      if (aHasChildren !== bHasChildren) return aHasChildren ? 1 : -1;
       if (!aHasChildren && !bHasChildren) {
-        const priorityA = getFilePriority(a.label);
-        const priorityB = getFilePriority(b.label);
-        if (priorityA !== priorityB) {
-          return priorityA - priorityB;
-        }
+        const priorityDiff =
+          getFilePriority(a.label) - getFilePriority(b.label);
+        if (priorityDiff !== 0) return priorityDiff;
       }
-
-      // Finally sort by name
       return a.label.localeCompare(b.label);
     });
-
-    // Recursively sort children
-    nodes.forEach((node) => {
-      if (node.children?.length) {
-        sortNodes(node.children);
-      }
-    });
-  }
+    nodes.forEach((node) => node.children?.length && sortNodes(node.children));
+  };
 
   sortNodes(root);
-
-  // Auto-expand logic for single root folder
   if (root.length === 1 && root[0].children) {
     expandedKeys.value[root[0].key] = true;
   }
@@ -147,124 +164,60 @@ function pathsToTree(paths: string[]): CustomTreeNode[] {
   return root;
 }
 
-const props = defineProps<{
-  zipPath: string;
-  detailsLoading?: boolean; // Add this prop
-}>();
+function handleNodeSelect(node: TreeNode) {
+  const customNode = node as CustomTreeNode;
+  if (customNode.children) {
+    expandedKeys.value[customNode.key] = !expandedKeys.value[customNode.key];
+    expandedKeys.value = { ...expandedKeys.value };
+    nextTick(() => (selectedNode.value = {}));
+    return;
+  }
 
-const emit = defineEmits<{
-  (e: "loading", value: boolean): void;
-  (e: "progress", value: number): void;
-}>();
-
-const installationConfig = useInstallationConfigStore();
-const { app_icon, app_name, app_publisher, app_version, executable_path } =
-  storeToRefs(installationConfig);
-const loading = ref(false);
-
-// Filter paths based on mode
-function filterPaths(paths: string[], mode: FilterMode): string[] {
-  return paths.filter((path) => {
-    const isExe = path.toLowerCase().endsWith(".exe");
-    const isExecutable = isExe || /\.(bat|ps1)$/i.test(path);
-
-    switch (mode) {
-      case "exe":
-        return isExe;
-      case "executable":
-        return isExecutable;
-      case "all":
-        return true;
-    }
-  });
+  if (customNode.data?.isExecutable) {
+    executable_path.value = customNode.data.path;
+    selectedNode.value = { [customNode.key]: true };
+  } else {
+    selectedNode.value = {};
+  }
 }
 
-// Add new function to check if path is in first two levels
-function isInFirstTwoLevels(path: string): boolean {
-  return path.split("/").length <= 2;
-}
+// File operations
+async function loadZipContent() {
+  if (!props.zipPath || zipCache.value) return;
 
-// Add auto confirmed state
-const autoConfirmed = ref(false);
-
-// Add selection style computing
-const getNodeClass = computed(() => (node: PrimeTreeNode) => {
-  const customNode = node as unknown as CustomTreeNode;
-  if (
-    !customNode.data?.isExecutable ||
-    customNode.data.path !== executable_path.value
-  )
-    return "";
-
-  return ""; // Remove text color effect
-});
-
-// Modified watch effect
-watchEffect(async () => {
-  if (!props.zipPath) return;
-
-  loading.value = true;
+  status.value = "loading";
   try {
-    if (!zipContent.value) {
-      const data = await readFile(props.zipPath);
-      const zip = await JSZip.loadAsync(data);
-      const paths = Object.keys(zip.files).filter(
-        (path) => !path.endsWith("/"),
-      );
-      zipContent.value = { paths, zip };
-    }
+    const data = await readFile(props.zipPath);
+    const zip = await JSZip.loadAsync(data);
+    const paths = Object.keys(zip.files).filter((path) => !path.endsWith("/"));
+    zipCache.value = { paths, zip };
 
-    const filteredPaths = filterPaths(zipContent.value.paths, filterMode.value);
-    fileTree.value = pathsToTree(filteredPaths);
-
-    // Check for executables in first two levels
-    const topLevelExecutables = zipContent.value.paths.filter(
-      (path) => /\.(exe|bat|ps1)$/i.test(path) && isInFirstTwoLevels(path),
-    );
-
-    // If there's exactly one exe and no other executables in top levels
-    const topLevelExes = topLevelExecutables.filter((path) =>
-      path.toLowerCase().endsWith(".exe"),
-    );
-    if (topLevelExes.length === 1 && topLevelExecutables.length === 1) {
-      executable_path.value = topLevelExes[0];
-      // Update to use proper selection format
-      selectedNode.value = { [topLevelExes[0]]: true };
-      // Auto confirm after small delay to ensure UI is ready
-      setTimeout(() => {
-        if (!isConfirmed.value) {
-          autoConfirmed.value = true; // Set auto confirmed state
-          confirmSelection();
-        }
-      }, 100);
-    } else {
-      autoConfirmed.value = false; // Reset auto confirmed state
-      // Auto select if only one exe exists anywhere
-      const allExecutables = filterPaths(zipContent.value.paths, "exe");
-      if (allExecutables.length === 1) {
-        executable_path.value = allExecutables[0];
-      }
-    }
+    fileTree.value = buildFileTree(filteredPaths.value);
+    handleAutoExeSelection();
   } catch (error) {
     console.error("Failed to read zip:", error);
     fileTree.value = [];
+    status.value = "error";
   } finally {
-    loading.value = false;
+    status.value = "ready";
   }
-});
+}
 
-// Watch filter mode changes
-watch(filterMode, () => {
-  if (zipContent.value) {
-    const filteredPaths = filterPaths(zipContent.value.paths, filterMode.value);
-    fileTree.value = pathsToTree(filteredPaths);
+function handleAutoExeSelection() {
+  if (!zipCache.value) return;
+
+  const topLevelExes = zipCache.value.paths.filter(
+    (path) =>
+      path.toLowerCase().endsWith(".exe") && path.split("/").length <= 2,
+  );
+
+  if (topLevelExes.length === 1) {
+    executable_path.value = topLevelExes[0];
+    selectedNode.value = { [topLevelExes[0]]: true };
+    confirmSelection();
   }
-});
+}
 
-// Add confirmation state
-const isConfirmed = ref(false);
-
-// Modify confirmation handler
 async function confirmSelection() {
   isConfirmed.value = true;
   emit("loading", true);
@@ -318,52 +271,18 @@ async function confirmSelection() {
   }
 }
 
-// Reset confirmation when executable changes
-watch(executable_path, () => {
-  isConfirmed.value = false;
-  autoConfirmed.value = false;
-});
-
-// Add tree selection handling
-const selectedNode = ref<{ [key: string]: boolean }>({});
-
-// Update onNodeSelect handler to handle both files and folders
-function onNodeSelect(node: PrimeTreeNode) {
-  const customNode = node as unknown as CustomTreeNode;
-
-  if (node.children) {
-    // For folders, convert selection to expand/collapse
-    expandedKeys.value[node.key as string] =
-      !expandedKeys.value[node.key as string];
-    expandedKeys.value = { ...expandedKeys.value }; // Trigger reactivity
-    nextTick(() => {
-      selectedNode.value = {}; // Clear selection for folder
-    });
-    return;
-  }
-
-  if (customNode.data?.isExecutable) {
-    // For executable files, handle normally
-    executable_path.value = customNode.data.path;
-    selectedNode.value = { [node.key as string]: true };
-  } else {
-    // For non-executable files, clear selection
-    selectedNode.value = {};
-  }
-}
-
-// Add loading states for expand/collapse
-const isExpanding = ref(false);
-const isCollapsing = ref(false);
-
-// Modify expand/collapse functions with loading states
+// Add expansion handlers
 const expandAll = async () => {
   if (isExpanding.value) return;
   isExpanding.value = true;
   try {
-    for (const node of fileTree.value) {
-      await expandNode(node);
-    }
+    const expandNode = async (node: CustomTreeNode) => {
+      if (node.children?.length) {
+        expandedKeys.value[node.key] = true;
+        await Promise.all(node.children.map(expandNode));
+      }
+    };
+    await Promise.all(fileTree.value.map(expandNode));
     expandedKeys.value = { ...expandedKeys.value };
   } finally {
     isExpanding.value = false;
@@ -381,20 +300,23 @@ const collapseAll = async () => {
   }
 };
 
-const expandNode = async (node: CustomTreeNode) => {
-  if (node.children && node.children.length) {
-    expandedKeys.value[node.key] = true;
-    for (const child of node.children) {
-      await expandNode(child);
-    }
+// Effects
+watchEffect(() => {
+  loadZipContent();
+});
+
+watchEffect(() => {
+  if (zipCache.value) {
+    fileTree.value = buildFileTree(filteredPaths.value);
   }
-};
+});
 </script>
 
 <template>
   <Panel
     class="h-full flex flex-col shadow-sm border border-surface-200 dark:border-surface-700 rounded-md overflow-hidden relative"
   >
+    <!-- Header -->
     <template #header>
       <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-1 flex-1 min-w-0">
@@ -439,12 +361,13 @@ const expandNode = async (node: CustomTreeNode) => {
     </template>
 
     <div class="flex-1 flex flex-col p-1">
+      <!-- File Tree -->
       <div
         class="h-[22rem] border border-surface-200 dark:border-surface-700 rounded-md overflow-auto"
       >
-        <div v-if="loading" class="text-sm opacity-60 p-1.5">Loading...</div>
-        <div v-else-if="fileTree.length === 0" class="text-sm opacity-60 p-1.5">
-          No files found in archive
+        <div v-if="isLoading" class="text-sm opacity-60 p-1.5">Loading...</div>
+        <div v-else-if="isEmpty" class="text-sm opacity-60 p-1.5">
+          No files found
         </div>
         <Tree
           v-else
@@ -454,13 +377,10 @@ const expandNode = async (node: CustomTreeNode) => {
           class="h-full border-none [&_.p-tree-container_.p-treenode]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-1.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-treenode-content.p-highlight]:bg-green-50 cursor-pointer"
           selectionMode="single"
           toggleOnClick
-          @node-select="onNodeSelect"
+          @node-select="handleNodeSelect"
         >
           <template #default="{ node }">
-            <div
-              class="flex items-center gap-1.5 rounded px-1"
-              :class="getNodeClass(node)"
-            >
+            <div class="flex items-center gap-1.5 rounded px-1">
               <span class="material-symbols-rounded text-lg">{{
                 node.icon
               }}</span>
@@ -470,12 +390,13 @@ const expandNode = async (node: CustomTreeNode) => {
         </Tree>
       </div>
 
-      <div class="absolute bottom-2 left-2 flex flex-col space-y-1 items-start">
+      <!-- Filter Controls -->
+      <div class="absolute bottom-2 left-2">
         <div
           class="bg-surface-50 dark:bg-surface-800 rounded-md p-2 space-y-1.5"
         >
           <div
-            v-for="mode in filterModes"
+            v-for="mode in Object.values(FILTER_MODES)"
             :key="mode.value"
             class="flex items-center gap-2"
           >
@@ -488,22 +409,15 @@ const expandNode = async (node: CustomTreeNode) => {
               :for="'filter-' + mode.value"
               class="flex items-center gap-2.5 cursor-pointer"
             >
-              <span class="material-symbols-rounded">
-                {{
-                  mode.value === "exe"
-                    ? "terminal"
-                    : mode.value === "executable"
-                      ? "code"
-                      : "description"
-                }}
-              </span>
+              <span class="material-symbols-rounded">{{ mode.icon }}</span>
               <span class="text-sm">{{ mode.label }}</span>
             </label>
           </div>
         </div>
       </div>
 
-      <div class="absolute bottom-2 right-2 flex flex-col space-y-1 items-end">
+      <!-- Action Button -->
+      <div class="absolute bottom-2 right-2">
         <div class="flex justify-end w-full">
           <Button
             :severity="

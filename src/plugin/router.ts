@@ -1,15 +1,18 @@
+// Core imports
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useConfirm } from "primevue/useconfirm";
 import type { Router } from "vue-router";
 import { createMemoryHistory, createRouter } from "vue-router";
 
+// Page components
 import Installation from "@/Installation.vue";
 import Installation_Option from "@/Installation/Option.vue";
 import Installation_Progress from "@/Installation/Progress.vue";
 import Settings from "@/Settings.vue";
 
+// Route definitions
 const routes = [
-  { path: "/", redirect: "/Installation", name: "root" }, // Add root path redirect
+  { path: "/", redirect: "/Installation", name: "root" },
   { path: "/Installation", component: Installation, name: "installation" },
   {
     path: "/Installation/Option",
@@ -29,7 +32,6 @@ const router = createRouter({
   routes,
 });
 
-// Move the navigation guard setup to a separate function
 export function setupRouterGuards(router: Router) {
   router.beforeEach(async (to, from) => {
     // Skip guard if both routes are the same
@@ -39,7 +41,7 @@ export function setupRouterGuards(router: Router) {
 
     const installationConfig = useInstallationConfigStore();
 
-    // Only show confirmation when leaving installation option page to a different page
+    // Only show confirmation when leaving installation option page
     if (
       from.name === "installation-option" &&
       to.name !== "installation-option"
@@ -51,9 +53,9 @@ export function setupRouterGuards(router: Router) {
             message:
               "Are you sure you want to leave? All changes will be lost.",
             header: "Confirm",
-            icon: "material-symbols-rounded text-2xl warning", // Changed from text-xl to text-2xl
-            acceptIcon: "material-symbols-rounded text-lg logout", // Changed from text-base to text-lg
-            rejectIcon: "material-symbols-rounded text-lg close", // Changed from text-base to text-lg
+            icon: "material-symbols-rounded text-2xl warning",
+            acceptIcon: "material-symbols-rounded text-lg logout",
+            rejectIcon: "material-symbols-rounded text-lg close",
             acceptLabel: "Leave",
             rejectLabel: "Cancel",
             rejectClass: "p-button-outlined p-button-secondary",

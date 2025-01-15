@@ -1,21 +1,33 @@
+// Style imports
 import "@/assets/index.css";
+
+// Vue core imports
+import { createPinia } from "pinia";
+import { createApp, ref, type Ref } from "vue";
+
+// App components and plugins
 import Main from "@/Main.vue";
 import i18n from "@/plugin/i18n";
 import router, { setupRouterGuards } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
+
+// PrimeVue imports
 import Aura from "@primevue/themes/aura";
-import { defaultWindowIcon } from "@tauri-apps/api/app";
-import { Menu } from "@tauri-apps/api/menu";
-import { TrayIcon, TrayIconEvent } from "@tauri-apps/api/tray";
-import { getCurrentWindow } from "@tauri-apps/api/window";
-import { exit } from "@tauri-apps/plugin-process";
-import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
-import { createApp, Ref, ref } from "vue";
 
+// Tauri imports
+import { defaultWindowIcon } from "@tauri-apps/api/app";
+import { Menu } from "@tauri-apps/api/menu";
+import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { exit } from "@tauri-apps/plugin-process";
+
+// Window initialization
 export const window = await getCurrentWindow();
 const icon = (await defaultWindowIcon()) || "src-tauri\\icons\\icon.ico";
+
+// Tray menu configuration
 const menu = await Menu.new({
   items: [
     {
@@ -30,50 +42,52 @@ const menu = await Menu.new({
     {
       id: "quit",
       text: "Quit",
-      action: () => {
-        exit(0);
-      },
+      action: () => exit(0),
     },
   ],
 });
-const options = {
+
+// Tray icon configuration
+const trayOptions = {
   icon,
   menu,
   menuOnLeftClick: false,
   action: (event: TrayIconEvent) => {
-    switch (event.type) {
-      case "Click":
-        if (event.button == "Left" && event.buttonState == "Down") {
-          window.show();
-          window.unminimize();
-          window.setFocus();
-        }
-        break;
+    if (
+      event.type === "Click" &&
+      event.button === "Left" &&
+      event.buttonState === "Down"
+    ) {
+      window.show();
+      window.unminimize();
+      window.setFocus();
     }
   },
 };
 
-await window.onCloseRequested(async () => {
+// Window event handlers
+window.onCloseRequested(async () => {
   window.hide();
 });
 
+// App initialization
 const pinia = createPinia();
 const app = createApp(Main);
 
+// SVG loader utility
 async function loadSvg(name: string): Promise<string> {
-  const path = `/src/assets/icons/${name}.svg`;
   try {
-    const response = await fetch(path);
+    const response = await fetch(`/src/assets/icons/${name}.svg`);
     return await response.text();
-  } catch (error) {
-    console.error("Failed to load SVG:", error);
+  } catch {
     return "";
   }
 }
 
+// App configuration
 app
-  .use(pinia) // First initialize pinia
-  .use(router) // Then initialize router
+  .use(pinia)
+  .use(router)
   .use(PrimeVue, {
     theme: {
       preset: Aura,
@@ -84,32 +98,31 @@ app
       },
     },
   })
-  .use(ConfirmationService); // Add this line
+  .use(ConfirmationService);
 
-setupRouterGuards(router); // Finally setup router guards
+// Router guards setup
+setupRouterGuards(router);
 
+// SVG directive registration
 app.use(i18n).directive("svg", {
   async mounted(el, binding) {
-    const svgContent = await loadSvg(binding.value);
-    el.innerHTML = svgContent;
+    el.innerHTML = await loadSvg(binding.value);
   },
   async updated(el, binding) {
-    const svgContent = await loadSvg(binding.value);
-    el.innerHTML = svgContent;
+    el.innerHTML = await loadSvg(binding.value);
   },
 });
 
+// Error handling
 export const error: Ref<string[]> = ref([]);
 
+// Settings and tray initialization
 const settingsStore = useSettingsStore();
 await settingsStore.loadSettings();
+
 if (settingsStore.minimize_to_tray_on_close) {
-  try {
-    await TrayIcon.new(options);
-  } catch (err) {
-    console.error("Failed to create tray icon:", err);
-    error.value.push(`Failed to create tray icon: ${err}`);
-  }
+  await TrayIcon.new(trayOptions).catch(console.error);
 }
 
+// Mount application
 app.mount("#app");

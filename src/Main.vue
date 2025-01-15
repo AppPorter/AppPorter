@@ -1,16 +1,21 @@
 <script setup lang="ts">
+// Core imports
 import { window } from "@/main";
+import { goTo } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
+import { ref } from "vue";
+
+// PrimeVue components and types
 import ConfirmDialog from "primevue/confirmdialog";
 import ContextMenu from "primevue/contextmenu";
 import Menubar from "primevue/menubar";
-import { MenuItem } from "primevue/menuitem";
-import { ref } from "vue";
-import { goTo } from "./plugin/router";
+import type { MenuItem } from "primevue/menuitem";
 
+// Store initialization
 const settingsStore = useSettingsStore();
 
+// Window control handlers
 function close_button() {
   if (settingsStore.minimize_to_tray_on_close) {
     window.hide();
@@ -23,6 +28,7 @@ function minimize_button() {
   window.minimize();
 }
 
+// Navigation menu configuration
 const menu_items = [
   {
     label: "Installation",
@@ -38,8 +44,8 @@ const menu_items = [
   },
 ];
 
+// Context menu configuration
 const contextMenu = ref();
-
 const editMenuItems = ref<MenuItem[]>([
   {
     label: "Cut",
@@ -68,7 +74,7 @@ const editMenuItems = ref<MenuItem[]>([
   },
 ]);
 
-// Handle context menu globally
+// Context menu handler
 function handleContextMenu(event: MouseEvent) {
   const target = event.target as HTMLElement;
   if (
@@ -83,12 +89,13 @@ function handleContextMenu(event: MouseEvent) {
 
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
-    <!-- Add custom icon to ConfirmDialog -->
+    <!-- System Dialogs -->
     <ConfirmDialog>
       <template #icon>
         <span class="material-symbols-rounded text-2xl">warning</span>
       </template>
     </ConfirmDialog>
+
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">
       <button
@@ -105,12 +112,13 @@ function handleContextMenu(event: MouseEvent) {
       </button>
     </div>
 
-    <!-- Title Bar -->
+    <!-- Title Bar & Navigation -->
     <div class="fixed w-full z-40">
       <div style="-webkit-app-region: drag" class="w-full">
         <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
       </div>
 
+      <!-- Navigation Menu -->
       <div class="flex justify-center">
         <Menubar
           :model="menu_items"
@@ -128,7 +136,7 @@ function handleContextMenu(event: MouseEvent) {
       </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Main Content Area -->
     <div class="pt-28 px-4 pb-6">
       <RouterView class="z-40" />
     </div>
@@ -136,7 +144,7 @@ function handleContextMenu(event: MouseEvent) {
     <!-- Context Menu -->
     <ContextMenu ref="contextMenu" :model="editMenuItems">
       <template #item="{ item }">
-        <div class="flex items-center" v-if="!item.separator">
+        <div v-if="!item.separator" class="flex items-center">
           <span v-if="item.icon" :class="[item.icon, 'flex items-center mr-2']">
             {{ item.iconClass }}
           </span>

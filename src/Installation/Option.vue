@@ -1,18 +1,24 @@
 <script setup lang="ts">
+// External imports
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
 import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
+
+// PrimeVue components
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
 import InputSwitch from "primevue/inputswitch";
 import InputText from "primevue/inputtext";
 import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
+
+// Vue imports
 import { ref } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
+// Store initialization and destructuring
 const settingsStore = useSettingsStore();
 const {
   installation: {
@@ -32,6 +38,7 @@ const {
   },
 } = settingsStore;
 
+// Installation config store setup
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = installationConfig;
 const {
@@ -46,6 +53,7 @@ const {
   install_path,
 } = storeToRefs(installationConfig);
 
+// Config update handler based on installation mode
 function updateConfig(isCurrentUser: boolean) {
   if (isCurrentUser) {
     create_desktop_shortcut.value = current_create_desktop_shortcut;
@@ -60,9 +68,11 @@ function updateConfig(isCurrentUser: boolean) {
   }
 }
 
+// Initialize with settings
 current_user_only.value = settings_current_user_only;
 updateConfig(current_user_only.value);
 
+// Event handlers
 function handleInstallModeChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked;
   current_user_only.value = checked;
@@ -74,64 +84,49 @@ async function select_install_path() {
     directory: true,
     multiple: false,
   });
-  // Only update if a directory was selected
   if (selected) {
     install_path.value = String(selected);
   }
 }
 
+// Installation process handler
 async function start_installation() {
   try {
-    const {
-      app_icon,
-      app_name,
-      app_publisher,
-      app_version,
-      current_user_only,
-      create_desktop_shortcut,
-      create_registry_key,
-      create_start_menu_shortcut,
-      install_path,
-      executable_path,
-      zip_path,
-    } = installationConfig;
-    const arg = JSON.stringify({
-      app_icon,
-      app_name,
-      app_publisher,
-      app_version,
-      current_user_only,
-      create_desktop_shortcut,
-      create_registry_key,
-      create_start_menu_shortcut,
-      install_path,
-      executable_path,
-      zip_path,
-    });
-    console.log(arg);
-    const result = await invoke("execute_command", {
+    const config = {
+      app_icon: installationConfig.app_icon,
+      app_name: installationConfig.app_name,
+      app_publisher: installationConfig.app_publisher,
+      app_version: installationConfig.app_version,
+      current_user_only: installationConfig.current_user_only,
+      create_desktop_shortcut: installationConfig.create_desktop_shortcut,
+      create_registry_key: installationConfig.create_registry_key,
+      create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
+      install_path: installationConfig.install_path,
+      executable_path: installationConfig.executable_path,
+      zip_path: installationConfig.zip_path,
+    };
+
+    await invoke("execute_command", {
       command: "Installation",
-      arg: arg,
+      arg: JSON.stringify(config),
     });
-    console.log(result);
   } catch (error) {
     console.error("Failed to install:", error);
   }
 }
 
+// Loading states
 const detailsLoading = ref(false);
 const detailsLoadingProgress = ref(0);
 
 function handleDetailsProgress(value: number) {
   detailsLoadingProgress.value = value;
-  console.log("Progress update:", value); // Add logging for debugging
 }
 </script>
 
 <template>
-  <!-- 减小整体页面边距和间距 -->
   <div class="h-[calc(100vh-144px)] p-1.5 pb-12 flex gap-2">
-    <!-- Left Column -->
+    <!-- Left Column: Installation Options & App Details -->
     <div class="flex-1 min-w-[400px] space-y-2">
       <!-- Installation Options Panel -->
       <Panel
@@ -356,7 +351,7 @@ function handleDetailsProgress(value: number) {
       </Panel>
     </div>
 
-    <!-- Right Column -->
+    <!-- Right Column: ZIP Preview -->
     <div class="min-w-[350px] w-[40%]">
       <ZipPreview
         :zip-path="zip_path"
@@ -367,7 +362,7 @@ function handleDetailsProgress(value: number) {
     </div>
   </div>
 
-  <!-- Install Button -->
+  <!-- Installation Button -->
   <div class="fixed bottom-6 right-6 z-40">
     <Button
       severity="primary"

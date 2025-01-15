@@ -1,24 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { defineStore } from "pinia";
 
-interface Settings {
-  language: string;
-  theme: string;
-  minimize_to_tray_on_close: boolean;
-
-  system_drive_letter: string;
-  username: string;
-
-  installation: Installation;
-}
-
-interface Installation {
-  current_user_only: boolean;
-
-  all_users: InstallSettings;
-  current_user: InstallSettings;
-}
-
+// Core interfaces
 interface InstallSettings {
   create_desktop_shortcut: boolean;
   create_registry_key: boolean;
@@ -26,15 +9,34 @@ interface InstallSettings {
   install_path: string;
 }
 
+interface Installation {
+  current_user_only: boolean;
+  all_users: InstallSettings;
+  current_user: InstallSettings;
+}
+
+interface Settings {
+  // App preferences
+  language: string;
+  theme: string;
+  minimize_to_tray_on_close: boolean;
+
+  // System info
+  system_drive_letter: string;
+  username: string;
+
+  // Installation settings
+  installation: Installation;
+}
+
+// Store definition
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
     language: "",
     theme: "",
     minimize_to_tray_on_close: false,
-
     system_drive_letter: "",
     username: "",
-
     installation: {
       current_user_only: false,
       all_users: {
@@ -54,25 +56,15 @@ export const useSettingsStore = defineStore("settings", {
 
   actions: {
     async loadSettings() {
-      try {
-        const result = await invoke("execute_command", {
-          command: "LoadSettings",
-          arg: null,
-        });
-
-        const settings = JSON.parse(result as string) as Settings;
-        this.$patch(settings);
-      } catch (error) {
-        console.error("Failed to load settings:", error);
-      }
+      const result = await invoke("execute_command", {
+        command: "LoadSettings",
+        arg: null,
+      });
+      this.$patch(JSON.parse(result as string));
     },
 
     async saveSettings() {
-      try {
-        await invoke("save_settings", { settings: this.$state });
-      } catch (error) {
-        console.error("Failed to save settings:", error);
-      }
+      await invoke("save_settings", { settings: this.$state });
     },
   },
 });

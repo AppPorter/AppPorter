@@ -4,12 +4,11 @@ import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
 import { ref } from "vue";
 
+// Core states for installation progress tracking
 const progress = ref(0);
 const currentStep = ref("");
 const status = ref<"progress" | "success" | "error">("progress");
 const statusMessage = ref("");
-
-// 这里之后添加安装进度的实际逻辑
 </script>
 
 <template>
@@ -49,7 +48,7 @@ const statusMessage = ref("");
         }"
       />
 
-      <div class="text-center">
+      <div class="text-center space-y-1">
         <p class="text-sm font-medium text-surface-900 dark:text-surface-0">
           {{ currentStep }}
         </p>
