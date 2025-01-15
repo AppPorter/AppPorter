@@ -2,6 +2,7 @@
 import { window } from "@/main";
 import { useSettingsStore } from "@/stores/settings";
 import { exit } from "@tauri-apps/plugin-process";
+import ConfirmDialog from "primevue/confirmdialog";
 import ContextMenu from "primevue/contextmenu";
 import Menubar from "primevue/menubar";
 import { MenuItem } from "primevue/menuitem";
@@ -82,6 +83,12 @@ function handleContextMenu(event: MouseEvent) {
 
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
+    <!-- Add custom icon to ConfirmDialog -->
+    <ConfirmDialog>
+      <template #icon>
+        <span class="material-symbols-rounded text-2xl">warning</span>
+      </template>
+    </ConfirmDialog>
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">
       <button

@@ -11,6 +11,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
 import { createPinia } from "pinia";
 import PrimeVue from "primevue/config";
+import ConfirmationService from "primevue/confirmationservice";
 import { createApp, Ref, ref } from "vue";
 
 export const window = await getCurrentWindow();
@@ -82,10 +83,10 @@ app
         cssLayer: false,
       },
     },
-  });
-setupRouterGuards(router); // Finally setup router guards
+  })
+  .use(ConfirmationService); // Add this line
 
-router.push("/Installation"); // Move initial navigation here
+setupRouterGuards(router); // Finally setup router guards
 
 app.use(i18n).directive("svg", {
   async mounted(el, binding) {
