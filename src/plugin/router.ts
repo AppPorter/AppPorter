@@ -33,11 +33,22 @@ export function setupRouterGuards(router: Router) {
   router.beforeEach((to) => {
     const installationConfig = useInstallationConfigStore();
 
-    // Reset store data when navigation happens through menubar
-    if (to.path === "/Installation" || to.path === "/Settings") {
+    // Clear data based on route
+    if (to.name === "installation") {
+      // Reset all installation data when entering installation page
       installationConfig.$reset();
+    } else if (to.name === "installation-option") {
+      // Clear everything except zip_path
+      const zipPath = installationConfig.zip_path;
+      installationConfig.$reset();
+      installationConfig.zip_path = zipPath;
+    } else if (to.name === "installation-progress") {
+      // Keep installation config intact
+      return true;
+    } else if (to.name === "settings") {
+      // No need to clear installation data when entering settings
+      return true;
     }
-
     return true;
   });
 }

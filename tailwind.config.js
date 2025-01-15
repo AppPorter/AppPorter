@@ -3,6 +3,7 @@ import animate from "tailwindcss-animate";
 /** @type {import('tailwindcss').Config} */
 export const darkMode = ["class"];
 export const content = [
+  "./index.html",
   "./pages/**/*.{js,ts,tsx,vue}",
   "./components/**/*.{js,ts,tsx,vue}",
   "./app/**/*.{js,ts,tsx,vue}",
