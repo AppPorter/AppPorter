@@ -363,18 +363,16 @@ watchEffect(() => {
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
       <div
-        class="h-[22rem] border border-surface-200 dark:border-surface-700 rounded-md overflow-auto"
+        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[22rem] overflow-hidden"
       >
-        <div v-if="isLoading" class="text-sm opacity-60 p-1.5">Loading...</div>
-        <div v-else-if="isEmpty" class="text-sm opacity-60 p-1.5">
-          No files found
-        </div>
+        <div v-if="isLoading" class="text-sm opacity-60">Loading...</div>
+        <div v-else-if="isEmpty" class="text-sm opacity-60">No files found</div>
         <Tree
           v-else
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
-          class="h-full border-none [&_.p-tree-container_.p-treenode]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:px-1.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:py-0.5 [&_.p-tree-container_.p-treenode_.p-treenode-content]:rounded-sm [&_.p-treenode-content.p-highlight]:bg-green-50 cursor-pointer"
+          class="h-full overflow-auto"
           selectionMode="single"
           toggleOnClick
           @node-select="handleNodeSelect"
