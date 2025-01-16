@@ -9,10 +9,10 @@ import { storeToRefs } from "pinia";
 // PrimeVue components
 import Button from "primevue/button";
 import Checkbox from "primevue/checkbox";
-import InputSwitch from "primevue/inputswitch";
 import InputText from "primevue/inputtext";
 import Panel from "primevue/panel";
 import ProgressBar from "primevue/progressbar";
+import ToggleSwitch from "primevue/toggleswitch";
 
 // Vue imports
 import { ref } from "vue";
@@ -122,10 +122,17 @@ const detailsLoadingProgress = ref(0);
 function handleDetailsProgress(value: number) {
   detailsLoadingProgress.value = value;
 }
+
+defineOptions({
+  inheritAttrs: false,
+});
 </script>
 
 <template>
-  <div class="h-[calc(100vh-144px)] p-1.5 pb-12 flex gap-2">
+  <div
+    class="h-[calc(100vh-144px)] p-1.5 pb-12 flex gap-2"
+    :class="$attrs.class"
+  >
     <!-- Left Column: Installation Options & App Details -->
     <div class="flex-1 min-w-[400px] space-y-2">
       <!-- Installation Options Panel -->
@@ -163,7 +170,7 @@ function handleDetailsProgress(value: number) {
               class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 px-2 py-1 rounded-lg"
             >
               <span class="text-sm">All Users</span>
-              <InputSwitch
+              <ToggleSwitch
                 v-model="current_user_only"
                 @change="handleInstallModeChange"
                 class="mx-1"
