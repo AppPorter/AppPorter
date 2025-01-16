@@ -98,22 +98,19 @@ impl Settings {
     }
 
     pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
-        println!("{}", is_elevated()?);
-        let system_drive_letter = &std::env::var("windir")?[..1];
-        let username = &std::env::var("USERNAME")?;
-
-        self.system_drive_letter = system_drive_letter.to_string();
-        self.username = username.to_string();
+        self.administrator = is_elevated()?;
+        self.system_drive_letter = std::env::var("windir")?[..1].to_string();
+        self.username = std::env::var("USERNAME")?.to_string();
 
         if self.installation.all_users.install_path.is_empty() {
             self.installation.all_users.install_path =
-                format!(r"{}:\Program Files", system_drive_letter);
+                format!(r"{}:\Program Files", self.system_drive_letter);
         }
 
         if self.installation.current_user.install_path.is_empty() {
             self.installation.current_user.install_path = format!(
                 r"{}:\Users\{}\AppData\Local\Programs",
-                system_drive_letter, username
+                self.system_drive_letter, self.username
             );
         }
 

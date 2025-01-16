@@ -89,6 +89,9 @@ function handleContextMenu(event: MouseEvent) {
 
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
+    <!-- Warning -->
+    <Message severity="warn">Warn Message</Message>
+
     <!-- System Dialogs -->
     <ConfirmDialog>
       <template #icon>

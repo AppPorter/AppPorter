@@ -10,6 +10,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     EditContextMenu: typeof import('./src/components/context/EditContextMenu.vue')['default']
     InputSwitch: typeof import('primevue/inputswitch')['default']
+    Message: typeof import('primevue/message')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
