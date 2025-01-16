@@ -1,7 +1,7 @@
+use check_elevation::is_elevated;
 use config::Config;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::PathBuf};
-use windows_elevate::check_elevated;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
@@ -98,7 +98,7 @@ impl Settings {
     }
 
     pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
-        println!("{}", check_elevated()?);
+        println!("{}", is_elevated()?);
         let system_drive_letter = &std::env::var("windir")?[..1];
         let username = &std::env::var("USERNAME")?;
 

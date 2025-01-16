@@ -2,7 +2,6 @@
 
 use app_porter_lib::command;
 use std::{error::Error, result::Result};
-use windows_elevate::elevate;
 
 fn main() {
     match run() {
@@ -14,7 +13,6 @@ fn main() {
     }
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
@@ -24,6 +22,5 @@ fn run() -> Result<(), Box<dyn Error>> {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![command::execute_command])
         .run(tauri::generate_context!())?;
-    elevate()?;
     Ok(())
 }

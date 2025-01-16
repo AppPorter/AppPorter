@@ -8,7 +8,6 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
-    "rs": "cd src-tauri",
     "frontf": "prettier -w \"**/*.{js,ts,vue,html,css,json,md}\"",
     "backf": "cd src-tauri && cargo fmt",
     "f": "pnpm ff && pnpm bf",
