@@ -1,8 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{command, settings};
-use settings::load_settings;
+use app_porter_lib::command;
 use std::{error::Error, result::Result};
+use windows_elevate::elevate;
 
 fn main() {
     match run() {
@@ -16,7 +16,6 @@ fn main() {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 fn run() -> Result<(), Box<dyn Error>> {
-    load_settings()?;
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_fs::init())
@@ -25,5 +24,6 @@ fn run() -> Result<(), Box<dyn Error>> {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![command::execute_command])
         .run(tauri::generate_context!())?;
+    elevate()?;
     Ok(())
 }

@@ -1,6 +1,7 @@
 use config::Config;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::PathBuf};
+use windows_elevate::check_elevated;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Settings {
@@ -8,6 +9,7 @@ pub struct Settings {
     pub theme: String,
     pub minimize_to_tray_on_close: bool,
 
+    pub administrator: bool,
     pub system_drive_letter: String,
     pub username: String,
 
@@ -45,6 +47,7 @@ impl Settings {
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
 
+            administrator: false,
             system_drive_letter: String::new(),
             username: String::new(),
 
@@ -95,6 +98,7 @@ impl Settings {
     }
 
     pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
+        println!("{}", check_elevated()?);
         let system_drive_letter = &std::env::var("windir")?[..1];
         let username = &std::env::var("USERNAME")?;
 

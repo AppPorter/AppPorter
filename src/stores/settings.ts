@@ -22,6 +22,7 @@ interface Settings {
   minimize_to_tray_on_close: boolean;
 
   // System info
+  administrator: boolean;
   system_drive_letter: string;
   username: string;
 
@@ -32,6 +33,7 @@ interface Settings {
 // Store definition
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
+    administrator: false,
     language: "",
     theme: "",
     minimize_to_tray_on_close: false,
