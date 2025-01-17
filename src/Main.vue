@@ -89,13 +89,10 @@ function handleContextMenu(event: MouseEvent) {
 
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
-    <!-- Warning -->
-    <Message severity="warn">Warn Message</Message>
-
     <!-- System Dialogs -->
     <ConfirmDialog>
       <template #icon>
-        <span class="material-symbols-rounded text-2xl">warning</span>
+        <span class="material-symbols-rounded">warning</span>
       </template>
     </ConfirmDialog>
 
@@ -117,8 +114,26 @@ function handleContextMenu(event: MouseEvent) {
 
     <!-- Title Bar & Navigation -->
     <div class="fixed w-full z-40">
-      <div style="-webkit-app-region: drag" class="w-full">
-        <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
+      <div>
+        <div
+          class="flex items-center pr-24 w-full"
+          style="-webkit-app-region: drag"
+        >
+          <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
+
+          <!-- Warning -->
+          <Message
+            size="small"
+            severity="warn"
+            class="mx-4 py-0 w-full"
+            v-if="!settingsStore.administrator"
+          >
+            <template #icon
+              ><span class="material-symbols-rounded">warning</span></template
+            >Application is not running with administrator privileges. Some
+            features may be unavailable.</Message
+          >
+        </div>
       </div>
 
       <!-- Navigation Menu -->

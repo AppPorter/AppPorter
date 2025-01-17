@@ -42,10 +42,7 @@ export function setupRouterGuards(router: Router) {
     const installationConfig = useInstallationConfigStore();
 
     // Only show confirmation when leaving installation option page
-    if (
-      from.name === "installation-option" &&
-      to.name !== "installation-option"
-    ) {
+    if (from.name === "installation-option") {
       const confirm = useConfirm();
       try {
         await new Promise((resolve, reject) => {
