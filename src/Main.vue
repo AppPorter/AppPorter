@@ -20,6 +20,8 @@ const settingsStore = useSettingsStore();
 const confirm = useConfirm();
 const toast = useToast();
 
+const dismiss_warning = ref(false);
+
 // Window control handlers
 function close_button() {
   if (settingsStore.minimize_to_tray_on_close) {
@@ -42,31 +44,43 @@ const solve = (event) => {
     group: "popup",
     icon: "material-symbols-rounded warning",
     rejectProps: {
-      label: "Dismiss",
+      label: "Cancel",
       severity: "secondary",
       outlined: true,
     },
     acceptProps: {
-      label: "OK",
+      label: "Yes",
     },
     accept: () => {
       toast.add({
-        severity: "info",
-        summary: "Confirmed",
-        detail: "You have accepted",
+        severity: "success",
+        summary: "Restart to apply the change",
+        detail:
+          "You have to restart the application to run the application with administrator privileges.",
         life: 3000,
       });
     },
-    reject: () => {
-      toast.add({
-        severity: "error",
-        summary: "Rejected",
-        detail: "You have rejected",
-        life: 3000,
-      });
-    },
+    reject: () => {},
   });
 };
+const button_items = [
+  {
+    label: "Dismiss Once",
+    command: () => {
+      dismiss_warning.value = true;
+    },
+  },
+  //{
+  //  label: "Dismiss Forever",
+  //  command: () => {
+  //    toast.add({
+  //      severity: "info",
+  //      summary: "You can enable this warning from settings",
+  //      life: 3000,
+  //    });
+  //  },
+  //},
+];
 
 // Navigation menu configuration
 const menu_items = [
@@ -166,20 +180,22 @@ function handleContextMenu(event: MouseEvent) {
           size="small"
           severity="warn"
           class="mx-4 py-0 w-full"
-          v-if="!settingsStore.administrator"
+          v-if="!settingsStore.administrator && !dismiss_warning"
         >
           <template #icon
             ><span class="material-symbols-rounded">warning</span> </template
           >Application is not running with administrator privileges. Some
           features may be unavailable.
           <ConfirmPopup group="popup"></ConfirmPopup
-          ><Button
+          ><SplitButton
             @click="solve($event)"
             label="Solve"
-            variant="outlined"
+            outlined
             severity="warn"
-            class="z-40 left-4"
-          ></Button
+            class="z-40 left-2"
+            size="small"
+            :model="button_items"
+          ></SplitButton
         ></Message>
       </div>
 
