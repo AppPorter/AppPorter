@@ -1,5 +1,7 @@
 use std::{error::Error, process::Command};
 
+use settings::Settings;
+
 pub mod command;
 pub mod installation;
 pub mod settings;
@@ -12,21 +14,17 @@ pub fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
         operation =
             "Remove-ItemProperty -Path $regPath -Name $programPath -ErrorAction SilentlyContinue";
     }
+    let settings = Settings::read()?;
     let ps_command = format!(
         r#"
-        $currentUserSid = (Get-WmiObject Win32_UserAccount | Where-Object {{$_.Name -eq $env:USERNAME}}).SID
-
         $programPath = "{}"
-        $regPath = "Registry::HKEY_USERS\$currentUserSid\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
-            
-        if (-not (Test-Path $regPath)) {{
-            New-Item -Path $regPath -Force | Out-Null
-        }}
+        $regPath = "Registry::HKEY_USERS\{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
             
         $adminFlag = "~ RUNASADMIN"
         {}
         "#,
         std::env::current_exe()?.to_string_lossy(),
+        settings.user_sid,
         operation
     );
     let output = Command::new("powershell")
@@ -42,6 +40,5 @@ pub fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
-    println!("{:#?}", std::env::current_exe()?.to_string_lossy());
     Ok(())
 }

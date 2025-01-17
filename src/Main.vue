@@ -53,19 +53,21 @@ const solve = (event) => {
       label: "Yes",
     },
     accept: () => {
-      invoke("execute_command", {
-        command: {
-          name: "Elevate",
-          revert: false,
-        },
-      });
-      toast.add({
-        severity: "success",
-        summary: "Restart to apply the change",
-        detail:
-          "You have to restart the application to run the application with administrator privileges.",
-        life: 3000,
-      });
+      if (!settingsStore.debug) {
+        invoke("execute_command", {
+          command: {
+            name: "Elevate",
+            revert: false,
+          },
+        });
+        toast.add({
+          severity: "success",
+          summary: "Restart to apply the change",
+          detail:
+            "You have to restart the application to run the application with administrator privileges.",
+          life: 3000,
+        });
+      }
     },
     reject: () => {},
   });

@@ -22,6 +22,7 @@ interface Settings {
   minimize_to_tray_on_close: boolean;
 
   // System info
+  debug: boolean;
   elevated: boolean;
   run_as_admin: boolean;
   system_drive_letter: string;
@@ -34,13 +35,16 @@ interface Settings {
 // Store definition
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
-    elevated: false,
     language: "",
     theme: "",
     minimize_to_tray_on_close: false,
+
+    debug: false,
+    elevated: false,
     run_as_admin: false,
     system_drive_letter: "",
     username: "",
+
     installation: {
       current_user_only: false,
       all_users: {

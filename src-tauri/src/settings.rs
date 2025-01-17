@@ -1,35 +1,54 @@
 use check_elevation::is_elevated;
 use config::Config;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, path::PathBuf};
+use std::{error::Error, mem::replace, path::PathBuf, process::Command};
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Settings {
+    #[serde(default)]
     pub language: String,
+    #[serde(default)]
     pub theme: String,
+    #[serde(default)]
     pub minimize_to_tray_on_close: bool,
 
+    #[serde(default)]
+    pub debug: bool,
+    #[serde(default)]
     pub elevated: bool,
+    #[serde(default)]
     pub run_as_admin: bool,
+    #[serde(default)]
     pub system_drive_letter: String,
+    #[serde(default)]
+    pub user_sid: String,
+    #[serde(default)]
     pub username: String,
 
+    #[serde(default)]
     pub installation: Installation,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Installation {
+    #[serde(default)]
     pub current_user_only: bool,
 
+    #[serde(default)]
     pub all_users: InstallSettings,
+    #[serde(default)]
     pub current_user: InstallSettings,
 }
 
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Default)]
 pub struct InstallSettings {
+    #[serde(default)]
     pub create_desktop_shortcut: bool,
+    #[serde(default)]
     pub create_registry_key: bool,
+    #[serde(default)]
     pub create_start_menu_shortcut: bool,
+    #[serde(default)]
     pub install_path: String,
 }
 
@@ -48,9 +67,11 @@ impl Settings {
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
 
+            debug: false,
             elevated: false,
             run_as_admin: false,
             system_drive_letter: String::new(),
+            user_sid: String::new(),
             username: String::new(),
 
             installation: Installation {
@@ -100,6 +121,41 @@ impl Settings {
     }
 
     pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
+        #[cfg(debug_assertions)]
+        {
+            self.debug = true;
+        }
+        #[cfg(not(debug_assertions))]
+        {
+            self.debug = false;
+        }
+
+        let output = Command::new("powershell")
+            .args([
+                "-NoProfile",
+                "-NonInteractive",
+                "-ExecutionPolicy",
+                "Bypass",
+                "-Command",
+                r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
+            ])
+            .output()?;
+        if !output.status.success() {
+            return Err(String::from_utf8_lossy(&output.stderr).into());
+        }
+        self.user_sid = String::from_utf8_lossy(&output.stdout).trim().to_string();
+
+        match windows_registry::USERS
+            .open(format!(
+                r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
+                self.user_sid
+            ))?
+            .get_string(std::env::current_exe()?.to_string_lossy().to_string())
+        {
+            Ok(value) => self.run_as_admin = value.contains("RUNASADMIN"),
+            Err(_) => self.run_as_admin = false,
+        }
+
         self.elevated = is_elevated()?;
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
         self.username = std::env::var("USERNAME")?.to_string();
