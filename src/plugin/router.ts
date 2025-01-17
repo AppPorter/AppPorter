@@ -49,6 +49,7 @@ export function setupRouterGuards(router: Router) {
           confirm.require({
             message:
               "Are you sure you want to leave? All changes will be lost.",
+            group: "dialog",
             header: "Confirm",
             icon: "material-symbols-rounded text-2xl warning",
             acceptIcon: "material-symbols-rounded text-lg logout",

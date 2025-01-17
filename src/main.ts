@@ -15,6 +15,7 @@ import { useSettingsStore } from "@/stores/settings";
 import Aura from "@primevue/themes/aura";
 import PrimeVue from "primevue/config";
 import ConfirmationService from "primevue/confirmationservice";
+import ToastService from "primevue/toastservice";
 
 // Tauri imports
 import { defaultWindowIcon } from "@tauri-apps/api/app";
@@ -98,6 +99,7 @@ app
       },
     },
   })
+  .use(ToastService)
   .use(ConfirmationService);
 
 // Router guards setup

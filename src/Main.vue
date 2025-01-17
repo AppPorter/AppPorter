@@ -11,9 +11,14 @@ import ConfirmDialog from "primevue/confirmdialog";
 import ContextMenu from "primevue/contextmenu";
 import Menubar from "primevue/menubar";
 import type { MenuItem } from "primevue/menuitem";
+import Toast from "primevue/toast";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 
-// Store initialization
+// Store and utility initialization
 const settingsStore = useSettingsStore();
+const confirm = useConfirm();
+const toast = useToast();
 
 // Window control handlers
 function close_button() {
@@ -27,6 +32,41 @@ function close_button() {
 function minimize_button() {
   window.minimize();
 }
+
+// Warning
+const solve = (event) => {
+  confirm.require({
+    target: event.currentTarget,
+    message:
+      "Do you want to restart the application with administrator privileges?",
+    group: "popup",
+    icon: "material-symbols-rounded warning",
+    rejectProps: {
+      label: "Dismiss",
+      severity: "secondary",
+      outlined: true,
+    },
+    acceptProps: {
+      label: "OK",
+    },
+    accept: () => {
+      toast.add({
+        severity: "info",
+        summary: "Confirmed",
+        detail: "You have accepted",
+        life: 3000,
+      });
+    },
+    reject: () => {
+      toast.add({
+        severity: "error",
+        summary: "Rejected",
+        detail: "You have rejected",
+        life: 3000,
+      });
+    },
+  });
+};
 
 // Navigation menu configuration
 const menu_items = [
@@ -90,7 +130,8 @@ function handleContextMenu(event: MouseEvent) {
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
     <!-- System Dialogs -->
-    <ConfirmDialog>
+    <Toast />
+    <ConfirmDialog group="dialog">
       <template #icon>
         <span class="material-symbols-rounded">warning</span>
       </template>
@@ -113,27 +154,33 @@ function handleContextMenu(event: MouseEvent) {
     </div>
 
     <!-- Title Bar & Navigation -->
-    <div class="fixed w-full z-40">
-      <div>
-        <div
-          class="flex items-center pr-24 w-full"
-          style="-webkit-app-region: drag"
-        >
-          <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
+    <div class="fixed w-full z-30">
+      <div
+        class="flex items-center pr-24 w-full"
+        style="-webkit-app-region: drag"
+      >
+        <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
 
-          <!-- Warning -->
-          <Message
-            size="small"
+        <!-- Warning -->
+        <Message
+          size="small"
+          severity="warn"
+          class="mx-4 py-0 w-full"
+          v-if="!settingsStore.administrator"
+        >
+          <template #icon
+            ><span class="material-symbols-rounded">warning</span> </template
+          >Application is not running with administrator privileges. Some
+          features may be unavailable.
+          <ConfirmPopup group="popup"></ConfirmPopup
+          ><Button
+            @click="solve($event)"
+            label="Solve"
+            variant="outlined"
             severity="warn"
-            class="mx-4 py-0 w-full"
-            v-if="!settingsStore.administrator"
-          >
-            <template #icon
-              ><span class="material-symbols-rounded">warning</span></template
-            >Application is not running with administrator privileges. Some
-            features may be unavailable.</Message
-          >
-        </div>
+            class="z-40 left-4"
+          ></Button
+        ></Message>
       </div>
 
       <!-- Navigation Menu -->
@@ -156,7 +203,7 @@ function handleContextMenu(event: MouseEvent) {
 
     <!-- Main Content Area -->
     <div class="pt-28 px-4 pb-6">
-      <RouterView class="z-40" />
+      <RouterView class="z-30" />
     </div>
 
     <!-- Context Menu -->
