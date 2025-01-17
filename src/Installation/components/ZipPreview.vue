@@ -226,18 +226,18 @@ async function confirmSelection() {
   appDetailsCard?.classList.add("loading");
 
   try {
-    const arg = JSON.stringify({
-      zip_path: props.zipPath,
-      executable_path: executable_path.value,
-    });
-
     listen("get_details", (event) => {
       console.log(event.payload);
     });
 
     const result = await invoke("execute_command", {
-      command: "GetDetails",
-      arg: arg,
+      command: {
+        name: "GetDetails",
+        path: {
+          zip_path: props.zipPath,
+          executable_path: executable_path.value,
+        },
+      },
     });
     listen("get_details", () => {});
 

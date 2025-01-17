@@ -3,6 +3,7 @@
 import { window } from "@/main";
 import { goTo } from "@/plugin/router";
 import { useSettingsStore } from "@/stores/settings";
+import { invoke } from "@tauri-apps/api/core";
 import { exit } from "@tauri-apps/plugin-process";
 import { ref } from "vue";
 
@@ -52,6 +53,12 @@ const solve = (event) => {
       label: "Yes",
     },
     accept: () => {
+      invoke("execute_command", {
+        command: {
+          name: "Elevate",
+          revert: false,
+        },
+      });
       toast.add({
         severity: "success",
         summary: "Restart to apply the change",
@@ -180,7 +187,7 @@ function handleContextMenu(event: MouseEvent) {
           size="small"
           severity="warn"
           class="mx-4 py-0 w-full"
-          v-if="!settingsStore.administrator && !dismiss_warning"
+          v-if="!settingsStore.elevated && !dismiss_warning"
         >
           <template #icon
             ><span class="material-symbols-rounded">warning</span> </template

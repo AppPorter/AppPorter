@@ -92,23 +92,24 @@ async function select_install_path() {
 // Installation process handler
 async function start_installation() {
   try {
-    const config = {
-      app_icon: installationConfig.app_icon,
-      app_name: installationConfig.app_name,
-      app_publisher: installationConfig.app_publisher,
-      app_version: installationConfig.app_version,
-      current_user_only: installationConfig.current_user_only,
-      create_desktop_shortcut: installationConfig.create_desktop_shortcut,
-      create_registry_key: installationConfig.create_registry_key,
-      create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
-      install_path: installationConfig.install_path,
-      executable_path: installationConfig.executable_path,
-      zip_path: installationConfig.zip_path,
-    };
-
     await invoke("execute_command", {
-      command: "Installation",
-      arg: JSON.stringify(config),
+      command: {
+        name: "Installation",
+        config: {
+          app_icon: installationConfig.app_icon,
+          app_name: installationConfig.app_name,
+          app_publisher: installationConfig.app_publisher,
+          app_version: installationConfig.app_version,
+          current_user_only: installationConfig.current_user_only,
+          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
+          create_registry_key: installationConfig.create_registry_key,
+          create_start_menu_shortcut:
+            installationConfig.create_start_menu_shortcut,
+          install_path: installationConfig.install_path,
+          executable_path: installationConfig.executable_path,
+          zip_path: installationConfig.zip_path,
+        },
+      },
     });
   } catch (error) {
     console.error("Failed to install:", error);

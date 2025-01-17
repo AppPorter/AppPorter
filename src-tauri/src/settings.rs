@@ -9,7 +9,8 @@ pub struct Settings {
     pub theme: String,
     pub minimize_to_tray_on_close: bool,
 
-    pub administrator: bool,
+    pub elevated: bool,
+    pub run_as_admin: bool,
     pub system_drive_letter: String,
     pub username: String,
 
@@ -47,7 +48,8 @@ impl Settings {
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
 
-            administrator: false,
+            elevated: false,
+            run_as_admin: false,
             system_drive_letter: String::new(),
             username: String::new(),
 
@@ -98,7 +100,7 @@ impl Settings {
     }
 
     pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
-        self.administrator = is_elevated()?;
+        self.elevated = is_elevated()?;
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
         self.username = std::env::var("USERNAME")?.to_string();
 

@@ -22,7 +22,8 @@ interface Settings {
   minimize_to_tray_on_close: boolean;
 
   // System info
-  administrator: boolean;
+  elevated: boolean;
+  run_as_admin: boolean;
   system_drive_letter: string;
   username: string;
 
@@ -33,10 +34,11 @@ interface Settings {
 // Store definition
 export const useSettingsStore = defineStore("settings", {
   state: (): Settings => ({
-    administrator: false,
+    elevated: false,
     language: "",
     theme: "",
     minimize_to_tray_on_close: false,
+    run_as_admin: false,
     system_drive_letter: "",
     username: "",
     installation: {
@@ -59,8 +61,9 @@ export const useSettingsStore = defineStore("settings", {
   actions: {
     async loadSettings() {
       const result = await invoke("execute_command", {
-        command: "LoadSettings",
-        arg: null,
+        command: {
+          name: "LoadSettings",
+        },
       });
       this.$patch(JSON.parse(result as string));
     },

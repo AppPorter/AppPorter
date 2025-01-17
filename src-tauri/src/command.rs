@@ -1,35 +1,27 @@
-use crate::installation::{get_details, installation, ExePath, InstallationConfig};
-use crate::settings::load_settings;
-use serde_json::json;
+use crate::{
+    elevate,
+    installation::{get_details, installation, ExePath, InstallationConfig},
+    settings::load_settings,
+};
+use serde::Deserialize;
 use tauri::AppHandle;
 
-#[tauri::command(async)]
-pub async fn execute_command(
-    command: String,
-    arg: Option<String>,
-    app: AppHandle,
-) -> Result<String, String> {
-    let result = match command.as_str() {
-        "LoadSettings" => load_settings(),
-        "GetDetails" => {
-            let exe_path = serde_json::from_str::<ExePath>(&arg.ok_or("Arguments not found")?)
-                .map_err(|e| e.to_string())?;
-            get_details(exe_path, app)
-        }
-        "Installation" => {
-            let config =
-                serde_json::from_str::<InstallationConfig>(&arg.ok_or("Arguments not found")?)
-                    .map_err(|e| e.to_string())?;
-            installation(config, app)
-        }
-        _ => Err("Unknown command".into()),
-    };
+#[derive(Deserialize)]
+#[serde(tag = "name")]
+pub enum Command {
+    LoadSettings,
+    GetDetails { path: ExePath },
+    Installation { config: InstallationConfig },
+    Elevate { revert: bool },
+}
 
-    match result {
-        Ok(value) => Ok(value),
-        Err(error) => Ok(json!({
-            "error": error.to_string()
-        })
-        .to_string()),
+#[tauri::command(async)]
+pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
+    match command {
+        Command::LoadSettings => load_settings(),
+        Command::GetDetails { path } => get_details(path, app),
+        Command::Installation { config } => installation(config, app),
+        Command::Elevate { revert } => elevate(revert).map(|_| "Success".to_string()),
     }
+    .map_err(|e| e.to_string())
 }
