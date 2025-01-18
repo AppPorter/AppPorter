@@ -24,6 +24,8 @@ import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
 
+document.addEventListener("contextmenu", (event) => event.preventDefault());
+
 // Window initialization
 export const window = await getCurrentWindow();
 const icon = (await defaultWindowIcon()) || "src-tauri\\icons\\icon.ico";

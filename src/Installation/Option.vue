@@ -138,7 +138,7 @@ defineOptions({
 
 <template>
   <div
-    class="h-[calc(100vh-144px)] p-1.5 pb-12 flex gap-2"
+    class="h-[calc(100vh-130px)] p-1.5 pb-12 flex gap-2"
     :class="$attrs.class"
   >
     <!-- Left Column: Installation Options & App Details -->

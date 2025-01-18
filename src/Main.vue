@@ -209,11 +209,8 @@ function handleContextMenu(event: MouseEvent) {
       </div>
 
       <!-- Navigation Menu -->
-      <div class="flex justify-center">
-        <Menubar
-          :model="menu_items"
-          class="border-none shadow-none w-[calc(100vw-40px)]"
-        >
+      <div class="flex justify-center px-4">
+        <Menubar :model="menu_items" class="border-none shadow-none w-full">
           <template #item="{ item }">
             <div class="flex items-center px-2">
               <span :class="[item.icon, 'flex items-center']">{{
