@@ -12,19 +12,17 @@ import Settings from "@/Settings.vue";
 
 // Route definitions
 const routes = [
-  { path: "/", redirect: "/Installation", name: "root" },
-  { path: "/Installation", component: Installation, name: "installation" },
+  { path: "/", redirect: "/Installation" },
+  { path: "/Installation", component: Installation },
   {
     path: "/Installation/Option",
     component: Installation_Option,
-    name: "installation-option",
   },
   {
     path: "/Installation/Progress",
     component: Installation_Progress,
-    name: "installation-progress",
   },
-  { path: "/Settings", component: Settings, name: "settings" },
+  { path: "/Settings", component: Settings },
 ] as const;
 
 const router = createRouter({
@@ -42,7 +40,7 @@ export function setupRouterGuards(router: Router) {
     const installationConfig = useInstallationConfigStore();
 
     // Only show confirmation when leaving installation option page
-    if (from.name === "installation-option") {
+    if (from.path === "/Installation/Option") {
       const confirm = useConfirm();
       try {
         await new Promise((resolve, reject) => {
@@ -51,12 +49,15 @@ export function setupRouterGuards(router: Router) {
               "Are you sure you want to leave? All changes will be lost.",
             group: "dialog",
             header: "Confirm",
-            icon: "material-symbols-rounded text-2xl warning",
-            acceptIcon: "material-symbols-rounded text-lg logout",
-            rejectIcon: "material-symbols-rounded text-lg close",
-            acceptLabel: "Leave",
-            rejectLabel: "Cancel",
-            rejectClass: "p-button-outlined p-button-secondary",
+            icon: "material-symbols-rounded warning",
+            rejectProps: {
+              label: "Cancel",
+              severity: "secondary",
+              outlined: true,
+            },
+            acceptProps: {
+              label: "Leave",
+            },
             accept: () => resolve(true),
             reject: () => reject(),
           });
@@ -67,16 +68,8 @@ export function setupRouterGuards(router: Router) {
     }
 
     // Clear data based on route
-    if (to.name === "installation") {
+    if (to.path === "/Installation" || to.path === "/Settings") {
       installationConfig.$reset();
-    } else if (to.name === "installation-option") {
-      const zipPath = installationConfig.zip_path;
-      installationConfig.$reset();
-      installationConfig.zip_path = zipPath;
-    } else if (to.name === "installation-progress") {
-      return true;
-    } else if (to.name === "settings") {
-      return true;
     }
     return true;
   });

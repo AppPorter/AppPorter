@@ -97,7 +97,7 @@ const menu_items = [
     label: "Installation",
     icon: "material-symbols-rounded text-xl",
     iconClass: "install_desktop",
-    command: () => goTo("/installation"),
+    command: () => goTo("/"),
   },
   {
     label: "Settings",
@@ -156,7 +156,7 @@ function handleContextMenu(event: MouseEvent) {
     <Toast />
     <ConfirmDialog group="dialog">
       <template #icon>
-        <span class="material-symbols-rounded">warning</span>
+        <span class="material-symbols-rounded text-[32px]">warning</span>
       </template>
     </ConfirmDialog>
 
@@ -215,11 +215,11 @@ function handleContextMenu(event: MouseEvent) {
           class="border-none shadow-none w-[calc(100vw-40px)]"
         >
           <template #item="{ item }">
-            <div class="flex items-center">
+            <div class="flex items-center px-2">
               <span :class="[item.icon, 'flex items-center']">{{
                 item.iconClass
               }}</span>
-              <span class="ml-2">{{ item.label }}</span>
+              <span class="ml-1">{{ item.label }}</span>
             </div>
           </template>
         </Menubar>
