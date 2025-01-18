@@ -15,6 +15,8 @@ import ProgressBar from "primevue/progressbar";
 import ToggleSwitch from "primevue/toggleswitch";
 
 // Vue imports
+import { goTo } from "@/plugin/router";
+import { listen } from "@tauri-apps/api/event";
 import { ref } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
@@ -91,7 +93,11 @@ async function select_install_path() {
 
 // Installation process handler
 async function start_installation() {
+  goTo("/installation/progress");
   try {
+    listen("installation", (event) => {
+      console.log(event.payload);
+    });
     await invoke("execute_command", {
       command: {
         name: "Installation",
@@ -111,6 +117,7 @@ async function start_installation() {
         },
       },
     });
+    listen("installation", () => {});
   } catch (error) {
     console.error("Failed to install:", error);
   }

@@ -17,7 +17,6 @@ pub struct ExePath {
 }
 
 pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
-    let timer = std::time::Instant::now();
     // Create temp directory
     let temp_dir = Builder::new().prefix("appporter").tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
@@ -138,6 +137,7 @@ pub fn installation(
     installation_config: InstallationConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error>> {
+    let timer = std::time::Instant::now();
     let file = File::open(installation_config.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
@@ -145,7 +145,6 @@ pub fn installation(
         installation_config.install_path,
         installation_config.app_name.replace(" ", "-")
     );
-
     // Check if the zip has only one root directory
     let mut root_entries = std::collections::HashSet::new();
     for i in 0..archive.len() {
@@ -156,14 +155,13 @@ pub fn installation(
             root_entries.insert(root.to_string());
         }
     }
-
     // If there's exactly one root directory, we'll extract contents directly
     let single_root = if root_entries.len() == 1 {
         Some(root_entries.into_iter().next().unwrap())
     } else {
         None
     };
-
+    app.emit("installation", 1)?;
     // Extract files
     for i in 0..archive.len() {
         let mut file = archive.by_index(i)?;
@@ -192,7 +190,7 @@ pub fn installation(
         let mut outfile = std::fs::File::create(&outpath)?;
         std::io::copy(&mut file, &mut outfile)?;
     }
-
+    app.emit("installation", 2)?;
     let full_executable_path = if let Some(root) = &single_root {
         // If the executable path starts with the root directory, remove it
         let exe_path = if installation_config
@@ -215,7 +213,6 @@ pub fn installation(
             installation_config.executable_path.replace("/", r"\")
         )
     };
-
     let settings = crate::settings::Settings::read()?;
     if installation_config.create_start_menu_shortcut {
         let lnk_path = if installation_config.current_user_only {
@@ -231,7 +228,6 @@ pub fn installation(
         };
         ShellLink::new(&full_executable_path)?.create_lnk(lnk_path)?;
     }
-
     if installation_config.create_desktop_shortcut {
         ShellLink::new(&full_executable_path)?.create_lnk(format!(
             r"{}\{}.lnk",
