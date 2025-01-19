@@ -2,6 +2,7 @@
 // External imports
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
+import { listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 
@@ -15,7 +16,7 @@ import ToggleSwitch from "primevue/toggleswitch";
 
 // Vue imports
 import { goTo } from "@/plugin/router";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
 // Store initialization and destructuring
@@ -92,10 +93,20 @@ async function select_install_path() {
 // Loading states
 const detailsLoading = ref(false);
 const detailsLoadingProgress = ref(0);
+const progressMode = ref<"indeterminate" | "determinate">("indeterminate");
+const extractProgress = ref(0);
 
 function handleDetailsProgress(value: number) {
+  progressMode.value = "indeterminate";
   detailsLoadingProgress.value = value;
 }
+
+onMounted(() => {
+  listen("get_details", (event) => {
+    progressMode.value = "determinate";
+    detailsLoadingProgress.value = (event.payload as number) * 25;
+  });
+});
 
 defineOptions({
   inheritAttrs: false,
@@ -312,20 +323,18 @@ defineOptions({
           <h3
             class="text-base font-semibold text-surface-900 dark:text-surface-0"
           >
-            App Details
+            Loading App Details
           </h3>
           <ProgressBar
-            v-if="detailsLoadingProgress > 0"
-            :value="(detailsLoadingProgress / 4) * 100"
+            :mode="progressMode"
+            :value="detailsLoadingProgress"
             class="w-40"
           />
           <p class="text-sm text-surface-600 dark:text-surface-400">
             {{
-              detailsLoadingProgress > 0
-                ? ["Preparing", "Extracting", "Reading", "Processing"][
-                    detailsLoadingProgress - 1
-                  ]
-                : "Loading..."
+              ["Preparing", "Extracting", "Reading", "Processing"][
+                Math.floor(detailsLoadingProgress / 25) - 1
+              ] || "Loading..."
             }}
           </p>
         </div>

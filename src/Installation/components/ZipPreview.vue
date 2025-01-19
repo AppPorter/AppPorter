@@ -7,10 +7,11 @@ import JSZip from "jszip";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
 import Panel from "primevue/panel";
+import ProgressBar from "primevue/progressbar";
 import RadioButton from "primevue/radiobutton";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
-import { computed, nextTick, ref, watchEffect } from "vue";
+import { computed, nextTick, onMounted, ref, watchEffect } from "vue";
 
 // Types
 type FilterMode = "exe" | "executable" | "all";
@@ -82,7 +83,12 @@ const filteredPaths = computed(() => {
 });
 
 const isLoading = computed(() => status.value === "loading");
-const isEmpty = computed(() => fileTree.value.length === 0);
+const hasScanned = computed(() => zipCache.value !== null);
+const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0);
+
+// Loading states
+const progressMode = ref<"indeterminate" | "determinate">("indeterminate");
+const loadingProgress = ref(0);
 
 // Core functions
 function getFilePriority(name: string): number {
@@ -311,6 +317,32 @@ watchEffect(() => {
     fileTree.value = buildFileTree(filteredPaths.value);
   }
 });
+
+onMounted(async () => {
+  if (props.zipPath) {
+    emit("loading", true);
+    try {
+      const config = {
+        zip_path: props.zipPath,
+      };
+      progressMode.value = "indeterminate";
+      const files: string[] = await invoke("get_file_list", { config });
+      loadingProgress.value = 50;
+      progressMode.value = "determinate";
+
+      fileTree.value = buildFileTree(files);
+      loadingProgress.value = 100;
+
+      setTimeout(() => {
+        emit("loading", false);
+        loadingProgress.value = 0;
+      }, 500);
+    } catch (error) {
+      console.error("Failed to get file list:", error);
+      emit("loading", false);
+    }
+  }
+});
 </script>
 
 <template>
@@ -364,12 +396,10 @@ watchEffect(() => {
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
       <div
-        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[22rem] overflow-hidden"
+        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[22rem] overflow-hidden relative"
       >
-        <div v-if="isLoading" class="text-sm opacity-60">Loading...</div>
-        <div v-else-if="isEmpty" class="text-sm opacity-60">No files found</div>
         <Tree
-          v-else
+          v-if="hasScanned && !isEmpty"
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
@@ -387,6 +417,20 @@ watchEffect(() => {
             </div>
           </template>
         </Tree>
+
+        <!-- Empty State Overlay -->
+        <div
+          v-if="hasScanned && isEmpty"
+          class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
+        >
+          <span
+            class="material-symbols-rounded text-4xl text-surface-400 dark:text-surface-600"
+            >folder_off</span
+          >
+          <p class="text-sm text-surface-600 dark:text-surface-400">
+            No files found
+          </p>
+        </div>
       </div>
 
       <!-- Filter Controls -->
@@ -433,6 +477,20 @@ watchEffect(() => {
           </Button>
         </div>
       </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div
+      v-if="props.detailsLoading"
+      class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
+    >
+      <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">
+        Reading Archive
+      </h3>
+      <ProgressBar :mode="progressMode" :value="loadingProgress" class="w-40" />
+      <p class="text-sm text-surface-600 dark:text-surface-400">
+        {{ loadingProgress === 100 ? "Completed" : "Loading..." }}
+      </p>
     </div>
   </Panel>
 </template>
