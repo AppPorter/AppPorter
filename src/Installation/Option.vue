@@ -2,7 +2,6 @@
 // External imports
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
-import { invoke } from "@tauri-apps/api/core";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 
@@ -16,7 +15,6 @@ import ToggleSwitch from "primevue/toggleswitch";
 
 // Vue imports
 import { goTo } from "@/plugin/router";
-import { listen } from "@tauri-apps/api/event";
 import { ref } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
@@ -88,38 +86,6 @@ async function select_install_path() {
   });
   if (selected) {
     install_path.value = String(selected);
-  }
-}
-
-// Installation process handler
-async function start_installation() {
-  goTo("/installation/progress");
-  try {
-    listen("installation", (event) => {
-      console.log(event.payload);
-    });
-    await invoke("execute_command", {
-      command: {
-        name: "Installation",
-        config: {
-          app_icon: installationConfig.app_icon,
-          app_name: installationConfig.app_name,
-          app_publisher: installationConfig.app_publisher,
-          app_version: installationConfig.app_version,
-          current_user_only: installationConfig.current_user_only,
-          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
-          create_registry_key: installationConfig.create_registry_key,
-          create_start_menu_shortcut:
-            installationConfig.create_start_menu_shortcut,
-          install_path: installationConfig.install_path,
-          executable_path: installationConfig.executable_path,
-          zip_path: installationConfig.zip_path,
-        },
-      },
-    });
-    listen("installation", () => {});
-  } catch (error) {
-    console.error("Failed to install:", error);
   }
 }
 
@@ -383,7 +349,7 @@ defineOptions({
       severity="primary"
       size="large"
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
-      @click="start_installation"
+      @click="goTo('/installation/progress')"
     >
       <span class="material-symbols-rounded text-lg mr-1">download</span>
       Install

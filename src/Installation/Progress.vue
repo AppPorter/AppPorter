@@ -1,70 +1,51 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useInstallationConfigStore } from "@/stores/installation_config";
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
+import { onMounted, ref } from "vue";
+
+const installationConfig = useInstallationConfigStore();
+onMounted(() => {
+  try {
+    listen("installation", (event) => {
+      console.log(event.payload);
+    });
+    listen("installation_extract", (event) => {
+      console.log(event.payload);
+    });
+    invoke("execute_command", {
+      command: {
+        name: "Installation",
+        config: {
+          app_icon: installationConfig.app_icon,
+          app_name: installationConfig.app_name,
+          app_publisher: installationConfig.app_publisher,
+          app_version: installationConfig.app_version,
+          current_user_only: installationConfig.current_user_only,
+          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
+          create_registry_key: installationConfig.create_registry_key,
+          create_start_menu_shortcut:
+            installationConfig.create_start_menu_shortcut,
+          install_path: installationConfig.install_path,
+          executable_path: installationConfig.executable_path,
+          zip_path: installationConfig.zip_path,
+        },
+      },
+    });
+    listen("installation", () => {});
+    listen("installation_extract", () => {});
+  } catch (error) {
+    console.error("Failed to install:", error);
+  }
+});
+
+const progress_mode = ref<"indeterminate" | "determinate">("indeterminate");
+const progress = ref(0);
+</script>
 
 <template>
-  <Stepper value="1">
-    <StepList>
-      <Step value="1">Header I</Step>
-      <Step value="2">Header II</Step>
-      <Step value="3">Header III</Step>
-    </StepList>
-    <StepPanels>
-      <StepPanel v-slot="{ activateCallback }" value="1">
-        <div class="flex flex-col h-48">
-          <div
-            class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-          >
-            Content I
-          </div>
-        </div>
-        <div class="flex pt-6 justify-end">
-          <Button
-            label="Next"
-            icon="pi pi-arrow-right"
-            iconPos="right"
-            @click="activateCallback('2')"
-          />
-        </div>
-      </StepPanel>
-      <StepPanel v-slot="{ activateCallback }" value="2">
-        <div class="flex flex-col h-48">
-          <div
-            class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-          >
-            Content II
-          </div>
-        </div>
-        <div class="flex pt-6 justify-between">
-          <Button
-            label="Back"
-            severity="secondary"
-            icon="pi pi-arrow-left"
-            @click="activateCallback('1')"
-          />
-          <Button
-            label="Next"
-            icon="pi pi-arrow-right"
-            iconPos="right"
-            @click="activateCallback('3')"
-          />
-        </div>
-      </StepPanel>
-      <StepPanel v-slot="{ activateCallback }" value="3">
-        <div class="flex flex-col h-48">
-          <div
-            class="border-2 border-dashed border-surface-200 dark:border-surface-700 rounded bg-surface-50 dark:bg-surface-950 flex-auto flex justify-center items-center font-medium"
-          >
-            Content III
-          </div>
-        </div>
-        <div class="pt-6">
-          <Button
-            label="Back"
-            severity="secondary"
-            icon="pi pi-arrow-left"
-            @click="activateCallback('2')"
-          />
-        </div>
-      </StepPanel>
-    </StepPanels>
-  </Stepper>
+  <div class="card">
+    <Toast></Toast>
+    <ProgressBar :mode="progress_mode" :value="progress" />
+  </div>
 </template>

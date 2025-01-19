@@ -13,6 +13,7 @@ declare module 'vue' {
     EditContextMenu: typeof import('./src/components/context/EditContextMenu.vue')['default']
     InputSwitch: typeof import('primevue/inputswitch')['default']
     Message: typeof import('primevue/message')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SplitButton: typeof import('primevue/splitbutton')['default']
