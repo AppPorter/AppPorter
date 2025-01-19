@@ -182,7 +182,7 @@ function handleContextMenu(event: MouseEvent) {
         class="flex items-center pr-24 w-full"
         style="-webkit-app-region: drag"
       >
-        <h1 class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</h1>
+        <span class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</span>
 
         <!-- Warning -->
         <Message
