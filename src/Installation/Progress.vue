@@ -22,7 +22,13 @@ const installationConfig = useInstallationConfigStore();
 const getInstallMode = (isCurrentUser: boolean) =>
   isCurrentUser ? "Current User Only" : "All Users";
 
-const getShortcutsList = (config: any) => {
+interface ShortcutsConfig {
+  create_desktop_shortcut: boolean;
+  create_start_menu_shortcut: boolean;
+  create_registry_key: boolean;
+}
+
+const getShortcutsList = (config: ShortcutsConfig) => {
   const shortcuts = [];
   if (config.create_desktop_shortcut) shortcuts.push("Desktop");
   if (config.create_start_menu_shortcut) shortcuts.push("Start Menu");
@@ -114,7 +120,7 @@ defineOptions({
 </script>
 
 <template>
-  <div class="h-[calc(100vh-135px)] p-1.5 pb-12 flex items-center">
+  <div class="p-1.5 pb-12 flex items-center">
     <Panel
       class="border border-surface-200 dark:border-surface-700 shadow-sm max-w-5xl w-full mx-auto"
     >
