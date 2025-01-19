@@ -165,16 +165,17 @@ defineOptions({
           </div>
 
           <!-- Install Path -->
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-2 w-full">
             <span class="w-24 text-sm font-medium">Install Path</span>
-            <div class="flex-1 flex gap-1">
+            <div class="flex-1 flex gap-2">
               <InputText
                 v-model="install_path"
                 placeholder="Choose installation directory"
                 class="w-full text-sm h-8"
               />
               <Button
-                class="p-button-secondary h-8"
+                class="h-8 w-36"
+                severity="secondary"
                 @click="select_install_path"
               >
                 <span class="material-symbols-rounded">folder_open</span>
