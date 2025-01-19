@@ -22,6 +22,7 @@ interface Settings {
   minimize_to_tray_on_close: boolean;
 
   // System info
+  color: string;
   debug: boolean;
   elevated: boolean;
   run_as_admin: boolean;
@@ -39,6 +40,7 @@ export const useSettingsStore = defineStore("settings", {
     theme: "",
     minimize_to_tray_on_close: false,
 
+    color: "",
     debug: false,
     elevated: false,
     run_as_admin: false,

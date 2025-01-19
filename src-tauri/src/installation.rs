@@ -137,7 +137,6 @@ pub fn installation(
     installation_config: InstallationConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error>> {
-    let timer = std::time::Instant::now();
     let file = File::open(installation_config.zip_path)?;
     let mut archive = ZipArchive::new(file)?;
     let app_path = format!(
