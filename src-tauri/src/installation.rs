@@ -163,6 +163,7 @@ pub fn installation(
     app.emit("installation", 0)?;
 
     let total_files = archive.len();
+    let mut last_progress = -1;
     // Extract files
     for i in 0..total_files {
         let mut file = archive.by_index(i)?;
@@ -191,11 +192,13 @@ pub fn installation(
         let mut outfile = std::fs::File::create(&outpath)?;
         std::io::copy(&mut file, &mut outfile)?;
 
-        // Emit progress (convert to percentage)
         let progress = ((i as f32 + 1.0) / total_files as f32 * 100.0) as i32;
-        app.emit("installation", progress)?;
+        if progress != last_progress {
+            app.emit("installation_extract", progress)?;
+            last_progress = progress;
+        }
     }
-    app.emit("installation_extract", 101)?;
+    app.emit("installation", 101)?;
     let full_executable_path = if let Some(root) = &single_root {
         // If the executable path starts with the root directory, remove it
         let exe_path = if installation_config

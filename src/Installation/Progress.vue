@@ -4,14 +4,25 @@ import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
 import { onMounted, ref } from "vue";
 
+const progress_mode = ref<"indeterminate" | "determinate">("indeterminate");
+const extract_progress = ref(0);
+const is_finished = ref(false);
+
 const installationConfig = useInstallationConfigStore();
 onMounted(() => {
   try {
     listen("installation", (event) => {
-      console.log(event.payload);
+      if (event.payload == 0) {
+        progress_mode.value = "indeterminate";
+      }
+      if (event.payload == 101) {
+        progress_mode.value = "indeterminate";
+        is_finished.value = true;
+      }
     });
     listen("installation_extract", (event) => {
-      console.log(event.payload);
+      progress_mode.value = "determinate";
+      extract_progress.value = event.payload as number;
     });
     invoke("execute_command", {
       command: {
@@ -38,14 +49,12 @@ onMounted(() => {
     console.error("Failed to install:", error);
   }
 });
-
-const progress_mode = ref<"indeterminate" | "determinate">("indeterminate");
-const progress = ref(0);
 </script>
 
 <template>
-  <div class="card">
-    <Toast></Toast>
-    <ProgressBar :mode="progress_mode" :value="progress" />
-  </div>
+  <ProgressBar
+    v-if="!is_finished"
+    :mode="progress_mode"
+    :value="extract_progress"
+  />
 </template>
