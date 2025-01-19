@@ -214,6 +214,7 @@ function handleAutoExeSelection() {
   if (topLevelExes.length === 1) {
     executable_path.value = topLevelExes[0];
     selectedNode.value = { [topLevelExes[0]]: true };
+    autoConfirmed.value = true;
     confirmSelection();
   }
 }
@@ -419,18 +420,14 @@ watchEffect(() => {
         <div class="flex justify-end w-full">
           <Button
             :severity="
-              isConfirmed || autoConfirmed
-                ? autoConfirmed
-                  ? 'info'
-                  : 'success'
-                : 'secondary'
+              isConfirmed ? (autoConfirmed ? 'info' : 'success') : 'secondary'
             "
             class="h-8 text-sm min-w-[7rem] transition-all duration-200"
             :disabled="!executable_path || isConfirmed"
-            @click="executable_path && !autoConfirmed && confirmSelection()"
+            @click="executable_path && !isConfirmed && confirmSelection()"
           >
             <span class="material-symbols-rounded text-lg mr-1">
-              {{ isConfirmed || autoConfirmed ? "check_circle" : "task_alt" }}
+              {{ isConfirmed ? "check_circle" : "task_alt" }}
             </span>
             {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}
           </Button>
