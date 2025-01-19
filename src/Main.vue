@@ -153,7 +153,7 @@ function handleContextMenu(event: MouseEvent) {
 <template>
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
     <!-- System Dialogs -->
-    <Toast />
+    <Toast position="bottom-left" class="z-40" />
     <ConfirmDialog group="dialog">
       <template #icon>
         <span class="material-symbols-rounded text-[32px]">warning</span>
