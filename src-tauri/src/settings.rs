@@ -1,7 +1,7 @@
 use check_elevation::is_elevated;
 use config::Config;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, mem::replace, path::PathBuf, process::Command};
+use std::{error::Error, path::PathBuf, process::Command};
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Settings {
@@ -12,6 +12,8 @@ pub struct Settings {
     #[serde(default)]
     pub minimize_to_tray_on_close: bool,
 
+    #[serde(default)]
+    pub color: String,
     #[serde(default)]
     pub debug: bool,
     #[serde(default)]
@@ -67,6 +69,7 @@ impl Settings {
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
 
+            color: String::new(),
             debug: false,
             elevated: false,
             run_as_admin: false,
@@ -155,6 +158,18 @@ impl Settings {
             Ok(value) => self.run_as_admin = value.contains("RUNASADMIN"),
             Err(_) => self.run_as_admin = false,
         }
+
+        let accent_color_bgr = format!(
+            "{:x}",
+            windows_registry::CURRENT_USER
+                .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
+                .get_u32("AccentColorMenu")?
+        );
+        let accent_color_b = &accent_color_bgr[2..4];
+        let accent_color_g: &_ = &accent_color_bgr[4..6];
+        let accent_color_r = &accent_color_bgr[6..8];
+        let accent_color_rgb = format!("#{}{}{}", accent_color_r, accent_color_g, accent_color_b);
+        self.color = accent_color_rgb;
 
         self.elevated = is_elevated()?;
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
