@@ -323,15 +323,8 @@ onMounted(async () => {
   if (props.zipPath) {
     emit("loading", true);
     try {
-      const config = {
-        zip_path: props.zipPath,
-      };
       progressMode.value = "indeterminate";
-      const files: string[] = await invoke("get_file_list", { config });
-      loadingProgress.value = 50;
-      progressMode.value = "determinate";
-
-      fileTree.value = buildFileTree(files);
+      await loadZipContent();
       loadingProgress.value = 100;
 
       setTimeout(() => {
@@ -339,7 +332,7 @@ onMounted(async () => {
         loadingProgress.value = 0;
       }, 500);
     } catch (error) {
-      console.error("Failed to get file list:", error);
+      console.error("Failed to load zip content:", error);
       emit("loading", false);
     }
   }
