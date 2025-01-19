@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
 import { readFile } from "@tauri-apps/plugin-fs";
 import JSZip from "jszip";
 import { storeToRefs } from "pinia";
@@ -82,7 +81,6 @@ const filteredPaths = computed(() => {
   return filterFilesByMode(zipCache.value.paths, filterMode.value);
 });
 
-const isLoading = computed(() => status.value === "loading");
 const hasScanned = computed(() => zipCache.value !== null);
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0);
 
@@ -182,6 +180,9 @@ function handleNodeSelect(node: TreeNode) {
   if (customNode.data?.isExecutable) {
     executable_path.value = customNode.data.path;
     selectedNode.value = { [customNode.key]: true };
+    // Reset confirm state when selecting a new executable
+    isConfirmed.value = false;
+    autoConfirmed.value = false;
   } else {
     selectedNode.value = {};
   }
@@ -189,7 +190,7 @@ function handleNodeSelect(node: TreeNode) {
 
 // File operations
 async function loadZipContent() {
-  if (!props.zipPath || zipCache.value) return;
+  if (!props.zipPath) return;
 
   status.value = "loading";
   try {
@@ -233,10 +234,6 @@ async function confirmSelection() {
   appDetailsCard?.classList.add("loading");
 
   try {
-    listen("get_details", (event) => {
-      console.log(event.payload);
-    });
-
     const result = await invoke("execute_command", {
       command: {
         name: "GetDetails",
@@ -246,8 +243,6 @@ async function confirmSelection() {
         },
       },
     });
-    listen("get_details", () => {});
-
     if (typeof result === "string") {
       const parsedResult = JSON.parse(result);
 
@@ -309,6 +304,12 @@ const collapseAll = async () => {
 
 // Effects
 watchEffect(() => {
+  if (!props.zipPath) return;
+  zipCache.value = null;
+  isConfirmed.value = false;
+  autoConfirmed.value = false;
+  selectedNode.value = {};
+  executable_path.value = "";
   loadZipContent();
 });
 
