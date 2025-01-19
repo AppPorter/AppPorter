@@ -29,7 +29,6 @@ async function select_zip_file() {
 
 <template>
   <div class="mt-32 flex items-center justify-center">
-    <Button @click="goTo('/Installation/Progress')">progress</Button>
     <!-- Main Selection Panel -->
     <Panel
       class="w-full max-w-3xl mx-auto shadow-sm border border-surface-200 dark:border-surface-700"
