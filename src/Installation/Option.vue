@@ -2,7 +2,7 @@
 // External imports
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { useSettingsStore } from "@/stores/settings";
-import { listen } from "@tauri-apps/api/event";
+import { emit, listen } from "@tauri-apps/api/event";
 import { open } from "@tauri-apps/plugin-dialog";
 import { storeToRefs } from "pinia";
 
@@ -144,6 +144,55 @@ async function handleInstallClick() {
     pathError.value = String(error);
   }
 }
+
+// Auto fill states
+const autoConfirmed = ref(false);
+
+// Auto fill logic
+async function confirmSelection() {
+  emit("loading", true);
+  autoConfirmed.value = false;
+
+  try {
+    const result = await invoke("execute_command", {
+      command: {
+        name: "GetDetails",
+        path: {
+          zip_path: zip_path,
+          executable_path: installationConfig.executable_path,
+        },
+      },
+    });
+    if (typeof result === "string") {
+      const parsedResult = JSON.parse(result);
+
+      if ("error" in parsedResult) {
+        throw new Error(parsedResult.error);
+      }
+
+      const details = Array.isArray(parsedResult) ? parsedResult : null;
+      if (!details) {
+        throw new Error("Invalid response format");
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      app_name.value = details[0];
+      app_version.value = details[1];
+      app_publisher.value = details[2] || "";
+      app_icon.value = details[3] || "";
+
+      autoConfirmed.value = true;
+    } else {
+      throw new Error("Unexpected response type");
+    }
+  } catch (error) {
+    console.error("Failed to get details:", error);
+    autoConfirmed.value = false;
+  } finally {
+    emit("loading", false);
+  }
+}
 </script>
 
 <template>
@@ -277,27 +326,17 @@ async function handleInstallClick() {
                 App Details
               </h2>
             </div>
-            <div
-              class="w-12 h-12 rounded-lg overflow-hidden shrink-0 border-2"
-              :class="[
-                !app_icon
-                  ? 'border-dashed border-surface-300 dark:border-surface-600 bg-surface-50 dark:bg-surface-800'
-                  : 'border-transparent',
-              ]"
+            <Button
+              :severity="autoConfirmed ? 'info' : 'secondary'"
+              class="h-8 text-sm min-w-[6.5rem] transition-all duration-200"
+              :disabled="!installationConfig.executable_path || detailsLoading"
+              @click="confirmSelection"
             >
-              <img
-                v-if="app_icon"
-                :src="app_icon"
-                class="w-full h-full object-contain"
-                alt="App Icon"
-              />
-              <span
-                v-else
-                class="material-symbols-rounded w-full h-full flex items-center justify-center text-surface-400 dark:text-surface-500"
-              >
-                image
+              <span class="material-symbols-rounded text-lg mr-1">
+                {{ autoConfirmed ? "check_circle" : "auto_awesome" }}
               </span>
-            </div>
+              {{ autoConfirmed ? "Auto Filled" : "Auto Fill" }}
+            </Button>
           </div>
         </template>
 

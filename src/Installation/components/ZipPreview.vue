@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from "@/stores/installation_config";
-import { invoke } from "@tauri-apps/api/core";
 import { readFile } from "@tauri-apps/plugin-fs";
 import JSZip from "jszip";
 import { storeToRefs } from "pinia";
@@ -62,8 +61,6 @@ const filterMode = ref<FilterMode>("exe");
 const expandedKeys = ref<Record<string, boolean>>({});
 const selectedNode = ref<Record<string, boolean>>({});
 const fileTree = ref<CustomTreeNode[]>([]);
-const isConfirmed = ref(false);
-const autoConfirmed = ref(false);
 const isExpanding = ref(false);
 const isCollapsing = ref(false);
 
@@ -180,9 +177,6 @@ function handleNodeSelect(node: TreeNode) {
   if (customNode.data?.isExecutable) {
     executable_path.value = customNode.data.path;
     selectedNode.value = { [customNode.key]: true };
-    // Reset confirm state when selecting a new executable
-    isConfirmed.value = false;
-    autoConfirmed.value = false;
   } else {
     selectedNode.value = {};
   }
@@ -221,55 +215,6 @@ function handleAutoExeSelection() {
   if (topLevelExes.length === 1) {
     executable_path.value = topLevelExes[0];
     selectedNode.value = { [topLevelExes[0]]: true };
-    autoConfirmed.value = true;
-    confirmSelection();
-  }
-}
-
-async function confirmSelection() {
-  isConfirmed.value = true;
-  emit("loading", true);
-
-  const appDetailsCard = document.querySelector(".app-details-card");
-  appDetailsCard?.classList.add("loading");
-
-  try {
-    const result = await invoke("execute_command", {
-      command: {
-        name: "GetDetails",
-        path: {
-          zip_path: props.zipPath,
-          executable_path: executable_path.value,
-        },
-      },
-    });
-    if (typeof result === "string") {
-      const parsedResult = JSON.parse(result);
-
-      if ("error" in parsedResult) {
-        throw new Error(parsedResult.error);
-      }
-
-      const details = Array.isArray(parsedResult) ? parsedResult : null;
-      if (!details) {
-        throw new Error("Invalid response format");
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 100));
-
-      app_name.value = details[0];
-      app_version.value = details[1];
-      app_publisher.value = details[2] || "";
-      app_icon.value = details[3] || "";
-    } else {
-      throw new Error("Unexpected response type");
-    }
-  } catch (error) {
-    console.error("Failed to get details:", error);
-    isConfirmed.value = false;
-  } finally {
-    emit("loading", false);
-    appDetailsCard?.classList.remove("loading");
   }
 }
 
@@ -306,8 +251,6 @@ const collapseAll = async () => {
 watchEffect(() => {
   if (!props.zipPath) return;
   zipCache.value = null;
-  isConfirmed.value = false;
-  autoConfirmed.value = false;
   selectedNode.value = {};
   executable_path.value = "";
   loadZipContent();
@@ -450,25 +393,6 @@ onMounted(async () => {
               <span class="text-sm">{{ mode.label }}</span>
             </label>
           </div>
-        </div>
-      </div>
-
-      <!-- Action Button -->
-      <div class="absolute bottom-2 right-2">
-        <div class="flex justify-end w-full">
-          <Button
-            :severity="
-              isConfirmed ? (autoConfirmed ? 'info' : 'success') : 'secondary'
-            "
-            class="h-8 text-sm min-w-[7rem] transition-all duration-200"
-            :disabled="!executable_path || isConfirmed"
-            @click="executable_path && !isConfirmed && confirmSelection()"
-          >
-            <span class="material-symbols-rounded text-lg mr-1">
-              {{ isConfirmed ? "check_circle" : "task_alt" }}
-            </span>
-            {{ autoConfirmed ? "Auto Confirmed" : "Confirm" }}
-          </Button>
         </div>
       </div>
     </div>
