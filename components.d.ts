@@ -7,22 +7,12 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    Button: typeof import('primevue/button')['default']
     Card: typeof import('primevue/card')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
-    EditContextMenu: typeof import('./src/components/context/EditContextMenu.vue')['default']
-    InputSwitch: typeof import('primevue/inputswitch')['default']
     Message: typeof import('primevue/message')['default']
-    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SplitButton: typeof import('primevue/splitbutton')['default']
-    Step: typeof import('primevue/step')['default']
-    StepList: typeof import('primevue/steplist')['default']
-    StepPanel: typeof import('primevue/steppanel')['default']
-    StepPanels: typeof import('primevue/steppanels')['default']
-    Stepper: typeof import('primevue/stepper')['default']
-    Toast: typeof import('primevue/toast')['default']
   }
   export interface ComponentCustomProperties {
     Tooltip: typeof import('primevue/tooltip')['default']

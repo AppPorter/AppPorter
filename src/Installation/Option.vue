@@ -16,6 +16,7 @@ import ToggleSwitch from "primevue/toggleswitch";
 
 // Vue imports
 import { goTo } from "@/plugin/router";
+import { invoke } from "@tauri-apps/api/core";
 import { onMounted, ref } from "vue";
 import ZipPreview from "./components/ZipPreview.vue";
 
@@ -94,7 +95,6 @@ async function select_install_path() {
 const detailsLoading = ref(false);
 const detailsLoadingProgress = ref(0);
 const progressMode = ref<"indeterminate" | "determinate">("indeterminate");
-const extractProgress = ref(0);
 
 function handleDetailsProgress(value: number) {
   progressMode.value = "indeterminate";
@@ -111,6 +111,39 @@ onMounted(() => {
 defineOptions({
   inheritAttrs: false,
 });
+
+// Path validation states
+const pathError = ref("");
+const nameError = ref("");
+
+// Modified installation button click handler
+async function handleInstallClick() {
+  // Check app name
+  if (!app_name.value) {
+    nameError.value = "Application name is required";
+    return;
+  }
+  nameError.value = "";
+
+  // Check for empty path first
+  if (!install_path.value) {
+    pathError.value = "Installation path is required";
+    return;
+  }
+
+  try {
+    await invoke("execute_command", {
+      command: {
+        name: "ValidatePath",
+        path: install_path.value,
+      },
+    });
+    pathError.value = "";
+    goTo("/installation/progress");
+  } catch (error) {
+    pathError.value = String(error);
+  }
+}
 </script>
 
 <template>
@@ -172,6 +205,8 @@ defineOptions({
                 v-model="install_path"
                 placeholder="Choose installation directory"
                 class="w-full text-sm h-8"
+                :invalid="!!pathError"
+                :title="pathError"
               />
               <Button
                 class="h-8 w-36"
@@ -276,6 +311,8 @@ defineOptions({
               v-model="app_name"
               placeholder="Application Name"
               class="w-full text-sm h-8"
+              :invalid="!!nameError"
+              :title="nameError"
             />
           </div>
 
@@ -359,7 +396,7 @@ defineOptions({
       severity="primary"
       size="large"
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
-      @click="goTo('/installation/progress')"
+      @click="handleInstallClick"
     >
       <span class="material-symbols-rounded text-lg mr-1">download</span>
       Install

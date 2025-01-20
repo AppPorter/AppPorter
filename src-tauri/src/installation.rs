@@ -77,7 +77,7 @@ pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error
         }} catch {{
             Write-Output (ConvertTo-Json -Compress @{{
                 product_name = [System.IO.Path]::GetFileNameWithoutExtension($file_path);
-                product_version = '1.0.0';
+                product_version = '';
                 copyright = '';
                 error = $_.Exception.Message;
             }})
@@ -105,10 +105,8 @@ pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error
     let details: Value = serde_json::from_str(&output_str)?;
 
     let response = json!([
-        details["product_name"]
-            .as_str()
-            .unwrap_or("Unknown Application"),
-        details["product_version"].as_str().unwrap_or("1.0.0"),
+        details["product_name"].as_str().unwrap_or(""),
+        details["product_version"].as_str().unwrap_or(""),
         details["copyright"].as_str().unwrap_or(""),
         icon_data_url
     ]);

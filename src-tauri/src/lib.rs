@@ -42,3 +42,28 @@ pub fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
     }
     Ok(())
 }
+
+pub fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
+    // Check drive letter and basic path format
+    if !path
+        .chars()
+        .nth(0)
+        .map_or(false, |c| c.is_ascii_alphabetic())
+        || !path.chars().nth(1).map_or(false, |c| c == ':')
+        || !path.chars().nth(2).map_or(false, |c| c == '\\')
+    {
+        return Err("Invalid drive letter or path format".into());
+    }
+
+    // Check if path exists and is accessible
+    match std::fs::metadata(&path) {
+        Ok(metadata) => {
+            if metadata.is_dir() {
+                Ok("Path is valid".into())
+            } else {
+                Err("Path exists but is not a directory".into())
+            }
+        }
+        Err(e) => Err("Directory does not exist".into()),
+    }
+}

@@ -2,6 +2,7 @@ use crate::{
     elevate,
     installation::{get_details, installation, ExePath, InstallationConfig},
     settings::load_settings,
+    validate_path,
 };
 use serde::Deserialize;
 use tauri::AppHandle;
@@ -13,6 +14,7 @@ pub enum Command {
     GetDetails { path: ExePath },
     Installation { config: InstallationConfig },
     Elevate { revert: bool },
+    ValidatePath { path: String },
 }
 
 #[tauri::command(async)]
@@ -22,6 +24,7 @@ pub async fn execute_command(command: Command, app: AppHandle) -> Result<String,
         Command::GetDetails { path } => get_details(path, app),
         Command::Installation { config } => installation(config, app),
         Command::Elevate { revert } => elevate(revert).map(|_| "Success".to_string()),
+        Command::ValidatePath { path } => validate_path(path),
     }
     .map_err(|e| e.to_string())
 }
