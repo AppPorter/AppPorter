@@ -38,6 +38,8 @@ async function handleInstallClick() {
   nameError.value = "";
   pathError.value = "";
 
+  const is_legal = ref(true);
+
   // Validate executable selection
   if (!installationConfig.executable_path) {
     toast.add({
@@ -46,7 +48,7 @@ async function handleInstallClick() {
       detail: "Please select an executable file from the archive",
       life: 3000,
     });
-    return;
+    is_legal.value = false;
   }
 
   // Check app name
@@ -58,7 +60,7 @@ async function handleInstallClick() {
       detail: "Please enter an application name",
       life: 3000,
     });
-    return;
+    is_legal.value = false;
   }
 
   // Check installation path
@@ -70,8 +72,10 @@ async function handleInstallClick() {
       detail: "Please select an installation path",
       life: 3000,
     });
-    return;
+    is_legal.value = false;
   }
+
+  if (!is_legal.value) return;
 
   try {
     await new Promise((resolve, reject) => {
