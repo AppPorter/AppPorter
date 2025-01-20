@@ -103,7 +103,7 @@ const menu_items = [
     label: "Settings",
     icon: "material-symbols-rounded text-xl",
     iconClass: "settings",
-    command: () => goTo("/settings"),
+    command: () => goTo("/Settings"),
   },
 ];
 

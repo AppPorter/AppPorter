@@ -15,7 +15,7 @@ const routes = [
   { path: "/", redirect: "/Installation" },
   { path: "/Installation", component: Installation },
   {
-    path: "/Installation/Option",
+    path: "/Installation/Config",
     component: Installation_Config,
   },
   {
@@ -40,7 +40,10 @@ export function setupRouterGuards(router: Router) {
     const installationConfig = useInstallationConfigStore();
 
     // Only show confirmation when leaving installation option page
-    if (from.path === "/Installation/Option") {
+    if (
+      from.path === "/Installation/Config" &&
+      to.path !== "/Installation/Progress"
+    ) {
       const confirm = useConfirm();
       try {
         await new Promise((resolve, reject) => {
@@ -49,7 +52,6 @@ export function setupRouterGuards(router: Router) {
               "Are you sure you want to leave? All changes will be lost.",
             group: "dialog",
             header: "Confirm",
-            icon: "material-symbols-rounded warning",
             rejectProps: {
               label: "Cancel",
               severity: "secondary",

@@ -76,7 +76,7 @@ async function select_zip_file() {
         <!-- Navigation Button -->
         <div class="flex justify-end">
           <Button
-            @click="goTo('/Installation/Option')"
+            @click="goTo('/Installation/Config')"
             :disabled="!zip_path"
             severity="primary"
             class="h-9 px-6"

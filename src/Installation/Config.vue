@@ -3,6 +3,8 @@ import { goTo } from "@/plugin/router";
 import { useInstallationConfigStore } from "@/stores/installation_config";
 import { invoke } from "@tauri-apps/api/core";
 import Button from "primevue/button";
+import { useConfirm } from "primevue/useconfirm";
+import { useToast } from "primevue/usetoast";
 import { ref } from "vue";
 
 // Components
@@ -23,6 +25,9 @@ const progressMode = ref<"indeterminate" | "determinate">("indeterminate");
 const pathError = ref("");
 const nameError = ref("");
 
+const toast = useToast();
+const confirm = useConfirm();
+
 function handleDetailsProgress(value: number) {
   progressMode.value = "indeterminate";
   detailsLoadingProgress.value = value;
@@ -33,28 +38,77 @@ async function handleInstallClick() {
   nameError.value = "";
   pathError.value = "";
 
+  // Validate executable selection
+  if (!installationConfig.executable_path) {
+    toast.add({
+      severity: "error",
+      summary: "Executable Missing",
+      detail: "Please select an executable file from the archive",
+      life: 3000,
+    });
+    return;
+  }
+
   // Check app name
   if (!installationConfig.app_name) {
     nameError.value = "Application name is required";
+    toast.add({
+      severity: "error",
+      summary: "Missing App Name",
+      detail: "Please enter an application name",
+      life: 3000,
+    });
     return;
   }
 
   // Check installation path
   if (!installationConfig.install_path) {
     pathError.value = "Installation path is required";
+    toast.add({
+      severity: "error",
+      summary: "Missing Install Path",
+      detail: "Please select an installation path",
+      life: 3000,
+    });
     return;
   }
 
   try {
+    await new Promise((resolve, reject) => {
+      confirm.require({
+        message: "Do you want to start the installation process now?",
+        group: "dialog",
+        header: "Start Installation",
+        rejectProps: {
+          label: "Cancel",
+          severity: "secondary",
+          outlined: true,
+        },
+        acceptProps: {
+          label: "Install",
+        },
+        accept: () => resolve(true),
+        reject: () => reject(),
+      });
+    });
+
     await invoke("execute_command", {
       command: {
         name: "ValidatePath",
         path: installationConfig.install_path,
       },
     });
-    goTo("/installation/progress");
+    goTo("/Installation/Progress");
   } catch (error) {
-    pathError.value = String(error);
+    if (error instanceof Error) {
+      pathError.value = error.message;
+      toast.add({
+        severity: "error",
+        summary: "Invalid Install Path",
+        detail: error.message,
+        life: 3000,
+      });
+    }
   }
 }
 </script>
