@@ -10,6 +10,7 @@ declare module 'vue' {
     Card: typeof import('primevue/card')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
     Message: typeof import('primevue/message')['default']
+    ProgressBar: typeof import('primevue/progressbar')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SplitButton: typeof import('primevue/splitbutton')['default']

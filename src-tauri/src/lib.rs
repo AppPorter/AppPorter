@@ -64,6 +64,6 @@ pub fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
                 Err("Path exists but is not a directory".into())
             }
         }
-        Err(e) => Err("Directory does not exist".into()),
+        Err(e) => Err(format!("Directory does not exist. {}", e).into()),
     }
 }

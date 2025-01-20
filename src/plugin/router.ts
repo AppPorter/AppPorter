@@ -6,7 +6,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 
 // Page components
 import Installation from "@/Installation.vue";
-import Installation_Option from "@/Installation/Option.vue";
+import Installation_Config from "@/Installation/Config.vue";
 import Installation_Progress from "@/Installation/Progress.vue";
 import Settings from "@/Settings.vue";
 
@@ -16,7 +16,7 @@ const routes = [
   { path: "/Installation", component: Installation },
   {
     path: "/Installation/Option",
-    component: Installation_Option,
+    component: Installation_Config,
   },
   {
     path: "/Installation/Progress",
