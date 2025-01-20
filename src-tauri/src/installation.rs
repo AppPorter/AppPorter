@@ -272,5 +272,5 @@ pub fn installation(
             &std::env::current_exe()?.to_string_lossy().to_string(),
         )?;
     }
-    Ok("".to_owned())
+    Ok(full_executable_path)
 }

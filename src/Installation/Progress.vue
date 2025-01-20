@@ -16,6 +16,7 @@ const extract_progress = ref(0);
 const is_finished = ref(false);
 const current_status = ref("Preparing installation...");
 const can_close = ref(false);
+const final_executable_path = ref("");
 
 const installationConfig = useInstallationConfigStore();
 
@@ -37,13 +38,6 @@ const getShortcutsList = (config: ShortcutsConfig) => {
 };
 
 const toast = useToast();
-
-// Get final executable path
-const getFinalExecutablePath = () => {
-  const appNameForPath = installationConfig.app_name.replace(/ /g, "-");
-  const exePath = installationConfig.executable_path.replace(/\//g, "\\");
-  return `${installationConfig.install_path}\\${appNameForPath}\\${exePath}`;
-};
 
 // Copy handler
 const handleCopy = async (text: string, type: string) => {
@@ -99,6 +93,10 @@ onMounted(() => {
           zip_path: installationConfig.zip_path,
         },
       },
+    }).then((result) => {
+      if (typeof result === "string") {
+        final_executable_path.value = result;
+      }
     });
   } catch (error) {
     console.error("Installation failed:", error);
@@ -239,7 +237,7 @@ defineOptions({
                 outlined
                 v-tooltip.top="'Copy path'"
                 class="w-8 h-7"
-                @click="handleCopy(getFinalExecutablePath(), 'Executable path')"
+                @click="handleCopy(final_executable_path, 'Executable path')"
               >
                 <i class="material-symbols-rounded">content_copy</i>
               </Button>
@@ -247,7 +245,7 @@ defineOptions({
           </template>
           <template #content>
             <p class="text-sm font-medium break-all select-text">
-              {{ getFinalExecutablePath() }}
+              {{ final_executable_path }}
             </p>
           </template>
         </Card>
