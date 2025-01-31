@@ -333,7 +333,7 @@ onMounted(async () => {
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
       <div
-        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[22rem] overflow-hidden relative"
+        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[54vh] overflow-hidden relative"
       >
         <Tree
           v-if="hasScanned && !isEmpty"
