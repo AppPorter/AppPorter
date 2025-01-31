@@ -6,7 +6,7 @@ pub mod command;
 pub mod installation;
 pub mod settings;
 
-pub fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
+pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
     let operation: &str;
     if !revert {
         operation = "Set-ItemProperty -Path $regPath -Name $programPath -Value $adminFlag";
@@ -14,7 +14,7 @@ pub fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
         operation =
             "Remove-ItemProperty -Path $regPath -Name $programPath -ErrorAction SilentlyContinue";
     }
-    let settings = Settings::read()?;
+    let settings = Settings::read().await?;
     let ps_command = format!(
         r#"
         $programPath = "{}"

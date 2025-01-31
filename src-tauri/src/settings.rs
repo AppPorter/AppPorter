@@ -1,7 +1,8 @@
 use check_elevation::is_elevated;
 use config::Config;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, path::PathBuf, process::Command};
+use std::{error::Error, path::PathBuf};
+use tokio::process::Command;
 
 #[derive(Debug, Deserialize, Serialize, Default)]
 pub struct Settings {
@@ -55,7 +56,7 @@ pub struct InstallSettings {
 }
 
 impl Settings {
-    fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
+    async fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
         let exe_dir = std::env::current_exe()?
             .parent()
             .ok_or("Failed to get exe directory")?
@@ -63,7 +64,7 @@ impl Settings {
         Ok(exe_dir.join("Settings.toml"))
     }
 
-    fn create_default_config() -> Result<Self, Box<dyn Error>> {
+    async fn create_default_config() -> Result<Self, Box<dyn Error>> {
         let default_settings = Self {
             language: String::from("en"),
             theme: String::from("system"),
@@ -94,21 +95,22 @@ impl Settings {
             },
         };
 
-        let config_path = Self::get_config_path()?;
+        let config_path = Self::get_config_path().await?;
         let content = toml::to_string_pretty(&default_settings)?;
-        std::fs::write(config_path, content)?;
+        tokio::fs::write(config_path, content).await?;
 
         Ok(default_settings)
     }
 
-    pub fn read() -> Result<Self, Box<dyn Error>> {
-        let config_path = Self::get_config_path()?;
+    pub async fn read() -> Result<Self, Box<dyn Error>> {
+        let config_path = Self::get_config_path().await?;
 
         let settings = if !config_path.exists() {
-            Self::create_default_config()?
+            Self::create_default_config().await?
         } else {
+            let content = tokio::fs::read_to_string(&config_path).await?;
             Config::builder()
-                .add_source(config::File::from(config_path))
+                .add_source(config::File::from_str(&content, config::FileFormat::Toml))
                 .build()?
                 .try_deserialize::<Settings>()?
         };
@@ -116,14 +118,14 @@ impl Settings {
         Ok(settings)
     }
 
-    pub fn save(&self) -> Result<(), Box<dyn Error>> {
-        let config_path = Self::get_config_path()?;
+    pub async fn save(&self) -> Result<(), Box<dyn Error>> {
+        let config_path = Self::get_config_path().await?;
         let content = toml::to_string_pretty(&self)?;
-        std::fs::write(config_path, content)?;
+        tokio::fs::write(config_path, content).await?;
         Ok(())
     }
 
-    pub fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
         #[cfg(debug_assertions)]
         {
             self.debug = true;
@@ -142,7 +144,8 @@ impl Settings {
                 "-Command",
                 r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
             ])
-            .output()?;
+            .output()
+            .await?;
         if !output.status.success() {
             return Err(String::from_utf8_lossy(&output.stderr).into());
         }
@@ -187,13 +190,13 @@ impl Settings {
             );
         }
 
-        self.save()?;
+        self.save().await?;
         Ok(())
     }
 }
 
-pub fn load_settings() -> Result<String, Box<dyn Error>> {
-    let mut settings = Settings::read()?;
-    settings.initialization()?;
+pub async fn load_settings() -> Result<String, Box<dyn Error>> {
+    let mut settings = Settings::read().await?;
+    settings.initialization().await?;
     Ok(serde_json::to_string(&settings)?)
 }

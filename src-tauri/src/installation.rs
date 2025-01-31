@@ -131,7 +131,7 @@ pub struct InstallationConfig {
     app_version: String,
 }
 
-pub fn installation(
+pub async fn installation(
     installation_config: InstallationConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error>> {
@@ -219,7 +219,7 @@ pub fn installation(
             installation_config.executable_path.replace("/", r"\")
         )
     };
-    let settings = crate::settings::Settings::read()?;
+    let settings = crate::settings::Settings::read().await?;
     if installation_config.create_start_menu_shortcut {
         let lnk_path = if installation_config.current_user_only {
             format!(
