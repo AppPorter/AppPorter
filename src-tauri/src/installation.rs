@@ -3,11 +3,11 @@ use mslnk::ShellLink;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::error::Error;
-use std::fs::File;
-use std::process::Command;
+use std::io::Read;
 use systemicons::get_icon;
 use tauri::{AppHandle, Emitter};
 use tempfile::Builder;
+use tokio::{fs::File, io::AsyncWriteExt, process::Command};
 use zip::ZipArchive;
 
 #[derive(Deserialize, Debug)]
@@ -16,31 +16,55 @@ pub struct ExePath {
     pub executable_path: String,
 }
 
-pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
+pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
     // Create temp directory
     let temp_dir = Builder::new().prefix("appporter").tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
-    // Read zip file
-    let file = File::open(&req.zip_path)?;
-    let mut archive = ZipArchive::new(file)?;
-    // Extract only the target executable
-    if let Ok(mut exe_file) = archive.by_name(&req.executable_path) {
-        // Create parent directories if they don't exist
-        if let Some(parent) = temp_exe_path.parent() {
-            std::fs::create_dir_all(parent)?;
-        }
-        // Extract the exe file
-        let mut outfile = File::create(&temp_exe_path)?;
-        app.emit("get_details", 1)?;
-        std::io::copy(&mut exe_file, &mut outfile)?;
-        app.emit("get_details", 2)?;
-    } else {
+    let executable_path = req.executable_path.clone();
+
+    // Do synchronous zip operations in a blocking task
+    let (buffer, exe_found) =
+        tokio::task::spawn_blocking(move || -> Result<(Vec<u8>, bool), String> {
+            let file = std::fs::File::open(&req.zip_path)
+                .map_err(|e| format!("Failed to open zip file: {}", e))?;
+            let mut archive =
+                ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
+            let mut buffer = Vec::new();
+
+            let result = match archive.by_name(&executable_path) {
+                Ok(mut exe_file) => {
+                    exe_file
+                        .read_to_end(&mut buffer)
+                        .map_err(|e| format!("Failed to read executable: {}", e))?;
+                    Ok((buffer, true))
+                }
+                Err(_) => Ok((Vec::new(), false)),
+            };
+            result
+        })
+        .await
+        .map_err(|e| format!("Thread join error: {}", e))??;
+
+    if !exe_found {
         return Err(format!(
             "Failed to find executable '{}' in archive",
             req.executable_path
         )
         .into());
     }
+
+    app.emit("get_details", 1)?;
+
+    // Create parent directories if they don't exist
+    if let Some(parent) = temp_exe_path.parent() {
+        tokio::fs::create_dir_all(parent).await?;
+    }
+
+    // Write the file asynchronously
+    let mut outfile = File::create(&temp_exe_path).await?;
+    outfile.write_all(&buffer).await?;
+    app.emit("get_details", 2)?;
+
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
     let icon_base64 = STANDARD.encode(&raw_icon);
     let icon_data_url = format!("data:image/png;base64,{}", icon_base64);
@@ -95,7 +119,8 @@ pub fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error
             "-Command",
             &ps_command,
         ])
-        .output()?;
+        .output()
+        .await?;
     app.emit("get_details", 4)?;
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
@@ -135,69 +160,106 @@ pub async fn installation(
     installation_config: InstallationConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error>> {
-    let file = File::open(installation_config.zip_path)?;
-    let mut archive = ZipArchive::new(file)?;
+    let zip_path = installation_config.zip_path.clone();
     let app_path = format!(
         r"{}\{}",
         installation_config.install_path,
         installation_config.app_name.replace(" ", "-")
     );
-    // Check if the zip has only one root directory
-    let mut root_entries = std::collections::HashSet::new();
-    for i in 0..archive.len() {
-        let file = archive.by_index(i)?;
-        let name = file.name();
-        let root = name.split('/').next().unwrap_or("");
-        if !root.is_empty() {
-            root_entries.insert(root.to_string());
-        }
-    }
-    // If there's exactly one root directory, we'll extract contents directly
-    let single_root = if root_entries.len() == 1 {
-        Some(root_entries.into_iter().next().unwrap())
-    } else {
-        None
-    };
+
+    // Do synchronous zip operations in a blocking task
+    let (file_count, single_root) =
+        tokio::task::spawn_blocking(move || -> Result<(usize, Option<String>), String> {
+            let file = std::fs::File::open(&zip_path)
+                .map_err(|e| format!("Failed to open zip file: {}", e))?;
+            let mut archive =
+                ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
+
+            let total_files = archive.len();
+            let mut root_entries = std::collections::HashSet::new();
+
+            for i in 0..archive.len() {
+                let file = archive
+                    .by_index(i)
+                    .map_err(|e| format!("Failed to read zip entry: {}", e))?;
+                let name = file.name();
+                let root = name.split('/').next().unwrap_or("");
+                if !root.is_empty() {
+                    root_entries.insert(root.to_string());
+                }
+            }
+
+            let single_root = if root_entries.len() == 1 {
+                Some(root_entries.into_iter().next().unwrap())
+            } else {
+                None
+            };
+
+            Ok((total_files, single_root))
+        })
+        .await
+        .map_err(|e| format!("Thread join error: {}", e))??;
+
     app.emit("installation", 0)?;
 
-    let total_files = archive.len();
     let mut last_progress = -1;
-    // Extract files
-    for i in 0..total_files {
-        let mut file = archive.by_index(i)?;
-        let name = file.name();
+    // Extract files in chunks to avoid holding the ZipArchive for too long
+    for i in 0..file_count {
+        let zip_path = installation_config.zip_path.clone();
+        let app_path = app_path.clone();
+        let single_root = single_root.clone();
 
-        // Skip if it's a directory entry
+        let file_data =
+            tokio::task::spawn_blocking(move || -> Result<(String, Vec<u8>), String> {
+                let file = std::fs::File::open(&zip_path)
+                    .map_err(|e| format!("Failed to open zip file: {}", e))?;
+                let mut archive = ZipArchive::new(file)
+                    .map_err(|e| format!("Failed to read zip archive: {}", e))?;
+
+                let mut zip_file = archive
+                    .by_index(i)
+                    .map_err(|e| format!("Failed to read zip entry: {}", e))?;
+
+                let name = zip_file.name().to_string();
+                let mut buffer = Vec::new();
+                std::io::copy(&mut zip_file, &mut buffer)
+                    .map_err(|e| format!("Failed to read file content: {}", e))?;
+
+                Ok((name, buffer))
+            })
+            .await
+            .map_err(|e| format!("Thread join error: {}", e))??;
+
+        let (name, buffer) = file_data;
         if name.ends_with('/') {
             continue;
         }
 
-        let outpath = if let Some(root) = &single_root {
-            // Remove the root directory from the path
+        let outpath = if let Some(ref root) = single_root {
             if name.starts_with(&format!("{}/", root)) {
                 let relative_path = name.strip_prefix(&format!("{}/", root)).unwrap();
                 std::path::Path::new(&app_path).join(relative_path)
             } else {
-                std::path::Path::new(&app_path).join(name)
+                std::path::Path::new(&app_path).join(&name)
             }
         } else {
-            std::path::Path::new(&app_path).join(name)
+            std::path::Path::new(&app_path).join(&name)
         };
 
         if let Some(parent) = outpath.parent() {
-            std::fs::create_dir_all(parent)?;
+            tokio::fs::create_dir_all(parent).await?;
         }
-        let mut outfile = std::fs::File::create(&outpath)?;
-        std::io::copy(&mut file, &mut outfile)?;
+        let mut outfile = File::create(&outpath).await?;
+        outfile.write_all(&buffer).await?;
 
-        let progress = ((i as f32 + 1.0) / total_files as f32 * 100.0) as i32;
+        let progress = ((i as f32 + 1.0) / file_count as f32 * 100.0) as i32;
         if progress != last_progress {
             app.emit("installation_extract", progress)?;
             last_progress = progress;
         }
     }
     app.emit("installation", 101)?;
-    let full_executable_path = if let Some(root) = &single_root {
+    let full_executable_path = if let Some(ref root) = single_root {
         // If the executable path starts with the root directory, remove it
         let exe_path = if installation_config
             .executable_path

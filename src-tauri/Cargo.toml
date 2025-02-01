@@ -29,7 +29,7 @@
         "derive",
     ] }
     serde_json = "1.0.138"
-    tauri = { version = "2.2.5", features = [
+    tauri = { version = "2.0", features = [
         "tray-icon",
     ] }
     tauri-plugin-opener = "2.2.5"
@@ -39,11 +39,19 @@
     config = "0.15.7"
     dirs = "6.0.0"
     mslnk = "0.1.8"
+    specta = "=2.0.0-rc.22"
+    specta-jsdoc = "0.0.9"
+    specta-typescript = "0.0.9"
     systemicons = "0.9.13"
     tauri-plugin-clipboard-manager = "2.2.1"
     tauri-plugin-dialog = "2.2.0"
     tauri-plugin-fs = "2.2.0"
     tauri-plugin-process = "2.2.0"
+    tauri-specta = { version = "=2.0.0-rc.21", features = [
+        "derive",
+        "javascript",
+        "typescript",
+    ] }
     tempfile = "3.16.0"
     tokio = { version = "1.36.0", features = [
         "full",
