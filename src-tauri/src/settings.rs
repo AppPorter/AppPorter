@@ -6,15 +6,17 @@ use tokio::process::Command;
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Settings {
+    // UI and preferences
     #[serde(default)]
     pub language: String,
     #[serde(default)]
     pub theme: String,
     #[serde(default)]
     pub minimize_to_tray_on_close: bool,
-
     #[serde(default)]
     pub color: String,
+
+    // System information
     #[serde(default)]
     pub debug: bool,
     #[serde(default)]
@@ -56,6 +58,7 @@ pub struct InstallSettings {
 }
 
 impl Settings {
+    /// Returns the path to the settings file
     async fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
         let exe_dir = tokio::fs::canonicalize(
             std::env::current_exe()?
@@ -67,12 +70,12 @@ impl Settings {
         Ok(exe_dir.join("Settings.toml"))
     }
 
+    /// Creates a new settings file with default values
     async fn create_default_config() -> Result<Self, Box<dyn Error>> {
         let default_settings = Self {
             language: String::from("en"),
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
-
             color: String::new(),
             debug: false,
             elevated: false,
@@ -99,37 +102,37 @@ impl Settings {
         };
 
         let config_path = Self::get_config_path().await?;
-        let settings_clone = default_settings.clone();
-        let content =
-            tokio::task::spawn_blocking(move || toml::to_string_pretty(&settings_clone)).await??;
-        tokio::fs::write(config_path, content).await?;
+        let content = tokio::task::spawn_blocking({
+            let settings = default_settings.clone();
+            move || toml::to_string_pretty(&settings)
+        })
+        .await??;
 
+        tokio::fs::write(config_path, content).await?;
         Ok(default_settings)
     }
 
+    /// Reads settings from file or creates default if not exists
     pub async fn read() -> Result<Self, Box<dyn Error>> {
         let config_path = Self::get_config_path().await?;
 
-        let settings = if !tokio::fs::try_exists(&config_path).await? {
-            Self::create_default_config().await?
-        } else {
-            let content = tokio::fs::read_to_string(&config_path).await?;
-            let content_clone = content.clone();
-            tokio::task::spawn_blocking(move || {
-                Config::builder()
-                    .add_source(config::File::from_str(
-                        &content_clone,
-                        config::FileFormat::Toml,
-                    ))
-                    .build()?
-                    .try_deserialize::<Settings>()
-            })
-            .await??
-        };
+        if !tokio::fs::try_exists(&config_path).await? {
+            return Self::create_default_config().await;
+        }
+
+        let content = tokio::fs::read_to_string(&config_path).await?;
+        let settings = tokio::task::spawn_blocking(move || {
+            Config::builder()
+                .add_source(config::File::from_str(&content, config::FileFormat::Toml))
+                .build()?
+                .try_deserialize::<Settings>()
+        })
+        .await??;
 
         Ok(settings)
     }
 
+    /// Saves current settings to file
     pub async fn save(&self) -> Result<(), Box<dyn Error>> {
         let config_path = Self::get_config_path().await?;
         let settings_str = tokio::task::spawn_blocking({
@@ -137,63 +140,73 @@ impl Settings {
             move || toml::to_string_pretty(&settings)
         })
         .await??;
+
         tokio::fs::write(config_path, settings_str).await?;
         Ok(())
     }
 
+    /// Initializes system-specific settings
     pub async fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
-        #[cfg(debug_assertions)]
-        {
-            self.debug = true;
-        }
-        #[cfg(not(debug_assertions))]
-        {
-            self.debug = false;
-        }
+        self.debug = cfg!(debug_assertions);
+        self.elevated = is_elevated()?;
+        self.user_sid = self.get_user_sid().await?;
+        self.run_as_admin = self.check_run_as_admin()?;
+        self.update_system_info()?;
+        self.update_color_settings().await?;
+        self.update_install_paths();
+        self.save().await?;
+        Ok(())
+    }
 
-        let output = tokio::process::Command::new("powershell")
+    async fn get_user_sid(&self) -> Result<String, Box<dyn Error>> {
+        let output = Command::new("powershell")
             .args([
-                "-NoProfile",
-                "-NonInteractive",
-                "-ExecutionPolicy",
-                "Bypass",
+                "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
                 "-Command",
                 r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
             ])
             .output()
             .await?;
+
         if !output.status.success() {
             return Err(String::from_utf8_lossy(&output.stderr).into());
         }
-        self.user_sid = String::from_utf8_lossy(&output.stdout).trim().to_string();
+        Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+    }
 
-        match windows_registry::USERS
+    fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error>> {
+        Ok(windows_registry::USERS
             .open(format!(
                 r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
                 self.user_sid
             ))?
             .get_string(std::env::current_exe()?.to_string_lossy().to_string())
-        {
-            Ok(value) => self.run_as_admin = value.contains("RUNASADMIN"),
-            Err(_) => self.run_as_admin = false,
-        }
+            .map(|value| value.contains("RUNASADMIN"))
+            .unwrap_or(false))
+    }
 
-        let accent_color_bgr = format!(
-            "{:x}",
-            windows_registry::CURRENT_USER
-                .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
-                .get_u32("AccentColorMenu")?
-        );
-        let accent_color_b = &accent_color_bgr[2..4];
-        let accent_color_g: &_ = &accent_color_bgr[4..6];
-        let accent_color_r = &accent_color_bgr[6..8];
-        let accent_color_rgb = format!("#{}{}{}", accent_color_r, accent_color_g, accent_color_b);
-        self.color = accent_color_rgb;
-
-        self.elevated = is_elevated()?;
+    fn update_system_info(&mut self) -> Result<(), Box<dyn Error>> {
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
         self.username = std::env::var("USERNAME")?.to_string();
+        Ok(())
+    }
 
+    async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error>> {
+        let accent_color = windows_registry::CURRENT_USER
+            .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
+            .get_u32("AccentColorMenu")?;
+
+        let accent_color_str = format!("{:06x}", accent_color);
+        let (b, g, r) = (
+            &accent_color_str[0..2],
+            &accent_color_str[2..4],
+            &accent_color_str[4..6],
+        );
+        self.color = format!("#{}{}{}", r, g, b);
+        Ok(())
+    }
+
+    fn update_install_paths(&mut self) {
         if self.installation.all_users.install_path.is_empty() {
             self.installation.all_users.install_path =
                 format!(r"{}:\Program Files", self.system_drive_letter);
@@ -205,9 +218,6 @@ impl Settings {
                 self.system_drive_letter, self.username
             );
         }
-
-        self.save().await?;
-        Ok(())
     }
 }
 

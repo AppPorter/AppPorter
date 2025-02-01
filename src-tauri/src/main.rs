@@ -1,16 +1,13 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app_porter_lib::command;
-use std::{error::Error, result::Result};
+use std::error::Error;
 
 #[tokio::main]
 async fn main() {
-    match run().await {
-        Ok(_) => {}
-        Err(e) => {
-            #[cfg(debug_assertions)]
-            eprintln!("{}", e.to_string());
-        }
+    if let Err(e) = run().await {
+        #[cfg(debug_assertions)]
+        eprintln!("Application error: {}", e);
     }
 }
 

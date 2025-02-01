@@ -1,12 +1,8 @@
-use crate::{
-    elevate,
-    installation::{get_details, installation, ExePath, InstallationConfig},
-    settings::load_settings,
-    validate_path,
-};
+use crate::{elevate, installation::*, settings::load_settings, validate_path};
 use serde::Deserialize;
 use tauri::AppHandle;
 
+/// Represents all available commands that can be invoked through Tauri
 #[derive(Deserialize)]
 #[serde(tag = "name")]
 pub enum Command {
@@ -17,14 +13,20 @@ pub enum Command {
     ValidatePath { path: String },
 }
 
+impl Command {
+    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn std::error::Error>> {
+        match self {
+            Self::LoadSettings => load_settings().await,
+            Self::GetDetails { path } => get_details(path, app).await,
+            Self::Installation { config } => installation(config, app).await,
+            Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
+            Self::ValidatePath { path } => validate_path(path).await,
+        }
+    }
+}
+
+/// Executes a command and returns the result as a string
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
-    let result = match command {
-        Command::LoadSettings => load_settings().await,
-        Command::GetDetails { path } => get_details(path, app).await,
-        Command::Installation { config } => installation(config, app).await,
-        Command::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
-        Command::ValidatePath { path } => validate_path(path).await,
-    };
-    result.map_err(|e| e.to_string())
+    command.execute(app).await.map_err(|e| e.to_string())
 }
