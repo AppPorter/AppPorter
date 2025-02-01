@@ -3,8 +3,9 @@
 use app_porter_lib::command;
 use std::{error::Error, result::Result};
 
-fn main() {
-    match run() {
+#[tokio::main]
+async fn main() {
+    match run().await {
         Ok(_) => {}
         Err(e) => {
             #[cfg(debug_assertions)]
@@ -13,7 +14,7 @@ fn main() {
     }
 }
 
-fn run() -> Result<(), Box<dyn Error>> {
+async fn run() -> Result<(), Box<dyn Error>> {
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_fs::init())

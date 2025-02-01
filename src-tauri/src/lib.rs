@@ -1,4 +1,4 @@
-use std::{error::Error, process::Command};
+use std::error::Error;
 
 use settings::Settings;
 
@@ -27,7 +27,7 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
         settings.user_sid,
         operation
     );
-    let output = Command::new("powershell")
+    let output = tokio::process::Command::new("powershell")
         .args([
             "-NoProfile",
             "-NonInteractive",
@@ -36,14 +36,15 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
             "-Command",
             &ps_command,
         ])
-        .output()?;
+        .output()
+        .await?;
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
     Ok(())
 }
 
-pub fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
+pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
     // Check drive letter and basic path format
     if !path
         .chars()
@@ -55,8 +56,8 @@ pub fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
         return Err("Invalid drive letter or path format".into());
     }
 
-    // Check if path exists and is accessible
-    match std::fs::metadata(&path) {
+    // Check if path exists and is accessible using tokio's fs
+    match tokio::fs::metadata(&path).await {
         Ok(metadata) => {
             if metadata.is_dir() {
                 Ok("Path is valid".into())

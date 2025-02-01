@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use std::{error::Error, path::PathBuf};
 use tokio::process::Command;
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Settings {
     #[serde(default)]
     pub language: String,
@@ -32,7 +32,7 @@ pub struct Settings {
     pub installation: Installation,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Installation {
     #[serde(default)]
     pub current_user_only: bool,
@@ -43,7 +43,7 @@ pub struct Installation {
     pub current_user: InstallSettings,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct InstallSettings {
     #[serde(default)]
     pub create_desktop_shortcut: bool,
@@ -57,10 +57,13 @@ pub struct InstallSettings {
 
 impl Settings {
     async fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
-        let exe_dir = std::env::current_exe()?
-            .parent()
-            .ok_or("Failed to get exe directory")?
-            .to_path_buf();
+        let exe_dir = tokio::fs::canonicalize(
+            std::env::current_exe()?
+                .parent()
+                .ok_or("Failed to get exe directory")?
+                .to_path_buf(),
+        )
+        .await?;
         Ok(exe_dir.join("Settings.toml"))
     }
 
@@ -96,7 +99,9 @@ impl Settings {
         };
 
         let config_path = Self::get_config_path().await?;
-        let content = toml::to_string_pretty(&default_settings)?;
+        let settings_clone = default_settings.clone();
+        let content =
+            tokio::task::spawn_blocking(move || toml::to_string_pretty(&settings_clone)).await??;
         tokio::fs::write(config_path, content).await?;
 
         Ok(default_settings)
@@ -105,14 +110,21 @@ impl Settings {
     pub async fn read() -> Result<Self, Box<dyn Error>> {
         let config_path = Self::get_config_path().await?;
 
-        let settings = if !config_path.exists() {
+        let settings = if !tokio::fs::try_exists(&config_path).await? {
             Self::create_default_config().await?
         } else {
             let content = tokio::fs::read_to_string(&config_path).await?;
-            Config::builder()
-                .add_source(config::File::from_str(&content, config::FileFormat::Toml))
-                .build()?
-                .try_deserialize::<Settings>()?
+            let content_clone = content.clone();
+            tokio::task::spawn_blocking(move || {
+                Config::builder()
+                    .add_source(config::File::from_str(
+                        &content_clone,
+                        config::FileFormat::Toml,
+                    ))
+                    .build()?
+                    .try_deserialize::<Settings>()
+            })
+            .await??
         };
 
         Ok(settings)
@@ -120,8 +132,12 @@ impl Settings {
 
     pub async fn save(&self) -> Result<(), Box<dyn Error>> {
         let config_path = Self::get_config_path().await?;
-        let content = toml::to_string_pretty(&self)?;
-        tokio::fs::write(config_path, content).await?;
+        let settings_str = tokio::task::spawn_blocking({
+            let settings = self.clone();
+            move || toml::to_string_pretty(&settings)
+        })
+        .await??;
+        tokio::fs::write(config_path, settings_str).await?;
         Ok(())
     }
 
@@ -135,7 +151,7 @@ impl Settings {
             self.debug = false;
         }
 
-        let output = Command::new("powershell")
+        let output = tokio::process::Command::new("powershell")
             .args([
                 "-NoProfile",
                 "-NonInteractive",

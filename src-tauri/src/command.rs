@@ -19,12 +19,12 @@ pub enum Command {
 
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
-    match command {
+    let result = match command {
         Command::LoadSettings => load_settings().await,
         Command::GetDetails { path } => get_details(path, app).await,
         Command::Installation { config } => installation(config, app).await,
         Command::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
-        Command::ValidatePath { path } => validate_path(path),
-    }
-    .map_err(|e| e.to_string())
+        Command::ValidatePath { path } => validate_path(path).await,
+    };
+    result.map_err(|e| e.to_string())
 }
