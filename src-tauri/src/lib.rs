@@ -5,7 +5,7 @@ use settings::Settings;
 use std::error::Error;
 
 pub mod command;
-pub mod installation;
+pub mod operations;
 pub mod settings;
 
 /// Elevates or reverts elevation of the application

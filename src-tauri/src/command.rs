@@ -1,4 +1,4 @@
-use crate::{elevate, installation::*, settings::load_settings, validate_path};
+use crate::{elevate, operations::*, settings::load_settings, validate_path};
 use serde::Deserialize;
 use tauri::AppHandle;
 
