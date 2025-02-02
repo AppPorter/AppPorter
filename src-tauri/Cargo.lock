@@ -93,6 +93,8 @@ dependencies = [
  "check_elevation",
  "config",
  "dirs 6.0.0",
+ "futures-util",
+ "log",
  "mslnk",
  "serde",
  "serde_json",

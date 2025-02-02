@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::command;
+use app_porter_lib::{command, websocket};
 use std::error::Error;
 
 #[tokio::main]
@@ -12,6 +12,12 @@ async fn main() {
 }
 
 async fn run() -> Result<(), Box<dyn Error>> {
+    tokio::spawn(async {
+        if let Err(e) = websocket::start_websocket_server().await {
+            eprintln!("WebSocket server error: {}", e);
+        }
+    });
+
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_fs::init())

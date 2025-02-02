@@ -7,6 +7,7 @@ use std::error::Error;
 pub mod command;
 pub mod operations;
 pub mod settings;
+pub mod websocket;
 
 /// Elevates or reverts elevation of the application
 pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {

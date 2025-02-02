@@ -38,6 +38,8 @@
     check_elevation = "0.2.4"
     config = "0.15.7"
     dirs = "6.0.0"
+    futures-util = "0.3.31"
+    log = "0.4.25"
     mslnk = "0.1.8"
     systemicons = "0.9.13"
     tauri-plugin-clipboard-manager = "2.2.1"
