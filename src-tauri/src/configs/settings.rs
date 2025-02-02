@@ -166,7 +166,7 @@ impl Settings {
     async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error>> {
         let accent_color = windows_registry::CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
-            .get_u32("AccentColorMenu")?;
+            .get_u32("StartColorMenu")?;
 
         let accent_color_str = format!("{:06x}", accent_color);
         let (b, g, r) = (
@@ -197,4 +197,9 @@ pub async fn load_settings() -> Result<String, Box<dyn Error>> {
     let mut settings = Settings::read().await?;
     settings.initialization().await?;
     Ok(serde_json::to_string(&settings)?)
+}
+
+pub async fn save_settings(settings: Settings) -> Result<String, Box<dyn Error>> {
+    settings.save().await?;
+    Ok("Settings saved successfully".to_string())
 }

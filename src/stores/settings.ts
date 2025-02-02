@@ -75,7 +75,12 @@ export const useSettingsStore = defineStore("settings", {
     },
 
     async saveSettings() {
-      await invoke("save_settings", { settings: this.$state });
+      await invoke("execute_command", {
+        command: {
+          name: "SaveSettings",
+          settings: this.$state,
+        },
+      });
     },
   },
 });

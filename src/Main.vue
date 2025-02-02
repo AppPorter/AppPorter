@@ -224,7 +224,7 @@ function handleContextMenu(event: MouseEvent) {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-24 px-4 pb-10 h-[calc(100vh-130px)] z-30">
+    <div class="pt-[100px] px-4 pb-6 h-full z-30 gap-2 flex">
       <RouterView />
     </div>
 

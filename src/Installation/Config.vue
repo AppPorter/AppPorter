@@ -118,30 +118,28 @@ async function handleInstallClick() {
 </script>
 
 <template>
-  <div class="h-[calc(100vh-130px)] p-1.5 pb-12 flex gap-2">
-    <!-- Left Column: Options & App Details -->
-    <div class="flex-1 min-w-[400px] space-y-2">
-      <Options
-        :path-error="pathError"
-        @update:path-error="(val) => (pathError = val)"
-      />
-      <AppDetails
-        :name-error="nameError"
-        :details-loading="detailsLoading"
-        :details-loading-progress="detailsLoadingProgress"
-        :progress-mode="progressMode"
-      />
-    </div>
+  <!-- Left Column: Options & App Details -->
+  <div class="flex-1 min-w-[400px] space-y-2">
+    <Options
+      :path-error="pathError"
+      @update:path-error="(val) => (pathError = val)"
+    />
+    <AppDetails
+      :name-error="nameError"
+      :details-loading="detailsLoading"
+      :details-loading-progress="detailsLoadingProgress"
+      :progress-mode="progressMode"
+    />
+  </div>
 
-    <!-- Right Column: ZIP Preview -->
-    <div class="min-w-[350px] w-[40%]">
-      <ZipPreview
-        :zip-path="zip_path"
-        :details-loading="detailsLoading"
-        @loading="(value) => (detailsLoading = value)"
-        @progress="handleDetailsProgress"
-      />
-    </div>
+  <!-- Right Column: ZIP Preview -->
+  <div class="min-w-[350px] w-[40%] h-[calc(100vh-170px)]">
+    <ZipPreview
+      :zip-path="zip_path"
+      :details-loading="detailsLoading"
+      @loading="(value) => (detailsLoading = value)"
+      @progress="handleDetailsProgress"
+    />
   </div>
 
   <!-- Installation Button -->

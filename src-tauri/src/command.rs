@@ -1,4 +1,7 @@
-use crate::{configs::settings::load_settings, operations::*};
+use crate::{
+    configs::settings::{load_settings, save_settings, Settings},
+    operations::*,
+};
 use serde::Deserialize;
 use tauri::AppHandle;
 
@@ -11,6 +14,7 @@ pub enum Command {
     Installation { config: InstallationConfig },
     Elevate { revert: bool },
     ValidatePath { path: String },
+    SaveSettings { settings: Settings },
 }
 
 impl Command {
@@ -21,6 +25,7 @@ impl Command {
             Self::Installation { config } => installation(config, app).await,
             Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
             Self::ValidatePath { path } => validate_path(path).await,
+            Self::SaveSettings { settings } => save_settings(settings).await,
         }
     }
 }
