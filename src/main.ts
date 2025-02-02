@@ -7,8 +7,8 @@ import { createApp, ref, type Ref } from "vue";
 
 // App components and plugins
 import Main from "@/Main.vue";
-import i18n from "@/plugin/i18n";
-import router, { setupRouterGuards } from "@/plugin/router";
+import i18n from "@/plugins/i18n";
+import router, { setupRouterGuards } from "@/plugins/router";
 import { useSettingsStore } from "@/stores/settings";
 
 // PrimeVue imports

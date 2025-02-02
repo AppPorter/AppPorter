@@ -1,3 +1,5 @@
+use crate::configs::settings::Settings;
+use crate::configs::ConfigFile;
 use mslnk::ShellLink;
 use serde::Deserialize;
 use std::{collections::HashSet, error::Error};
@@ -134,7 +136,7 @@ pub async fn installation(
         single_root.as_deref(),
     );
 
-    let settings = crate::settings::Settings::read().await?;
+    let settings = Settings::read().await?;
 
     if installation_config.create_start_menu_shortcut {
         create_start_menu_shortcut(

@@ -1,7 +1,7 @@
+use crate::configs::ConfigFile;
 use check_elevation::is_elevated;
-use config::Config;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, path::PathBuf};
+use std::error::Error;
 use tokio::process::Command;
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -57,32 +57,24 @@ pub struct InstallSettings {
     pub install_path: String,
 }
 
-impl Settings {
-    /// Returns the path to the settings file
-    async fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
-        let exe_dir = tokio::fs::canonicalize(
-            std::env::current_exe()?
-                .parent()
-                .ok_or("Failed to get exe directory")?
-                .to_path_buf(),
-        )
-        .await?;
-        Ok(exe_dir.join("Settings.toml"))
+#[async_trait::async_trait]
+impl ConfigFile for Settings {
+    fn get_filename() -> &'static str {
+        "Settings.toml"
     }
 
-    /// Creates a new settings file with default values
-    async fn create_default_config() -> Result<Self, Box<dyn Error>> {
+    async fn create_default() -> Result<Self, Box<dyn Error>> {
         let default_settings = Self {
             language: String::from("en"),
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
             color: String::new(),
-            debug: false,
-            elevated: false,
+            debug: cfg!(debug_assertions),
+            elevated: is_elevated()?,
             run_as_admin: false,
-            system_drive_letter: String::new(),
+            system_drive_letter: std::env::var("windir")?[..1].to_string(),
             user_sid: String::new(),
-            username: String::new(),
+            username: std::env::var("USERNAME")?,
 
             installation: Installation {
                 current_user_only: false,
@@ -90,62 +82,42 @@ impl Settings {
                     create_desktop_shortcut: false,
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
-                    install_path: String::new(),
+                    install_path: format!(
+                        r"{}:\Program Files",
+                        std::env::var("windir")?[..1].to_string()
+                    ),
                 },
                 current_user: InstallSettings {
                     create_desktop_shortcut: false,
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
-                    install_path: String::new(),
+                    install_path: format!(
+                        r"{}:\Users\{}\AppData\Local\Programs",
+                        std::env::var("windir")?[..1].to_string(),
+                        std::env::var("USERNAME")?
+                    ),
                 },
             },
         };
 
-        let config_path = Self::get_config_path().await?;
+        let config_path = Self::get_file_path().await?;
+
+        if let Some(parent) = config_path.parent() {
+            tokio::fs::create_dir_all(parent).await?;
+        }
+
         let content = tokio::task::spawn_blocking({
-            let settings = default_settings.clone();
-            move || toml::to_string_pretty(&settings)
+            let config = default_settings.clone();
+            move || toml::to_string_pretty(&config)
         })
         .await??;
 
         tokio::fs::write(config_path, content).await?;
         Ok(default_settings)
     }
+}
 
-    /// Reads settings from file or creates default if not exists
-    pub async fn read() -> Result<Self, Box<dyn Error>> {
-        let config_path = Self::get_config_path().await?;
-
-        if !tokio::fs::try_exists(&config_path).await? {
-            return Self::create_default_config().await;
-        }
-
-        let content = tokio::fs::read_to_string(&config_path).await?;
-        let settings = tokio::task::spawn_blocking(move || {
-            Config::builder()
-                .add_source(config::File::from_str(&content, config::FileFormat::Toml))
-                .build()?
-                .try_deserialize::<Settings>()
-        })
-        .await??;
-
-        Ok(settings)
-    }
-
-    /// Saves current settings to file
-    pub async fn save(&self) -> Result<(), Box<dyn Error>> {
-        let config_path = Self::get_config_path().await?;
-        let settings_str = tokio::task::spawn_blocking({
-            let settings = self.clone();
-            move || toml::to_string_pretty(&settings)
-        })
-        .await??;
-
-        tokio::fs::write(config_path, settings_str).await?;
-        Ok(())
-    }
-
-    /// Initializes system-specific settings
+impl Settings {
     pub async fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
         self.debug = cfg!(debug_assertions);
         self.elevated = is_elevated()?;

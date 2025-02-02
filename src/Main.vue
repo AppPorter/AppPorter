@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // Core imports
 import { window } from "@/main";
-import { goTo } from "@/plugin/router";
+import { goTo } from "@/plugins/router";
 import { useSettingsStore } from "@/stores/settings";
 import { invoke } from "@tauri-apps/api/core";
 import { exit } from "@tauri-apps/plugin-process";

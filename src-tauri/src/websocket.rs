@@ -1,3 +1,5 @@
+use crate::configs::app_list::AppList;
+use crate::configs::ConfigFile;
 use futures_util::{SinkExt, StreamExt};
 use log::*;
 use std::{error::Error, net::SocketAddr};
@@ -33,7 +35,14 @@ async fn handle_connection(peer: SocketAddr, stream: TcpStream) -> WsResult<()> 
 
 async fn handle_extension_message(msg: Message) -> Message {
     match &msg {
-        Message::Text(text) => println!("Text: {}", text),
+        Message::Text(text) => {
+            let mut app_list = AppList::read().await.unwrap_or_default();
+            app_list.add_link(text.to_string());
+            if let Err(e) = app_list.save().await {
+                error!("Failed to save app list: {}", e);
+            }
+            println!("Added link to app list: {}", text);
+        }
         _ => println!("Unknown: {:?}", msg),
     }
     msg

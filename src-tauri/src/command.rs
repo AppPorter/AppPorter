@@ -1,4 +1,4 @@
-use crate::{elevate, operations::*, settings::load_settings, validate_path};
+use crate::{configs::settings::load_settings, operations::*};
 use serde::Deserialize;
 use tauri::AppHandle;
 
@@ -25,7 +25,6 @@ impl Command {
     }
 }
 
-/// Executes a command and returns the result as a string
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
     command.execute(app).await.map_err(|e| e.to_string())
