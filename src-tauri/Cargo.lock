@@ -96,6 +96,7 @@ dependencies = [
  "config",
  "dirs 6.0.0",
  "futures-util",
+ "lazy_static",
  "log",
  "mslnk",
  "serde",

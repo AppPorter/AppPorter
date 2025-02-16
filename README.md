@@ -5,8 +5,9 @@
 ### feature
 
 - [ ] Broser extension: "Install and Subscribe via AppPorter"
-- [ ] App Manage and Update
-- [ ] App list (uninstalltion)
+- [ ] AppList
+- [ ] Uninstallation
+- [ ] Update
 
 ### fix
 

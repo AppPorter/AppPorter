@@ -52,4 +52,8 @@ impl AppList {
         };
         self.links.push(new_link);
     }
+
+    pub fn has_link(&self, url: &str) -> bool {
+        self.links.iter().any(|link| link.url == url)
+    }
 }
