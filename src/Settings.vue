@@ -5,6 +5,7 @@ const settings = useSettingsStore();
 
 const saveSettings = async () => {
   await settings.saveSettings();
+  window.location.reload();
 };
 
 const languageOptions = [
