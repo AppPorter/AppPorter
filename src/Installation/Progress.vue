@@ -79,18 +79,20 @@ onMounted(() => {
       command: {
         name: "Installation",
         config: {
-          app_icon: installationConfig.app_icon,
-          app_name: installationConfig.app_name,
-          app_publisher: installationConfig.app_publisher,
-          app_version: installationConfig.app_version,
-          current_user_only: installationConfig.current_user_only,
-          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
-          create_registry_key: installationConfig.create_registry_key,
-          create_start_menu_shortcut:
-            installationConfig.create_start_menu_shortcut,
-          install_path: installationConfig.install_path,
-          executable_path: installationConfig.executable_path,
           zip_path: installationConfig.zip_path,
+          details: {
+            name: installationConfig.app_name,
+            icon: installationConfig.app_icon,
+            publisher: installationConfig.app_publisher,
+            version: installationConfig.app_version,
+            current_user_only: installationConfig.current_user_only,
+            create_desktop_shortcut: installationConfig.create_desktop_shortcut,
+            create_registry_key: installationConfig.create_registry_key,
+            create_start_menu_shortcut:
+              installationConfig.create_start_menu_shortcut,
+            install_path: installationConfig.install_path,
+            executable_path: installationConfig.executable_path,
+          },
         },
       },
     }).then((result) => {

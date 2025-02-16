@@ -5,17 +5,45 @@ use std::error::Error;
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct AppList {
     #[serde(default)]
-    pub links: Vec<AppLink>,
+    pub links: Vec<App>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
-pub struct AppLink {
-    #[serde(default)]
-    pub url: String,
+pub struct App {
     #[serde(default)]
     pub timestamp: i64,
     #[serde(default)]
-    pub status: String,
+    pub installed: bool,
+    #[serde(default)]
+    pub details: InstalledApp,
+    #[serde(default)]
+    pub url: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+pub struct InstalledApp {
+    #[serde(default)]
+    pub name: String,
+    #[serde(default)]
+    pub icon: String,
+    #[serde(default)]
+    pub publisher: String,
+    #[serde(default)]
+    pub version: String,
+
+    #[serde(default)]
+    pub install_path: String,
+    #[serde(default)]
+    pub executable_path: String,
+
+    #[serde(default)]
+    pub current_user_only: bool,
+    #[serde(default)]
+    pub create_desktop_shortcut: bool,
+    #[serde(default)]
+    pub create_start_menu_shortcut: bool,
+    #[serde(default)]
+    pub create_registry_key: bool,
 }
 
 #[async_trait::async_trait]
@@ -45,10 +73,11 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn add_link(&mut self, url: String) {
-        let new_link = AppLink {
-            url,
+        let new_link = App {
             timestamp: chrono::Utc::now().timestamp(),
-            status: "pending".to_string(),
+            installed: false,
+            details: InstalledApp::default(),
+            url,
         };
         self.links.push(new_link);
     }

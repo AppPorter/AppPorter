@@ -1,5 +1,8 @@
-use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
+use crate::configs::{
+    app_list::{App, AppList, InstalledApp},
+    settings::Settings,
+};
 use mslnk::ShellLink;
 use serde::Deserialize;
 use std::{collections::HashSet, error::Error};
@@ -11,19 +14,7 @@ use zip::ZipArchive;
 #[derive(Deserialize, Debug)]
 pub struct InstallationConfig {
     zip_path: String,
-
-    current_user_only: bool,
-    create_desktop_shortcut: bool,
-    create_registry_key: bool,
-    create_start_menu_shortcut: bool,
-    install_path: String,
-
-    executable_path: String,
-
-    app_icon: String,
-    app_name: String,
-    app_publisher: String,
-    app_version: String,
+    details: InstalledApp,
 }
 
 pub async fn installation(
@@ -33,8 +24,8 @@ pub async fn installation(
     let zip_path = installation_config.zip_path.clone();
     let app_path = format!(
         r"{}\{}",
-        installation_config.install_path,
-        installation_config.app_name.replace(" ", "-")
+        installation_config.details.install_path,
+        installation_config.details.name.replace(" ", "-")
     );
 
     // Do synchronous zip operations in a blocking task
@@ -132,29 +123,40 @@ pub async fn installation(
 
     let full_executable_path = get_full_executable_path(
         &app_path,
-        &installation_config.executable_path,
+        &installation_config.details.executable_path,
         single_root.as_deref(),
     );
 
     let settings = Settings::read().await?;
 
-    if installation_config.create_start_menu_shortcut {
+    if installation_config.details.create_start_menu_shortcut {
         create_start_menu_shortcut(
             &settings.system_drive_letter,
             &settings.username,
-            &installation_config.app_name,
+            &installation_config.details.name,
             &full_executable_path,
-            installation_config.current_user_only,
+            installation_config.details.current_user_only,
         )?;
     }
 
-    if installation_config.create_desktop_shortcut {
-        create_desktop_shortcut(&full_executable_path, &installation_config.app_name)?;
+    if installation_config.details.create_desktop_shortcut {
+        create_desktop_shortcut(&full_executable_path, &installation_config.details.name)?;
     }
 
-    if installation_config.create_registry_key {
+    if installation_config.details.create_registry_key {
         create_registry_entries(&installation_config, &full_executable_path, &app_path)?;
     }
+
+    // Add new app to app list
+    let mut app_list = AppList::read().await?;
+    let new_app = App {
+        timestamp: chrono::Utc::now().timestamp(),
+        installed: true,
+        details: installation_config.details,
+        url: "".to_string(),
+    };
+    app_list.links.push(new_app);
+    app_list.save().await?;
 
     Ok(full_executable_path)
 }
@@ -218,27 +220,27 @@ fn create_registry_entries(
     executable_path: &str,
     app_path: &str,
 ) -> Result<(), Box<dyn Error>> {
-    let key = if config.current_user_only {
+    let key = if config.details.current_user_only {
         CURRENT_USER.create(format!(
             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.app_name
+            config.details.name
         ))?
     } else {
         LOCAL_MACHINE.create(format!(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.app_name
+            config.details.name
         ))?
     };
 
     key.set_string("Comments", "Installed with AppPorter")?;
     key.set_string("DisplayIcon", executable_path)?;
-    key.set_string("DisplayName", &config.app_name)?;
-    key.set_string("DisplayVersion", &config.app_version)?;
+    key.set_string("DisplayName", &config.details.name)?;
+    key.set_string("DisplayVersion", &config.details.version)?;
     key.set_string("InstallLocation", app_path)?;
     key.set_u32("NoModify", 1)?;
     key.set_u32("NoRemove", 0)?;
     key.set_u32("NoRepair", 1)?;
-    key.set_string("Publisher", &config.app_publisher)?;
+    key.set_string("Publisher", &config.details.publisher)?;
     key.set_string(
         "UninstallString",
         &std::env::current_exe()?.to_string_lossy().to_string(),
