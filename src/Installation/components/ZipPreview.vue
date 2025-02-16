@@ -70,8 +70,7 @@ const isCollapsing = ref(false);
 
 // Store
 const store = useInstallationConfigStore();
-const { app_icon, app_name, app_publisher, app_version, executable_path } =
-  storeToRefs(store);
+const { icon, name, publisher, version, executable_path } = storeToRefs(store);
 
 // Cache
 const zipCache = ref<{ paths: string[]; zip: JSZip } | null>(null);

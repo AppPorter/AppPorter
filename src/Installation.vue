@@ -36,9 +36,7 @@ async function select_zip_file() {
     <template #header>
       <div class="flex items-center gap-2">
         <div class="p-1 rounded-md bg-primary-50">
-          <span class="material-symbols-rounded text-xl text-primary-600">
-            folder_zip
-          </span>
+          <span class="mir folder_zip text-xl text-primary-600"></span>
         </div>
         <div>
           <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
@@ -61,7 +59,7 @@ async function select_zip_file() {
           class="flex-1 text-sm h-9"
         />
         <Button @click="select_zip_file" severity="secondary" class="h-9 px-4">
-          <span class="material-symbols-rounded mr-1.5">folder_open</span>
+          <span class="mir folder_open mr-1.5"></span>
           Browse
         </Button>
       </div>
@@ -74,7 +72,7 @@ async function select_zip_file() {
           severity="primary"
           class="h-9 px-6"
         >
-          <span class="material-symbols-rounded mr-1.5">navigate_next</span>
+          <span class="mir navigate_next mr-1.5"></span>
           Next
         </Button>
       </div>

@@ -26,9 +26,7 @@ const themeOptions = [
     <template #header>
       <div class="flex items-center gap-2">
         <div class="p-1 rounded-md bg-primary-50">
-          <span class="material-symbols-rounded text-xl text-primary-600">
-            settings
-          </span>
+          <span class="mir settings text-xl text-primary-600"></span>
         </div>
         <div>
           <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
@@ -47,7 +45,7 @@ const themeOptions = [
       <Panel header="Basic Settings">
         <template #header>
           <div class="flex items-center gap-2">
-            <span class="material-symbols-rounded">tune</span>
+            <span class="mir tune"></span>
             <span>Basic Settings</span>
           </div>
         </template>
@@ -83,7 +81,7 @@ const themeOptions = [
       <Panel header="Installation Settings">
         <template #header>
           <div class="flex items-center gap-2">
-            <span class="material-symbols-rounded">install_desktop</span>
+            <span class="mir install_desktop"></span>
             <span>Installation Settings</span>
           </div>
         </template>
@@ -98,7 +96,7 @@ const themeOptions = [
             <Panel class="flex-1">
               <template #header>
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-rounded">person</span>
+                  <span class="mir person"></span>
                   <span>Current User Settings</span>
                 </div>
               </template>
@@ -135,7 +133,7 @@ const themeOptions = [
             <Panel class="flex-1">
               <template #header>
                 <div class="flex items-center gap-2">
-                  <span class="material-symbols-rounded">group</span>
+                  <span class="mir group"></span>
                   <span>All Users Settings</span>
                 </div>
               </template>
@@ -174,7 +172,7 @@ const themeOptions = [
     <!-- Footer Section -->
     <div class="pt-4 flex justify-end">
       <Button label="Save Changes" @click="saveSettings" severity="primary">
-        <span class="material-symbols-rounded mr-2">save</span>
+        <span class="mir save mr-2"></span>
         Save Changes
       </Button>
     </div>

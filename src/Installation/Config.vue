@@ -52,7 +52,7 @@ async function handleInstallClick() {
   }
 
   // Check app name
-  if (!installationConfig.app_name) {
+  if (!installationConfig.name) {
     nameError.value = "Application name is required";
     toast.add({
       severity: "error",

@@ -81,10 +81,10 @@ onMounted(() => {
         config: {
           zip_path: installationConfig.zip_path,
           details: {
-            name: installationConfig.app_name,
-            icon: installationConfig.app_icon,
-            publisher: installationConfig.app_publisher,
-            version: installationConfig.app_version,
+            name: installationConfig.name,
+            icon: installationConfig.icon,
+            publisher: installationConfig.publisher,
+            version: installationConfig.version,
             current_user_only: installationConfig.current_user_only,
             create_desktop_shortcut: installationConfig.create_desktop_shortcut,
             create_registry_key: installationConfig.create_registry_key,
@@ -167,21 +167,21 @@ defineOptions({
               <h3
                 class="text-base font-medium text-surface-900 dark:text-surface-0 leading-none"
               >
-                {{ installationConfig.app_name }}
+                {{ installationConfig.name }}
               </h3>
               <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
-                {{ installationConfig.app_version || "Version N/A" }}
+                {{ installationConfig.version || "Version N/A" }}
               </p>
               <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                {{ installationConfig.app_publisher || "Publisher N/A" }}
+                {{ installationConfig.publisher || "Publisher N/A" }}
               </p>
             </div>
             <div
               class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
             >
               <img
-                v-if="installationConfig.app_icon"
-                :src="installationConfig.app_icon"
+                v-if="installationConfig.icon"
+                :src="installationConfig.icon"
                 class="w-8 h-8 object-contain"
                 alt="App Icon"
               />

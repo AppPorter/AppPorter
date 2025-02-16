@@ -18,7 +18,7 @@ defineProps<{
 // Store setup
 const installationConfig = useInstallationConfigStore();
 const { zip_path } = installationConfig;
-const { app_name, app_publisher, app_version, executable_path } =
+const { name, publisher, version, executable_path } =
   storeToRefs(installationConfig);
 
 // Auto fill states
@@ -53,9 +53,9 @@ async function confirmSelection() {
 
       await new Promise((resolve) => setTimeout(resolve, 100));
 
-      app_name.value = details[0];
-      app_version.value = details[1];
-      app_publisher.value = details[2] || "";
+      name.value = details[0];
+      version.value = details[1];
+      publisher.value = details[2] || "";
 
       autoConfirmed.value = true;
     } else {
@@ -108,7 +108,7 @@ async function confirmSelection() {
       <div class="flex items-center gap-2">
         <span class="w-24 text-sm font-medium">App Name</span>
         <InputText
-          v-model="app_name"
+          v-model="name"
           placeholder="Application Name"
           class="w-full text-sm h-8"
           :invalid="!!nameError"
@@ -127,7 +127,7 @@ async function confirmSelection() {
           </p>
         </div>
         <InputText
-          v-model="app_publisher"
+          v-model="publisher"
           placeholder="Publisher Name"
           class="w-full text-sm h-8"
         />
@@ -144,7 +144,7 @@ async function confirmSelection() {
           </p>
         </div>
         <InputText
-          v-model="app_version"
+          v-model="version"
           placeholder="1.0.0"
           class="w-full text-sm h-8"
         />
