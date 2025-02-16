@@ -100,6 +100,12 @@ const menu_items = [
     command: () => goTo("/"),
   },
   {
+    label: "AppList",
+    icon: "material-symbols-rounded text-xl",
+    iconClass: "apps",
+    command: () => goTo("/AppList"),
+  },
+  {
     label: "Settings",
     icon: "material-symbols-rounded text-xl",
     iconClass: "settings",

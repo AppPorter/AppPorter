@@ -86,3 +86,13 @@ impl AppList {
         self.links.iter().any(|link| link.url == url)
     }
 }
+
+pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
+    let app_list = AppList::read().await?;
+    Ok(serde_json::to_string(&app_list)?)
+}
+
+pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error>> {
+    app_list.save().await?;
+    Ok("AppList saved successfully".to_string())
+}

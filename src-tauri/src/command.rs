@@ -1,4 +1,5 @@
 use crate::{
+    configs::app_list::{load_app_list, save_app_list, AppList},
     configs::settings::{load_settings, save_settings, Settings},
     operations::*,
 };
@@ -15,6 +16,8 @@ pub enum Command {
     Elevate { revert: bool },
     ValidatePath { path: String },
     SaveSettings { settings: Settings },
+    LoadAppList,
+    SaveAppList { app_list: AppList },
 }
 
 impl Command {
@@ -26,6 +29,8 @@ impl Command {
             Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
             Self::ValidatePath { path } => validate_path(path).await,
             Self::SaveSettings { settings } => save_settings(settings).await,
+            Self::LoadAppList => load_app_list().await,
+            Self::SaveAppList { app_list } => save_app_list(app_list).await,
         }
     }
 }

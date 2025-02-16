@@ -5,6 +5,7 @@ import type { Router } from "vue-router";
 import { createMemoryHistory, createRouter } from "vue-router";
 
 // Page components
+import AppList from "@/AppList.vue";
 import Installation from "@/Installation.vue";
 import Installation_Config from "@/Installation/Config.vue";
 import Installation_Progress from "@/Installation/Progress.vue";
@@ -21,6 +22,10 @@ const routes = [
   {
     path: "/Installation/Progress",
     component: Installation_Progress,
+  },
+  {
+    path: "/AppList",
+    component: AppList,
   },
   { path: "/Settings", component: Settings },
 ] as const;
@@ -67,10 +72,6 @@ export function setupRouterGuards(router: Router) {
       } catch {
         return false;
       }
-    }
-
-    // Clear data based on route
-    if (to.path === "/Installation" || to.path === "/Settings") {
       installationConfig.$reset();
     }
     return true;
