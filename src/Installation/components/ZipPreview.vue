@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from "@/stores/installation_config";
+import { useSettingsStore } from "@/stores/settings";
 import { readFile } from "@tauri-apps/plugin-fs";
+import Color from "color";
 import JSZip from "jszip";
 import { storeToRefs } from "pinia";
 import Button from "primevue/button";
@@ -10,6 +12,8 @@ import RadioButton from "primevue/radiobutton";
 import Tree from "primevue/tree";
 import type { TreeNode } from "primevue/treenode";
 import { computed, nextTick, onMounted, ref, watchEffect } from "vue";
+
+const settingsStore = useSettingsStore();
 
 // Types
 type FilterMode = "exe" | "executable" | "all";
@@ -280,6 +284,20 @@ onMounted(async () => {
     }
   }
 });
+
+function selectColor(): string {
+  if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return Color(settingsStore.color).lightness(80).hex();
+  } else {
+    return Color(settingsStore.color).lightness(20).hex();
+  }
+}
+const selectedColor = ref(selectColor());
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", () => {
+    selectedColor.value = selectColor();
+  });
 </script>
 
 <template>
@@ -346,7 +364,12 @@ onMounted(async () => {
           @node-select="handleNodeSelect"
         >
           <template #default="{ node }">
-            <div class="flex items-center gap-1.5 rounded px-1">
+            <div
+              class="flex items-center gap-1.5 rounded px-1"
+              :style="
+                node.label == executable_path ? { color: selectedColor } : {}
+              "
+            >
               <span class="material-symbols-rounded text-lg">{{
                 node.icon
               }}</span>

@@ -24,6 +24,8 @@ import { Menu } from "@tauri-apps/api/menu";
 import { TrayIcon, type TrayIconEvent } from "@tauri-apps/api/tray";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { exit } from "@tauri-apps/plugin-process";
+
+// Other imports
 import Color from "color";
 
 document.addEventListener("contextmenu", (event) => event.preventDefault());
