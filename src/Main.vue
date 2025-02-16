@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // Core imports
+import { generateMaterialIconsClasses } from "@/assets/material_icons";
 import { window } from "@/main";
 import { goTo } from "@/plugins/router";
 import { useSettingsStore } from "@/stores/settings";
 import { invoke } from "@tauri-apps/api/core";
 import { exit } from "@tauri-apps/plugin-process";
-import { ref } from "vue";
+import { onBeforeMount, onBeforeUnmount, ref } from "vue";
 
 // PrimeVue components and types
 import ConfirmDialog from "primevue/confirmdialog";
@@ -43,7 +44,7 @@ const solve = (event) => {
     message:
       "Do you want to restart the application with administrator privileges?",
     group: "popup",
-    icon: "material-symbols-rounded warning",
+    icon: "mir warning",
     rejectProps: {
       label: "Cancel",
       severity: "secondary",
@@ -95,20 +96,17 @@ const button_items = [
 const menu_items = [
   {
     label: "Installation",
-    icon: "material-symbols-rounded text-xl",
-    iconClass: "install_desktop",
+    icon: "mir install_desktop",
     command: () => goTo("/"),
   },
   {
     label: "AppList",
-    icon: "material-symbols-rounded text-xl",
-    iconClass: "apps",
+    icon: "mir apps",
     command: () => goTo("/AppList"),
   },
   {
     label: "Settings",
-    icon: "material-symbols-rounded text-xl",
-    iconClass: "settings",
+    icon: "mir settings",
     command: () => goTo("/Settings"),
   },
 ];
@@ -118,8 +116,7 @@ const contextMenu = ref();
 const editMenuItems = ref<MenuItem[]>([
   {
     label: "Cut",
-    icon: "material-symbols-rounded text-base",
-    iconClass: "content_cut",
+    icon: "mir content_cut",
     command: () => document.execCommand("cut"),
   },
   {
@@ -154,6 +151,16 @@ function handleContextMenu(event: MouseEvent) {
   }
   event.preventDefault();
 }
+
+let cleanup: (() => void) | undefined;
+
+onBeforeMount(() => {
+  cleanup = generateMaterialIconsClasses();
+});
+
+onBeforeUnmount(() => {
+  cleanup?.();
+});
 </script>
 
 <template>
@@ -162,7 +169,7 @@ function handleContextMenu(event: MouseEvent) {
     <Toast position="bottom-left" class="z-40" />
     <ConfirmDialog group="dialog">
       <template #icon>
-        <span class="material-symbols-rounded text-[32px]">warning</span>
+        <span class="mir warning text-[32px]"></span>
       </template>
     </ConfirmDialog>
 
@@ -172,13 +179,13 @@ function handleContextMenu(event: MouseEvent) {
         class="w-12 h-8 hover:bg-[#363636] hover:text-white flex items-center justify-center"
         @click="minimize_button"
       >
-        <span class="material-symbols-rounded">remove</span>
+        <span class="mir remove"></span>
       </button>
       <button
         class="w-12 h-8 hover:bg-[#c42b1c] hover:text-white flex items-center justify-center"
         @click="close_button"
       >
-        <span class="material-symbols-rounded">close</span>
+        <span class="mir close"></span>
       </button>
     </div>
 
@@ -197,9 +204,8 @@ function handleContextMenu(event: MouseEvent) {
           class="mx-4 py-0 w-full"
           v-if="!settingsStore.elevated && !dismiss_warning"
         >
-          <template #icon
-            ><span class="material-symbols-rounded">warning</span> </template
-          >Application is not running with administrator privileges. Some
+          <template #icon><span class="mir warning"></span></template>
+          Application is not running with administrator privileges. Some
           features may be unavailable.
           <ConfirmPopup group="popup"></ConfirmPopup
           ><SplitButton
