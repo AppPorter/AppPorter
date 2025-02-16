@@ -1,14 +1,20 @@
 # AppPorter
 
-## todo
+## Todo
 
-### feature
+### Feature
 
 - [ ] AppList
 - [ ] Uninstallation
 - [ ] Update
 
-### fix
+### Change
+
+- [ ] Replace Powershell commands
+- [ ] Small Window
+- [ ] Fullscreen
+
+### Fix
 
 - [ ] window control button hover effect
 - [ ] border of zip preview panel
