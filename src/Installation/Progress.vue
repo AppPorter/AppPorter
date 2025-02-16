@@ -137,15 +137,14 @@ defineOptions({
               ]"
             >
               <span
-                class="material-symbols-rounded text-xl"
+                class="text-xl mir"
                 :class="[
+                  is_finished ? 'task_alt' : 'install_desktop',
                   is_finished
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-primary-600 dark:text-primary-400',
                 ]"
-              >
-                {{ is_finished ? "task_alt" : "install_desktop" }}
-              </span>
+              ></span>
             </div>
             <div class="min-w-0 flex-shrink">
               <h2
@@ -187,10 +186,8 @@ defineOptions({
               />
               <span
                 v-else
-                class="material-symbols-rounded text-2xl text-surface-400 dark:text-surface-600"
-              >
-                apps
-              </span>
+                class="mir apps text-2xl text-surface-400 dark:text-surface-600"
+              ></span>
             </div>
           </div>
         </div>
@@ -228,10 +225,8 @@ defineOptions({
             <div class="flex items-center justify-between w-full py-1">
               <div class="flex items-center gap-2">
                 <span
-                  class="material-symbols-rounded text-surface-600 dark:text-surface-400"
-                >
-                  terminal
-                </span>
+                  class="mir terminal text-surface-600 dark:text-surface-400"
+                ></span>
                 <span class="text-sm font-medium">Installed Location</span>
               </div>
               <Button
@@ -241,7 +236,7 @@ defineOptions({
                 class="w-8 h-7"
                 @click="handleCopy(final_executable_path, 'Executable path')"
               >
-                <i class="material-symbols-rounded">content_copy</i>
+                <span class="mir content_copy"></span>
               </Button>
             </div>
           </template>
@@ -262,10 +257,8 @@ defineOptions({
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
                   <span
-                    class="material-symbols-rounded text-surface-600 dark:text-surface-400"
-                  >
-                    settings
-                  </span>
+                    class="mir settings text-surface-600 dark:text-surface-400"
+                  ></span>
                   <span class="text-sm font-medium">Installation Settings</span>
                 </div>
                 <Button
@@ -280,7 +273,7 @@ defineOptions({
                     )
                   "
                 >
-                  <i class="material-symbols-rounded">content_copy</i>
+                  <span class="mir content_copy"></span>
                 </Button>
               </div>
             </template>
@@ -322,10 +315,8 @@ defineOptions({
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
                   <span
-                    class="material-symbols-rounded text-surface-600 dark:text-surface-400"
-                  >
-                    folder_zip
-                  </span>
+                    class="mir folder_zip text-surface-600 dark:text-surface-400"
+                  ></span>
                   <span class="text-sm font-medium">Package Information</span>
                 </div>
                 <Button
@@ -340,7 +331,7 @@ defineOptions({
                     )
                   "
                 >
-                  <i class="material-symbols-rounded">content_copy</i>
+                  <span class="mir content_copy"></span>
                 </Button>
               </div>
             </template>
@@ -375,9 +366,10 @@ defineOptions({
             :severity="is_finished ? 'success' : 'danger'"
             class="w-24 h-8"
           >
-            <span class="material-symbols-rounded mr-1">
-              {{ is_finished ? "home" : "close" }}
-            </span>
+            <span
+              class="mr-1 mir"
+              :class="is_finished ? 'home' : 'close'"
+            ></span>
             {{ is_finished ? "Finish" : "Close" }}
           </Button>
         </div>

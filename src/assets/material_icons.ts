@@ -6,6 +6,18 @@ export function generateMaterialIconsClasses() {
     document.head.appendChild(style);
   }
 
+  // Add commonly used dynamic icons
+  const DYNAMIC_ICONS = new Set([
+    "task_alt",
+    "install_desktop",
+    "content_copy",
+    "folder_zip",
+    "home",
+    "close",
+    "terminal",
+    "settings",
+  ]);
+
   const processedIcons = new Set<string>();
   let updateScheduled = false;
 
@@ -14,7 +26,10 @@ export function generateMaterialIconsClasses() {
     updateScheduled = true;
 
     requestAnimationFrame(() => {
-      const rules = Array.from(processedIcons)
+      // Combine dynamic icons with processed icons
+      const allIcons = new Set([...processedIcons, ...DYNAMIC_ICONS]);
+
+      const rules = Array.from(allIcons)
         .map(
           (iconName) => `
           .mir.${iconName}::before {
@@ -42,6 +57,7 @@ export function generateMaterialIconsClasses() {
     }
   };
 
+  // Initial scan and style generation
   document.querySelectorAll("*").forEach(processElement);
   updateStyles();
 

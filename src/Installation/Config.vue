@@ -150,7 +150,7 @@ async function handleInstallClick() {
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
       @click="handleInstallClick"
     >
-      <span class="material-symbols-rounded text-lg mr-1">download</span>
+      <span class="mir download text-lg mr-1"></span>
       Install
     </Button>
   </div>
