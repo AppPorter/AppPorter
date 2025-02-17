@@ -104,10 +104,12 @@ const menu_items = [
     icon: "mir apps",
     command: () => goTo("/AppList"),
   },
+  { separator: true },
   {
     label: "Settings",
     icon: "mir settings",
     command: () => goTo("/Settings"),
+    class: "absolute right-7",
   },
 ];
 
@@ -208,8 +210,9 @@ onBeforeMount(() => {
       </div>
 
       <!-- Navigation Menu -->
-      <div class="flex justify-center px-4">
-        <Menubar :model="menu_items" class="border-none shadow-none w-full" />
+      <div class="flex px-4">
+        <Menubar :model="menu_items" class="border-none shadow-none w-full">
+        </Menubar>
       </div>
     </div>
 

@@ -17,6 +17,7 @@ export default [
       "vue/valid-template-root": ["off"],
       "vue/multi-word-component-names": ["off"],
       "@typescript-eslint/no-unused-vars": ["warn"],
+      "vue/no-unused-vars ": ["warn"],
       "prefer-const": [
         "warn",
         {
