@@ -136,7 +136,7 @@ impl Settings {
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
                 "-Command",
                 r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
-            ])
+            ]).creation_flags(0x08000000)
             .output()
             .await?;
 

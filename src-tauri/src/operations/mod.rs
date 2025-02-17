@@ -43,6 +43,7 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
             "-Command",
             &ps_command,
         ])
+        .creation_flags(0x08000000)
         .output()
         .await?;
 

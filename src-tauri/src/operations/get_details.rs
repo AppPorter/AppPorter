@@ -118,6 +118,7 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
             "-Command",
             &ps_command,
         ])
+        .creation_flags(0x08000000)
         .output()
         .await?;
     app.emit("get_details", 4)?;
