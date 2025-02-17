@@ -312,7 +312,7 @@ window
       <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-1 flex-1 min-w-0">
           <span class="mir folder_zip text-lg opacity-80"></span>
-          <span class="text-base font-medium truncate">Files in Archive</span>
+          <span class="text-base font-medium">Files in Archive</span>
         </div>
         <div class="flex gap-1 ml-2 shrink-0">
           <Button

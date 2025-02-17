@@ -120,7 +120,7 @@ defineOptions({
 </script>
 
 <template>
-  <div class="p-1.5 pb-12 flex items-center">
+  <div class="p-1.5 pb-12 flex items-center w-full">
     <Panel
       class="border border-surface-200 dark:border-surface-700 shadow-sm max-w-5xl w-full mx-auto"
     >
@@ -148,13 +148,11 @@ defineOptions({
             </div>
             <div class="min-w-0 flex-shrink">
               <h2
-                class="text-lg font-medium text-surface-900 dark:text-surface-0 leading-none truncate"
+                class="text-lg font-medium text-surface-900 dark:text-surface-0"
               >
                 Installation Progress
               </h2>
-              <p
-                class="text-xs text-surface-600 dark:text-surface-400 mt-1 truncate"
-              >
+              <p class="text-xs text-surface-600 dark:text-surface-400">
                 Installing application to your system
               </p>
             </div>
