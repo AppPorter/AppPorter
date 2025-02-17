@@ -171,10 +171,12 @@ const themeOptions = [
 
     <!-- Footer Section -->
     <div class="pt-4 flex justify-end">
-      <Button label="Save Changes" @click="saveSettings" severity="primary">
-        <span class="mir save mr-2"></span>
-        Save Changes
-      </Button>
+      <Button
+        icon="mir save"
+        label="Save Changes"
+        @click="saveSettings"
+        severity="primary"
+      />
     </div>
   </Panel>
 </template>

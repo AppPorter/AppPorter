@@ -142,10 +142,9 @@ watchEffect(() => {
             class="h-8 w-36"
             severity="secondary"
             @click="select_install_path"
-          >
-            <span class="mir folder_open"></span>
-            Browse
-          </Button>
+            icon="mir folder_open"
+            label="Browse"
+          />
         </div>
       </div>
 

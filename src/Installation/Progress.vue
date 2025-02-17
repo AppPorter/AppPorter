@@ -234,10 +234,9 @@ defineOptions({
                 outlined
                 v-tooltip.top="'Copy path'"
                 class="w-8 h-7"
+                icon="mir content_copy"
                 @click="handleCopy(final_executable_path, 'Executable path')"
-              >
-                <span class="mir content_copy"></span>
-              </Button>
+              />
             </div>
           </template>
           <template #content>
@@ -266,15 +265,14 @@ defineOptions({
                   outlined
                   v-tooltip.top="'Copy settings'"
                   class="w-8 h-7"
+                  icon="mir content_copy"
                   @click="
                     handleCopy(
                       `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${installationConfig.install_path}`,
                       'Settings',
                     )
                   "
-                >
-                  <span class="mir content_copy"></span>
-                </Button>
+                />
               </div>
             </template>
             <template #content>
@@ -324,15 +322,14 @@ defineOptions({
                   outlined
                   v-tooltip.top="'Copy package info'"
                   class="w-8 h-7"
+                  icon="mir content_copy"
                   @click="
                     handleCopy(
                       `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
                       'Package info',
                     )
                   "
-                >
-                  <span class="mir content_copy"></span>
-                </Button>
+                />
               </div>
             </template>
             <template #content>
@@ -365,13 +362,9 @@ defineOptions({
             @click="handleClose"
             :severity="is_finished ? 'success' : 'danger'"
             class="w-24 h-8"
-          >
-            <span
-              class="mr-1 mir"
-              :class="is_finished ? 'home' : 'close'"
-            ></span>
-            {{ is_finished ? "Finish" : "Close" }}
-          </Button>
+            :icon="is_finished ? 'mir home' : 'mir close'"
+            :label="is_finished ? 'Finish' : 'Close'"
+          />
         </div>
       </div>
     </Panel>

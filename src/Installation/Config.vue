@@ -149,9 +149,8 @@ async function handleInstallClick() {
       size="large"
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
       @click="handleInstallClick"
-    >
-      <span class="mir download text-lg mr-1"></span>
-      Install
-    </Button>
+      icon="mir download"
+      label="Install"
+    />
   </div>
 </template>

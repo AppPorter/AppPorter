@@ -31,6 +31,7 @@ async function select_zip_file() {
   <!-- Main Selection Panel -->
   <Panel
     class="w-full max-w-3xl m-auto shadow-sm border border-surface-200 dark:border-surface-700 h-52"
+    header="Select Installation Package"
   >
     <!-- Header Section -->
     <template #header>
@@ -58,10 +59,13 @@ async function select_zip_file() {
           placeholder="Select a zip file to install"
           class="flex-1 text-sm h-9"
         />
-        <Button @click="select_zip_file" severity="secondary" class="h-9 px-4">
-          <span class="mir folder_open mr-1.5"></span>
-          Browse
-        </Button>
+        <Button
+          @click="select_zip_file"
+          severity="secondary"
+          class="h-9 px-4"
+          icon="mir folder_open"
+          label="Browse"
+        />
       </div>
 
       <!-- Navigation Button -->
@@ -71,10 +75,9 @@ async function select_zip_file() {
           :disabled="!zip_path"
           severity="primary"
           class="h-9 px-6"
-        >
-          <span class="mir navigate_next mr-1.5"></span>
-          Next
-        </Button>
+          icon="mir navigate_next"
+          label="Next"
+        />
       </div>
     </div>
   </Panel>

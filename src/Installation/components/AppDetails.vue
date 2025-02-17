@@ -91,13 +91,9 @@ async function confirmSelection() {
           class="h-8 text-sm min-w-[6.5rem] transition-all duration-200"
           :disabled="detailsLoading"
           @click="confirmSelection"
-        >
-          <span
-            class="text-lg mr-1"
-            :class="autoConfirmed ? 'mir check_circle' : 'mir auto_awesome'"
-          ></span>
-          {{ autoConfirmed ? "Auto Filled" : "Auto Fill" }}
-        </Button>
+          :icon="autoConfirmed ? 'mir check_circle' : 'mir auto_awesome'"
+          :label="autoConfirmed ? 'Auto Filled' : 'Auto Fill'"
+        />
       </div>
     </template>
 

@@ -6,7 +6,7 @@ import { goTo } from "@/plugins/router";
 import { useSettingsStore } from "@/stores/settings";
 import { invoke } from "@tauri-apps/api/core";
 import { exit } from "@tauri-apps/plugin-process";
-import { onBeforeMount, onBeforeUnmount, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 
 // PrimeVue components and types
 import ConfirmDialog from "primevue/confirmdialog";
@@ -149,14 +149,8 @@ function handleContextMenu(event: MouseEvent) {
   event.preventDefault();
 }
 
-let cleanup: (() => void) | undefined;
-
 onBeforeMount(() => {
-  cleanup = generateMaterialIconsClasses();
-});
-
-onBeforeUnmount(() => {
-  cleanup?.();
+  generateMaterialIconsClasses();
 });
 </script>
 

@@ -40,9 +40,13 @@ interface CustomTreeNode extends TreeNode {
 
 // Core constants
 const FILTER_MODES = {
-  exe: { value: "exe", label: ".exe Only", icon: "terminal" },
-  executable: { value: "executable", label: "Executable Files", icon: "code" },
-  all: { value: "all", label: "All Files", icon: "description" },
+  exe: { value: "exe", label: ".exe Only", icon: "mir terminal" },
+  executable: {
+    value: "executable",
+    label: "Executable Files",
+    icon: "mir code",
+  },
+  all: { value: "all", label: "All Files", icon: "mir description" },
 } as const;
 
 const FILE_PRIORITIES = {
@@ -99,10 +103,10 @@ function getFilePriority(name: string): number {
 function getFileIcon(fileName: string): string {
   const ext = fileName.toLowerCase();
   return ext.endsWith(".exe")
-    ? "terminal"
+    ? "mir terminal"
     : ext.endsWith(".ps1") || ext.endsWith(".bat")
-      ? "code"
-      : "draft";
+      ? "mir code"
+      : "mir draft";
 }
 
 function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
@@ -318,12 +322,8 @@ window
             :disabled="isExpanding"
             v-tooltip.bottom="'Expand All'"
             @click="expandAll"
-          >
-            <span
-              class="mir text-base"
-              :class="isExpanding ? 'progress_activity' : 'unfold_more'"
-            ></span>
-          </Button>
+            :icon="isExpanding ? 'mir progress_activity' : 'mir unfold_more'"
+          />
           <Button
             type="button"
             class="p-1 h-6 min-w-0 hover:bg-surface-100 dark:hover:bg-surface-600"
@@ -331,12 +331,8 @@ window
             :disabled="isCollapsing"
             v-tooltip.bottom="'Collapse All'"
             @click="collapseAll"
-          >
-            <span
-              class="mir text-base"
-              :class="isCollapsing ? 'progress_activity' : 'unfold_less'"
-            ></span>
-          </Button>
+            :icon="isCollapsing ? 'mir progress_activity' : 'mir unfold_less'"
+          />
         </div>
       </div>
     </template>

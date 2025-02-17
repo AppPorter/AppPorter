@@ -1,72 +1,54 @@
+// All used icons collection
+const USED_ICONS = [
+  "settings",
+  "tune",
+  "install_desktop",
+  "person",
+  "group",
+  "save",
+  "folder_zip",
+  "folder_open",
+  "navigate_next",
+  "remove",
+  "close",
+  "warning",
+  "apps",
+  "content_cut",
+  "content_copy",
+  "content_paste",
+  "select_all",
+  "download",
+  "task_alt",
+  "terminal",
+  "home",
+  "check_circle",
+  "auto_awesome",
+  "code",
+  "draft",
+  "description",
+  "folder_off",
+  "progress_activity",
+  "unfold_more",
+  "unfold_less",
+] as const;
+
 export function generateMaterialIconsClasses() {
-  let style = document.getElementById("material-icons-style");
-  if (!style) {
-    style = document.createElement("style");
-    style.id = "material-icons-style";
-    document.head.appendChild(style);
-  }
+  const style = document.createElement("style");
+  style.id = "material-icons-style";
 
-  const processedIcons = new Set<string>();
-  let updateTimer: number | null = null;
+  const rules = USED_ICONS.map(
+    (iconName) => `
+    .mir.${iconName}::before {
+      font-family: 'Material Symbols Rounded' !important;
+      content: "${iconName}" !important;
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }`,
+  ).join("\n");
 
-  const updateStyles = () => {
-    const rules = Array.from(processedIcons)
-      .map(
-        (iconName) => `
-        .mir.${iconName}::before {
-          font-family: 'Material Symbols Rounded' !important;
-          content: "${iconName}" !important;
-          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-        }`,
-      )
-      .join("\n");
+  style.textContent = rules;
+  document.head.appendChild(style);
 
-    style!.textContent = rules;
+  return () => {
+    style.remove();
   };
-
-  const debouncedUpdate = () => {
-    if (updateTimer) {
-      clearTimeout(updateTimer);
-    }
-    updateTimer = window.setTimeout(updateStyles, 100);
-  };
-
-  const processElement = (el: Element) => {
-    if (!el.classList?.contains("mir")) return;
-
-    const iconClass = Array.from(el.classList).find(
-      (cls) => cls !== "mir" && !cls.includes("-") && !cls.includes(":"),
-    );
-
-    if (iconClass && !processedIcons.has(iconClass)) {
-      processedIcons.add(iconClass);
-      debouncedUpdate();
-    }
-  };
-
-  document.querySelectorAll(".mir").forEach(processElement);
-
-  const observer = new MutationObserver((mutations) => {
-    let hasChanges = false;
-    mutations.forEach((mutation) => {
-      mutation.addedNodes.forEach((node) => {
-        if (node instanceof Element) {
-          processElement(node);
-          node.querySelectorAll(".mir").forEach(processElement);
-          hasChanges = true;
-        }
-      });
-    });
-
-    if (hasChanges) {
-      debouncedUpdate();
-    }
-  });
-
-  observer.observe(document.body, {
-    childList: true,
-    subtree: true,
-  });
-
-  return () => observer.disconnect();
 }
