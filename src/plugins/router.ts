@@ -14,20 +14,41 @@ import Settings from "@/Settings.vue";
 // Route definitions
 const routes = [
   { path: "/", redirect: "/Installation" },
-  { path: "/Installation", component: Installation },
+  {
+    path: "/Installation",
+    component: Installation,
+    meta: {
+      icon: "mir install_desktop",
+    },
+  },
   {
     path: "/Installation/Config",
     component: Installation_Config,
+    meta: {
+      icon: "mir settings_applications",
+    },
   },
   {
     path: "/Installation/Progress",
     component: Installation_Progress,
+    meta: {
+      icon: "mir pending_actions",
+    },
   },
   {
     path: "/AppList",
     component: AppList,
+    meta: {
+      icon: "mir apps",
+    },
   },
-  { path: "/Settings", component: Settings },
+  {
+    path: "/Settings",
+    component: Settings,
+    meta: {
+      icon: "mir settings",
+    },
+  },
 ] as const;
 
 const router = createRouter({
@@ -57,13 +78,18 @@ export function setupRouterGuards(router: Router) {
               "Are you sure you want to leave? All changes will be lost.",
             group: "dialog",
             header: "Confirm",
+            icon: "mir warning",
             rejectProps: {
               label: "Cancel",
               severity: "secondary",
               outlined: true,
+              icon: "mir close",
+              size: "small",
             },
             acceptProps: {
               label: "Leave",
+              icon: "mir navigate_next",
+              size: "small",
             },
             accept: () => resolve(true),
             reject: () => reject(),

@@ -1,7 +1,7 @@
 .mir {
   display: inline-block;
-  height: 16px;
-  line-height: 16px;
+  height: 1em;
+  line-height: 1em;
   vertical-align: middle;
 }
 
@@ -14,9 +14,9 @@
   line-height: 1 !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  width: 16px !important;
-  height: 16px !important;
-  font-size: 16px !important;
+  width: 100% !important;
+  height: 100% !important;
+  font-size: inherit !important;
   font-family: "Material Symbols Rounded";
   vertical-align: top;
 }
