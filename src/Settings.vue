@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { onMounted, ref, watch } from "vue";
 import { useSettingsStore } from "./stores/settings";
 
 const settings = useSettingsStore();
+const isSettingsChanged = ref(false);
+const initialSettings = ref({});
 
 const saveSettings = async () => {
   await settings.saveSettings();
@@ -18,6 +21,19 @@ const themeOptions = [
   { label: "Light", value: "light" },
   { label: "Dark", value: "dark" },
 ];
+
+onMounted(() => {
+  initialSettings.value = JSON.parse(JSON.stringify(settings.$state));
+});
+
+watch(
+  () => settings.$state,
+  (newValue) => {
+    isSettingsChanged.value =
+      JSON.stringify(newValue) !== JSON.stringify(initialSettings.value);
+  },
+  { deep: true },
+);
 </script>
 
 <template>
@@ -176,6 +192,7 @@ const themeOptions = [
         label="Save Changes"
         @click="saveSettings"
         severity="primary"
+        :disabled="!isSettingsChanged"
       />
     </div>
   </Panel>
