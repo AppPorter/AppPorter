@@ -30,6 +30,7 @@ const USED_ICONS = [
   "progress_activity",
   "unfold_more",
   "unfold_less",
+  "verified",
 ] as const;
 
 export function generateMaterialIconsClasses() {

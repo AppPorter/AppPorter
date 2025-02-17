@@ -87,11 +87,11 @@ async function confirmSelection() {
           </h2>
         </div>
         <Button
-          :severity="autoConfirmed ? 'info' : 'secondary'"
+          :severity="autoConfirmed ? 'success' : 'secondary'"
           class="h-8 text-sm min-w-[6.5rem] transition-all duration-200"
           :disabled="detailsLoading"
           @click="confirmSelection"
-          :icon="autoConfirmed ? 'mir check_circle' : 'mir auto_awesome'"
+          :icon="autoConfirmed ? 'mir verified' : 'mir auto_awesome'"
           :label="autoConfirmed ? 'Auto Filled' : 'Auto Fill'"
         />
       </div>
