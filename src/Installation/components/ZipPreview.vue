@@ -351,19 +351,7 @@ window
           selectionMode="single"
           toggleOnClick
           @node-select="handleNodeSelect"
-        >
-          <template #default="{ node }">
-            <div
-              class="flex items-center gap-1.5 rounded px-1"
-              :style="
-                node.label == executable_path ? { color: selectedColor } : {}
-              "
-            >
-              <span class="mir text-lg" :class="node.icon"></span>
-              <span>{{ node.label }}</span>
-            </div>
-          </template>
-        </Tree>
+        />
 
         <!-- Empty State Overlay -->
         <div

@@ -117,17 +117,17 @@ await settingsStore.loadSettings();
 const UserColor = definePreset(Aura, {
   semantic: {
     primary: {
-      50: Color(settingsStore.color).lightness(95).hex(),
-      100: Color(settingsStore.color).lightness(90).hex(),
-      200: Color(settingsStore.color).lightness(80).hex(),
-      300: Color(settingsStore.color).lightness(70).hex(),
-      400: Color(settingsStore.color).lightness(60).hex(),
-      500: Color(settingsStore.color).lightness(50).hex(),
-      600: Color(settingsStore.color).lightness(60).hex(),
-      700: Color(settingsStore.color).lightness(70).hex(),
-      800: Color(settingsStore.color).lightness(80).hex(),
-      900: Color(settingsStore.color).lightness(90).hex(),
-      950: Color(settingsStore.color).lightness(95).hex(),
+      50: Color(settingsStore.color).lightness(20).hex(),
+      100: Color(settingsStore.color).lightness(25).hex(),
+      200: Color(settingsStore.color).lightness(30).hex(),
+      300: Color(settingsStore.color).lightness(35).hex(),
+      400: Color(settingsStore.color).lightness(40).hex(),
+      500: Color(settingsStore.color).lightness(45).hex(),
+      600: Color(settingsStore.color).lightness(50).hex(),
+      700: Color(settingsStore.color).lightness(55).hex(),
+      800: Color(settingsStore.color).lightness(60).hex(),
+      900: Color(settingsStore.color).lightness(65).hex(),
+      950: Color(settingsStore.color).lightness(70).hex(),
     },
   },
 });

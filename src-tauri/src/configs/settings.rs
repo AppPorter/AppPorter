@@ -166,13 +166,12 @@ impl Settings {
     async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error>> {
         let accent_color = windows_registry::CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
-            .get_u32("StartColorMenu")?;
-
-        let accent_color_str = format!("{:06x}", accent_color);
+            .get_u32("AccentColorMenu")?;
+        let accent_color_str = format!("{:x}", accent_color);
         let (b, g, r) = (
-            &accent_color_str[0..2],
             &accent_color_str[2..4],
             &accent_color_str[4..6],
+            &accent_color_str[6..8],
         );
         self.color = format!("#{}{}{}", r, g, b);
         Ok(())
