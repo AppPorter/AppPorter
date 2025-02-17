@@ -8,10 +8,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     Button: typeof import('primevue/button')['default']
-    Card: typeof import('primevue/card')['default']
     ConfirmPopup: typeof import('primevue/confirmpopup')['default']
-    Dropdown: typeof import('primevue/dropdown')['default']
-    InputSwitch: typeof import('primevue/inputswitch')['default']
     Message: typeof import('primevue/message')['default']
     Panel: typeof import('primevue/panel')['default']
     ProgressBar: typeof import('primevue/progressbar')['default']

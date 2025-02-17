@@ -6,7 +6,6 @@ use std::error::Error;
 #[tokio::main]
 async fn main() {
     if let Err(e) = run().await {
-        #[cfg(debug_assertions)]
         eprintln!("Application error: {}", e);
     }
 }
