@@ -96,20 +96,17 @@ const button_items = [
 const menu_items = [
   {
     label: "Installation",
-    icon: "mir",
-    iconClass: "install_desktop",
+    icon: "mir install_desktop",
     command: () => goTo("/"),
   },
   {
     label: "AppList",
-    icon: "mir",
-    iconClass: "apps",
+    icon: "mir apps",
     command: () => goTo("/AppList"),
   },
   {
     label: "Settings",
-    icon: "mir",
-    iconClass: "settings",
+    icon: "mir settings",
     command: () => goTo("/Settings"),
   },
 ];
@@ -119,27 +116,23 @@ const contextMenu = ref();
 const editMenuItems = ref<MenuItem[]>([
   {
     label: "Cut",
-    icon: "mir",
-    iconClass: "content_cut",
+    icon: "mir content_cut",
     command: () => document.execCommand("cut"),
   },
   {
     label: "Copy",
-    icon: "mir",
-    iconClass: "content_copy",
+    icon: "mir content_copy",
     command: () => document.execCommand("copy"),
   },
   {
     label: "Paste",
-    icon: "mir",
-    iconClass: "content_paste",
+    icon: "mir content_paste",
     command: () => document.execCommand("paste"),
   },
   { separator: true },
   {
     label: "Select All",
-    icon: "mir",
-    iconClass: "select_all",
+    icon: "mir select_all",
     command: () => document.execCommand("selectAll"),
   },
 ]);
@@ -171,11 +164,7 @@ onBeforeUnmount(() => {
   <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
     <!-- System Dialogs -->
     <Toast position="bottom-left" class="z-40" />
-    <ConfirmDialog group="dialog">
-      <template #icon>
-        <span class="mir warning text-[32px]"></span>
-      </template>
-    </ConfirmDialog>
+    <ConfirmDialog group="dialog"> </ConfirmDialog>
 
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">
@@ -207,12 +196,12 @@ onBeforeUnmount(() => {
           severity="warn"
           class="mx-4 py-0 w-full"
           v-if="!settingsStore.elevated && !dismiss_warning"
+          icon="mir warning"
         >
-          <template #icon><span class="mir warning"></span></template>
           Application is not running with administrator privileges. Some
           features may be unavailable.
-          <ConfirmPopup group="popup"></ConfirmPopup
-          ><SplitButton
+          <ConfirmPopup group="popup"></ConfirmPopup>
+          <SplitButton
             @click="solve($event)"
             label="Solve"
             outlined
@@ -220,22 +209,13 @@ onBeforeUnmount(() => {
             class="z-40 left-2"
             size="small"
             :model="button_items"
-          ></SplitButton
-        ></Message>
+          ></SplitButton>
+        </Message>
       </div>
 
       <!-- Navigation Menu -->
       <div class="flex justify-center px-4">
-        <Menubar :model="menu_items" class="border-none shadow-none w-full">
-          <template #item="{ item }">
-            <div class="flex items-center px-2">
-              <span
-                :class="[item.icon, item.iconClass, 'flex items-center']"
-              ></span>
-              <span class="ml-1">{{ item.label }}</span>
-            </div>
-          </template>
-        </Menubar>
+        <Menubar :model="menu_items" class="border-none shadow-none w-full" />
       </div>
     </div>
 
@@ -245,17 +225,7 @@ onBeforeUnmount(() => {
     </div>
 
     <!-- Context Menu -->
-    <ContextMenu ref="contextMenu" :model="editMenuItems">
-      <template #item="{ item }">
-        <div v-if="!item.separator" class="flex items-center">
-          <span
-            v-if="item.icon"
-            :class="[item.icon, item.iconClass, 'flex items-center mr-2']"
-          ></span>
-          <span>{{ item.label }}</span>
-        </div>
-      </template>
-    </ContextMenu>
+    <ContextMenu ref="contextMenu" :model="editMenuItems" />
 
     <!-- Status Bar -->
     <div
