@@ -1,5 +1,5 @@
+@import "./material_icons.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import "./material_icons.css";

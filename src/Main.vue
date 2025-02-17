@@ -96,17 +96,20 @@ const button_items = [
 const menu_items = [
   {
     label: "Installation",
-    icon: "mir install_desktop",
+    icon: "mir",
+    iconClass: "install_desktop",
     command: () => goTo("/"),
   },
   {
     label: "AppList",
-    icon: "mir apps",
+    icon: "mir",
+    iconClass: "apps",
     command: () => goTo("/AppList"),
   },
   {
     label: "Settings",
-    icon: "mir settings",
+    icon: "mir",
+    iconClass: "settings",
     command: () => goTo("/Settings"),
   },
 ];
@@ -116,25 +119,26 @@ const contextMenu = ref();
 const editMenuItems = ref<MenuItem[]>([
   {
     label: "Cut",
-    icon: "mir content_cut",
+    icon: "mir",
+    iconClass: "content_cut",
     command: () => document.execCommand("cut"),
   },
   {
     label: "Copy",
-    icon: "material-symbols-rounded text-base",
+    icon: "mir",
     iconClass: "content_copy",
     command: () => document.execCommand("copy"),
   },
   {
     label: "Paste",
-    icon: "material-symbols-rounded text-base",
+    icon: "mir",
     iconClass: "content_paste",
     command: () => document.execCommand("paste"),
   },
   { separator: true },
   {
     label: "Select All",
-    icon: "material-symbols-rounded text-base",
+    icon: "mir",
     iconClass: "select_all",
     command: () => document.execCommand("selectAll"),
   },
@@ -225,9 +229,9 @@ onBeforeUnmount(() => {
         <Menubar :model="menu_items" class="border-none shadow-none w-full">
           <template #item="{ item }">
             <div class="flex items-center px-2">
-              <span :class="[item.icon, 'flex items-center']">{{
-                item.iconClass
-              }}</span>
+              <span
+                :class="[item.icon, item.iconClass, 'flex items-center']"
+              ></span>
               <span class="ml-1">{{ item.label }}</span>
             </div>
           </template>
@@ -244,9 +248,10 @@ onBeforeUnmount(() => {
     <ContextMenu ref="contextMenu" :model="editMenuItems">
       <template #item="{ item }">
         <div v-if="!item.separator" class="flex items-center">
-          <span v-if="item.icon" :class="[item.icon, 'flex items-center mr-2']">
-            {{ item.iconClass }}
-          </span>
+          <span
+            v-if="item.icon"
+            :class="[item.icon, item.iconClass, 'flex items-center mr-2']"
+          ></span>
           <span>{{ item.label }}</span>
         </div>
       </template>

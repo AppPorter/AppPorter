@@ -78,9 +78,8 @@ async function confirmSelection() {
       <div class="flex justify-between items-center w-full py-0">
         <div class="flex items-center gap-1.5">
           <span
-            class="material-symbols-rounded text-lg text-surface-600 dark:text-surface-400"
-            >apps</span
-          >
+            class="mir apps text-lg text-surface-600 dark:text-surface-400"
+          ></span>
           <h2
             class="text-base font-medium text-surface-900 dark:text-surface-0"
           >
@@ -93,9 +92,10 @@ async function confirmSelection() {
           :disabled="detailsLoading"
           @click="confirmSelection"
         >
-          <span class="material-symbols-rounded text-lg mr-1">
-            {{ autoConfirmed ? "check_circle" : "auto_awesome" }}
-          </span>
+          <span
+            class="text-lg mr-1"
+            :class="autoConfirmed ? 'mir check_circle' : 'mir auto_awesome'"
+          ></span>
           {{ autoConfirmed ? "Auto Filled" : "Auto Fill" }}
         </Button>
       </div>

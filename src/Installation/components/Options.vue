@@ -94,9 +94,8 @@ watchEffect(() => {
       <div class="flex flex-col py-0">
         <div class="flex items-center gap-1.5">
           <span
-            class="material-symbols-rounded text-lg text-surface-600 dark:text-surface-400"
-            >settings</span
-          >
+            class="mir settings text-lg text-surface-600 dark:text-surface-400"
+          ></span>
           <h2
             class="text-base font-medium text-surface-900 dark:text-surface-0"
           >
@@ -144,7 +143,7 @@ watchEffect(() => {
             severity="secondary"
             @click="select_install_path"
           >
-            <span class="material-symbols-rounded">folder_open</span>
+            <span class="mir folder_open"></span>
             Browse
           </Button>
         </div>

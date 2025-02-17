@@ -307,9 +307,7 @@ window
     <template #header>
       <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-1 flex-1 min-w-0">
-          <span class="material-symbols-rounded text-lg opacity-80"
-            >folder_zip</span
-          >
+          <span class="mir folder_zip text-lg opacity-80"></span>
           <span class="text-base font-medium truncate">Files in Archive</span>
         </div>
         <div class="flex gap-1 ml-2 shrink-0">
@@ -322,11 +320,9 @@ window
             @click="expandAll"
           >
             <span
-              class="material-symbols-rounded text-base"
-              :class="{ 'animate-spin': isExpanding }"
-            >
-              {{ isExpanding ? "progress_activity" : "unfold_more" }}
-            </span>
+              class="mir text-base"
+              :class="isExpanding ? 'progress_activity' : 'unfold_more'"
+            ></span>
           </Button>
           <Button
             type="button"
@@ -337,11 +333,9 @@ window
             @click="collapseAll"
           >
             <span
-              class="material-symbols-rounded text-base"
-              :class="{ 'animate-spin': isCollapsing }"
-            >
-              {{ isCollapsing ? "progress_activity" : "unfold_less" }}
-            </span>
+              class="mir text-base"
+              :class="isCollapsing ? 'progress_activity' : 'unfold_less'"
+            ></span>
           </Button>
         </div>
       </div>
@@ -369,9 +363,7 @@ window
                 node.label == executable_path ? { color: selectedColor } : {}
               "
             >
-              <span class="material-symbols-rounded text-lg">{{
-                node.icon
-              }}</span>
+              <span class="mir text-lg" :class="node.icon"></span>
               <span>{{ node.label }}</span>
             </div>
           </template>
@@ -383,9 +375,8 @@ window
           class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
         >
           <span
-            class="material-symbols-rounded text-4xl text-surface-400 dark:text-surface-600"
-            >folder_off</span
-          >
+            class="mir folder_off text-4xl text-surface-400 dark:text-surface-600"
+          ></span>
           <p class="text-sm text-surface-600 dark:text-surface-400">
             No files found
           </p>
@@ -411,7 +402,7 @@ window
               :for="'filter-' + mode.value"
               class="flex items-center gap-2.5 cursor-pointer"
             >
-              <span class="material-symbols-rounded">{{ mode.icon }}</span>
+              <span class="mir" :class="mode.icon"></span>
               <span class="text-sm">{{ mode.label }}</span>
             </label>
           </div>
