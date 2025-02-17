@@ -82,14 +82,17 @@ async function handleInstallClick() {
       confirm.require({
         message: "Do you want to start the installation process now?",
         group: "dialog",
+        icon: "mir install_desktop",
         header: "Start Installation",
         rejectProps: {
           label: "Cancel",
           severity: "secondary",
           outlined: true,
+          icon: "mir close",
         },
         acceptProps: {
           label: "Install",
+          icon: "mir navigate_next",
         },
         accept: () => resolve(true),
         reject: () => reject(),

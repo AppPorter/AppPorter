@@ -84,12 +84,10 @@ export function setupRouterGuards(router: Router) {
               severity: "secondary",
               outlined: true,
               icon: "mir close",
-              size: "small",
             },
             acceptProps: {
               label: "Leave",
               icon: "mir navigate_next",
-              size: "small",
             },
             accept: () => resolve(true),
             reject: () => reject(),

@@ -43,7 +43,7 @@ const solve = (event) => {
     target: event.currentTarget,
     message:
       "Do you want to restart the application with administrator privileges?",
-    group: "popup",
+    group: "admin_popup",
     icon: "mir warning",
     rejectProps: {
       label: "Cancel",
@@ -194,7 +194,7 @@ onBeforeMount(() => {
         >
           Application is not running with administrator privileges. Some
           features may be unavailable.
-          <ConfirmPopup group="popup"></ConfirmPopup>
+          <ConfirmPopup group="admin_popup"></ConfirmPopup>
           <SplitButton
             @click="solve($event)"
             label="Solve"
