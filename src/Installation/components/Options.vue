@@ -114,9 +114,7 @@ watchEffect(() => {
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <span class="w-24 text-sm font-medium">Install Mode</span>
-        <div
-          class="flex items-center gap-2 bg-surface-50 dark:bg-surface-800 px-2 py-1 rounded-lg"
-        >
+        <div class="flex items-center gap-2 px-2 py-1 rounded-lg">
           <span class="text-sm">All Users</span>
           <ToggleSwitch
             v-model="current_user_only"
@@ -151,9 +149,7 @@ watchEffect(() => {
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
         <span class="w-24 mt-1 text-sm font-medium">Shortcuts</span>
-        <div
-          class="space-y-1 bg-surface-50 dark:bg-surface-800 p-1.5 rounded-lg flex-1"
-        >
+        <div class="space-y-1 p-1.5 rounded-lg flex-1">
           <div class="flex items-center gap-2">
             <Checkbox
               v-model="create_desktop_shortcut"

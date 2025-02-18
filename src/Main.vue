@@ -217,7 +217,7 @@ onBeforeMount(() => {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[100px] px-4 pb-6 h-full z-30 gap-2 flex">
+    <div class="pt-[105px] px-4 pb-6 h-full z-30 gap-2 flex">
       <RouterView />
     </div>
 

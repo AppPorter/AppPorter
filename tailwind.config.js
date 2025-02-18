@@ -1,6 +1,5 @@
-import animate from "tailwindcss-animate";
-
 /** @type {import('tailwindcss').Config} */
+const primeui = require("tailwindcss-primeui");
 export const darkMode = ["media"];
 export const content = [
   "./index.html",
@@ -35,4 +34,4 @@ export const theme = {
     },
   },
 };
-export const plugins = [animate];
+export const plugins = [primeui];

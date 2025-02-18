@@ -339,15 +339,13 @@ window
 
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
-      <div
-        class="card rounded-md border border-surface-200 dark:border-surface-700 h-[54vh] overflow-hidden relative"
-      >
+      <div class="card h-[54vh]">
         <Tree
           v-if="hasScanned && !isEmpty"
           :value="fileTree"
           v-model:selectionKeys="selectedNode"
           v-model:expandedKeys="expandedKeys"
-          class="h-full overflow-auto"
+          class="h-full overflow-auto bg-surface-50 dark:bg-surface-800"
           selectionMode="single"
           toggleOnClick
           @node-select="handleNodeSelect"
@@ -368,10 +366,8 @@ window
       </div>
 
       <!-- Filter Controls -->
-      <div class="absolute bottom-2 left-2">
-        <div
-          class="bg-surface-50 dark:bg-surface-800 rounded-md p-2 space-y-1.5"
-        >
+      <div class="absolute bottom-2 left-2 w-full">
+        <div class="rounded-md p-2 space-y-1.5">
           <div
             v-for="mode in Object.values(FILTER_MODES)"
             :key="mode.value"

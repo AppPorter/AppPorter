@@ -41,8 +41,8 @@ watch(
     <!-- Header Section -->
     <template #header>
       <div class="flex items-center gap-2">
-        <div class="p-1 rounded-md bg-primary-50">
-          <span class="mir settings text-xl text-primary-600"></span>
+        <div class="p-1 rounded-md">
+          <span class="mir settings text-xl"></span>
         </div>
         <div>
           <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">

@@ -97,9 +97,7 @@ async function confirmSelection() {
       </div>
     </template>
 
-    <div
-      class="space-y-3 p-3 bg-gradient-to-b from-surface-0 dark:from-surface-900 to-surface-50/50 dark:to-surface-800/50"
-    >
+    <div class="space-y-3 p-3">
       <!-- App Name -->
       <div class="flex items-center gap-2">
         <span class="w-24 text-sm font-medium">App Name</span>
