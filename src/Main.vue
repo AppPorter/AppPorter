@@ -165,13 +165,13 @@ onBeforeMount(() => {
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">
       <button
-        class="w-12 h-8 hover:bg-[#363636] hover:text-white flex items-center justify-center"
+        class="w-12 h-8 hover:bg-[#e9e9e9] dark:hover:bg-[#2d2d2d] flex items-center justify-center"
         @click="minimize_button"
       >
         <span class="mir remove"></span>
       </button>
       <button
-        class="w-12 h-8 hover:bg-[#c42b1c] hover:text-white flex items-center justify-center"
+        class="w-12 h-8 hover:bg-[#c42b1c] flex items-center justify-center"
         @click="close_button"
       >
         <span class="mir close"></span>
