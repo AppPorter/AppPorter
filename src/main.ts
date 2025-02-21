@@ -1,5 +1,5 @@
 // Style imports
-import '@/assets/index.css'
+import '@/assets/main.css'
 
 // Vue core imports
 import { createPinia } from 'pinia'
