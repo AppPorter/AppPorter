@@ -1,56 +1,56 @@
-import { invoke } from "@tauri-apps/api/core";
-import { defineStore } from "pinia";
+import { invoke } from '@tauri-apps/api/core'
+import { defineStore } from 'pinia'
 
 export interface InstalledApp {
-  name: string;
-  icon: string;
-  publisher: string;
-  version: string;
-  install_path: string;
-  executable_path: string;
-  current_user_only: boolean;
-  create_desktop_shortcut: boolean;
-  create_start_menu_shortcut: boolean;
-  create_registry_key: boolean;
+  name: string
+  icon: string
+  publisher: string
+  version: string
+  install_path: string
+  executable_path: string
+  current_user_only: boolean
+  create_desktop_shortcut: boolean
+  create_start_menu_shortcut: boolean
+  create_registry_key: boolean
 }
 
 interface App {
-  timestamp: number;
-  installed: boolean;
-  details: InstalledApp;
-  url: string;
+  timestamp: number
+  installed: boolean
+  details: InstalledApp
+  url: string
 }
 
 interface AppList {
-  links: App[];
+  links: App[]
 }
 
-export const useAppListStore = defineStore("app_list", {
+export const useAppListStore = defineStore('app_list', {
   state: (): AppList => ({
     links: [],
   }),
 
   actions: {
     async loadAppList() {
-      const result = await invoke("execute_command", {
+      const result = await invoke('execute_command', {
         command: {
-          name: "LoadAppList",
+          name: 'LoadAppList',
         },
-      });
-      this.$patch(JSON.parse(result as string));
+      })
+      this.$patch(JSON.parse(result as string))
     },
 
     async saveAppList() {
-      await invoke("execute_command", {
+      await invoke('execute_command', {
         command: {
-          name: "SaveAppList",
+          name: 'SaveAppList',
           app_list: this.$state,
         },
-      });
+      })
     },
 
     hasLink(url: string): boolean {
-      return this.links.some((link) => link.url === url);
+      return this.links.some((link) => link.url === url)
     },
 
     addLink(url: string) {
@@ -58,21 +58,21 @@ export const useAppListStore = defineStore("app_list", {
         timestamp: Math.floor(Date.now() / 1000),
         installed: false,
         details: {
-          name: "",
-          icon: "",
-          publisher: "",
-          version: "",
-          install_path: "",
-          executable_path: "",
+          name: '',
+          icon: '',
+          publisher: '',
+          version: '',
+          install_path: '',
+          executable_path: '',
           current_user_only: false,
           create_desktop_shortcut: false,
           create_start_menu_shortcut: false,
           create_registry_key: false,
         },
         url: url,
-      };
+      }
 
-      this.links.push(newLink);
+      this.links.push(newLink)
     },
   },
-});
+})

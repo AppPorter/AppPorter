@@ -1,71 +1,71 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from "@/stores/installation_config";
-import { invoke } from "@tauri-apps/api/core";
-import { emit } from "@tauri-apps/api/event";
-import { storeToRefs } from "pinia";
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import Panel from "primevue/panel";
-import { ref } from "vue";
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import { invoke } from '@tauri-apps/api/core'
+import { emit } from '@tauri-apps/api/event'
+import { storeToRefs } from 'pinia'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
+import { ref } from 'vue'
 
 defineProps<{
-  nameError: string;
-  detailsLoading: boolean;
-  detailsLoadingProgress: number;
-  progressMode: "indeterminate" | "determinate";
-}>();
+  nameError: string
+  detailsLoading: boolean
+  detailsLoadingProgress: number
+  progressMode: 'indeterminate' | 'determinate'
+}>()
 
 // Store setup
-const installationConfig = useInstallationConfigStore();
-const { zip_path } = installationConfig;
+const installationConfig = useInstallationConfigStore()
+const { zip_path } = installationConfig
 const { name, publisher, version, executable_path } =
-  storeToRefs(installationConfig);
+  storeToRefs(installationConfig)
 
 // Auto fill states
-const autoConfirmed = ref(false);
+const autoConfirmed = ref(false)
 
 async function confirmSelection() {
-  emit("loading", true);
-  autoConfirmed.value = false;
+  emit('loading', true)
+  autoConfirmed.value = false
 
   try {
-    const result = await invoke("execute_command", {
+    const result = await invoke('execute_command', {
       command: {
-        name: "GetDetails",
+        name: 'GetDetails',
         path: {
           zip_path: zip_path,
           executable_path: executable_path.value,
         },
       },
-    });
+    })
 
-    if (typeof result === "string") {
-      const parsedResult = JSON.parse(result);
+    if (typeof result === 'string') {
+      const parsedResult = JSON.parse(result)
 
-      if ("error" in parsedResult) {
-        throw new Error(parsedResult.error);
+      if ('error' in parsedResult) {
+        throw new Error(parsedResult.error)
       }
 
-      const details = Array.isArray(parsedResult) ? parsedResult : null;
+      const details = Array.isArray(parsedResult) ? parsedResult : null
       if (!details) {
-        throw new Error("Invalid response format");
+        throw new Error('Invalid response format')
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100))
 
-      name.value = details[0];
-      version.value = details[1];
-      publisher.value = details[2] || "";
+      name.value = details[0]
+      version.value = details[1]
+      publisher.value = details[2] || ''
 
-      autoConfirmed.value = true;
+      autoConfirmed.value = true
     } else {
-      throw new Error("Unexpected response type");
+      throw new Error('Unexpected response type')
     }
   } catch (error) {
-    console.error("Failed to get details:", error);
-    autoConfirmed.value = false;
+    console.error('Failed to get details:', error)
+    autoConfirmed.value = false
   } finally {
-    emit("loading", false);
+    emit('loading', false)
   }
 }
 </script>
@@ -160,9 +160,9 @@ async function confirmSelection() {
       />
       <p class="text-sm text-surface-600 dark:text-surface-400">
         {{
-          ["Preparing", "Extracting", "Reading", "Processing"][
+          ['Preparing', 'Extracting', 'Reading', 'Processing'][
             Math.floor(detailsLoadingProgress / 25) - 1
-          ] || "Loading..."
+          ] || 'Loading...'
         }}
       </p>
     </div>

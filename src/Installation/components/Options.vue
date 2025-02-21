@@ -1,23 +1,23 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from "@/stores/installation_config";
-import { useSettingsStore } from "@/stores/settings";
-import { open } from "@tauri-apps/plugin-dialog";
-import { storeToRefs } from "pinia";
-import { watchEffect } from "vue";
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useSettingsStore } from '@/stores/settings'
+import { open } from '@tauri-apps/plugin-dialog'
+import { storeToRefs } from 'pinia'
+import { watchEffect } from 'vue'
 
 // PrimeVue components
-import Button from "primevue/button";
-import Checkbox from "primevue/checkbox";
-import InputText from "primevue/inputtext";
-import Panel from "primevue/panel";
-import ToggleSwitch from "primevue/toggleswitch";
+import Button from 'primevue/button'
+import Checkbox from 'primevue/checkbox'
+import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
+import ToggleSwitch from 'primevue/toggleswitch'
 
 defineProps<{
-  pathError: string;
-}>();
+  pathError: string
+}>()
 
 // Store initialization and destructuring
-const settingsStore = useSettingsStore();
+const settingsStore = useSettingsStore()
 const {
   installation: {
     current_user_only: settings_current_user_only,
@@ -34,58 +34,58 @@ const {
       install_path: current_install_path,
     },
   },
-} = settingsStore;
+} = settingsStore
 
 // Installation config store setup
-const installationConfig = useInstallationConfigStore();
-const { zip_path } = installationConfig;
+const installationConfig = useInstallationConfigStore()
+const { zip_path } = installationConfig
 const {
   current_user_only,
   create_desktop_shortcut,
   create_registry_key,
   create_start_menu_shortcut,
   install_path,
-} = storeToRefs(installationConfig);
+} = storeToRefs(installationConfig)
 
 // Config update handler based on installation mode
 function updateConfig(isCurrentUser: boolean) {
   if (isCurrentUser) {
-    create_desktop_shortcut.value = current_create_desktop_shortcut;
-    create_registry_key.value = current_create_registry_key;
-    create_start_menu_shortcut.value = current_create_start_menu_shortcut;
-    install_path.value = current_install_path;
+    create_desktop_shortcut.value = current_create_desktop_shortcut
+    create_registry_key.value = current_create_registry_key
+    create_start_menu_shortcut.value = current_create_start_menu_shortcut
+    install_path.value = current_install_path
   } else {
-    create_desktop_shortcut.value = all_create_desktop_shortcut;
-    create_registry_key.value = all_create_registry_key;
-    create_start_menu_shortcut.value = all_create_start_menu_shortcut;
-    install_path.value = all_install_path;
+    create_desktop_shortcut.value = all_create_desktop_shortcut
+    create_registry_key.value = all_create_registry_key
+    create_start_menu_shortcut.value = all_create_start_menu_shortcut
+    install_path.value = all_install_path
   }
 }
 
 // Initialize with settings
-current_user_only.value = settings_current_user_only;
-updateConfig(current_user_only.value);
+current_user_only.value = settings_current_user_only
+updateConfig(current_user_only.value)
 
 // Event handlers
 function handleInstallModeChange(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked;
-  current_user_only.value = checked;
-  updateConfig(checked);
+  const checked = (event.target as HTMLInputElement).checked
+  current_user_only.value = checked
+  updateConfig(checked)
 }
 
 async function select_install_path() {
   const selected = await open({
     directory: true,
     multiple: false,
-  });
+  })
   if (selected) {
-    install_path.value = String(selected);
+    install_path.value = String(selected)
   }
 }
 
 watchEffect(() => {
-  updateConfig(current_user_only.value);
-});
+  updateConfig(current_user_only.value)
+})
 </script>
 
 <template>

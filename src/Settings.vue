@@ -1,39 +1,39 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from "vue";
-import { useSettingsStore } from "./stores/settings";
+import { onMounted, ref, watch } from 'vue'
+import { useSettingsStore } from './stores/settings'
 
-const settings = useSettingsStore();
-const isSettingsChanged = ref(false);
-const initialSettings = ref({});
+const settings = useSettingsStore()
+const isSettingsChanged = ref(false)
+const initialSettings = ref({})
 
 const saveSettings = async () => {
-  await settings.saveSettings();
-  window.location.reload();
-};
+  await settings.saveSettings()
+  window.location.reload()
+}
 
 const languageOptions = [
-  { label: "English", value: "en" },
-  { label: "中文", value: "zh" },
-];
+  { label: 'English', value: 'en' },
+  { label: '中文', value: 'zh' },
+]
 
 const themeOptions = [
-  { label: "System", value: "system" },
-  { label: "Light", value: "light" },
-  { label: "Dark", value: "dark" },
-];
+  { label: 'System', value: 'system' },
+  { label: 'Light', value: 'light' },
+  { label: 'Dark', value: 'dark' },
+]
 
 onMounted(() => {
-  initialSettings.value = JSON.parse(JSON.stringify(settings.$state));
-});
+  initialSettings.value = JSON.parse(JSON.stringify(settings.$state))
+})
 
 watch(
   () => settings.$state,
   (newValue) => {
     isSettingsChanged.value =
-      JSON.stringify(newValue) !== JSON.stringify(initialSettings.value);
+      JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
   },
-  { deep: true },
-);
+  { deep: true }
+)
 </script>
 
 <template>

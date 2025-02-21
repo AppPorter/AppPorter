@@ -1,83 +1,83 @@
 <script setup lang="ts">
-import { goTo } from "@/plugins/router";
-import { useInstallationConfigStore } from "@/stores/installation_config";
-import { invoke } from "@tauri-apps/api/core";
-import { listen } from "@tauri-apps/api/event";
-import Button from "primevue/button";
-import Card from "primevue/card";
-import Panel from "primevue/panel";
-import ProgressBar from "primevue/progressbar";
-import Tooltip from "primevue/tooltip";
-import { useToast } from "primevue/usetoast";
-import { onMounted, ref } from "vue";
+import { goTo } from '@/plugins/router'
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
+import Button from 'primevue/button'
+import Card from 'primevue/card'
+import Panel from 'primevue/panel'
+import ProgressBar from 'primevue/progressbar'
+import Tooltip from 'primevue/tooltip'
+import { useToast } from 'primevue/usetoast'
+import { onMounted, ref } from 'vue'
 
-const progress_mode = ref<"indeterminate" | "determinate">("indeterminate");
-const extract_progress = ref(0);
-const is_finished = ref(false);
-const current_status = ref("Preparing installation...");
-const can_close = ref(false);
-const final_executable_path = ref("");
+const progress_mode = ref<'indeterminate' | 'determinate'>('indeterminate')
+const extract_progress = ref(0)
+const is_finished = ref(false)
+const current_status = ref('Preparing installation...')
+const can_close = ref(false)
+const final_executable_path = ref('')
 
-const installationConfig = useInstallationConfigStore();
+const installationConfig = useInstallationConfigStore()
 
 const getInstallMode = (isCurrentUser: boolean) =>
-  isCurrentUser ? "Current User Only" : "All Users";
+  isCurrentUser ? 'Current User Only' : 'All Users'
 
 interface ShortcutsConfig {
-  create_desktop_shortcut: boolean;
-  create_start_menu_shortcut: boolean;
-  create_registry_key: boolean;
+  create_desktop_shortcut: boolean
+  create_start_menu_shortcut: boolean
+  create_registry_key: boolean
 }
 
 const getShortcutsList = (config: ShortcutsConfig) => {
-  const shortcuts = [];
-  if (config.create_desktop_shortcut) shortcuts.push("Desktop");
-  if (config.create_start_menu_shortcut) shortcuts.push("Start Menu");
-  if (config.create_registry_key) shortcuts.push("Registry Entry");
-  return shortcuts.length ? shortcuts.join(", ") : "None";
-};
+  const shortcuts = []
+  if (config.create_desktop_shortcut) shortcuts.push('Desktop')
+  if (config.create_start_menu_shortcut) shortcuts.push('Start Menu')
+  if (config.create_registry_key) shortcuts.push('Registry Entry')
+  return shortcuts.length ? shortcuts.join(', ') : 'None'
+}
 
-const toast = useToast();
+const toast = useToast()
 
 // Copy handler
 const handleCopy = async (text: string, type: string) => {
   try {
-    await navigator.clipboard.writeText(text);
+    await navigator.clipboard.writeText(text)
     toast.add({
-      severity: "info",
-      summary: "Copied",
+      severity: 'info',
+      summary: 'Copied',
       detail: `${type} copied to clipboard`,
       life: 2000,
-    });
+    })
   } catch (error) {
-    console.error("Copy failed:", error);
+    console.error('Copy failed:', error)
   }
-};
+}
 
 onMounted(() => {
   try {
-    listen("installation", (event) => {
+    listen('installation', (event) => {
       if (event.payload === 0) {
-        progress_mode.value = "indeterminate";
-        current_status.value = "Preparing to extract files...";
+        progress_mode.value = 'indeterminate'
+        current_status.value = 'Preparing to extract files...'
       }
       if (event.payload === 101) {
-        progress_mode.value = "indeterminate";
-        current_status.value = "Installation completed successfully!";
-        is_finished.value = true;
-        can_close.value = true;
+        progress_mode.value = 'indeterminate'
+        current_status.value = 'Installation completed successfully!'
+        is_finished.value = true
+        can_close.value = true
       }
-    });
+    })
 
-    listen("installation_extract", (event) => {
-      progress_mode.value = "determinate";
-      extract_progress.value = event.payload as number;
-      current_status.value = `Extracting files (${extract_progress.value}%)...`;
-    });
+    listen('installation_extract', (event) => {
+      progress_mode.value = 'determinate'
+      extract_progress.value = event.payload as number
+      current_status.value = `Extracting files (${extract_progress.value}%)...`
+    })
 
-    invoke("execute_command", {
+    invoke('execute_command', {
       command: {
-        name: "Installation",
+        name: 'Installation',
         config: {
           zip_path: installationConfig.zip_path,
           details: {
@@ -96,27 +96,27 @@ onMounted(() => {
         },
       },
     }).then((result) => {
-      if (typeof result === "string") {
-        final_executable_path.value = result;
+      if (typeof result === 'string') {
+        final_executable_path.value = result
       }
-    });
+    })
   } catch (error) {
-    console.error("Installation failed:", error);
-    current_status.value = "Installation failed. Please try again.";
-    can_close.value = true;
+    console.error('Installation failed:', error)
+    current_status.value = 'Installation failed. Please try again.'
+    can_close.value = true
   }
-});
+})
 
 const handleClose = () => {
-  goTo("/");
-};
+  goTo('/')
+}
 
 // Register the tooltip directive
 defineOptions({
   directives: {
     tooltip: Tooltip,
   },
-});
+})
 </script>
 
 <template>
@@ -167,10 +167,10 @@ defineOptions({
                 {{ installationConfig.name }}
               </h3>
               <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
-                {{ installationConfig.version || "Version N/A" }}
+                {{ installationConfig.version || 'Version N/A' }}
               </p>
               <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
-                {{ installationConfig.publisher || "Publisher N/A" }}
+                {{ installationConfig.publisher || 'Publisher N/A' }}
               </p>
             </div>
             <div
@@ -267,7 +267,7 @@ defineOptions({
                   @click="
                     handleCopy(
                       `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${installationConfig.install_path}`,
-                      'Settings',
+                      'Settings'
                     )
                   "
                 />
@@ -324,7 +324,7 @@ defineOptions({
                   @click="
                     handleCopy(
                       `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
-                      'Package info',
+                      'Package info'
                     )
                   "
                 />

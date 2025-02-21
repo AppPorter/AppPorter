@@ -1,40 +1,40 @@
 <script setup lang="ts">
 // Core imports
-import { generateMaterialIconsClasses } from "@/assets/material_icons";
-import { window } from "@/main";
-import { goTo } from "@/plugins/router";
-import { useSettingsStore } from "@/stores/settings";
-import { invoke } from "@tauri-apps/api/core";
-import { exit } from "@tauri-apps/plugin-process";
-import { onBeforeMount, ref } from "vue";
+import { generateMaterialIconsClasses } from '@/assets/material_icons'
+import { window } from '@/main'
+import { goTo } from '@/plugins/router'
+import { useSettingsStore } from '@/stores/settings'
+import { invoke } from '@tauri-apps/api/core'
+import { exit } from '@tauri-apps/plugin-process'
+import { onBeforeMount, ref } from 'vue'
 
 // PrimeVue components and types
-import ConfirmDialog from "primevue/confirmdialog";
-import ContextMenu from "primevue/contextmenu";
-import Menubar from "primevue/menubar";
-import type { MenuItem } from "primevue/menuitem";
-import Toast from "primevue/toast";
-import { useConfirm } from "primevue/useconfirm";
-import { useToast } from "primevue/usetoast";
+import ConfirmDialog from 'primevue/confirmdialog'
+import ContextMenu from 'primevue/contextmenu'
+import Menubar from 'primevue/menubar'
+import type { MenuItem } from 'primevue/menuitem'
+import Toast from 'primevue/toast'
+import { useConfirm } from 'primevue/useconfirm'
+import { useToast } from 'primevue/usetoast'
 
 // Store and utility initialization
-const settingsStore = useSettingsStore();
-const confirm = useConfirm();
-const toast = useToast();
+const settingsStore = useSettingsStore()
+const confirm = useConfirm()
+const toast = useToast()
 
-const dismiss_warning = ref(false);
+const dismiss_warning = ref(false)
 
 // Window control handlers
 function close_button() {
   if (settingsStore.minimize_to_tray_on_close) {
-    window.hide();
+    window.hide()
   } else {
-    exit(0);
+    exit(0)
   }
 }
 
 function minimize_button() {
-  window.minimize();
+  window.minimize()
 }
 
 // Warning
@@ -42,42 +42,42 @@ const solve = (event) => {
   confirm.require({
     target: event.currentTarget,
     message:
-      "Do you want to restart the application with administrator privileges?",
-    group: "admin_popup",
-    icon: "mir warning",
+      'Do you want to restart the application with administrator privileges?',
+    group: 'admin_popup',
+    icon: 'mir warning',
     rejectProps: {
-      label: "Cancel",
-      severity: "secondary",
+      label: 'Cancel',
+      severity: 'secondary',
       outlined: true,
     },
     acceptProps: {
-      label: "Yes",
+      label: 'Yes',
     },
     accept: () => {
       if (!settingsStore.debug) {
-        invoke("execute_command", {
+        invoke('execute_command', {
           command: {
-            name: "Elevate",
+            name: 'Elevate',
             revert: false,
           },
-        });
+        })
         toast.add({
-          severity: "success",
-          summary: "Restart to apply the change",
+          severity: 'success',
+          summary: 'Restart to apply the change',
           detail:
-            "You have to restart the application to run the application with administrator privileges.",
+            'You have to restart the application to run the application with administrator privileges.',
           life: 3000,
-        });
+        })
       }
     },
     reject: () => {},
-  });
-};
+  })
+}
 const button_items = [
   {
-    label: "Dismiss Once",
+    label: 'Dismiss Once',
     command: () => {
-      dismiss_warning.value = true;
+      dismiss_warning.value = true
     },
   },
   //{
@@ -90,70 +90,70 @@ const button_items = [
   //    });
   //  },
   //},
-];
+]
 
 // Navigation menu configuration
 const menu_items = [
   {
-    label: "Installation",
-    icon: "mir install_desktop",
-    command: () => goTo("/"),
+    label: 'Installation',
+    icon: 'mir install_desktop',
+    command: () => goTo('/'),
   },
   {
-    label: "AppList",
-    icon: "mir apps",
-    command: () => goTo("/AppList"),
+    label: 'AppList',
+    icon: 'mir apps',
+    command: () => goTo('/AppList'),
   },
   { separator: true },
   {
-    label: "Settings",
-    icon: "mir settings",
-    command: () => goTo("/Settings"),
-    class: "absolute right-7",
+    label: 'Settings',
+    icon: 'mir settings',
+    command: () => goTo('/Settings'),
+    class: 'absolute right-7',
   },
-];
+]
 
 // Context menu configuration
-const contextMenu = ref();
+const contextMenu = ref()
 const editMenuItems = ref<MenuItem[]>([
   {
-    label: "Cut",
-    icon: "mir content_cut",
-    command: () => document.execCommand("cut"),
+    label: 'Cut',
+    icon: 'mir content_cut',
+    command: () => document.execCommand('cut'),
   },
   {
-    label: "Copy",
-    icon: "mir content_copy",
-    command: () => document.execCommand("copy"),
+    label: 'Copy',
+    icon: 'mir content_copy',
+    command: () => document.execCommand('copy'),
   },
   {
-    label: "Paste",
-    icon: "mir content_paste",
-    command: () => document.execCommand("paste"),
+    label: 'Paste',
+    icon: 'mir content_paste',
+    command: () => document.execCommand('paste'),
   },
   { separator: true },
   {
-    label: "Select All",
-    icon: "mir select_all",
-    command: () => document.execCommand("selectAll"),
+    label: 'Select All',
+    icon: 'mir select_all',
+    command: () => document.execCommand('selectAll'),
   },
-]);
+])
 
 // Context menu handler
 function handleContextMenu(event: MouseEvent) {
-  const target = event.target as HTMLElement;
+  const target = event.target as HTMLElement
   if (
     target instanceof HTMLInputElement ||
     target instanceof HTMLTextAreaElement
   ) {
-    contextMenu.value?.show(event);
+    contextMenu.value?.show(event)
   }
-  event.preventDefault();
+  event.preventDefault()
 }
 
 onBeforeMount(() => {
-  generateMaterialIconsClasses();
-});
+  generateMaterialIconsClasses()
+})
 </script>
 
 <template>

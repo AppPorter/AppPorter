@@ -1,28 +1,28 @@
 <script setup lang="ts">
 // Core imports
-import { goTo } from "@/plugins/router";
-import { useInstallationConfigStore } from "@/stores/installation_config";
-import { open } from "@tauri-apps/plugin-dialog";
-import { storeToRefs } from "pinia";
+import { goTo } from '@/plugins/router'
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import { open } from '@tauri-apps/plugin-dialog'
+import { storeToRefs } from 'pinia'
 
 // PrimeVue components
-import Button from "primevue/button";
-import InputText from "primevue/inputtext";
-import Panel from "primevue/panel";
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
 
 // Store initialization
-const installationConfig = useInstallationConfigStore();
-const { zip_path } = storeToRefs(installationConfig);
+const installationConfig = useInstallationConfigStore()
+const { zip_path } = storeToRefs(installationConfig)
 
 // File selection handler
 async function select_zip_file() {
   const selected = await open({
     multiple: false,
     directory: false,
-    filters: [{ name: "Zip", extensions: ["zip"] }],
-  });
+    filters: [{ name: 'Zip', extensions: ['zip'] }],
+  })
   if (selected) {
-    zip_path.value = selected;
+    zip_path.value = selected
   }
 }
 </script>

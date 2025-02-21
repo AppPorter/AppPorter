@@ -1,8 +1,8 @@
 @font-face {
-  font-family: "Material Symbols Rounded";
+  font-family: 'Material Symbols Rounded';
   font-style: normal;
   font-weight: 400;
-  src: url("./fonts/material-symbols-rounded.woff2") format("woff2");
+  src: url('./fonts/material-symbols-rounded.woff2') format('woff2');
 }
 
 .mir {
@@ -24,6 +24,6 @@
   width: 100% !important;
   height: 100% !important;
   font-size: inherit !important;
-  font-family: "Material Symbols Rounded";
+  font-family: 'Material Symbols Rounded';
   vertical-align: top;
 }
