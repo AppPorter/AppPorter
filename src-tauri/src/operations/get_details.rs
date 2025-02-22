@@ -16,6 +16,7 @@ pub struct ExePath {
 }
 
 pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
+    println!("get_details: {:#?}", req);
     // Create temp directory
     let temp_dir = Builder::new().prefix("appporter").tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
@@ -62,6 +63,7 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
     // Write the file asynchronously
     let mut outfile = File::create(&temp_exe_path).await?;
     outfile.write_all(&buffer).await?;
+    outfile.sync_all().await?;
     app.emit("get_details", 2)?;
 
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
@@ -135,5 +137,6 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         details["copyright"].as_str().unwrap_or(""),
         icon_data_url
     ]);
+    println!("get_details response: {:#?}", response);
     Ok(response.to_string())
 }
