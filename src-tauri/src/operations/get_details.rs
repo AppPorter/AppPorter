@@ -5,7 +5,8 @@ use std::error::Error;
 use std::io::Read;
 use systemicons::get_icon;
 use tauri::{AppHandle, Emitter};
-use tokio::{fs::File, io::AsyncWriteExt, process::Command};
+use tempfile::{tempdir, tempfile_in};
+use tokio::process::Command;
 use zip::ZipArchive;
 
 #[derive(Deserialize, Debug)]
@@ -16,12 +17,15 @@ pub struct ExePath {
 
 pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
     println!("get_details: {:#?}", req);
-    // Create permanent directory in system temp folder
-    let base_dir = std::env::temp_dir().join("appporter_exes");
-    tokio::fs::create_dir_all(&base_dir).await?;
-
-    let temp_exe_path = base_dir.join(&req.executable_path);
+    // Create temp directory
+    let temp_dir = tempdir()?;
+    let temp_exe_path = temp_dir.path().join(&req.executable_path);
     let executable_path = req.executable_path.clone();
+
+    // Create parent directories if they don't exist
+    if let Some(parent) = temp_exe_path.parent() {
+        tokio::fs::create_dir_all(parent).await?;
+    }
 
     // Do synchronous zip operations in a blocking task
     let (buffer, exe_found) =
@@ -56,17 +60,11 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
 
     app.emit("get_details", 1)?;
 
-    // Create parent directories if they don't exist
-    if let Some(parent) = temp_exe_path.parent() {
-        tokio::fs::create_dir_all(parent).await?;
-    }
+    // Write to temporary file in the temp directory
+    let parent_dir = temp_exe_path.parent().unwrap_or(temp_dir.path());
+    let temp_file = tempfile_in(parent_dir)?;
+    tokio::fs::write(&temp_exe_path, &buffer).await?;
 
-    // Write the file asynchronously (only if it doesn't exist)
-    if !temp_exe_path.exists() {
-        let mut outfile = File::create(&temp_exe_path).await?;
-        outfile.write_all(&buffer).await?;
-        outfile.sync_all().await?;
-    }
     app.emit("get_details", 2)?;
 
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
@@ -141,5 +139,10 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         icon_data_url
     ]);
     println!("get_details response: {:#?}", response);
+
+    // Keep temp_dir and temp_file in scope until all operations are complete
+    drop(temp_file);
+    drop(temp_dir);
+
     Ok(response.to_string())
 }
