@@ -5,7 +5,6 @@ use std::error::Error;
 use std::io::Read;
 use systemicons::get_icon;
 use tauri::{AppHandle, Emitter};
-use tempfile::Builder;
 use tokio::{fs::File, io::AsyncWriteExt, process::Command};
 use zip::ZipArchive;
 
@@ -17,9 +16,11 @@ pub struct ExePath {
 
 pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
     println!("get_details: {:#?}", req);
-    // Create temp directory
-    let temp_dir = Builder::new().prefix("appporter").tempdir()?;
-    let temp_exe_path = temp_dir.path().join(&req.executable_path);
+    // Create permanent directory in system temp folder
+    let base_dir = std::env::temp_dir().join("appporter_exes");
+    tokio::fs::create_dir_all(&base_dir).await?;
+
+    let temp_exe_path = base_dir.join(&req.executable_path);
     let executable_path = req.executable_path.clone();
 
     // Do synchronous zip operations in a blocking task
@@ -60,10 +61,12 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         tokio::fs::create_dir_all(parent).await?;
     }
 
-    // Write the file asynchronously
-    let mut outfile = File::create(&temp_exe_path).await?;
-    outfile.write_all(&buffer).await?;
-    outfile.sync_all().await?;
+    // Write the file asynchronously (only if it doesn't exist)
+    if !temp_exe_path.exists() {
+        let mut outfile = File::create(&temp_exe_path).await?;
+        outfile.write_all(&buffer).await?;
+        outfile.sync_all().await?;
+    }
     app.emit("get_details", 2)?;
 
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
