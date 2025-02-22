@@ -88,8 +88,7 @@ onMounted(() => {
             current_user_only: installationConfig.current_user_only,
             create_desktop_shortcut: installationConfig.create_desktop_shortcut,
             create_registry_key: installationConfig.create_registry_key,
-            create_start_menu_shortcut:
-              installationConfig.create_start_menu_shortcut,
+            create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
             install_path: installationConfig.install_path,
             executable_path: installationConfig.executable_path,
           },
@@ -147,9 +146,7 @@ defineOptions({
               ></span>
             </div>
             <div class="min-w-0 flex-shrink">
-              <h2
-                class="text-lg font-medium text-surface-900 dark:text-surface-0"
-              >
+              <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
                 Installation Progress
               </h2>
               <p class="text-xs text-surface-600 dark:text-surface-400">
@@ -161,9 +158,7 @@ defineOptions({
           <!-- Right: App Details -->
           <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
             <div class="text-right">
-              <h3
-                class="text-base font-medium text-surface-900 dark:text-surface-0 leading-none"
-              >
+              <h3 class="text-base font-medium text-surface-900 dark:text-surface-0 leading-none">
                 {{ installationConfig.name }}
               </h3>
               <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
@@ -182,10 +177,7 @@ defineOptions({
                 class="w-8 h-8 object-contain"
                 alt="App Icon"
               />
-              <span
-                v-else
-                class="mir apps text-2xl text-surface-400 dark:text-surface-600"
-              ></span>
+              <span v-else class="mir apps text-2xl text-surface-400 dark:text-surface-600"></span>
             </div>
           </div>
         </div>
@@ -207,11 +199,7 @@ defineOptions({
           </p>
 
           <!-- Progress Bar -->
-          <ProgressBar
-            :mode="progress_mode"
-            :value="extract_progress"
-            class="h-1.5"
-          />
+          <ProgressBar :mode="progress_mode" :value="extract_progress" class="h-1.5" />
         </div>
 
         <!-- Final Executable Path Card -->
@@ -222,9 +210,7 @@ defineOptions({
           <template #title>
             <div class="flex items-center justify-between w-full py-1">
               <div class="flex items-center gap-2">
-                <span
-                  class="mir terminal text-surface-600 dark:text-surface-400"
-                ></span>
+                <span class="mir terminal text-surface-600 dark:text-surface-400"></span>
                 <span class="text-sm font-medium">Installed Location</span>
               </div>
               <Button
@@ -247,15 +233,11 @@ defineOptions({
         <!-- Installation Details Grid -->
         <div class="grid grid-cols-2 gap-3">
           <!-- Installation Settings Card -->
-          <Card
-            class="shadow-none border border-surface-200 dark:border-surface-700"
-          >
+          <Card class="shadow-none border border-surface-200 dark:border-surface-700">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
-                  <span
-                    class="mir settings text-surface-600 dark:text-surface-400"
-                  ></span>
+                  <span class="mir settings text-surface-600 dark:text-surface-400"></span>
                   <span class="text-sm font-medium">Installation Settings</span>
                 </div>
                 <Button
@@ -276,25 +258,19 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400"
-                    >Install Mode</span
-                  >
+                  <span class="text-sm text-surface-600 dark:text-surface-400">Install Mode</span>
                   <p class="text-sm font-medium">
                     {{ getInstallMode(installationConfig.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400"
-                    >Shortcuts</span
-                  >
+                  <span class="text-sm text-surface-600 dark:text-surface-400">Shortcuts</span>
                   <p class="text-sm font-medium">
                     {{ getShortcutsList(installationConfig) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400"
-                    >Install Path</span
-                  >
+                  <span class="text-sm text-surface-600 dark:text-surface-400">Install Path</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.install_path }}
                   </p>
@@ -304,15 +280,11 @@ defineOptions({
           </Card>
 
           <!-- Package Information Card -->
-          <Card
-            class="shadow-none border border-surface-200 dark:border-surface-700"
-          >
+          <Card class="shadow-none border border-surface-200 dark:border-surface-700">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
-                  <span
-                    class="mir folder_zip text-surface-600 dark:text-surface-400"
-                  ></span>
+                  <span class="mir folder_zip text-surface-600 dark:text-surface-400"></span>
                   <span class="text-sm font-medium">Package Information</span>
                 </div>
                 <Button
@@ -333,9 +305,7 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400"
-                    >Source Archive</span
-                  >
+                  <span class="text-sm text-surface-600 dark:text-surface-400">Source Archive</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.zip_path }}
                   </p>

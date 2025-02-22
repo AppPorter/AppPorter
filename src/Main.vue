@@ -41,8 +41,7 @@ function minimize_button() {
 const solve = (event) => {
   confirm.require({
     target: event.currentTarget,
-    message:
-      'Do you want to restart the application with administrator privileges?',
+    message: 'Do you want to restart the application with administrator privileges?',
     group: 'admin_popup',
     icon: 'mir warning',
     rejectProps: {
@@ -142,10 +141,7 @@ const editMenuItems = ref<MenuItem[]>([
 // Context menu handler
 function handleContextMenu(event: MouseEvent) {
   const target = event.target as HTMLElement
-  if (
-    target instanceof HTMLInputElement ||
-    target instanceof HTMLTextAreaElement
-  ) {
+  if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
     contextMenu.value?.show(event)
   }
   event.preventDefault()
@@ -180,10 +176,7 @@ onBeforeMount(() => {
 
     <!-- Title Bar & Navigation -->
     <div class="fixed w-full z-30">
-      <div
-        class="flex items-center pr-24 w-full"
-        style="-webkit-app-region: drag"
-      >
+      <div class="flex items-center pr-24 w-full" style="-webkit-app-region: drag">
         <span class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</span>
 
         <!-- Warning -->
@@ -194,8 +187,8 @@ onBeforeMount(() => {
           v-if="!settingsStore.elevated && !dismiss_warning"
           icon="mir warning"
         >
-          Application is not running with administrator privileges. Some
-          features may be unavailable.
+          Application is not running with administrator privileges. Some features may be
+          unavailable.
           <ConfirmPopup group="admin_popup"></ConfirmPopup>
           <SplitButton
             @click="solve($event)"
@@ -211,8 +204,7 @@ onBeforeMount(() => {
 
       <!-- Navigation Menu -->
       <div class="flex px-4">
-        <Menubar :model="menu_items" class="border-none shadow-none w-full">
-        </Menubar>
+        <Menubar :model="menu_items" class="border-none shadow-none w-full"> </Menubar>
       </div>
     </div>
 
@@ -225,9 +217,7 @@ onBeforeMount(() => {
     <ContextMenu ref="contextMenu" :model="editMenuItems" />
 
     <!-- Status Bar -->
-    <div
-      class="fixed bottom-0 left-0 right-0 h-6 px-4 flex items-center text-sm"
-    >
+    <div class="fixed bottom-0 left-0 right-0 h-6 px-4 flex items-center text-sm">
       <p>{{ $route.fullPath }}</p>
     </div>
   </div>

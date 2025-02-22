@@ -29,8 +29,7 @@ onMounted(() => {
 watch(
   () => settings.$state,
   (newValue) => {
-    isSettingsChanged.value =
-      JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
+    isSettingsChanged.value = JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
   },
   { deep: true }
 )
@@ -45,9 +44,7 @@ watch(
           <span class="mir settings text-xl"></span>
         </div>
         <div>
-          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
-            Settings
-          </h2>
+          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">Settings</h2>
           <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
             Manage your application preferences
           </p>
@@ -120,26 +117,17 @@ watch(
                 <div class="flex items-center justify-between">
                   <label>Create Desktop Shortcut</label>
                   <ToggleSwitch
-                    v-model="
-                      settings.installation.current_user.create_desktop_shortcut
-                    "
+                    v-model="settings.installation.current_user.create_desktop_shortcut"
                   />
                 </div>
                 <div class="flex items-center justify-between">
                   <label>Create Registry Key</label>
-                  <ToggleSwitch
-                    v-model="
-                      settings.installation.current_user.create_registry_key
-                    "
-                  />
+                  <ToggleSwitch v-model="settings.installation.current_user.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
                   <label>Create Start Menu Shortcut</label>
                   <ToggleSwitch
-                    v-model="
-                      settings.installation.current_user
-                        .create_start_menu_shortcut
-                    "
+                    v-model="settings.installation.current_user.create_start_menu_shortcut"
                   />
                 </div>
               </div>
@@ -156,26 +144,16 @@ watch(
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
                   <label>Create Desktop Shortcut</label>
-                  <ToggleSwitch
-                    v-model="
-                      settings.installation.all_users.create_desktop_shortcut
-                    "
-                  />
+                  <ToggleSwitch v-model="settings.installation.all_users.create_desktop_shortcut" />
                 </div>
                 <div class="flex items-center justify-between">
                   <label>Create Registry Key</label>
-                  <ToggleSwitch
-                    v-model="
-                      settings.installation.all_users.create_registry_key
-                    "
-                  />
+                  <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
                   <label>Create Start Menu Shortcut</label>
                   <ToggleSwitch
-                    v-model="
-                      settings.installation.all_users.create_start_menu_shortcut
-                    "
+                    v-model="settings.installation.all_users.create_start_menu_shortcut"
                   />
                 </div>
               </div>

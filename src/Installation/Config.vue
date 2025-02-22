@@ -123,10 +123,7 @@ async function handleInstallClick() {
 <template>
   <!-- Left Column: Options & App Details -->
   <div class="flex-1 min-w-[400px] space-y-2">
-    <Options
-      :path-error="pathError"
-      @update:path-error="(val) => (pathError = val)"
-    />
+    <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
     <AppDetails
       :name-error="nameError"
       :details-loading="detailsLoading"

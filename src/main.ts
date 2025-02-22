@@ -60,11 +60,7 @@ const trayOptions = {
   menu,
   menuOnLeftClick: false,
   action: (event: TrayIconEvent) => {
-    if (
-      event.type === 'Click' &&
-      event.button === 'Left' &&
-      event.buttonState === 'Down'
-    ) {
+    if (event.type === 'Click' && event.button === 'Left' && event.buttonState === 'Down') {
       window.show()
       window.unminimize()
       window.setFocus()

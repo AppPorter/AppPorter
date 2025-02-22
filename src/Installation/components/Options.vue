@@ -93,12 +93,8 @@ watchEffect(() => {
     <template #header>
       <div class="flex flex-col py-0">
         <div class="flex items-center gap-1.5">
-          <span
-            class="mir settings text-lg text-surface-600 dark:text-surface-400"
-          ></span>
-          <h2
-            class="text-base font-medium text-surface-900 dark:text-surface-0"
-          >
+          <span class="mir settings text-lg text-surface-600 dark:text-surface-400"></span>
+          <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">
             Installation Options
           </h2>
         </div>
@@ -151,14 +147,8 @@ watchEffect(() => {
         <span class="w-24 mt-1 text-sm font-medium">Shortcuts</span>
         <div class="space-y-1 p-1.5 rounded-lg flex-1">
           <div class="flex items-center gap-2">
-            <Checkbox
-              v-model="create_desktop_shortcut"
-              :binary="true"
-              inputId="desktop_shortcut"
-            />
-            <label for="desktop_shortcut" class="text-sm"
-              >Create Desktop Shortcut</label
-            >
+            <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
+            <label for="desktop_shortcut" class="text-sm">Create Desktop Shortcut</label>
           </div>
           <div class="flex items-center gap-2">
             <Checkbox
@@ -166,19 +156,11 @@ watchEffect(() => {
               :binary="true"
               inputId="start_menu_shortcut"
             />
-            <label for="start_menu_shortcut" class="text-sm"
-              >Create Start Menu Shortcut</label
-            >
+            <label for="start_menu_shortcut" class="text-sm">Create Start Menu Shortcut</label>
           </div>
           <div class="flex items-center gap-2">
-            <Checkbox
-              v-model="create_registry_key"
-              :binary="true"
-              inputId="registry_key"
-            />
-            <label for="registry_key" class="text-sm"
-              >Create Registry Entry</label
-            >
+            <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
+            <label for="registry_key" class="text-sm">Create Registry Entry</label>
           </div>
         </div>
       </div>

@@ -66,16 +66,12 @@ export function setupRouterGuards(router: Router) {
     const installationConfig = useInstallationConfigStore()
 
     // Only show confirmation when leaving installation option page
-    if (
-      from.path === '/Installation/Config' &&
-      to.path !== '/Installation/Progress'
-    ) {
+    if (from.path === '/Installation/Config' && to.path !== '/Installation/Progress') {
       const confirm = useConfirm()
       try {
         await new Promise((resolve, reject) => {
           confirm.require({
-            message:
-              'Are you sure you want to leave? All changes will be lost.',
+            message: 'Are you sure you want to leave? All changes will be lost.',
             group: 'dialog',
             header: 'Confirm',
             icon: 'mir warning',
