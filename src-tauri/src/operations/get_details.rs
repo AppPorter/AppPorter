@@ -89,7 +89,6 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         }} catch {{
             Write-Output (ConvertTo-Json -Compress @{{
                 error = $_.Exception.Message;
-                filename = [System.IO.Path]::GetFileNameWithoutExtension($file_path);
             }})
         }}"#,
         temp_exe_path.to_string_lossy().replace("'", "''")
@@ -120,71 +119,35 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
     let output_str = String::from_utf8_lossy(&output.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
     println!("get_details details: {:#?}", details);
-    // Process the data in Rust with new priority logic
-    let filename = details["filename"].as_str().unwrap_or_default();
+
+    // Helper function to get valid string value
+    fn get_valid_str(value: &Value) -> Option<&str> {
+        value.as_str().and_then(|s| {
+            let trimmed = s.trim();
+            if trimmed.is_empty() {
+                None
+            } else {
+                Some(trimmed)
+            }
+        })
+    }
 
     // Get software name based on priority
-    let product_name = details["product_name"]
-        .as_str()
-        .and_then(|s| {
-            if !s.trim().is_empty() {
-                Some(s.trim())
-            } else {
-                None
-            }
-        })
+    let product_name = get_valid_str(&details["product_name"])
+        .or_else(|| get_valid_str(&details["file_description"]))
         .or_else(|| {
-            details["file_description"].as_str().and_then(|s| {
-                if !s.trim().is_empty() {
-                    Some(s.trim())
-                } else {
-                    None
-                }
-            })
+            get_valid_str(&details["original_filename"]).map(|s| s.trim_end_matches(".exe"))
         })
-        .or_else(|| {
-            details["original_filename"].as_str().and_then(|s| {
-                if !s.trim().is_empty() {
-                    Some(s.trim().trim_end_matches(".exe").trim())
-                } else {
-                    None
-                }
-            })
-        })
-        .unwrap_or(filename);
+        .or_else(|| get_valid_str(&details["filename"]))
+        .unwrap_or_default();
 
     // Get version based on priority
-    let version = details["product_version"]
-        .as_str()
-        .and_then(|s| {
-            if !s.trim().is_empty() {
-                Some(s.trim())
-            } else {
-                None
-            }
-        })
-        .or_else(|| {
-            details["file_version"].as_str().and_then(|s| {
-                if !s.trim().is_empty() {
-                    Some(s.trim())
-                } else {
-                    None
-                }
-            })
-        })
+    let version = get_valid_str(&details["product_version"])
+        .or_else(|| get_valid_str(&details["file_version"]))
         .unwrap_or_default();
 
     // Get copyright information
-    let copyright = details["copyright"]
-        .as_str()
-        .and_then(|s| {
-            if !s.trim().is_empty() {
-                Some(s.trim())
-            } else {
-                None
-            }
-        })
-        .unwrap_or_default();
+    let copyright = get_valid_str(&details["copyright"]).unwrap_or_default();
 
     let response = json!([product_name, version, copyright, icon_data_url]);
 
