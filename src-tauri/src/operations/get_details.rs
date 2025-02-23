@@ -77,40 +77,26 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         try {{
             $file_path = '{}';
             $version_info = (Get-Item $file_path).VersionInfo;
-            
-            $product_name = if ($version_info.ProductName -and $version_info.ProductName.Trim()) {{ 
-                $version_info.ProductName.Trim() 
-            }} else {{ 
-                [System.IO.Path]::GetFileNameWithoutExtension($file_path) 
-            }};
-            
-            $product_version = if ($version_info.ProductVersion -and $version_info.ProductVersion.Trim()) {{ 
-                $version_info.ProductVersion.Trim() 
-            }} else {{ 
-            }};
-            
-            $copyright = if ($version_info.LegalCopyright -and $version_info.LegalCopyright.Trim()) {{ 
-                $version_info.LegalCopyright.Trim()
-            }} else {{ 
-                '' 
-            }};
-            
             Write-Output (ConvertTo-Json -Compress @{{
-                product_name = $product_name;
-                product_version = $product_version;
-                copyright = $copyright;
+                product_name = $version_info.ProductName;
+                file_description = $version_info.FileDescription;
+                original_filename = $version_info.OriginalFilename;
+                product_version = $version_info.ProductVersion;
+                file_version = $version_info.FileVersion;
+                copyright = $version_info.LegalCopyright;
+                filename = [System.IO.Path]::GetFileNameWithoutExtension($file_path);
             }})
         }} catch {{
             Write-Output (ConvertTo-Json -Compress @{{
-                product_name = [System.IO.Path]::GetFileNameWithoutExtension($file_path);
-                product_version = '';
-                copyright = '';
                 error = $_.Exception.Message;
+                filename = [System.IO.Path]::GetFileNameWithoutExtension($file_path);
             }})
         }}"#,
         temp_exe_path.to_string_lossy().replace("'", "''")
     );
+
     app.emit("get_details", 3)?;
+
     // Execute PowerShell command
     let output = Command::new("powershell")
         .args([
@@ -124,20 +110,84 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         .creation_flags(0x08000000)
         .output()
         .await?;
+
     app.emit("get_details", 4)?;
+
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
 
     let output_str = String::from_utf8_lossy(&output.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
+    println!("get_details details: {:#?}", details);
+    // Process the data in Rust with new priority logic
+    let filename = details["filename"].as_str().unwrap_or_default();
 
-    let response = json!([
-        details["product_name"].as_str().unwrap_or(""),
-        details["product_version"].as_str().unwrap_or(""),
-        details["copyright"].as_str().unwrap_or(""),
-        icon_data_url
-    ]);
+    // Get software name based on priority
+    let product_name = details["product_name"]
+        .as_str()
+        .and_then(|s| {
+            if !s.trim().is_empty() {
+                Some(s.trim())
+            } else {
+                None
+            }
+        })
+        .or_else(|| {
+            details["file_description"].as_str().and_then(|s| {
+                if !s.trim().is_empty() {
+                    Some(s.trim())
+                } else {
+                    None
+                }
+            })
+        })
+        .or_else(|| {
+            details["original_filename"].as_str().and_then(|s| {
+                if !s.trim().is_empty() {
+                    Some(s.trim().trim_end_matches(".exe").trim())
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap_or(filename);
+
+    // Get version based on priority
+    let version = details["product_version"]
+        .as_str()
+        .and_then(|s| {
+            if !s.trim().is_empty() {
+                Some(s.trim())
+            } else {
+                None
+            }
+        })
+        .or_else(|| {
+            details["file_version"].as_str().and_then(|s| {
+                if !s.trim().is_empty() {
+                    Some(s.trim())
+                } else {
+                    None
+                }
+            })
+        })
+        .unwrap_or_default();
+
+    // Get copyright information
+    let copyright = details["copyright"]
+        .as_str()
+        .and_then(|s| {
+            if !s.trim().is_empty() {
+                Some(s.trim())
+            } else {
+                None
+            }
+        })
+        .unwrap_or_default();
+
+    let response = json!([product_name, version, copyright, icon_data_url]);
+
     println!("get_details response: {:#?}", response);
 
     // Keep temp_dir and temp_file in scope until all operations are complete
