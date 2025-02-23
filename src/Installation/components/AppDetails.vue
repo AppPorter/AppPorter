@@ -18,7 +18,7 @@ defineProps<{
 // Store setup
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
-const { name, publisher, version, executable_path } = storeToRefs(installationConfig)
+const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
 
 // Auto fill states
 const autoConfirmed = ref(false)
@@ -54,7 +54,8 @@ async function confirmSelection() {
 
       name.value = details[0]
       version.value = details[1]
-      publisher.value = details[2] || ''
+      publisher.value = details[2]
+      icon.value = details[3]
 
       autoConfirmed.value = true
     } else {
@@ -66,6 +67,11 @@ async function confirmSelection() {
   } finally {
     emit('loading', false)
   }
+}
+
+// Clear icon function
+function clearIcon() {
+  icon.value = ''
 }
 </script>
 
@@ -91,16 +97,60 @@ async function confirmSelection() {
     </template>
 
     <div class="space-y-3 p-3">
+      <!-- App Icon -->
+      <div class="flex items-center gap-2">
+        <div class="w-24">
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Icon</span>
+          <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
+        </div>
+        <div class="w-full">
+          <div class="flex items-center gap-2">
+            <div class="relative group">
+              <div
+                class="w-[48px] h-[48px] border border-surface-200 dark:border-surface-700 rounded-lg flex items-center justify-center overflow-hidden bg-surface-50 dark:bg-surface-800"
+              >
+                <img
+                  v-if="icon"
+                  :src="icon"
+                  :style="{ width: '48px', height: '48px' }"
+                  class="object-contain"
+                  alt="App Icon"
+                />
+                <span v-else class="mir apps text-2xl text-surface-300 dark:text-surface-600" />
+              </div>
+              <Button
+                v-if="icon"
+                type="button"
+                severity="danger"
+                text
+                raised
+                class="!absolute !-top-1.5 !-right-1.5 !min-w-0 !w-5 !h-5 !p-0 !pointer-events-auto invisible !opacity-0 !scale-75 group-hover:!opacity-100 group-hover:!visible group-hover:!scale-100 !transition-all !duration-200 !ease-out hover:!scale-110"
+                @click="clearIcon"
+              >
+                <span class="mir close !text-xs" />
+              </Button>
+            </div>
+            <span class="text-xs text-surface-500 dark:text-surface-400" v-if="!icon">
+              Icon will be automatically extracted from the application
+            </span>
+          </div>
+        </div>
+      </div>
+
       <!-- App Name -->
       <div class="flex items-center gap-2">
-        <span class="w-24 text-sm font-medium">App Name</span>
-        <InputText
-          v-model="name"
-          placeholder="Application Name"
-          class="w-full text-sm h-8"
-          :invalid="!!nameError"
-          :title="nameError"
-        />
+        <div class="w-24">
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Name</span>
+        </div>
+        <div class="w-full">
+          <InputText
+            v-model="name"
+            placeholder="Application Name"
+            class="w-full text-sm h-8"
+            :invalid="!!nameError"
+            :title="nameError"
+          />
+        </div>
       </div>
 
       <!-- Publisher -->
@@ -109,7 +159,9 @@ async function confirmSelection() {
           <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Publisher</span>
           <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
         </div>
-        <InputText v-model="publisher" placeholder="Publisher Name" class="w-full text-sm h-8" />
+        <div class="w-full">
+          <InputText v-model="publisher" placeholder="Publisher Name" class="w-full text-sm h-8" />
+        </div>
       </div>
 
       <!-- Version -->
@@ -118,7 +170,9 @@ async function confirmSelection() {
           <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Version</span>
           <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
         </div>
-        <InputText v-model="version" placeholder="1.0.0" class="w-full text-sm h-8" />
+        <div class="w-full">
+          <InputText v-model="version" placeholder="1.0.0" class="w-full text-sm h-8" />
+        </div>
       </div>
     </div>
 
