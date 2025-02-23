@@ -94,6 +94,11 @@ export function setupRouterGuards(router: Router) {
       }
       installationConfig.$reset()
     }
+
+    if (from.path === '/Installation/Progress') {
+      installationConfig.$reset()
+    }
+
     return true
   })
 }
