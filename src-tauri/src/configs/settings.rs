@@ -60,7 +60,7 @@ pub struct InstallSettings {
 #[async_trait::async_trait]
 impl ConfigFile for Settings {
     fn get_filename() -> &'static str {
-        "Settings.toml"
+        "Settings.json"
     }
 
     async fn create_default() -> Result<Self, Box<dyn Error>> {
@@ -106,13 +106,11 @@ impl ConfigFile for Settings {
             tokio::fs::create_dir_all(parent).await?;
         }
 
-        let content = tokio::task::spawn_blocking({
-            let config = default_settings.clone();
-            move || toml::to_string_pretty(&config)
-        })
-        .await??;
-
-        tokio::fs::write(config_path, content).await?;
+        tokio::fs::write(
+            &config_path,
+            serde_json::to_string_pretty(&default_settings)?,
+        )
+        .await?;
         Ok(default_settings)
     }
 }

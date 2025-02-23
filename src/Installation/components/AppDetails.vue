@@ -88,7 +88,7 @@ function clearIcon() {
         <Button
           :severity="autoConfirmed ? 'success' : 'secondary'"
           class="h-8 text-sm min-w-[6.5rem] transition-all duration-200"
-          :disabled="detailsLoading"
+          :disabled="detailsLoading || executable_path === ''"
           @click="confirmSelection"
           :icon="autoConfirmed ? 'mir verified' : 'mir auto_awesome'"
           :label="autoConfirmed ? 'Auto Filled' : 'Auto Fill'"

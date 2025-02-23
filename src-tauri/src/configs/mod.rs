@@ -1,4 +1,3 @@
-use config::Config as ConfigBuilder;
 use serde::{de::DeserializeOwned, Serialize};
 use std::{error::Error, path::PathBuf};
 
@@ -10,13 +9,10 @@ pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 's
     fn get_filename() -> &'static str;
 
     async fn get_file_path() -> Result<PathBuf, Box<dyn Error>> {
-        let exe_dir = tokio::fs::canonicalize(
-            std::env::current_exe()?
-                .parent()
-                .ok_or("Failed to get exe directory")?
-                .to_path_buf(),
-        )
-        .await?;
+        let exe_dir = std::env::current_exe()?
+            .parent()
+            .ok_or("Failed to get exe directory")?
+            .to_path_buf();
         Ok(exe_dir.join("configs").join(Self::get_filename()))
     }
 
@@ -28,13 +24,7 @@ pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 's
             tokio::fs::create_dir_all(parent).await?;
         }
 
-        let content = tokio::task::spawn_blocking({
-            let config = default_config.clone();
-            move || toml::to_string_pretty(&config)
-        })
-        .await??;
-
-        tokio::fs::write(config_path, content).await?;
+        tokio::fs::write(&config_path, serde_json::to_string_pretty(&default_config)?).await?;
         Ok(default_config)
     }
 
@@ -46,26 +36,12 @@ pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 's
         }
 
         let content = tokio::fs::read_to_string(&config_path).await?;
-        let config = tokio::task::spawn_blocking(move || {
-            ConfigBuilder::builder()
-                .add_source(config::File::from_str(&content, config::FileFormat::Toml))
-                .build()?
-                .try_deserialize::<Self>()
-        })
-        .await??;
-
-        Ok(config)
+        Ok(serde_json::from_str(&content)?)
     }
 
     async fn save(&self) -> Result<(), Box<dyn Error>> {
         let config_path = Self::get_file_path().await?;
-        let config_str = tokio::task::spawn_blocking({
-            let config = self.clone();
-            move || toml::to_string_pretty(&config)
-        })
-        .await??;
-
-        tokio::fs::write(config_path, config_str).await?;
+        tokio::fs::write(&config_path, serde_json::to_string_pretty(&self)?).await?;
         Ok(())
     }
 }

@@ -49,25 +49,7 @@ pub struct InstalledApp {
 #[async_trait::async_trait]
 impl ConfigFile for AppList {
     fn get_filename() -> &'static str {
-        "AppList.toml"
-    }
-
-    async fn create_default() -> Result<Self, Box<dyn Error>> {
-        let default_list = Self { links: Vec::new() };
-        let config_path = Self::get_file_path().await?;
-
-        if let Some(parent) = config_path.parent() {
-            tokio::fs::create_dir_all(parent).await?;
-        }
-
-        let content = tokio::task::spawn_blocking({
-            let config = default_list.clone();
-            move || toml::to_string_pretty(&config)
-        })
-        .await??;
-
-        tokio::fs::write(config_path, content).await?;
-        Ok(default_list)
+        "AppList.json"
     }
 }
 
@@ -88,8 +70,7 @@ impl AppList {
 }
 
 pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
-    let app_list = AppList::read().await?;
-    Ok(serde_json::to_string(&app_list)?)
+    Ok(serde_json::to_string(&AppList::read().await?)?)
 }
 
 pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error>> {
