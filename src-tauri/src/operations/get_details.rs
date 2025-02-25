@@ -16,7 +16,6 @@ pub struct ExePath {
 }
 
 pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
-    println!("get_details: {:#?}", req);
     // Create temp directory
     let temp_dir = tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
@@ -118,7 +117,6 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
 
     let output_str = String::from_utf8_lossy(&output.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
-    println!("get_details details: {:#?}", details);
 
     // Helper function to get valid string value
     fn get_valid_str(value: &Value) -> Option<&str> {
@@ -150,8 +148,6 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
     let copyright = get_valid_str(&details["copyright"]).unwrap_or_default();
 
     let response = json!([product_name, version, copyright, icon_data_url]);
-
-    println!("get_details response: {:#?}", response);
 
     // Keep temp_dir and temp_file in scope until all operations are complete
     drop(temp_file);
