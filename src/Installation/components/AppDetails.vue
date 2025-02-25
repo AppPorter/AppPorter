@@ -15,12 +15,10 @@ defineProps<{
   progressMode: 'indeterminate' | 'determinate'
 }>()
 
-// Store setup
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
 const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
 
-// Auto fill states
 const autoConfirmed = ref(false)
 
 async function confirmSelection() {
@@ -32,35 +30,34 @@ async function confirmSelection() {
       command: {
         name: 'GetDetails',
         path: {
-          zip_path: zip_path,
+          zip_path,
           executable_path: executable_path.value,
         },
       },
     })
 
-    if (typeof result === 'string') {
-      const parsedResult = JSON.parse(result)
-
-      if ('error' in parsedResult) {
-        throw new Error(parsedResult.error)
-      }
-
-      const details = Array.isArray(parsedResult) ? parsedResult : null
-      if (!details) {
-        throw new Error('Invalid response format')
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 100))
-
-      name.value = details[0]
-      version.value = details[1]
-      publisher.value = details[2]
-      icon.value = details[3]
-
-      autoConfirmed.value = true
-    } else {
+    if (typeof result !== 'string') {
       throw new Error('Unexpected response type')
     }
+
+    const parsedResult = JSON.parse(result)
+
+    if ('error' in parsedResult) {
+      throw new Error(parsedResult.error)
+    }
+
+    const details = Array.isArray(parsedResult) ? parsedResult : null
+    if (!details) {
+      throw new Error('Invalid response format')
+    }
+
+    // Small delay for UI
+    await new Promise((resolve) => setTimeout(resolve, 100))
+
+    // Update app details with received data
+    ;[name.value, version.value, publisher.value, icon.value] = details
+
+    autoConfirmed.value = true
   } catch (error) {
     console.error('Failed to get details:', error)
     autoConfirmed.value = false
@@ -69,7 +66,6 @@ async function confirmSelection() {
   }
 }
 
-// Clear icon function
 function clearIcon() {
   icon.value = ''
 }
@@ -109,13 +105,7 @@ function clearIcon() {
               <div
                 class="w-[48px] h-[48px] border border-surface-200 dark:border-surface-700 rounded-lg flex items-center justify-center overflow-hidden bg-surface-50 dark:bg-surface-800"
               >
-                <img
-                  v-if="icon"
-                  :src="icon"
-                  :style="{ width: '48px', height: '48px' }"
-                  class="object-contain"
-                  alt="App Icon"
-                />
+                <img v-if="icon" :src="icon" class="w-12 h-12 object-contain" alt="App Icon" />
                 <span v-else class="mir apps text-2xl text-surface-300 dark:text-surface-600" />
               </div>
               <Button
@@ -124,13 +114,13 @@ function clearIcon() {
                 severity="danger"
                 text
                 raised
-                class="!absolute !-top-1.5 !-right-1.5 !min-w-0 !w-5 !h-5 !p-0 !pointer-events-auto invisible !opacity-0 !scale-75 group-hover:!opacity-100 group-hover:!visible group-hover:!scale-100 !transition-all !duration-200 !ease-out hover:!scale-110"
+                class="!absolute !-top-1.5 !-right-1.5 !min-w-0 !w-5 !h-5 !p-0 invisible opacity-0 scale-75 group-hover:opacity-100 group-hover:visible group-hover:scale-100 transition-all duration-200 ease-out hover:scale-110"
                 @click="clearIcon"
               >
                 <span class="mir close !text-xs" />
               </Button>
             </div>
-            <span class="text-xs text-surface-500 dark:text-surface-400" v-if="!icon">
+            <span v-if="!icon" class="text-xs text-surface-500 dark:text-surface-400">
               Icon will be automatically extracted from the application
             </span>
           </div>

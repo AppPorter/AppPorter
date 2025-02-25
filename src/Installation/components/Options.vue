@@ -16,27 +16,12 @@ defineProps<{
   pathError: string
 }>()
 
-// Store initialization and destructuring
+// Store setup
 const settingsStore = useSettingsStore()
 const {
-  installation: {
-    current_user_only: settings_current_user_only,
-    all_users: {
-      create_desktop_shortcut: all_create_desktop_shortcut,
-      create_registry_key: all_create_registry_key,
-      create_start_menu_shortcut: all_create_start_menu_shortcut,
-      install_path: all_install_path,
-    },
-    current_user: {
-      create_desktop_shortcut: current_create_desktop_shortcut,
-      create_registry_key: current_create_registry_key,
-      create_start_menu_shortcut: current_create_start_menu_shortcut,
-      install_path: current_install_path,
-    },
-  },
+  installation: { current_user_only: settings_current_user_only, all_users, current_user },
 } = settingsStore
 
-// Installation config store setup
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
 const {
@@ -47,32 +32,21 @@ const {
   install_path,
 } = storeToRefs(installationConfig)
 
-// Config update handler based on installation mode
+// Sync settings between installation modes
 function updateConfig(isCurrentUser: boolean) {
-  if (isCurrentUser) {
-    create_desktop_shortcut.value = current_create_desktop_shortcut
-    create_registry_key.value = current_create_registry_key
-    create_start_menu_shortcut.value = current_create_start_menu_shortcut
-    install_path.value = current_install_path
-  } else {
-    create_desktop_shortcut.value = all_create_desktop_shortcut
-    create_registry_key.value = all_create_registry_key
-    create_start_menu_shortcut.value = all_create_start_menu_shortcut
-    install_path.value = all_install_path
-  }
+  const sourceConfig = isCurrentUser ? current_user : all_users
+
+  create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
+  create_registry_key.value = sourceConfig.create_registry_key
+  create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
+  install_path.value = sourceConfig.install_path
 }
 
 // Initialize with settings
 current_user_only.value = settings_current_user_only
 updateConfig(current_user_only.value)
 
-// Event handlers
-function handleInstallModeChange(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
-  current_user_only.value = checked
-  updateConfig(checked)
-}
-
+// Select installation directory using file dialog
 async function select_install_path() {
   const selected = await open({
     directory: true,
@@ -83,6 +57,14 @@ async function select_install_path() {
   }
 }
 
+// Update configuration when installation mode changes
+function handleInstallModeChange(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked
+  current_user_only.value = checked
+  updateConfig(checked)
+}
+
+// Ensure configuration stays in sync with installation mode
 watchEffect(() => {
   updateConfig(current_user_only.value)
 })

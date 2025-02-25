@@ -12,21 +12,19 @@ import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 import ZipPreview from './components/ZipPreview.vue'
 
-// Store setup
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
+const toast = useToast()
+const confirm = useConfirm()
 
-// Shared states
+// UI state management
 const detailsLoading = ref(false)
 const detailsLoadingProgress = ref(0)
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 
-// Path validation states
+// Validation states
 const pathError = ref('')
 const nameError = ref('')
-
-const toast = useToast()
-const confirm = useConfirm()
 
 function handleDetailsProgress(value: number) {
   progressMode.value = 'indeterminate'
@@ -34,50 +32,54 @@ function handleDetailsProgress(value: number) {
 }
 
 async function handleInstallClick() {
-  // Reset errors
+  // Reset validation errors
   nameError.value = ''
   pathError.value = ''
 
-  const is_legal = ref(true)
+  const validationErrors = []
 
-  // Validate executable selection
+  // Validate required fields
   if (!installationConfig.executable_path) {
-    toast.add({
-      severity: 'error',
+    validationErrors.push({
+      field: 'executable',
+      message: 'Please select an executable file from the archive',
       summary: 'Executable Missing',
-      detail: 'Please select an executable file from the archive',
-      life: 3000,
     })
-    is_legal.value = false
   }
 
-  // Check app name
   if (!installationConfig.name) {
     nameError.value = 'Application name is required'
-    toast.add({
-      severity: 'error',
+    validationErrors.push({
+      field: 'name',
+      message: 'Please enter an application name',
       summary: 'Missing App Name',
-      detail: 'Please enter an application name',
-      life: 3000,
     })
-    is_legal.value = false
   }
 
-  // Check installation path
   if (!installationConfig.install_path) {
     pathError.value = 'Installation path is required'
-    toast.add({
-      severity: 'error',
+    validationErrors.push({
+      field: 'path',
+      message: 'Please select an installation path',
       summary: 'Missing Install Path',
-      detail: 'Please select an installation path',
-      life: 3000,
     })
-    is_legal.value = false
   }
 
-  if (!is_legal.value) return
+  // Show validation errors if any
+  if (validationErrors.length) {
+    validationErrors.forEach((error) => {
+      toast.add({
+        severity: 'error',
+        summary: error.summary,
+        detail: error.message,
+        life: 3000,
+      })
+    })
+    return
+  }
 
   try {
+    // Validate installation path on backend
     await invoke('execute_command', {
       command: {
         name: 'ValidatePath',
@@ -85,6 +87,7 @@ async function handleInstallClick() {
       },
     })
 
+    // Confirm installation intent
     await new Promise((resolve, reject) => {
       confirm.require({
         message: 'Do you want to start the installation process now?',

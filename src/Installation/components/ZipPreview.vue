@@ -14,15 +14,12 @@ import type { TreeNode } from 'primevue/treenode'
 import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 
 const settingsStore = useSettingsStore()
+const store = useInstallationConfigStore()
+const { executable_path } = storeToRefs(store)
 
 // Types
 type FilterMode = 'exe' | 'executable' | 'all'
 type FileStatus = 'loading' | 'ready' | 'error'
-
-interface Props {
-  zipPath: string
-  detailsLoading?: boolean
-}
 
 interface CustomNodeData {
   path: string
@@ -38,7 +35,7 @@ interface CustomTreeNode extends TreeNode {
   data?: CustomNodeData
 }
 
-// Core constants
+// Constants
 const FILTER_MODES = {
   exe: { value: 'exe', label: '.exe Only', icon: 'mir terminal' },
   executable: {
@@ -57,27 +54,29 @@ const FILE_PRIORITIES = {
 } as const
 
 // Props & emits
-const props = defineProps<Props>()
+const props = defineProps<{
+  zipPath: string
+  detailsLoading?: boolean
+}>()
+
 const emit = defineEmits<{
   (event: 'loading', value: boolean): void
   (event: 'progress', value: number): void
 }>()
 
-// Core states
+// State
 const status = ref<FileStatus>('ready')
 const filterMode = ref<FilterMode>('exe')
 const expandedKeys = ref<Record<string, boolean>>({})
 const selectedNode = ref<Record<string, boolean>>({})
 const fileTree = ref<CustomTreeNode[]>([])
+const zipCache = ref<{ paths: string[]; zip: JSZip } | null>(null)
+
+// UI state
 const isExpanding = ref(false)
 const isCollapsing = ref(false)
-
-// Store
-const store = useInstallationConfigStore()
-const { icon, name, publisher, version, executable_path } = storeToRefs(store)
-
-// Cache
-const zipCache = ref<{ paths: string[]; zip: JSZip } | null>(null)
+const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
+const loadingProgress = ref(0)
 
 // Computed
 const filteredPaths = computed(() => {
@@ -88,11 +87,7 @@ const filteredPaths = computed(() => {
 const hasScanned = computed(() => zipCache.value !== null)
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 
-// Loading states
-const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
-const loadingProgress = ref(0)
-
-// Core functions
+// File utilities
 function getFilePriority(name: string): number {
   const ext = name.toLowerCase().split('.').pop() || ''
   return ext in FILE_PRIORITIES
@@ -102,18 +97,19 @@ function getFilePriority(name: string): number {
 
 function getFileIcon(fileName: string): string {
   const ext = fileName.toLowerCase()
-  return ext.endsWith('.exe')
-    ? 'mir terminal'
-    : ext.endsWith('.ps1') || ext.endsWith('.bat')
-      ? 'mir code'
-      : 'mir draft'
+  if (ext.endsWith('.exe')) return 'mir terminal'
+  if (ext.endsWith('.ps1') || ext.endsWith('.bat')) return 'mir code'
+  return 'mir draft'
 }
 
 function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
   return paths.filter((path) => {
     const isExe = path.toLowerCase().endsWith('.exe')
     const isExecutable = isExe || /\.(bat|ps1)$/i.test(path)
-    return mode === 'exe' ? isExe : mode === 'executable' ? isExecutable : true
+
+    if (mode === 'exe') return isExe
+    if (mode === 'executable') return isExecutable
+    return true
   })
 }
 
@@ -121,6 +117,7 @@ function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
 function buildFileTree(paths: string[]): CustomTreeNode[] {
   const root: CustomTreeNode[] = []
 
+  // Build tree structure from file paths
   paths.forEach((path) => {
     const parts = path.split('/')
     let current = root
@@ -153,17 +150,27 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
     nodes.sort((a, b) => {
       const aHasChildren = !!a.children?.length
       const bHasChildren = !!b.children?.length
+
+      // Folders before files
       if (aHasChildren !== bHasChildren) return aHasChildren ? 1 : -1
+
+      // Sort files by priority
       if (!aHasChildren && !bHasChildren) {
         const priorityDiff = getFilePriority(a.label) - getFilePriority(b.label)
         if (priorityDiff !== 0) return priorityDiff
       }
+
       return a.label.localeCompare(b.label)
     })
-    nodes.forEach((node) => node.children?.length && sortNodes(node.children))
+
+    nodes.forEach((node) => {
+      if (node.children?.length) sortNodes(node.children)
+    })
   }
 
   sortNodes(root)
+
+  // Auto-expand first level if single root folder
   if (root.length === 1 && root[0].children) {
     expandedKeys.value[root[0].key] = true
   }
@@ -173,6 +180,8 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
 function handleNodeSelect(node: TreeNode) {
   const customNode = node as CustomTreeNode
+
+  // Handle folder selection - toggle expand
   if (customNode.children) {
     expandedKeys.value[customNode.key] = !expandedKeys.value[customNode.key]
     expandedKeys.value = { ...expandedKeys.value }
@@ -180,6 +189,7 @@ function handleNodeSelect(node: TreeNode) {
     return
   }
 
+  // Handle file selection - only update if executable
   if (customNode.data?.isExecutable) {
     executable_path.value = customNode.data.path
     selectedNode.value = { [customNode.key]: true }
@@ -188,7 +198,22 @@ function handleNodeSelect(node: TreeNode) {
   }
 }
 
-// File operations
+function tryAutoSelectExecutable() {
+  if (!zipCache.value) return
+
+  // Find top-level .exe files (max depth 1)
+  const topLevelExes = zipCache.value.paths.filter(
+    (path) => path.toLowerCase().endsWith('.exe') && path.split('/').length <= 2
+  )
+
+  // Auto-select if single top-level .exe found
+  if (topLevelExes.length === 1) {
+    executable_path.value = topLevelExes[0]
+    selectedNode.value = { [topLevelExes[0]]: true }
+  }
+}
+
+// File loading operations
 async function loadZipContent() {
   if (!props.zipPath) return
 
@@ -200,7 +225,7 @@ async function loadZipContent() {
     zipCache.value = { paths, zip }
 
     fileTree.value = buildFileTree(filteredPaths.value)
-    handleAutoExeSelection()
+    tryAutoSelectExecutable()
   } catch (error) {
     console.error('Failed to read zip:', error)
     fileTree.value = []
@@ -210,51 +235,51 @@ async function loadZipContent() {
   }
 }
 
-function handleAutoExeSelection() {
-  if (!zipCache.value) return
-
-  const topLevelExes = zipCache.value.paths.filter(
-    (path) => path.toLowerCase().endsWith('.exe') && path.split('/').length <= 2
-  )
-
-  if (topLevelExes.length === 1) {
-    executable_path.value = topLevelExes[0]
-    selectedNode.value = { [topLevelExes[0]]: true }
-  }
-}
-
-// Add expansion handlers
+// Tree expansion handlers
 const expandAll = async () => {
   if (isExpanding.value) return
   isExpanding.value = true
+
   try {
-    const expandNode = async (node: CustomTreeNode) => {
+    const expandNode = (node: CustomTreeNode) => {
       if (node.children?.length) {
         expandedKeys.value[node.key] = true
-        await Promise.all(node.children.map(expandNode))
+        node.children.forEach(expandNode)
       }
     }
-    await Promise.all(fileTree.value.map(expandNode))
+
+    fileTree.value.forEach(expandNode)
     expandedKeys.value = { ...expandedKeys.value }
   } finally {
     isExpanding.value = false
   }
 }
 
-const collapseAll = async () => {
+const collapseAll = () => {
   if (isCollapsing.value) return
   isCollapsing.value = true
+
   try {
     expandedKeys.value = {}
-    await nextTick()
   } finally {
     isCollapsing.value = false
   }
 }
 
+// Theme handling
+function selectColor(): string {
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+  const lightness = isDarkMode ? 80 : 20
+  return Color(settingsStore.color).lightness(lightness).hex()
+}
+
+const selectedColor = ref(selectColor())
+
 // Effects
 watchEffect(() => {
   if (!props.zipPath) return
+
+  // Reset state when zip path changes
   zipCache.value = null
   selectedNode.value = {}
   executable_path.value = ''
@@ -267,35 +292,29 @@ watchEffect(() => {
   }
 })
 
-onMounted(async () => {
+onMounted(() => {
   if (props.zipPath) {
     emit('loading', true)
-    try {
-      progressMode.value = 'indeterminate'
-      await loadZipContent()
-      loadingProgress.value = 100
+    progressMode.value = 'indeterminate'
 
-      setTimeout(() => {
+    loadZipContent()
+      .then(() => {
+        loadingProgress.value = 100
+        setTimeout(() => {
+          emit('loading', false)
+          loadingProgress.value = 0
+        }, 500)
+      })
+      .catch((error) => {
+        console.error('Failed to load zip content:', error)
         emit('loading', false)
-        loadingProgress.value = 0
-      }, 500)
-    } catch (error) {
-      console.error('Failed to load zip content:', error)
-      emit('loading', false)
-    }
+      })
   }
-})
 
-function selectColor(): string {
-  if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-    return Color(settingsStore.color).lightness(80).hex()
-  } else {
-    return Color(settingsStore.color).lightness(20).hex()
-  }
-}
-const selectedColor = ref(selectColor())
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-  selectedColor.value = selectColor()
+  // Listen for theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    selectedColor.value = selectColor()
+  })
 })
 </script>
 

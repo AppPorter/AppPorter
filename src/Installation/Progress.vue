@@ -11,25 +11,26 @@ import Tooltip from 'primevue/tooltip'
 import { useToast } from 'primevue/usetoast'
 import { onMounted, ref } from 'vue'
 
-const progress_mode = ref<'indeterminate' | 'determinate'>('indeterminate')
-const extract_progress = ref(0)
-const is_finished = ref(false)
-const current_status = ref('Preparing installation...')
-const can_close = ref(false)
-const final_executable_path = ref('')
+// Installation state
+const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
+const extractProgress = ref(0)
+const isFinished = ref(false)
+const currentStatus = ref('Preparing installation...')
+const canClose = ref(false)
+const finalExecutablePath = ref('')
 
 const installationConfig = useInstallationConfigStore()
+const toast = useToast()
 
+// Helper functions
 const getInstallMode = (isCurrentUser: boolean) =>
   isCurrentUser ? 'Current User Only' : 'All Users'
 
-interface ShortcutsConfig {
+const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
-}
-
-const getShortcutsList = (config: ShortcutsConfig) => {
+}) => {
   const shortcuts = []
   if (config.create_desktop_shortcut) shortcuts.push('Desktop')
   if (config.create_start_menu_shortcut) shortcuts.push('Start Menu')
@@ -37,9 +38,7 @@ const getShortcutsList = (config: ShortcutsConfig) => {
   return shortcuts.length ? shortcuts.join(', ') : 'None'
 }
 
-const toast = useToast()
-
-// Copy handler
+// Copy to clipboard handler
 const handleCopy = async (text: string, type: string) => {
   try {
     await navigator.clipboard.writeText(text)
@@ -55,62 +54,64 @@ const handleCopy = async (text: string, type: string) => {
 }
 
 onMounted(() => {
-  try {
-    listen('installation', (event) => {
-      if (event.payload === 0) {
-        progress_mode.value = 'indeterminate'
-        current_status.value = 'Preparing to extract files...'
-      }
-      if (event.payload === 101) {
-        progress_mode.value = 'indeterminate'
-        current_status.value = 'Installation completed successfully!'
-        is_finished.value = true
-        can_close.value = true
-      }
-    })
+  // Setup event listeners for installation progress
+  listen('installation', (event) => {
+    if (event.payload === 0) {
+      progressMode.value = 'indeterminate'
+      currentStatus.value = 'Preparing to extract files...'
+    }
+    if (event.payload === 101) {
+      progressMode.value = 'indeterminate'
+      currentStatus.value = 'Installation completed successfully!'
+      isFinished.value = true
+      canClose.value = true
+    }
+  })
 
-    listen('installation_extract', (event) => {
-      progress_mode.value = 'determinate'
-      extract_progress.value = event.payload as number
-      current_status.value = `Extracting files (${extract_progress.value}%)...`
-    })
+  listen('installation_extract', (event) => {
+    progressMode.value = 'determinate'
+    extractProgress.value = event.payload as number
+    currentStatus.value = `Extracting files (${extractProgress.value}%)...`
+  })
 
-    invoke('execute_command', {
-      command: {
-        name: 'Installation',
-        config: {
-          zip_path: installationConfig.zip_path,
-          details: {
-            name: installationConfig.name,
-            icon: installationConfig.icon,
-            publisher: installationConfig.publisher,
-            version: installationConfig.version,
-            current_user_only: installationConfig.current_user_only,
-            create_desktop_shortcut: installationConfig.create_desktop_shortcut,
-            create_registry_key: installationConfig.create_registry_key,
-            create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
-            install_path: installationConfig.install_path,
-            executable_path: installationConfig.executable_path,
-          },
+  // Start installation process
+  invoke('execute_command', {
+    command: {
+      name: 'Installation',
+      config: {
+        zip_path: installationConfig.zip_path,
+        details: {
+          name: installationConfig.name,
+          icon: installationConfig.icon,
+          publisher: installationConfig.publisher,
+          version: installationConfig.version,
+          current_user_only: installationConfig.current_user_only,
+          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
+          create_registry_key: installationConfig.create_registry_key,
+          create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
+          install_path: installationConfig.install_path,
+          executable_path: installationConfig.executable_path,
         },
       },
-    }).then((result) => {
+    },
+  })
+    .then((result) => {
       if (typeof result === 'string') {
-        final_executable_path.value = result
+        finalExecutablePath.value = result
       }
     })
-  } catch (error) {
-    console.error('Installation failed:', error)
-    current_status.value = 'Installation failed. Please try again.'
-    can_close.value = true
-  }
+    .catch((error) => {
+      console.error('Installation failed:', error)
+      currentStatus.value = 'Installation failed. Please try again.'
+      canClose.value = true
+    })
 })
 
 const handleClose = () => {
   goTo('/')
 }
 
-// Register the tooltip directive
+// Register tooltip directive
 defineOptions({
   directives: {
     tooltip: Tooltip,
@@ -125,12 +126,12 @@ defineOptions({
     >
       <template #header>
         <div class="flex items-center justify-between py-1 w-full min-w-0">
-          <!-- Left: Progress Title -->
+          <!-- Progress Title -->
           <div class="flex items-center gap-2 min-w-0 flex-shrink">
             <div
               class="p-1.5 rounded-md shrink-0"
               :class="[
-                is_finished
+                isFinished
                   ? 'bg-green-50 dark:bg-green-900/20'
                   : 'bg-primary-50 dark:bg-primary-900/20',
               ]"
@@ -138,8 +139,8 @@ defineOptions({
               <span
                 class="text-xl mir"
                 :class="[
-                  is_finished ? 'task_alt' : 'install_desktop',
-                  is_finished
+                  isFinished ? 'task_alt' : 'install_desktop',
+                  isFinished
                     ? 'text-green-600 dark:text-green-400'
                     : 'text-primary-600 dark:text-primary-400',
                 ]"
@@ -155,7 +156,7 @@ defineOptions({
             </div>
           </div>
 
-          <!-- Right: App Details -->
+          <!-- App Details -->
           <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
             <div class="text-right">
               <h3 class="text-base font-medium text-surface-900 dark:text-surface-0 leading-none">
@@ -186,25 +187,22 @@ defineOptions({
       <div class="space-y-4">
         <!-- Progress Section -->
         <div class="space-y-2">
-          <!-- Status Text -->
           <p
             class="text-sm"
             :class="[
-              is_finished
+              isFinished
                 ? 'text-green-600 dark:text-green-400'
                 : 'text-surface-600 dark:text-surface-400',
             ]"
           >
-            {{ current_status }}
+            {{ currentStatus }}
           </p>
-
-          <!-- Progress Bar -->
-          <ProgressBar :mode="progress_mode" :value="extract_progress" class="h-1.5" />
+          <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
         </div>
 
         <!-- Final Executable Path Card -->
         <Card
-          v-if="is_finished"
+          v-if="isFinished"
           class="shadow-none border border-surface-200 dark:border-surface-700"
         >
           <template #title>
@@ -219,13 +217,13 @@ defineOptions({
                 v-tooltip.top="'Copy path'"
                 class="w-8 h-7"
                 icon="mir content_copy"
-                @click="handleCopy(final_executable_path, 'Executable path')"
+                @click="handleCopy(finalExecutablePath, 'Executable path')"
               />
             </div>
           </template>
           <template #content>
             <p class="text-sm font-medium break-all select-text">
-              {{ final_executable_path }}
+              {{ finalExecutablePath }}
             </p>
           </template>
         </Card>
@@ -326,12 +324,12 @@ defineOptions({
         <!-- Action Buttons -->
         <div class="flex justify-end">
           <Button
-            v-if="can_close"
+            v-if="canClose"
             @click="handleClose"
-            :severity="is_finished ? 'success' : 'danger'"
+            :severity="isFinished ? 'success' : 'danger'"
             class="w-24 h-8"
-            :icon="is_finished ? 'mir home' : 'mir close'"
-            :label="is_finished ? 'Finish' : 'Close'"
+            :icon="isFinished ? 'mir home' : 'mir close'"
+            :label="isFinished ? 'Finish' : 'Close'"
           />
         </div>
       </div>
