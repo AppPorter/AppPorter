@@ -32,12 +32,10 @@ export const useAppListStore = defineStore('app_list', {
 
   actions: {
     async loadAppList() {
-      const result = await invoke('execute_command', {
-        command: {
-          name: 'LoadAppList',
-        },
+      const result = await invoke<string>('execute_command', {
+        command: { name: 'LoadAppList' },
       })
-      this.$patch(JSON.parse(result as string))
+      this.$patch(JSON.parse(result))
     },
 
     async saveAppList() {
@@ -54,7 +52,7 @@ export const useAppListStore = defineStore('app_list', {
     },
 
     addLink(url: string) {
-      const newLink: App = {
+      this.links.push({
         timestamp: Math.floor(Date.now() / 1000),
         installed: false,
         details: {
@@ -70,9 +68,7 @@ export const useAppListStore = defineStore('app_list', {
           create_registry_key: false,
         },
         url: url,
-      }
-
-      this.links.push(newLink)
+      })
     },
   },
 })

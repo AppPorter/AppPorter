@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { InstalledApp } from './app_list'
 
-type InstallationConfig = InstalledApp & {
+interface InstallationConfig extends InstalledApp {
   zip_path: string
 }
 

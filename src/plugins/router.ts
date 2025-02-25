@@ -58,48 +58,54 @@ const router = createRouter({
 
 export function setupRouterGuards(router: Router) {
   router.beforeEach(async (to, from) => {
-    // Skip guard if both routes are the same
+    // Skip guard for same route or direct navigation
     if (to.path === from.path) {
       return true
     }
 
     const installationConfig = useInstallationConfigStore()
 
-    // Only show confirmation when leaving installation option page
+    // Show confirmation when leaving config page (except to progress)
     if (from.path === '/Installation/Config' && to.path !== '/Installation/Progress') {
-      const confirm = useConfirm()
       try {
-        await new Promise((resolve, reject) => {
-          confirm.require({
-            message: 'Are you sure you want to leave? All changes will be lost.',
-            group: 'dialog',
-            header: 'Confirm',
-            icon: 'mir warning',
-            rejectProps: {
-              label: 'Cancel',
-              severity: 'secondary',
-              outlined: true,
-              icon: 'mir close',
-            },
-            acceptProps: {
-              label: 'Leave',
-              icon: 'mir navigate_next',
-            },
-            accept: () => resolve(true),
-            reject: () => reject(),
-          })
-        })
+        await showLeaveConfirmation()
       } catch {
         return false
       }
       installationConfig.$reset()
     }
 
+    // Reset when leaving progress page
     if (from.path === '/Installation/Progress') {
       installationConfig.$reset()
     }
 
     return true
+  })
+}
+
+// Promisified confirmation dialog
+function showLeaveConfirmation(): Promise<boolean> {
+  const confirm = useConfirm()
+  return new Promise((resolve, reject) => {
+    confirm.require({
+      message: 'Are you sure you want to leave? All changes will be lost.',
+      group: 'dialog',
+      header: 'Confirm',
+      icon: 'mir warning',
+      rejectProps: {
+        label: 'Cancel',
+        severity: 'secondary',
+        outlined: true,
+        icon: 'mir close',
+      },
+      acceptProps: {
+        label: 'Leave',
+        icon: 'mir navigate_next',
+      },
+      accept: () => resolve(true),
+      reject: () => reject(),
+    })
   })
 }
 

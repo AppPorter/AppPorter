@@ -1,5 +1,4 @@
 <script setup lang="ts">
-// Core imports
 import { generateMaterialIconsClasses } from '@/assets/material_icons'
 import { window } from '@/main'
 import { goTo } from '@/plugins/router'
@@ -8,7 +7,6 @@ import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
 import { onBeforeMount, ref } from 'vue'
 
-// PrimeVue components and types
 import ConfirmDialog from 'primevue/confirmdialog'
 import ContextMenu from 'primevue/contextmenu'
 import Menubar from 'primevue/menubar'
@@ -17,15 +15,14 @@ import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 
-// Store and utility initialization
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()
 const toast = useToast()
 
-const dismiss_warning = ref(false)
+const dismissWarning = ref(false)
 
 // Window control handlers
-function close_button() {
+function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     window.hide()
   } else {
@@ -33,12 +30,12 @@ function close_button() {
   }
 }
 
-function minimize_button() {
+function handleMinimize() {
   window.minimize()
 }
 
-// Warning
-const solve = (event) => {
+// Admin privileges warning handler
+const handleAdminPrompt = (event) => {
   confirm.require({
     target: event.currentTarget,
     message: 'Do you want to restart the application with administrator privileges?',
@@ -72,27 +69,18 @@ const solve = (event) => {
     reject: () => {},
   })
 }
-const button_items = [
+
+const warningActions = [
   {
     label: 'Dismiss Once',
     command: () => {
-      dismiss_warning.value = true
+      dismissWarning.value = true
     },
   },
-  //{
-  //  label: "Dismiss Forever",
-  //  command: () => {
-  //    toast.add({
-  //      severity: "info",
-  //      summary: "You can enable this warning from settings",
-  //      life: 3000,
-  //    });
-  //  },
-  //},
 ]
 
 // Navigation menu configuration
-const menu_items = [
+const menuItems = [
   {
     label: 'Installation',
     icon: 'mir install_desktop',
@@ -112,7 +100,7 @@ const menu_items = [
   },
 ]
 
-// Context menu configuration
+// Context menu setup
 const contextMenu = ref()
 const editMenuItems = ref<MenuItem[]>([
   {
@@ -138,7 +126,6 @@ const editMenuItems = ref<MenuItem[]>([
   },
 ])
 
-// Context menu handler
 function handleContextMenu(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
@@ -162,13 +149,13 @@ onBeforeMount(() => {
     <div class="fixed top-0 right-0 h-auto z-50 flex">
       <button
         class="w-12 h-8 hover:bg-[#e9e9e9] dark:hover:bg-[#2d2d2d] flex items-center justify-center"
-        @click="minimize_button"
+        @click="handleMinimize"
       >
         <span class="mir remove"></span>
       </button>
       <button
         class="w-12 h-8 hover:bg-[#c42b1c] flex items-center justify-center"
-        @click="close_button"
+        @click="handleClose"
       >
         <span class="mir close"></span>
       </button>
@@ -179,32 +166,32 @@ onBeforeMount(() => {
       <div class="flex items-center pr-24 w-full" style="-webkit-app-region: drag">
         <span class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</span>
 
-        <!-- Warning -->
+        <!-- Admin Privileges Warning -->
         <Message
           size="small"
           severity="warn"
           class="mx-4 py-0 w-full"
-          v-if="!settingsStore.elevated && !dismiss_warning"
+          v-if="!settingsStore.elevated && !dismissWarning"
           icon="mir warning"
         >
           Application is not running with administrator privileges. Some features may be
           unavailable.
           <ConfirmPopup group="admin_popup"></ConfirmPopup>
           <SplitButton
-            @click="solve($event)"
+            @click="handleAdminPrompt($event)"
             label="Solve"
             outlined
             severity="warn"
             class="z-40 left-2"
             size="small"
-            :model="button_items"
+            :model="warningActions"
           ></SplitButton>
         </Message>
       </div>
 
       <!-- Navigation Menu -->
       <div class="flex px-4">
-        <Menubar :model="menu_items" class="border-none shadow-none w-full"> </Menubar>
+        <Menubar :model="menuItems" class="border-none shadow-none w-full"> </Menubar>
       </div>
     </div>
 

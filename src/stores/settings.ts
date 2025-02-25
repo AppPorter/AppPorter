@@ -1,7 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
-// Core interfaces
 interface InstallSettings {
   create_desktop_shortcut: boolean
   create_registry_key: boolean
@@ -29,7 +28,6 @@ interface Settings {
   system_drive_letter: string
   username: string
 
-  // Installation settings
   installation: Installation
 }
 
@@ -66,12 +64,10 @@ export const useSettingsStore = defineStore('settings', {
 
   actions: {
     async loadSettings() {
-      const result = await invoke('execute_command', {
-        command: {
-          name: 'LoadSettings',
-        },
+      const result = await invoke<string>('execute_command', {
+        command: { name: 'LoadSettings' },
       })
-      this.$patch(JSON.parse(result as string))
+      this.$patch(JSON.parse(result))
     },
 
     async saveSettings() {

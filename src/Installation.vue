@@ -15,12 +15,13 @@ const installationConfig = useInstallationConfigStore()
 const { zip_path } = storeToRefs(installationConfig)
 
 // File selection handler
-async function select_zip_file() {
+async function selectZipFile() {
   const selected = await open({
     multiple: false,
     directory: false,
     filters: [{ name: 'Zip', extensions: ['zip'] }],
   })
+
   if (selected) {
     zip_path.value = selected
   }
@@ -60,7 +61,7 @@ async function select_zip_file() {
           class="flex-1 text-sm h-9"
         />
         <Button
-          @click="select_zip_file"
+          @click="selectZipFile"
           severity="secondary"
           class="h-9 px-4"
           icon="mir folder_open"
