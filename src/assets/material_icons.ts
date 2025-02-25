@@ -1,4 +1,4 @@
-// All used icons collection
+// Material icon names used throughout the application
 const USED_ICONS = [
   'settings',
   'tune',
@@ -33,23 +33,25 @@ const USED_ICONS = [
   'verified',
 ] as const
 
+/**
+ * Dynamically injects Material Icons CSS classes
+ * @returns Cleanup function that removes the injected styles
+ */
 export function generateMaterialIconsClasses() {
   const style = document.createElement('style')
   style.id = 'material-icons-style'
 
-  const rules = USED_ICONS.map(
-    (iconName) => `
-    .mir.${iconName}::before {
+  style.textContent = USED_ICONS.map(
+    (icon) => `
+    .mir.${icon}::before {
       font-family: 'Material Symbols Rounded' !important;
-      content: "${iconName}" !important;
+      content: "${icon}" !important;
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }`
   ).join('\n')
 
-  style.textContent = rules
   document.head.appendChild(style)
 
-  return () => {
-    style.remove()
-  }
+  // Return cleanup function
+  return () => style.remove()
 }
