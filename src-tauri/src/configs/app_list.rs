@@ -55,13 +55,11 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn add_link(&mut self, url: String) {
-        let new_link = App {
+        self.links.push(App {
             timestamp: chrono::Utc::now().timestamp(),
-            installed: false,
-            details: InstalledApp::default(),
             url,
-        };
-        self.links.push(new_link);
+            ..Default::default()
+        });
     }
 
     pub fn has_link(&self, url: &str) -> bool {
@@ -75,5 +73,5 @@ pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
 
 pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error>> {
     app_list.save().await?;
-    Ok("AppList saved successfully".to_string())
+    Ok("AppList saved successfully".to_owned())
 }

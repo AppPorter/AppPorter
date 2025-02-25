@@ -16,38 +16,39 @@ pub struct ExePath {
 }
 
 pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
-    // Create temp directory
+    // Set up temp environment
     let temp_dir = tempdir()?;
     let temp_exe_path = temp_dir.path().join(&req.executable_path);
     let executable_path = req.executable_path.clone();
 
-    // Create parent directories if they don't exist
     if let Some(parent) = temp_exe_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
     }
 
-    // Do synchronous zip operations in a blocking task
+    // Extract executable in blocking task
+    app.emit("get_details", 0)?;
     let (buffer, exe_found) =
         tokio::task::spawn_blocking(move || -> Result<(Vec<u8>, bool), String> {
             let file = std::fs::File::open(&req.zip_path)
                 .map_err(|e| format!("Failed to open zip file: {}", e))?;
             let mut archive =
                 ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
-            let mut buffer = Vec::new();
 
-            let result = match archive.by_name(&executable_path) {
+            let mut buffer = Vec::new();
+            let found = match archive.by_name(&executable_path) {
                 Ok(mut exe_file) => {
                     exe_file
                         .read_to_end(&mut buffer)
                         .map_err(|e| format!("Failed to read executable: {}", e))?;
-                    Ok((buffer, true))
+                    true
                 }
-                Err(_) => Ok((Vec::new(), false)),
+                Err(_) => false,
             };
-            result
+
+            Ok((buffer, found))
         })
         .await
-        .map_err(|e| format!("Thread join error: {}", e))??;
+        .map_err(|e| format!("Thread error: {}", e))??;
 
     if !exe_found {
         return Err(format!(
@@ -59,17 +60,18 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
 
     app.emit("get_details", 1)?;
 
-    // Write to temporary file in the temp directory
+    // Write executable to temp location
     let parent_dir = temp_exe_path.parent().unwrap_or(temp_dir.path());
     let temp_file = tempfile_in(parent_dir)?;
     tokio::fs::write(&temp_exe_path, &buffer).await?;
 
     app.emit("get_details", 2)?;
 
+    // Extract icon as data URL
     let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
-    let icon_base64 = STANDARD.encode(&raw_icon);
-    let icon_data_url = format!("data:image/png;base64,{}", icon_base64);
-    // Prepare PowerShell command
+    let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
+
+    // Build PowerShell command for file metadata extraction
     let ps_command = format!(
         r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
         $ErrorActionPreference = 'Stop';
@@ -95,7 +97,7 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
 
     app.emit("get_details", 3)?;
 
-    // Execute PowerShell command
+    // Execute PowerShell to get file metadata
     let output = Command::new("powershell")
         .args([
             "-NoProfile",
@@ -105,7 +107,7 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
             "-Command",
             &ps_command,
         ])
-        .creation_flags(0x08000000)
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
 
@@ -115,22 +117,11 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
 
+    // Parse metadata with fallback priority
     let output_str = String::from_utf8_lossy(&output.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
 
-    // Helper function to get valid string value
-    fn get_valid_str(value: &Value) -> Option<&str> {
-        value.as_str().and_then(|s| {
-            let trimmed = s.trim();
-            if trimmed.is_empty() {
-                None
-            } else {
-                Some(trimmed)
-            }
-        })
-    }
-
-    // Get software name based on priority
+    // Get valid non-empty string value with fallbacks
     let product_name = get_valid_str(&details["product_name"])
         .or_else(|| get_valid_str(&details["file_description"]))
         .or_else(|| {
@@ -139,19 +130,23 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
         .or_else(|| get_valid_str(&details["filename"]))
         .unwrap_or_default();
 
-    // Get version based on priority
     let version = get_valid_str(&details["product_version"])
         .or_else(|| get_valid_str(&details["file_version"]))
         .unwrap_or_default();
 
-    // Get copyright information
     let copyright = get_valid_str(&details["copyright"]).unwrap_or_default();
 
-    let response = json!([product_name, version, copyright, icon_data_url]);
-
-    // Keep temp_dir and temp_file in scope until all operations are complete
+    // Clean up temporary resources
     drop(temp_file);
     drop(temp_dir);
 
-    Ok(response.to_string())
+    Ok(json!([product_name, version, copyright, icon_data_url]).to_string())
+}
+
+// Helper function to get valid non-empty string value
+fn get_valid_str(value: &Value) -> Option<&str> {
+    value
+        .as_str()
+        .filter(|s| !s.trim().is_empty())
+        .map(|s| s.trim())
 }

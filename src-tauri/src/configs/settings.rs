@@ -6,7 +6,6 @@ use tokio::process::Command;
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Settings {
-    // UI and preferences
     #[serde(default)]
     pub language: String,
     #[serde(default)]
@@ -16,7 +15,6 @@ pub struct Settings {
     #[serde(default)]
     pub color: String,
 
-    // System information
     #[serde(default)]
     pub debug: bool,
     #[serde(default)]
@@ -64,6 +62,9 @@ impl ConfigFile for Settings {
     }
 
     async fn create_default() -> Result<Self, Box<dyn Error>> {
+        let system_drive = std::env::var("windir")?[..1].to_string();
+        let username = std::env::var("USERNAME")?;
+
         let default_settings = Self {
             language: String::from("en"),
             theme: String::from("system"),
@@ -72,9 +73,9 @@ impl ConfigFile for Settings {
             debug: cfg!(debug_assertions),
             elevated: is_elevated()?,
             run_as_admin: false,
-            system_drive_letter: std::env::var("windir")?[..1].to_string(),
+            system_drive_letter: system_drive.clone(),
             user_sid: String::new(),
-            username: std::env::var("USERNAME")?,
+            username: username.clone(),
 
             installation: Installation {
                 current_user_only: false,
@@ -82,10 +83,7 @@ impl ConfigFile for Settings {
                     create_desktop_shortcut: false,
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
-                    install_path: format!(
-                        r"{}:\Program Files",
-                        std::env::var("windir")?[..1].to_string()
-                    ),
+                    install_path: format!(r"{}:\Program Files", system_drive),
                 },
                 current_user: InstallSettings {
                     create_desktop_shortcut: false,
@@ -93,8 +91,7 @@ impl ConfigFile for Settings {
                     create_start_menu_shortcut: true,
                     install_path: format!(
                         r"{}:\Users\{}\AppData\Local\Programs",
-                        std::env::var("windir")?[..1].to_string(),
-                        std::env::var("USERNAME")?
+                        system_drive, username
                     ),
                 },
             },
@@ -128,13 +125,15 @@ impl Settings {
         Ok(())
     }
 
+    // Get current user's SID using PowerShell
     async fn get_user_sid(&self) -> Result<String, Box<dyn Error>> {
         let output = Command::new("powershell")
             .args([
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
                 "-Command",
                 r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
-            ]).creation_flags(0x08000000)
+            ])
+            .creation_flags(0x08000000) // CREATE_NO_WINDOW flag
             .output()
             .await?;
 
@@ -144,28 +143,34 @@ impl Settings {
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
     }
 
+    // Check if the app is configured to run as admin
     fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error>> {
+        let registry_path = format!(
+            r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
+            self.user_sid
+        );
+        let exe_path = std::env::current_exe()?.to_string_lossy().to_string();
+
         Ok(windows_registry::USERS
-            .open(format!(
-                r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
-                self.user_sid
-            ))?
-            .get_string(std::env::current_exe()?.to_string_lossy().to_string())
-            .map(|value| value.contains("RUNASADMIN"))
-            .unwrap_or(false))
+            .open(registry_path)?
+            .get_string(exe_path)
+            .map_or(false, |value| value.contains("RUNASADMIN")))
     }
 
     fn update_system_info(&mut self) -> Result<(), Box<dyn Error>> {
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
-        self.username = std::env::var("USERNAME")?.to_string();
+        self.username = std::env::var("USERNAME")?;
         Ok(())
     }
 
+    // Extract Windows accent color from registry
     async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error>> {
         let accent_color = windows_registry::CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
             .get_u32("AccentColorMenu")?;
-        let accent_color_str = format!("{:x}", accent_color);
+
+        // Convert ABGR format to RGB hex
+        let accent_color_str = format!("{:08x}", accent_color);
         let (b, g, r) = (
             &accent_color_str[2..4],
             &accent_color_str[4..6],
@@ -176,6 +181,7 @@ impl Settings {
     }
 
     fn update_install_paths(&mut self) {
+        // Set default install paths if empty
         if self.installation.all_users.install_path.is_empty() {
             self.installation.all_users.install_path =
                 format!(r"{}:\Program Files", self.system_drive_letter);

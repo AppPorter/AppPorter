@@ -18,17 +18,17 @@ pub struct InstallationConfig {
 }
 
 pub async fn installation(
-    installation_config: InstallationConfig,
+    config: InstallationConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error>> {
-    let zip_path = installation_config.zip_path.clone();
+    let zip_path = config.zip_path.clone();
     let app_path = format!(
         r"{}\{}",
-        installation_config.details.install_path,
-        installation_config.details.name.replace(" ", "-")
+        config.details.install_path,
+        config.details.name.replace(" ", "-")
     );
 
-    // Do synchronous zip operations in a blocking task
+    // Analyze zip contents in a blocking task
     let (file_count, single_root) =
         tokio::task::spawn_blocking(move || -> Result<(usize, Option<String>), String> {
             let file = std::fs::File::open(&zip_path)
@@ -36,9 +36,8 @@ pub async fn installation(
             let mut archive =
                 ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
 
-            let total_files = archive.len();
+            // Find if archive has a single root folder
             let mut root_entries = HashSet::new();
-
             for i in 0..archive.len() {
                 let file = archive
                     .by_index(i)
@@ -56,20 +55,21 @@ pub async fn installation(
                 None
             };
 
-            Ok((total_files, single_root))
+            Ok((archive.len(), single_root))
         })
         .await
-        .map_err(|e| format!("Thread join error: {}", e))??;
+        .map_err(|e| format!("Thread error: {}", e))??;
 
     app.emit("installation", 0)?;
 
+    // Extract files in batches to avoid memory issues
     let mut last_progress = -1;
-    // Extract files in chunks to avoid holding the ZipArchive for too long
     for i in 0..file_count {
-        let zip_path = installation_config.zip_path.clone();
+        let zip_path = config.zip_path.clone();
         let app_path = app_path.clone();
         let single_root = single_root.clone();
 
+        // Extract single file in blocking task
         let file_data =
             tokio::task::spawn_blocking(move || -> Result<(String, Vec<u8>), String> {
                 let file = std::fs::File::open(&zip_path)
@@ -89,13 +89,14 @@ pub async fn installation(
                 Ok((name, buffer))
             })
             .await
-            .map_err(|e| format!("Thread join error: {}", e))??;
+            .map_err(|e| format!("Thread error: {}", e))??;
 
         let (name, buffer) = file_data;
         if name.ends_with('/') {
-            continue;
+            continue; // Skip directories
         }
 
+        // Determine output path based on single root detection
         let outpath = if let Some(ref root) = single_root {
             if name.starts_with(&format!("{}/", root)) {
                 let relative_path = name.strip_prefix(&format!("{}/", root)).unwrap();
@@ -113,6 +114,7 @@ pub async fn installation(
         let mut outfile = File::create(&outpath).await?;
         outfile.write_all(&buffer).await?;
 
+        // Update progress
         let progress = ((i as f32 + 1.0) / file_count as f32 * 100.0) as i32;
         if progress != last_progress {
             app.emit("installation_extract", progress)?;
@@ -121,46 +123,48 @@ pub async fn installation(
     }
     app.emit("installation", 101)?;
 
+    // Get full executable path and perform post-installation tasks
     let full_executable_path = get_full_executable_path(
         &app_path,
-        &installation_config.details.executable_path,
+        &config.details.executable_path,
         single_root.as_deref(),
     );
 
     let settings = Settings::read().await?;
 
-    if installation_config.details.create_start_menu_shortcut {
+    // Create shortcuts
+    if config.details.create_start_menu_shortcut {
         create_start_menu_shortcut(
             &settings.system_drive_letter,
             &settings.username,
-            &installation_config.details.name,
+            &config.details.name,
             &full_executable_path,
-            installation_config.details.current_user_only,
+            config.details.current_user_only,
         )?;
     }
 
-    if installation_config.details.create_desktop_shortcut {
-        create_desktop_shortcut(&full_executable_path, &installation_config.details.name)?;
+    if config.details.create_desktop_shortcut {
+        create_desktop_shortcut(&full_executable_path, &config.details.name)?;
     }
 
-    if installation_config.details.create_registry_key {
-        create_registry_entries(&installation_config, &full_executable_path, &app_path)?;
+    if config.details.create_registry_key {
+        create_registry_entries(&config, &full_executable_path, &app_path)?;
     }
 
-    // Add new app to app list
+    // Add to app list
     let mut app_list = AppList::read().await?;
-    let new_app = App {
+    app_list.links.push(App {
         timestamp: chrono::Utc::now().timestamp(),
         installed: true,
-        details: installation_config.details,
+        details: config.details,
         url: "".to_string(),
-    };
-    app_list.links.push(new_app);
+    });
     app_list.save().await?;
 
     Ok(full_executable_path)
 }
 
+// Helper functions below
 fn get_full_executable_path(
     app_path: &str,
     executable_path: &str,

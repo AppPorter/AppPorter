@@ -6,7 +6,6 @@ use crate::{
 use serde::Deserialize;
 use tauri::AppHandle;
 
-/// Represents all available commands that can be invoked through Tauri
 #[derive(Deserialize)]
 #[serde(tag = "name")]
 pub enum Command {
@@ -21,6 +20,7 @@ pub enum Command {
 }
 
 impl Command {
+    /// Routes command to appropriate handler function
     async fn execute(self, app: AppHandle) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::LoadSettings => load_settings().await,
@@ -35,6 +35,7 @@ impl Command {
     }
 }
 
+/// Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
     command.execute(app).await.map_err(|e| e.to_string())

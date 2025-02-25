@@ -7,16 +7,19 @@ use std::error::Error;
 async fn main() {
     if let Err(e) = run().await {
         eprintln!("Application error: {}", e);
+        std::process::exit(1);
     }
 }
 
 async fn run() -> Result<(), Box<dyn Error>> {
+    // Start WebSocket server in background thread
     tokio::spawn(async {
         if let Err(e) = websocket::start_websocket_server().await {
             eprintln!("WebSocket server error: {}", e);
         }
     });
 
+    // Initialize and run Tauri application
     tauri::Builder::default()
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_fs::init())

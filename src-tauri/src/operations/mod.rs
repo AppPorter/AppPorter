@@ -8,18 +8,14 @@ pub mod installation;
 pub use get_details::*;
 pub use installation::*;
 
-/// Elevates or reverts elevation of the application
+/// Modifies Windows registry for application elevation privileges
 pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
-    let (operation, settings) = if !revert {
-        (
-            "Set-ItemProperty -Path $regPath -Name $programPath -Value $adminFlag",
-            Settings::read().await?,
-        )
+    let settings = Settings::read().await?;
+
+    let operation = if !revert {
+        "Set-ItemProperty -Path $regPath -Name $programPath -Value $adminFlag"
     } else {
-        (
-            "Remove-ItemProperty -Path $regPath -Name $programPath -ErrorAction SilentlyContinue",
-            Settings::read().await?,
-        )
+        "Remove-ItemProperty -Path $regPath -Name $programPath -ErrorAction SilentlyContinue"
     };
 
     let ps_command = format!(
@@ -53,7 +49,7 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-/// Validates if a given path is a valid directory
+/// Validates if a path exists and is a directory
 pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
     if !is_valid_path_format(&path) {
         return Err("Invalid drive letter or path format".into());
@@ -66,6 +62,7 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
     }
 }
 
+/// Checks if string has valid Windows path format (drive letter:\..)
 fn is_valid_path_format(path: &str) -> bool {
     let chars: Vec<char> = path.chars().collect();
     chars.get(0).map_or(false, |c| c.is_ascii_alphabetic())

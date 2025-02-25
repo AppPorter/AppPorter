@@ -78,6 +78,13 @@ async function handleInstallClick() {
   if (!is_legal.value) return
 
   try {
+    await invoke('execute_command', {
+      command: {
+        name: 'ValidatePath',
+        path: installationConfig.install_path,
+      },
+    })
+
     await new Promise((resolve, reject) => {
       confirm.require({
         message: 'Do you want to start the installation process now?',
@@ -99,12 +106,6 @@ async function handleInstallClick() {
       })
     })
 
-    await invoke('execute_command', {
-      command: {
-        name: 'ValidatePath',
-        path: installationConfig.install_path,
-      },
-    })
     goTo('/Installation/Progress')
   } catch (error) {
     if (error instanceof Error) {
