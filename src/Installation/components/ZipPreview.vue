@@ -369,7 +369,7 @@ onMounted(() => {
         <!-- Empty State Overlay -->
         <div
           v-if="hasScanned && isEmpty"
-          class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
+          class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
         >
           <span class="mir folder_off text-4xl text-surface-400 dark:text-surface-600"></span>
           <p class="text-sm text-surface-600 dark:text-surface-400">No files found</p>
@@ -401,7 +401,7 @@ onMounted(() => {
     <!-- Loading Overlay -->
     <div
       v-if="props.detailsLoading"
-      class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
+      class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
     >
       <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">Reading Archive</h3>
       <ProgressBar :mode="progressMode" :value="loadingProgress" class="w-40" />

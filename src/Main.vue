@@ -198,16 +198,11 @@ onBeforeMount(() => {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[105px] px-4 pb-6 h-full z-30 gap-2 flex">
+    <div class="pt-[6.5rem] px-4 pb-2 h-full z-30 gap-2 flex">
       <RouterView />
     </div>
 
     <!-- Context Menu -->
     <ContextMenu ref="contextMenu" :model="editMenuItems" />
-
-    <!-- Status Bar -->
-    <div class="fixed bottom-0 left-0 right-0 h-6 px-4 flex items-center text-sm">
-      <p>{{ $route.fullPath }}</p>
-    </div>
   </div>
 </template>

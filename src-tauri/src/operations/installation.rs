@@ -50,7 +50,7 @@ pub async fn installation(
             }
 
             let single_root = if root_entries.len() == 1 {
-                Some(root_entries.into_iter().next().unwrap())
+                root_entries.into_iter().next()
             } else {
                 None
             };
@@ -99,7 +99,9 @@ pub async fn installation(
         // Determine output path based on single root detection
         let outpath = if let Some(ref root) = single_root {
             if name.starts_with(&format!("{}/", root)) {
-                let relative_path = name.strip_prefix(&format!("{}/", root)).unwrap();
+                let relative_path = name
+                    .strip_prefix(&format!("{}/", root))
+                    .ok_or_else(|| format!("Failed to strip prefix from path: {}", name))?;
                 std::path::Path::new(&app_path).join(relative_path)
             } else {
                 std::path::Path::new(&app_path).join(&name)

@@ -126,7 +126,7 @@ async function handleInstallClick() {
 
 <template>
   <!-- Left Column: Options & App Details -->
-  <div class="flex-1 min-w-[400px] space-y-2">
+  <div class="flex-1 min-w-[25rem] space-y-2">
     <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
     <AppDetails
       :name-error="nameError"
@@ -137,7 +137,7 @@ async function handleInstallClick() {
   </div>
 
   <!-- Right Column: ZIP Preview -->
-  <div class="min-w-[350px] w-[40%] h-[calc(100vh-170px)]">
+  <div class="min-w-[22rem] w-[40%] h-[calc(100vh-10.625rem)]">
     <ZipPreview
       :zip-path="zip_path"
       :details-loading="detailsLoading"

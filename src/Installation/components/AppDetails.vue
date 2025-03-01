@@ -103,7 +103,7 @@ function clearIcon() {
           <div class="flex items-center gap-2">
             <div class="relative group">
               <div
-                class="w-[48px] h-[48px] border border-surface-200 dark:border-surface-700 rounded-lg flex items-center justify-center overflow-hidden bg-surface-50 dark:bg-surface-800"
+                class="w-12 h-12 border border-surface-200 dark:border-surface-700 rounded-lg flex items-center justify-center overflow-hidden bg-surface-50 dark:bg-surface-800"
               >
                 <img v-if="icon" :src="icon" class="w-12 h-12 object-contain" alt="App Icon" />
                 <span v-else class="mir apps text-2xl text-surface-300 dark:text-surface-600" />
@@ -169,7 +169,7 @@ function clearIcon() {
     <!-- Loading Overlay -->
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 backdrop-blur-[2px] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
+      class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-[0.5rem] transition-all duration-300"
     >
       <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">
         Loading App Details
