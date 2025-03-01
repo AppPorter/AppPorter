@@ -212,8 +212,7 @@ fn create_desktop_shortcut(executable_path: &str, app_name: &str) -> Result<(), 
         r"{}\{}.lnk",
         dirs::desktop_dir()
             .ok_or("Failed to get desktop directory")?
-            .to_string_lossy()
-            .to_string(),
+            .to_string_lossy(),
         app_name
     ))?;
     Ok(())
@@ -247,7 +246,7 @@ fn create_registry_entries(
     key.set_string("Publisher", &config.details.publisher)?;
     key.set_string(
         "UninstallString",
-        &std::env::current_exe()?.to_string_lossy().to_string(),
+        std::env::current_exe()?.to_string_lossy(),
     )?;
     Ok(())
 }

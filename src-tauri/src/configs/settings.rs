@@ -154,7 +154,7 @@ impl Settings {
         Ok(windows_registry::USERS
             .open(registry_path)?
             .get_string(exe_path)
-            .map_or(false, |value| value.contains("RUNASADMIN")))
+            .is_ok_and(|value| value.contains("RUNASADMIN")))
     }
 
     fn update_system_info(&mut self) -> Result<(), Box<dyn Error>> {

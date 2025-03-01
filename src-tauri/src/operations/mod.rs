@@ -65,7 +65,7 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
 /// Checks if string has valid Windows path format (drive letter:\..)
 fn is_valid_path_format(path: &str) -> bool {
     let chars: Vec<char> = path.chars().collect();
-    chars.get(0).map_or(false, |c| c.is_ascii_alphabetic())
-        && chars.get(1).map_or(false, |c| *c == ':')
-        && chars.get(2).map_or(false, |c| *c == '\\')
+    chars.first().is_some_and(|c| c.is_ascii_alphabetic())
+        && chars.get(1).is_some_and(|c| *c == ':')
+        && chars.get(2).is_some_and(|c| *c == '\\')
 }
