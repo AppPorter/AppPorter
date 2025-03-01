@@ -164,7 +164,9 @@ onBeforeMount(() => {
     <!-- Title Bar & Navigation -->
     <div class="fixed w-full z-30">
       <div class="flex items-center pr-24 w-full" style="-webkit-app-region: drag">
-        <span class="text-lg font-semibold pt-3 pl-6 pb-2">AppPorter</span>
+        <span class="text-lg font-semibold py-3 pl-6 flex items-center whitespace-nowrap">
+          <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
+        </span>
 
         <!-- Admin Privileges Warning -->
         <Message
