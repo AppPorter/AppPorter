@@ -8,9 +8,9 @@ importers:
 
   .:
     dependencies:
-      '@primevue/themes':
-        specifier: 4.2.5
-        version: 4.2.5
+      '@primeuix/themes':
+        specifier: 1.0.0
+        version: 1.0.0
       '@tauri-apps/api':
         specifier: 2.3.0
         version: 2.3.0
@@ -525,10 +525,6 @@ packages:
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
 
-  '@primeuix/styled@0.3.2':
-    resolution: {integrity: sha512-ColZes0+/WKqH4ob2x8DyNYf1NENpe5ZguOvx5yCLxaP8EIMVhLjWLO/3umJiDnQU4XXMLkn2mMHHw+fhTX/mw==}
-    engines: {node: '>=12.11.0'}
-
   '@primeuix/styled@0.5.0':
     resolution: {integrity: sha512-k5CTQ+10cXIXxZTep7sktmYe8lJkjmUaFVDAc1OCsWTJR+bhBy/s6zWIatGljVtuf3RmTSxtlrHQeFLjPmdUNQ==}
     engines: {node: '>=12.11.0'}
@@ -536,9 +532,8 @@ packages:
   '@primeuix/styles@1.0.0':
     resolution: {integrity: sha512-j/TlbqihLNMP37zFNjxac5dTRaQEf5Ldrv0P7NwKigCCc/+MI5j4MddxDw1LnxkGhWCJ1Gjbt9uwyQteWtSv7A==}
 
-  '@primeuix/utils@0.3.2':
-    resolution: {integrity: sha512-B+nphqTQeq+i6JuICLdVWnDMjONome2sNz0xI65qIOyeB4EF12CoKRiCsxuZ5uKAkHi/0d1LqlQ9mIWRSdkavw==}
-    engines: {node: '>=12.11.0'}
+  '@primeuix/themes@1.0.0':
+    resolution: {integrity: sha512-fxUgcAP9H6FeytbE8c4QvRt8aBnoyZJqvtnnVwHT8PHr1dNSnC1nYKGrXpebcx3SpNy9Hp9oVidGsl6u61+pXQ==}
 
   '@primeuix/utils@0.5.1':
     resolution: {integrity: sha512-/bYirtF3gJOGrRQfQ5tUyQOLEria7wg/UCqvpIydTAxLmj/UWgWwh2kAjYVp49eldm1+2sk4+TDkbAz8XcPpew==}
@@ -560,10 +555,6 @@ packages:
 
   '@primevue/metadata@4.3.1':
     resolution: {integrity: sha512-AOnbzzYr0Y7w7M1jTypNQQyDtEbrzjCmjnFf8tQ72fAHpTU2+W7O7aw0oO17VCh5TLyZkCftwWG9N6SfCv3o+Q==}
-    engines: {node: '>=12.11.0'}
-
-  '@primevue/themes@4.2.5':
-    resolution: {integrity: sha512-8F7yA36xYIKtNuAuyBdZZEks/bKDwlhH5WjpqGGB0FdwfAEoBYsynQ5sdqcT2Lb/NsajHmS5lc++Ttlvr1g1Lw==}
     engines: {node: '>=12.11.0'}
 
   '@rollup/pluginutils@5.1.4':
@@ -2683,10 +2674,6 @@ snapshots:
 
   '@polka/url@1.0.0-next.28': {}
 
-  '@primeuix/styled@0.3.2':
-    dependencies:
-      '@primeuix/utils': 0.3.2
-
   '@primeuix/styled@0.5.0':
     dependencies:
       '@primeuix/utils': 0.5.1
@@ -2695,7 +2682,9 @@ snapshots:
     dependencies:
       '@primeuix/styled': 0.5.0
 
-  '@primeuix/utils@0.3.2': {}
+  '@primeuix/themes@1.0.0':
+    dependencies:
+      '@primeuix/styled': 0.5.0
 
   '@primeuix/utils@0.5.1': {}
 
@@ -2717,10 +2706,6 @@ snapshots:
       - vue
 
   '@primevue/metadata@4.3.1': {}
-
-  '@primevue/themes@4.2.5':
-    dependencies:
-      '@primeuix/styled': 0.3.2
 
   '@rollup/pluginutils@5.1.4(rollup@4.34.9)':
     dependencies:
