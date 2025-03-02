@@ -9,7 +9,7 @@ import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
 import Tooltip from 'primevue/tooltip'
 import { useToast } from 'primevue/usetoast'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 
 // Installation state
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
@@ -21,6 +21,16 @@ const finalExecutablePath = ref('')
 
 const installationConfig = useInstallationConfigStore()
 const toast = useToast()
+
+// Compute full installation path including app folder
+const fullInstallPath = computed(() => {
+  const basePath = installationConfig.install_path
+  const appName = installationConfig.name
+  if (basePath && appName) {
+    return `${basePath.replace(/\\$/, '')}\\${appName}\\`
+  }
+  return basePath
+})
 
 // Helper functions
 const getInstallMode = (isCurrentUser: boolean) =>
@@ -245,7 +255,7 @@ defineOptions({
                   icon="mir content_copy"
                   @click="
                     handleCopy(
-                      `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${installationConfig.install_path}`,
+                      `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
                       'Settings'
                     )
                   "
@@ -269,7 +279,7 @@ defineOptions({
                 <div class="space-y-1">
                   <span class="text-sm text-surface-600 dark:text-surface-400">Install Path</span>
                   <p class="text-sm font-medium break-all">
-                    {{ installationConfig.install_path }}
+                    {{ fullInstallPath }}
                   </p>
                 </div>
               </div>
