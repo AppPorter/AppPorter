@@ -61,7 +61,6 @@ onMounted(() => {
       currentStatus.value = 'Preparing to extract files...'
     }
     if (event.payload === 101) {
-      progressMode.value = 'indeterminate'
       currentStatus.value = 'Installation completed successfully!'
       isFinished.value = true
       canClose.value = true

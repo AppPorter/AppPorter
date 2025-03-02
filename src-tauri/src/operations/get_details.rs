@@ -9,7 +9,7 @@ use tempfile::{tempdir, tempfile_in};
 use tokio::process::Command;
 use zip::ZipArchive;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ExePath {
     pub zip_path: String,
     pub executable_path: String,

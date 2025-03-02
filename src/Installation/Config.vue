@@ -36,45 +36,43 @@ async function handleInstallClick() {
   nameError.value = ''
   pathError.value = ''
 
-  const validationErrors = []
+  let hasErrors = false
 
   // Validate required fields
   if (!installationConfig.executable_path) {
-    validationErrors.push({
-      field: 'executable',
-      message: 'Please select an executable file from the archive',
+    toast.add({
+      severity: 'error',
       summary: 'Executable Missing',
+      detail: 'Please select an executable file from the archive',
+      life: 3000,
     })
+    hasErrors = true
   }
 
   if (!installationConfig.name) {
     nameError.value = 'Application name is required'
-    validationErrors.push({
-      field: 'name',
-      message: 'Please enter an application name',
+    toast.add({
+      severity: 'error',
       summary: 'Missing App Name',
+      detail: 'Please enter an application name',
+      life: 3000,
     })
+    hasErrors = true
   }
 
   if (!installationConfig.install_path) {
     pathError.value = 'Installation path is required'
-    validationErrors.push({
-      field: 'path',
-      message: 'Please select an installation path',
+    toast.add({
+      severity: 'error',
       summary: 'Missing Install Path',
+      detail: 'Please select an installation path',
+      life: 3000,
     })
+    hasErrors = true
   }
 
-  // Show validation errors if any
-  if (validationErrors.length) {
-    validationErrors.forEach((error) => {
-      toast.add({
-        severity: 'error',
-        summary: error.summary,
-        detail: error.message,
-        life: 3000,
-      })
-    })
+  // Stop if validation errors exist
+  if (hasErrors) {
     return
   }
 
@@ -111,15 +109,13 @@ async function handleInstallClick() {
 
     goTo('/Installation/Progress')
   } catch (error) {
-    if (error instanceof Error) {
-      pathError.value = error.message
-      toast.add({
-        severity: 'error',
-        summary: 'Invalid Install Path',
-        detail: error.message,
-        life: 3000,
-      })
-    }
+    pathError.value = error
+    toast.add({
+      severity: 'error',
+      summary: 'Invalid Install Path',
+      detail: 'Please select a valid installation path',
+      life: 3000,
+    })
   }
 }
 </script>

@@ -11,7 +11,7 @@ use tokio::{fs::File, io::AsyncWriteExt};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 use zip::ZipArchive;
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct InstallationConfig {
     zip_path: String,
     details: InstalledApp,

@@ -6,7 +6,7 @@ use crate::{
 use serde::Deserialize;
 use tauri::AppHandle;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(tag = "name")]
 pub enum Command {
     LoadSettings,
@@ -38,5 +38,13 @@ impl Command {
 /// Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
+    println!(
+        "{:?}",
+        command
+            .clone()
+            .execute(app.clone())
+            .await
+            .map_err(|e| e.to_string())
+    );
     command.execute(app).await.map_err(|e| e.to_string())
 }
