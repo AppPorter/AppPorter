@@ -159,7 +159,7 @@ pub async fn installation(
         timestamp: chrono::Utc::now().timestamp(),
         installed: true,
         details: config.details,
-        url: "".to_string(),
+        url: "".to_owned(),
     });
     app_list.save().await?;
 

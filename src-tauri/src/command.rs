@@ -26,7 +26,7 @@ impl Command {
             Self::LoadSettings => load_settings().await,
             Self::GetDetails { path } => get_details(path, app).await,
             Self::Installation { config } => installation(config, app).await,
-            Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_string()),
+            Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_owned()),
             Self::ValidatePath { path } => validate_path(path).await,
             Self::SaveSettings { settings } => save_settings(settings).await,
             Self::LoadAppList => load_app_list().await,
@@ -38,13 +38,5 @@ impl Command {
 /// Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
-    println!(
-        "{:?}",
-        command
-            .clone()
-            .execute(app.clone())
-            .await
-            .map_err(|e| e.to_string())
-    );
     command.execute(app).await.map_err(|e| e.to_string())
 }

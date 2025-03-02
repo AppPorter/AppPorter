@@ -204,5 +204,5 @@ pub async fn load_settings() -> Result<String, Box<dyn Error>> {
 
 pub async fn save_settings(settings: Settings) -> Result<String, Box<dyn Error>> {
     settings.save().await?;
-    Ok("Settings saved successfully".to_string())
+    Ok("Settings saved successfully".to_owned())
 }
