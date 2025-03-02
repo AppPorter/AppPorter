@@ -1,0 +1,3 @@
+!macro NSIS_HOOK_PREINSTALL
+  StrCpy $INSTDIR "$LOCALAPPDATA\Programs\${PRODUCTNAME}"
+!macroend
