@@ -7,6 +7,7 @@ import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
 import { onBeforeMount, ref } from 'vue'
 
+import { readText } from '@tauri-apps/plugin-clipboard-manager'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ContextMenu from 'primevue/contextmenu'
 import Menubar from 'primevue/menubar'
@@ -116,7 +117,7 @@ const editMenuItems = ref<MenuItem[]>([
   {
     label: 'Paste',
     icon: 'mir content_paste',
-    command: () => document.execCommand('paste'),
+    command: async () => document.execCommand('insertText', false, await readText()),
   },
   { separator: true },
   {
