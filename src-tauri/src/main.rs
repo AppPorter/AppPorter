@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{command, websocket};
+use app_porter_lib::{command, get_7z_path, websocket};
 use std::error::Error;
 use tauri::Manager;
 
@@ -13,6 +13,11 @@ async fn main() {
 }
 
 async fn run() -> Result<(), Box<dyn Error>> {
+    // Extract 7z.exe to temp file on startup
+    if let Err(e) = get_7z_path() {
+        eprintln!("Failed to extract 7z.exe: {}", e);
+    }
+
     // Start WebSocket server in background thread
     tokio::spawn(async {
         if let Err(e) = websocket::start_websocket_server().await {

@@ -1,13 +1,13 @@
+use crate::get_7z_path;
 use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::Deserialize;
 use serde_json::{json, Value};
 use std::error::Error;
-use std::io::Read;
+use std::path::Path;
 use systemicons::get_icon;
 use tauri::{AppHandle, Emitter};
-use tempfile::{tempdir, tempfile_in};
+use tempfile::tempdir;
 use tokio::process::Command;
-use zip::ZipArchive;
 
 #[derive(Deserialize, Debug, Clone)]
 pub struct ExePath {
@@ -20,50 +20,42 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
     // Set up temp environment
     let temp_dir = tempdir()?;
     let temp_exe_path = temp_dir.path().join(&input.executable_path);
-    let executable_path = input.executable_path.clone();
 
     if let Some(parent) = temp_exe_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
+    };
+    let path_7z = get_7z_path()?;
+    // Extract specific file using 7z.exe
+    let output1 = Command::new(path_7z)
+        .args([
+            "e", // Extract without full paths
+            &input.zip_path,
+            &input.executable_path,
+            &format!("-o{}", temp_dir.path().to_str().unwrap_or(".")), // Output directory flag
+            "-y",                                                      // Auto yes to all prompts
+            "-aoa", // Overwrite all existing files without prompt
+        ])
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .output()
+        .await?;
+    if !output1.status.success() {
+        return Err(String::from_utf8_lossy(&output1.stderr).into());
     }
 
-    // Extract executable in blocking task
-    let (buffer, exe_found) =
-        tokio::task::spawn_blocking(move || -> Result<(Vec<u8>, bool), String> {
-            let file = std::fs::File::open(&input.zip_path)
-                .map_err(|e| format!("Failed to open zip file: {}", e))?;
-            let mut archive =
-                ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
+    // Check if file was extracted
+    let extracted_file = Path::new(temp_dir.path()).join(
+        Path::new(&input.executable_path)
+            .file_name()
+            .unwrap_or_default(),
+    );
 
-            let mut buffer = Vec::new();
-            let found = match archive.by_name(&executable_path) {
-                Ok(mut exe_file) => {
-                    exe_file
-                        .read_to_end(&mut buffer)
-                        .map_err(|e| format!("Failed to read executable: {}", e))?;
-                    true
-                }
-                Err(_) => false,
-            };
-
-            Ok((buffer, found))
-        })
-        .await
-        .map_err(|e| format!("Thread error: {}", e))??;
-
-    if !exe_found {
+    if !extracted_file.exists() {
         return Err(format!(
             "Failed to find executable '{}' in archive",
             input.executable_path
         )
         .into());
     }
-
-    app.emit("get_details", 1)?;
-
-    // Write executable to temp location
-    let parent_dir = temp_exe_path.parent().unwrap_or(temp_dir.path());
-    let temp_file = tempfile_in(parent_dir)?;
-    tokio::fs::write(&temp_exe_path, &buffer).await?;
 
     app.emit("get_details", 2)?;
 
@@ -98,7 +90,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
     app.emit("get_details", 3)?;
 
     // Execute PowerShell to get file metadata
-    let output = Command::new("powershell")
+    let output2 = Command::new("powershell")
         .args([
             "-NoProfile",
             "-NonInteractive",
@@ -113,12 +105,12 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
 
     app.emit("get_details", 4)?;
 
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).into());
+    if !output2.status.success() {
+        return Err(String::from_utf8_lossy(&output2.stderr).into());
     }
 
     // Parse metadata with fallback priority
-    let output_str = String::from_utf8_lossy(&output.stdout);
+    let output_str = String::from_utf8_lossy(&output2.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
 
     // Get valid non-empty string value with fallbacks
@@ -137,7 +129,6 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
     let copyright = get_valid_str(&details["copyright"]).unwrap_or_default();
 
     // Clean up temporary resources
-    drop(temp_file);
     drop(temp_dir);
 
     Ok(json!([product_name, version, copyright, icon_data_url]).to_string())
