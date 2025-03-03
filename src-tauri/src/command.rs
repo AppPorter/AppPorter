@@ -26,7 +26,7 @@ impl Command {
             Self::LoadSettings => load_settings().await,
             Self::GetDetails { path } => get_details(path, app).await,
             Self::Installation { config } => installation(config, app).await,
-            Self::Elevate { revert } => elevate(revert).await.map(|_| "Success".to_owned()),
+            Self::Elevate { revert } => elevate(revert).await,
             Self::ValidatePath { path } => validate_path(path).await,
             Self::SaveSettings { settings } => save_settings(settings).await,
             Self::LoadAppList => load_app_list().await,

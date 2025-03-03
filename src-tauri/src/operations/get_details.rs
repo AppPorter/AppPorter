@@ -15,21 +15,21 @@ pub struct ExePath {
     pub executable_path: String,
 }
 
-pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
+pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
+    app.emit("get_details", 1)?;
     // Set up temp environment
     let temp_dir = tempdir()?;
-    let temp_exe_path = temp_dir.path().join(&req.executable_path);
-    let executable_path = req.executable_path.clone();
+    let temp_exe_path = temp_dir.path().join(&input.executable_path);
+    let executable_path = input.executable_path.clone();
 
     if let Some(parent) = temp_exe_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
     }
 
     // Extract executable in blocking task
-    app.emit("get_details", 0)?;
     let (buffer, exe_found) =
         tokio::task::spawn_blocking(move || -> Result<(Vec<u8>, bool), String> {
-            let file = std::fs::File::open(&req.zip_path)
+            let file = std::fs::File::open(&input.zip_path)
                 .map_err(|e| format!("Failed to open zip file: {}", e))?;
             let mut archive =
                 ZipArchive::new(file).map_err(|e| format!("Failed to read zip archive: {}", e))?;
@@ -53,7 +53,7 @@ pub async fn get_details(req: ExePath, app: AppHandle) -> Result<String, Box<dyn
     if !exe_found {
         return Err(format!(
             "Failed to find executable '{}' in archive",
-            req.executable_path
+            input.executable_path
         )
         .into());
     }

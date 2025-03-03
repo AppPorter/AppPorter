@@ -9,7 +9,7 @@ pub use get_details::*;
 pub use installation::*;
 
 /// Modifies Windows registry for application elevation privileges
-pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
+pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
     let settings = Settings::read().await?;
 
     let operation = if !revert {
@@ -46,7 +46,7 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error>> {
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
-    Ok(())
+    Ok("".to_owned())
 }
 
 /// Validates if a path exists and is a directory

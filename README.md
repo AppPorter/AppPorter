@@ -7,6 +7,7 @@
 - [ ] AppList
 - [ ] Uninstallation
 - [ ] Update
+- [ ] Custom app icon
 
 ### Change
 
