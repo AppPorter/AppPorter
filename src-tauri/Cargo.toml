@@ -25,11 +25,11 @@
     ] }
 
 [dependencies]
-    async-trait = "0.1.86"
+    async-trait = "0.1.87"
     serde = { version = "1.0.218", features = [
         "derive",
     ] }
-    serde_json = "1.0.139"
+    serde_json = "1.0.140"
     tauri = { version = "2.3.1", features = [
         "tray-icon",
     ] }
@@ -54,7 +54,6 @@
     tokio-tungstenite = "0.26.2"
     toml = "0.8.20"
     windows-registry = "0.5.0"
-    zip = "2.2.3"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
     tauri-plugin-single-instance = "2.2.2"
