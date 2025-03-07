@@ -101,7 +101,6 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
         // Only process lines between separators
         if is_output_section {
             if let Some(last_field) = line.split_whitespace().last() {
-                println!("{}", last_field);
                 list.push(last_field.to_owned());
             }
         }
