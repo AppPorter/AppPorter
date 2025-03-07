@@ -17,6 +17,7 @@ pub enum Command {
     SaveSettings { settings: Settings },
     LoadAppList,
     SaveAppList { app_list: AppList },
+    GetArchiveContent { path: String },
 }
 
 impl Command {
@@ -31,6 +32,7 @@ impl Command {
             Self::SaveSettings { settings } => save_settings(settings).await,
             Self::LoadAppList => load_app_list().await,
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
+            Self::GetArchiveContent { path } => get_archive_content(path).await,
         }
     }
 }

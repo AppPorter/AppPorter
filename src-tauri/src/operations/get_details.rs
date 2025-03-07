@@ -24,9 +24,8 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
     if let Some(parent) = temp_exe_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
     };
-    let path_7z = get_7z_path()?;
     // Extract specific file using 7z.exe
-    let output1 = Command::new(path_7z)
+    let output1 = Command::new(get_7z_path()?)
         .args([
             "e", // Extract without full paths
             &input.zip_path,

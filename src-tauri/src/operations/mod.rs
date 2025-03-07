@@ -1,5 +1,6 @@
 use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
+use crate::get_7z_path;
 use std::error::Error;
 
 pub mod get_details;
@@ -7,6 +8,7 @@ pub mod installation;
 
 pub use get_details::*;
 pub use installation::*;
+use tokio::process::Command;
 
 /// Modifies Windows registry for application elevation privileges
 pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
@@ -68,4 +70,42 @@ fn is_valid_path_format(path: &str) -> bool {
     chars.first().is_some_and(|c| c.is_ascii_alphabetic())
         && chars.get(1).is_some_and(|c| *c == ':')
         && chars.get(2).is_some_and(|c| *c == '\\')
+}
+
+pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>> {
+    let output = Command::new(get_7z_path()?)
+        .args([
+            "l", // Extract without full paths
+            &path, "-y",   // Auto yes to all prompts
+            "-aoa", // Overwrite all existing files without prompt
+        ])
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .output()
+        .await?;
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into());
+    }
+
+    let mut is_output_section = false;
+
+    let output_str = String::from_utf8_lossy(&output.stdout).to_string();
+
+    let mut list: Vec<String> = Vec::new();
+    for line in output_str.lines() {
+        if line.contains("------------------------") {
+            // Toggle output state when separator line is found
+            is_output_section = !is_output_section;
+            continue;
+        }
+
+        // Only process lines between separators
+        if is_output_section {
+            if let Some(last_field) = line.split_whitespace().last() {
+                println!("{}", last_field);
+                list.push(last_field.to_owned());
+            }
+        }
+    }
+
+    Ok(serde_json::to_string(&list)?)
 }

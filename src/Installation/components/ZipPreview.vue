@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { useSettingsStore } from '@/stores/settings'
-import { readFile } from '@tauri-apps/plugin-fs'
+import { invoke } from '@tauri-apps/api/core'
 import Color from 'color'
-import JSZip from 'jszip'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
@@ -70,7 +69,7 @@ const filterMode = ref<FilterMode>('exe')
 const expandedKeys = ref<Record<string, boolean>>({})
 const selectedNode = ref<Record<string, boolean>>({})
 const fileTree = ref<CustomTreeNode[]>([])
-const zipCache = ref<{ paths: string[]; zip: JSZip } | null>(null)
+const fileCache = ref<string[] | null>(null)
 
 // UI state
 const isExpanding = ref(false)
@@ -80,11 +79,19 @@ const loadingProgress = ref(0)
 
 // Computed
 const filteredPaths = computed(() => {
-  if (!zipCache.value) return []
-  return filterFilesByMode(zipCache.value.paths, filterMode.value)
+  if (!fileCache.value) return []
+
+  // When using 'all' mode, we need to ensure we still have directory structure
+  if (filterMode.value === 'all') {
+    return fileCache.value
+  }
+
+  // For other modes, filter files but keep directory structure
+  const filtered = filterFilesByMode(fileCache.value, filterMode.value)
+  return filtered
 })
 
-const hasScanned = computed(() => zipCache.value !== null)
+const hasScanned = computed(() => fileCache.value !== null)
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 
 // File utilities
@@ -104,6 +111,9 @@ function getFileIcon(fileName: string): string {
 
 function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
   return paths.filter((path) => {
+    // Skip directories (paths ending with backslash) in filtering
+    if (path.endsWith('\\')) return true
+
     const isExe = path.toLowerCase().endsWith('.exe')
     const isExecutable = isExe || /\.(bat|ps1)$/i.test(path)
 
@@ -115,54 +125,101 @@ function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
 
 // Tree operations
 function buildFileTree(paths: string[]): CustomTreeNode[] {
+  // Create a map to track all directories needed
+  const dirMap = new Map<string, boolean>()
+
+  // First pass: collect all directories that need to be shown
+  paths.forEach((path) => {
+    // For each path, add all parent directories
+    const parts = path.split('\\')
+    let currentPath = ''
+
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (parts[i] === '') continue
+
+      currentPath = currentPath ? `${currentPath}\\${parts[i]}` : parts[i]
+      dirMap.set(currentPath, true)
+    }
+
+    // Don't add the file itself to dirMap
+  })
+
+  // Build the tree with explicit root
   const root: CustomTreeNode[] = []
 
-  // Build tree structure from file paths
+  // Process each path and build tree
   paths.forEach((path) => {
-    const parts = path.split('/')
+    // Skip empty paths
+    if (!path.trim()) return
+
+    const parts = path.split('\\').filter((p) => p !== '')
+    if (parts.length === 0) return
+
     let current = root
+    let currentPath = ''
 
+    // Process each path segment
     parts.forEach((part, index) => {
+      currentPath = currentPath ? `${currentPath}\\${part}` : part
       const isLast = index === parts.length - 1
-      const isExecutable = isLast && /\.(exe|bat|ps1)$/i.test(part)
-      const currentPath = parts.slice(0, index + 1).join('/')
-      const existingNode = current.find((node) => node.label === part)
+      const isFile = isLast && !dirMap.has(currentPath)
+      const isExecutable = isFile && /\.(exe|bat|ps1)$/i.test(part.toLowerCase())
 
-      if (existingNode) {
-        current = existingNode.children || []
-      } else {
-        const newNode: CustomTreeNode = {
+      // Look for existing node
+      let node = current.find((n) => n.label === part)
+
+      if (!node) {
+        // Create new node
+        node = {
           key: currentPath,
           label: part,
-          icon: isLast ? getFileIcon(part) : 'folder',
-          children: isLast ? undefined : [],
           selectable: true,
-          data: { path: currentPath, isExecutable },
+          data: {
+            path: currentPath,
+            isExecutable: isFile && isExecutable,
+          },
         }
-        current.push(newNode)
-        current = newNode.children || []
+
+        // Set node properties based on type
+        if (isFile) {
+          node.icon = getFileIcon(part)
+          node.children = undefined
+        } else {
+          node.icon = 'folder'
+          node.children = []
+        }
+
+        current.push(node)
+      }
+
+      // Move to next level for directories
+      if (node.children) {
+        current = node.children
       }
     })
   })
 
-  // Sort nodes recursively
+  // Sort function - directories first, then by priority
   const sortNodes = (nodes: CustomTreeNode[]): void => {
     nodes.sort((a, b) => {
-      const aHasChildren = !!a.children?.length
-      const bHasChildren = !!b.children?.length
+      const aIsDir = !!a.children
+      const bIsDir = !!b.children
 
-      // Folders before files
-      if (aHasChildren !== bHasChildren) return aHasChildren ? 1 : -1
+      // Folders first
+      if (aIsDir !== bIsDir) return aIsDir ? -1 : 1
 
-      // Sort files by priority
-      if (!aHasChildren && !bHasChildren) {
-        const priorityDiff = getFilePriority(a.label) - getFilePriority(b.label)
-        if (priorityDiff !== 0) return priorityDiff
+      // For files, sort by priority
+      if (!aIsDir && !bIsDir) {
+        const aPriority = getFilePriority(a.label)
+        const bPriority = getFilePriority(b.label)
+        if (aPriority !== bPriority) return aPriority - bPriority
       }
 
+      // Default to alphabetical
       return a.label.localeCompare(b.label)
     })
 
+    // Sort children recursively
     nodes.forEach((node) => {
       if (node.children?.length) sortNodes(node.children)
     })
@@ -170,7 +227,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
   sortNodes(root)
 
-  // Auto-expand first level if single root folder
+  // Auto-expand top-level if single folder
   if (root.length === 1 && root[0].children) {
     expandedKeys.value[root[0].key] = true
   }
@@ -199,11 +256,11 @@ function handleNodeSelect(node: TreeNode) {
 }
 
 function tryAutoSelectExecutable() {
-  if (!zipCache.value) return
+  if (!fileCache.value) return
 
   // Find top-level .exe files (max depth 1)
-  const topLevelExes = zipCache.value.paths.filter(
-    (path) => path.toLowerCase().endsWith('.exe') && path.split('/').length <= 2
+  const topLevelExes = fileCache.value.filter(
+    (path) => path.toLowerCase().endsWith('.exe') && path.split('\\').length <= 2
   )
 
   // Auto-select if single top-level .exe found
@@ -219,11 +276,56 @@ async function loadZipContent() {
 
   status.value = 'loading'
   try {
-    const data = await readFile(props.zipPath)
-    const zip = await JSZip.loadAsync(data)
-    const paths = Object.keys(zip.files).filter((path) => !path.endsWith('/'))
-    zipCache.value = { paths, zip }
+    emit('loading', true)
+    progressMode.value = 'indeterminate'
 
+    // Use invoke to call backend function
+    const result = await invoke('execute_command', {
+      command: {
+        name: 'GetArchiveContent',
+        path: props.zipPath,
+      },
+    })
+
+    if (typeof result !== 'string') {
+      throw new Error('Unexpected response type')
+    }
+
+    const parsedResult = JSON.parse(result)
+
+    if ('error' in parsedResult) {
+      throw new Error(parsedResult.error)
+    }
+
+    // Assuming backend returns array of file paths
+    const paths = Array.isArray(parsedResult) ? parsedResult : []
+
+    // Add explicit directory paths by analyzing file paths
+    const allPaths = [...paths]
+    const directories = new Set<string>()
+
+    paths.forEach((path) => {
+      const parts = path.split('\\')
+      let currentDir = ''
+
+      // Add all parent directories with trailing backslash
+      for (let i = 0; i < parts.length - 1; i++) {
+        if (!parts[i]) continue
+        currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
+        directories.add(`${currentDir}\\`)
+      }
+    })
+
+    // Add directories to paths
+    directories.forEach((dir) => {
+      if (!allPaths.includes(dir)) {
+        allPaths.push(dir)
+      }
+    })
+
+    fileCache.value = allPaths
+
+    loadingProgress.value = 100
     fileTree.value = buildFileTree(filteredPaths.value)
     tryAutoSelectExecutable()
   } catch (error) {
@@ -232,6 +334,10 @@ async function loadZipContent() {
     status.value = 'error'
   } finally {
     status.value = 'ready'
+    setTimeout(() => {
+      emit('loading', false)
+      loadingProgress.value = 0
+    }, 500)
   }
 }
 
@@ -280,35 +386,21 @@ watchEffect(() => {
   if (!props.zipPath) return
 
   // Reset state when zip path changes
-  zipCache.value = null
+  fileCache.value = null
   selectedNode.value = {}
   executable_path.value = ''
   loadZipContent()
 })
 
 watchEffect(() => {
-  if (zipCache.value) {
+  if (fileCache.value) {
     fileTree.value = buildFileTree(filteredPaths.value)
   }
 })
 
 onMounted(() => {
   if (props.zipPath) {
-    emit('loading', true)
-    progressMode.value = 'indeterminate'
-
     loadZipContent()
-      .then(() => {
-        loadingProgress.value = 100
-        setTimeout(() => {
-          emit('loading', false)
-          loadingProgress.value = 0
-        }, 500)
-      })
-      .catch((error) => {
-        console.error('Failed to load zip content:', error)
-        emit('loading', false)
-      })
   }
 
   // Listen for theme changes
