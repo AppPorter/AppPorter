@@ -32,6 +32,12 @@ pub async fn installation(
 
     app.emit("installation", 0)?;
 
+    // Verify and prepare the installation path
+    let target_path = Path::new(&app_path);
+    if !target_path.exists() {
+        tokio::fs::create_dir_all(target_path).await?;
+    }
+
     // Extract files
     extract_files(&zip_path, &app_path, app.clone()).await?;
 
@@ -87,6 +93,43 @@ async fn extract_files(
     app: AppHandle,
 ) -> Result<(), Box<dyn Error>> {
     let path_7z = get_7z_path()?;
+
+    // First, list all files in the archive to verify them
+    let output_list = tokio::process::Command::new(&path_7z)
+        .args(["l", zip_path, "-y"])
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .output()
+        .await?;
+
+    if !output_list.status.success() {
+        return Err("Failed to list archive contents".into());
+    }
+
+    // Parse the output to get file paths
+    let output_str = String::from_utf8_lossy(&output_list.stdout);
+    let paths = parse_7z_list_output(&output_str);
+
+    // Validate all paths to make sure there's no path traversal attack
+    let canonical_app_path = std::fs::canonicalize(app_path)?;
+    for path in &paths {
+        let target_path = Path::new(app_path).join(sanitize_path(path));
+
+        // Try to get the canonical path (resolving any ../ etc)
+        if let Ok(canonical_path) =
+            std::fs::canonicalize(target_path.parent().unwrap_or(Path::new(app_path)))
+        {
+            // Check if this file would extract outside our target directory
+            if !canonical_path.starts_with(&canonical_app_path) {
+                return Err(format!(
+                    "Security violation: Path traversal detected in archive: {}",
+                    path
+                )
+                .into());
+            }
+        }
+    }
+
+    // If all paths are safe, proceed with extraction
     let mut child = std::process::Command::new(&path_7z)
         .args([
             "-bsp2",
@@ -95,6 +138,7 @@ async fn extract_files(
             &format!("-o{}", app_path),
             "-y",
             "-aoa", // Overwrite all existing files without prompt
+            "-snl", // Disable symbolic links
         ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .stderr(Stdio::piped())
@@ -134,6 +178,48 @@ async fn extract_files(
     app.emit("installation_extract", 100)?;
 
     Ok(())
+}
+
+// Helper function to sanitize paths by removing potentially dangerous components
+fn sanitize_path(path: &str) -> String {
+    let path = path.replace('/', "\\");
+
+    // Split the path by directory separators
+    let parts: Vec<&str> = path.split('\\').collect();
+
+    // Filter out parts that could lead to path traversal
+    let safe_parts: Vec<&str> = parts
+        .into_iter()
+        .filter(|part| {
+            !part.is_empty() && *part != "." && *part != ".." && !part.contains(':')
+            // Remove drive letters
+        })
+        .collect();
+
+    safe_parts.join("\\")
+}
+
+// Helper function to parse 7z list output and extract file paths
+fn parse_7z_list_output(output: &str) -> Vec<String> {
+    let mut result = Vec::new();
+    let mut is_output_section = false;
+
+    for line in output.lines() {
+        if line.contains("------------------------") {
+            // Toggle output section when separator line is found
+            is_output_section = !is_output_section;
+            continue;
+        }
+
+        // Only process lines between separators
+        if is_output_section {
+            if let Some(last_field) = line.split_whitespace().last() {
+                result.push(last_field.to_string());
+            }
+        }
+    }
+
+    result
 }
 
 // Detect if extraction created a single root folder

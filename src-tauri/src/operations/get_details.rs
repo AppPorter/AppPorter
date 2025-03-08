@@ -19,11 +19,34 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
     app.emit("get_details", 1)?;
     // Set up temp environment
     let temp_dir = tempdir()?;
-    let temp_exe_path = temp_dir.path().join(&input.executable_path);
+
+    // Sanitize the executable path to prevent directory traversal
+    let sanitized_path = sanitize_path(&input.executable_path);
+    let temp_exe_path = temp_dir.path().join(&sanitized_path);
 
     if let Some(parent) = temp_exe_path.parent() {
         tokio::fs::create_dir_all(parent).await?;
     };
+
+    // Validate that the path doesn't escape the temp directory
+    let temp_dir_canonical = std::fs::canonicalize(temp_dir.path())?;
+    let parent_canonical = if let Some(parent) = temp_exe_path.parent() {
+        std::fs::canonicalize(parent).ok()
+    } else {
+        Some(temp_dir_canonical.clone())
+    };
+
+    // Security check: ensure path is within temp directory
+    if let Some(parent_path) = parent_canonical {
+        if !parent_path.starts_with(&temp_dir_canonical) {
+            return Err(format!(
+                "Security violation: Path traversal detected in executable path: {}",
+                input.executable_path
+            )
+            .into());
+        }
+    }
+
     // Extract specific file using 7z.exe
     let output1 = Command::new(get_7z_path()?)
         .args([
@@ -33,6 +56,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
             &format!("-o{}", temp_dir.path().to_str().unwrap_or(".")), // Output directory flag
             "-y",                                                      // Auto yes to all prompts
             "-aoa", // Overwrite all existing files without prompt
+            "-snl", // Disable symbolic links
         ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
@@ -41,12 +65,10 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         return Err(String::from_utf8_lossy(&output1.stderr).into());
     }
 
-    // Check if file was extracted
-    let extracted_file = Path::new(temp_dir.path()).join(
-        Path::new(&input.executable_path)
-            .file_name()
-            .unwrap_or_default(),
-    );
+    // Check if file was extracted - note that we use file_name from the sanitized path
+    let file_name = Path::new(&sanitized_path).file_name().unwrap_or_default();
+
+    let extracted_file = temp_dir.path().join(file_name);
 
     if !extracted_file.exists() {
         return Err(format!(
@@ -58,11 +80,12 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
 
     app.emit("get_details", 2)?;
 
-    // Extract icon as data URL
-    let raw_icon = get_icon(&temp_exe_path.to_string_lossy(), 64).unwrap_or_default();
+    // Extract icon as data URL - use the safe extracted file path
+    let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64).unwrap_or_default();
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
-    // Build PowerShell command for file metadata extraction
+    // Build PowerShell command for file metadata extraction with path sanitization
+    let safe_path_for_ps = extracted_file.to_string_lossy().replace("'", "''");
     let ps_command = format!(
         r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
         $ErrorActionPreference = 'Stop';
@@ -83,7 +106,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
                 error = $_.Exception.Message;
             }})
         }}"#,
-        temp_exe_path.to_string_lossy().replace("'", "''")
+        safe_path_for_ps
     );
 
     app.emit("get_details", 3)?;
@@ -139,4 +162,23 @@ fn get_valid_str(value: &Value) -> Option<&str> {
         .as_str()
         .filter(|s| !s.trim().is_empty())
         .map(|s| s.trim())
+}
+
+// Helper function to sanitize paths by removing potentially dangerous components
+fn sanitize_path(path: &str) -> String {
+    let path = path.replace('/', "\\");
+
+    // Split the path by directory separators
+    let parts: Vec<&str> = path.split('\\').collect();
+
+    // Filter out parts that could lead to path traversal
+    let safe_parts: Vec<&str> = parts
+        .into_iter()
+        .filter(|part| {
+            !part.is_empty() && *part != "." && *part != ".." && !part.contains(':')
+            // Remove drive letters
+        })
+        .collect();
+
+    safe_parts.join("\\")
 }
