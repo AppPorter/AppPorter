@@ -19,7 +19,12 @@ async function selectZipFile() {
   const selected = await open({
     multiple: false,
     directory: false,
-    filters: [{ name: 'Zip', extensions: ['zip'] }],
+    filters: [
+      {
+        name: 'Archives',
+        extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab'],
+      },
+    ],
   })
 
   if (selected) {
