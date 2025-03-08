@@ -16,9 +16,9 @@ const settingsStore = useSettingsStore()
 const store = useInstallationConfigStore()
 const { executable_path } = storeToRefs(store)
 
-// Types
+// Types and interfaces
 type FilterMode = 'exe' | 'executable' | 'all'
-type FileStatus = 'loading' | 'ready' | 'error'
+type FileStatus = 'ready' | 'loading' | 'error'
 
 interface CustomNodeData {
   path: string
@@ -37,20 +37,9 @@ interface CustomTreeNode extends TreeNode {
 // Constants
 const FILTER_MODES = {
   exe: { value: 'exe', label: '.exe Only', icon: 'mir terminal' },
-  executable: {
-    value: 'executable',
-    label: 'Executable Files',
-    icon: 'mir code',
-  },
+  executable: { value: 'executable', label: 'Executable Files', icon: 'mir code' },
   all: { value: 'all', label: 'All Files', icon: 'mir description' },
-} as const
-
-const FILE_PRIORITIES = {
-  exe: 0,
-  bat: 1,
-  ps1: 2,
-  other: 3,
-} as const
+}
 
 // Props & emits
 const props = defineProps<{
@@ -70,86 +59,54 @@ const expandedKeys = ref<Record<string, boolean>>({})
 const selectedNode = ref<Record<string, boolean>>({})
 const fileTree = ref<CustomTreeNode[]>([])
 const fileCache = ref<string[] | null>(null)
-
-// UI state
+const loadingProgress = ref(0)
+const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const isExpanding = ref(false)
 const isCollapsing = ref(false)
-const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
-const loadingProgress = ref(0)
 
 // Computed
 const filteredPaths = computed(() => {
   if (!fileCache.value) return []
+  if (filterMode.value === 'all') return fileCache.value
 
-  // When using 'all' mode, we need to ensure we still have directory structure
-  if (filterMode.value === 'all') {
-    return fileCache.value
-  }
+  return fileCache.value.filter((path) => {
+    if (path.endsWith('\\')) return true // Keep directories
 
-  // For other modes, filter files but keep directory structure
-  const filtered = filterFilesByMode(fileCache.value, filterMode.value)
-  return filtered
+    const isExe = path.toLowerCase().endsWith('.exe')
+    const isExecutable = isExe || /\.(bat|ps1)$/i.test(path)
+
+    return filterMode.value === 'exe' ? isExe : isExecutable
+  })
 })
 
 const hasScanned = computed(() => fileCache.value !== null)
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 
-// File utilities
-function getFilePriority(name: string): number {
-  const ext = name.toLowerCase().split('.').pop() || ''
-  return ext in FILE_PRIORITIES
-    ? FILE_PRIORITIES[ext as keyof typeof FILE_PRIORITIES]
-    : FILE_PRIORITIES.other
-}
-
+// Utility functions
 function getFileIcon(fileName: string): string {
-  const ext = fileName.toLowerCase()
-  if (ext.endsWith('.exe')) return 'mir terminal'
-  if (ext.endsWith('.ps1') || ext.endsWith('.bat')) return 'mir code'
+  if (fileName.toLowerCase().endsWith('.exe')) return 'mir terminal'
+  if (/\.(ps1|bat)$/i.test(fileName.toLowerCase())) return 'mir code'
   return 'mir draft'
-}
-
-function filterFilesByMode(paths: string[], mode: FilterMode): string[] {
-  return paths.filter((path) => {
-    // Skip directories (paths ending with backslash) in filtering
-    if (path.endsWith('\\')) return true
-
-    const isExe = path.toLowerCase().endsWith('.exe')
-    const isExecutable = isExe || /\.(bat|ps1)$/i.test(path)
-
-    if (mode === 'exe') return isExe
-    if (mode === 'executable') return isExecutable
-    return true
-  })
 }
 
 // Tree operations
 function buildFileTree(paths: string[]): CustomTreeNode[] {
-  // Create a map to track all directories needed
+  // Track directories
   const dirMap = new Map<string, boolean>()
-
-  // First pass: collect all directories that need to be shown
   paths.forEach((path) => {
-    // For each path, add all parent directories
     const parts = path.split('\\')
     let currentPath = ''
-
     for (let i = 0; i < parts.length - 1; i++) {
       if (parts[i] === '') continue
-
       currentPath = currentPath ? `${currentPath}\\${parts[i]}` : parts[i]
       dirMap.set(currentPath, true)
     }
-
-    // Don't add the file itself to dirMap
   })
 
-  // Build the tree with explicit root
+  // Build tree
   const root: CustomTreeNode[] = []
 
-  // Process each path and build tree
   paths.forEach((path) => {
-    // Skip empty paths
     if (!path.trim()) return
 
     const parts = path.split('\\').filter((p) => p !== '')
@@ -158,18 +115,15 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
     let current = root
     let currentPath = ''
 
-    // Process each path segment
     parts.forEach((part, index) => {
       currentPath = currentPath ? `${currentPath}\\${part}` : part
       const isLast = index === parts.length - 1
       const isFile = isLast && !dirMap.has(currentPath)
       const isExecutable = isFile && /\.(exe|bat|ps1)$/i.test(part.toLowerCase())
 
-      // Look for existing node
       let node = current.find((n) => n.label === part)
 
       if (!node) {
-        // Create new node
         node = {
           key: currentPath,
           label: part,
@@ -180,7 +134,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
           },
         }
 
-        // Set node properties based on type
+        // Set node properties
         if (isFile) {
           node.icon = getFileIcon(part)
           node.children = undefined
@@ -192,30 +146,33 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
         current.push(node)
       }
 
-      // Move to next level for directories
       if (node.children) {
         current = node.children
       }
     })
   })
 
-  // Sort function - directories first, then by priority
+  // Sort nodes
   const sortNodes = (nodes: CustomTreeNode[]): void => {
     nodes.sort((a, b) => {
       const aIsDir = !!a.children
       const bIsDir = !!b.children
 
-      // Folders first
+      // Directories first
       if (aIsDir !== bIsDir) return aIsDir ? -1 : 1
 
-      // For files, sort by priority
+      // Files: executables first
       if (!aIsDir && !bIsDir) {
-        const aPriority = getFilePriority(a.label)
-        const bPriority = getFilePriority(b.label)
-        if (aPriority !== bPriority) return aPriority - bPriority
+        const aIsExe = a.label.toLowerCase().endsWith('.exe')
+        const bIsExe = b.label.toLowerCase().endsWith('.exe')
+        if (aIsExe !== bIsExe) return aIsExe ? -1 : 1
+
+        const aIsExecutable = /\.(bat|ps1)$/i.test(a.label.toLowerCase())
+        const bIsExecutable = /\.(bat|ps1)$/i.test(b.label.toLowerCase())
+        if (aIsExecutable !== bIsExecutable) return aIsExecutable ? -1 : 1
       }
 
-      // Default to alphabetical
+      // Alphabetical
       return a.label.localeCompare(b.label)
     })
 
@@ -227,7 +184,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
   sortNodes(root)
 
-  // Auto-expand top-level if single folder
+  // Auto-expand if single top folder
   if (root.length === 1 && root[0].children) {
     expandedKeys.value[root[0].key] = true
   }
@@ -238,7 +195,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 function handleNodeSelect(node: TreeNode) {
   const customNode = node as CustomTreeNode
 
-  // Handle folder selection - toggle expand
+  // Handle folder selection
   if (customNode.children) {
     expandedKeys.value[customNode.key] = !expandedKeys.value[customNode.key]
     expandedKeys.value = { ...expandedKeys.value }
@@ -246,7 +203,7 @@ function handleNodeSelect(node: TreeNode) {
     return
   }
 
-  // Handle file selection - only update if executable
+  // Handle file selection
   if (customNode.data?.isExecutable) {
     executable_path.value = customNode.data.path
     selectedNode.value = { [customNode.key]: true }
@@ -258,7 +215,7 @@ function handleNodeSelect(node: TreeNode) {
 function tryAutoSelectExecutable() {
   if (!fileCache.value) return
 
-  // Find top-level .exe files (max depth 1)
+  // Find top-level .exe files
   const topLevelExes = fileCache.value.filter(
     (path) => path.toLowerCase().endsWith('.exe') && path.split('\\').length <= 2
   )
@@ -270,7 +227,7 @@ function tryAutoSelectExecutable() {
   }
 }
 
-// File loading operations
+// File loading
 async function loadZipContent() {
   if (!props.zipPath) return
 
@@ -279,7 +236,7 @@ async function loadZipContent() {
     emit('loading', true)
     progressMode.value = 'indeterminate'
 
-    // Use invoke to call backend function
+    // Get archive content from backend
     const result = await invoke('execute_command', {
       command: {
         name: 'GetArchiveContent',
@@ -287,28 +244,18 @@ async function loadZipContent() {
       },
     })
 
-    if (typeof result !== 'string') {
-      throw new Error('Unexpected response type')
-    }
+    const parsedResult = JSON.parse(result as string)
+    if ('error' in parsedResult) throw new Error(parsedResult.error)
 
-    const parsedResult = JSON.parse(result)
-
-    if ('error' in parsedResult) {
-      throw new Error(parsedResult.error)
-    }
-
-    // Assuming backend returns array of file paths
     const paths = Array.isArray(parsedResult) ? parsedResult : []
 
-    // Add explicit directory paths by analyzing file paths
+    // Add directory paths
     const allPaths = [...paths]
     const directories = new Set<string>()
 
     paths.forEach((path) => {
       const parts = path.split('\\')
       let currentDir = ''
-
-      // Add all parent directories with trailing backslash
       for (let i = 0; i < parts.length - 1; i++) {
         if (!parts[i]) continue
         currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
@@ -316,15 +263,11 @@ async function loadZipContent() {
       }
     })
 
-    // Add directories to paths
     directories.forEach((dir) => {
-      if (!allPaths.includes(dir)) {
-        allPaths.push(dir)
-      }
+      if (!allPaths.includes(dir)) allPaths.push(dir)
     })
 
     fileCache.value = allPaths
-
     loadingProgress.value = 100
     fileTree.value = buildFileTree(filteredPaths.value)
     tryAutoSelectExecutable()
@@ -342,7 +285,7 @@ async function loadZipContent() {
 }
 
 // Tree expansion handlers
-const expandAll = async () => {
+const expandAll = () => {
   if (isExpanding.value) return
   isExpanding.value = true
 
@@ -364,7 +307,6 @@ const expandAll = async () => {
 const collapseAll = () => {
   if (isCollapsing.value) return
   isCollapsing.value = true
-
   try {
     expandedKeys.value = {}
   } finally {
@@ -373,19 +315,15 @@ const collapseAll = () => {
 }
 
 // Theme handling
-function selectColor(): string {
-  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
-  const lightness = isDarkMode ? 80 : 20
-  return Color(settingsStore.color).lightness(lightness).hex()
-}
-
-const selectedColor = ref(selectColor())
+const selectedColor = ref(
+  Color(settingsStore.color)
+    .lightness(window.matchMedia('(prefers-color-scheme: dark)').matches ? 80 : 20)
+    .hex()
+)
 
 // Effects
 watchEffect(() => {
   if (!props.zipPath) return
-
-  // Reset state when zip path changes
   fileCache.value = null
   selectedNode.value = {}
   executable_path.value = ''
@@ -399,14 +337,7 @@ watchEffect(() => {
 })
 
 onMounted(() => {
-  if (props.zipPath) {
-    loadZipContent()
-  }
-
-  // Listen for theme changes
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-    selectedColor.value = selectColor()
-  })
+  if (props.zipPath) loadZipContent()
 })
 </script>
 
@@ -458,7 +389,7 @@ onMounted(() => {
           @node-select="handleNodeSelect"
         />
 
-        <!-- Empty State Overlay -->
+        <!-- Empty State -->
         <div
           v-if="hasScanned && isEmpty"
           class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
