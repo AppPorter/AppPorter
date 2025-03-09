@@ -5,7 +5,8 @@ import { goTo } from '@/plugins/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
-import { defineExpose, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, defineExpose, onBeforeMount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmPopup from 'primevue/confirmpopup'
@@ -173,6 +174,11 @@ function handleContextMenu(event: MouseEvent) {
   event.preventDefault()
 }
 
+const route = useRoute()
+const cachedComponents = computed(() => {
+  return route.path !== '/Installation/Home'
+})
+
 onBeforeMount(() => {
   generateMaterialIconsClasses()
 })
@@ -293,7 +299,7 @@ onMounted(() => {
     <!-- Main Content Area -->
     <div class="pt-[6.5rem] px-4 pb-2 h-full z-30 gap-2 flex">
       <router-view v-slot="{ Component, route }">
-        <keep-alive>
+        <keep-alive :include="cachedComponents ? undefined : []">
           <component :is="Component" :key="route.path" />
         </keep-alive>
       </router-view>
