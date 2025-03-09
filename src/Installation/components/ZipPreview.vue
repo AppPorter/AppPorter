@@ -277,10 +277,8 @@ async function loadZipContent() {
     status.value = 'error'
   } finally {
     status.value = 'ready'
-    setTimeout(() => {
-      emit('loading', false)
-      loadingProgress.value = 0
-    }, 500)
+    emit('loading', false)
+    loadingProgress.value = 0
   }
 }
 

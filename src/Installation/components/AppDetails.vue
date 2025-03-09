@@ -51,9 +51,6 @@ async function confirmSelection() {
       throw new Error('Invalid response format')
     }
 
-    // Small delay for UI
-    await new Promise((resolve) => setTimeout(resolve, 100))
-
     // Update app details with received data
     ;[name.value, version.value, publisher.value, icon.value] = details
 
