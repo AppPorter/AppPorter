@@ -12,6 +12,7 @@ import Panel from 'primevue/panel'
 
 // Store initialization
 const installationConfig = useInstallationConfigStore()
+installationConfig.page = 'Home'
 const { zip_path } = storeToRefs(installationConfig)
 
 // File selection handler

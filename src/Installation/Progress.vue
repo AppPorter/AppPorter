@@ -20,6 +20,7 @@ const canClose = ref(false)
 const finalExecutablePath = ref('')
 
 const installationConfig = useInstallationConfigStore()
+installationConfig.page = 'Progress'
 const toast = useToast()
 
 // Compute full installation path including app folder
@@ -74,6 +75,7 @@ onMounted(() => {
       currentStatus.value = 'Installation completed successfully!'
       isFinished.value = true
       canClose.value = true
+      installationConfig.page = 'Finish'
     }
   })
 
@@ -113,11 +115,12 @@ onMounted(() => {
       console.error('Installation failed:', error)
       currentStatus.value = 'Installation failed. Please try again.'
       canClose.value = true
+      installationConfig.page = 'Finish'
     })
 })
 
 const handleClose = () => {
-  goTo('/')
+  goTo('/Installation/Home')
 }
 
 // Register tooltip directive

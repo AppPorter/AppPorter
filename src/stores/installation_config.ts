@@ -1,8 +1,11 @@
 import { defineStore } from 'pinia'
 import type { InstalledApp } from './app_list'
 
+type Pages = 'Home' | 'Config' | 'Progress' | 'Finish'
+
 interface InstallationConfig extends InstalledApp {
   zip_path: string
+  page: Pages
 }
 
 export const useInstallationConfigStore = defineStore('installation_config', {
@@ -18,6 +21,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     create_desktop_shortcut: false,
     create_start_menu_shortcut: true,
     create_registry_key: true,
+    page: 'Home',
   }),
 
   actions: {

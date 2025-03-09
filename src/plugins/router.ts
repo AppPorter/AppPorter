@@ -1,7 +1,6 @@
 // Core imports
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { useConfirm } from 'primevue/useconfirm'
-import type { Router } from 'vue-router'
+import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 // Page components
@@ -11,11 +10,14 @@ import Installation_Config from '@/Installation/Config.vue'
 import Installation_Progress from '@/Installation/Progress.vue'
 import Settings from '@/Settings.vue'
 
+const Dummy = { render: () => null }
+
 // Route definitions
 const routes = [
   { path: '/', redirect: '/Installation' },
+  { path: '/Installation', component: Dummy },
   {
-    path: '/Installation',
+    path: '/Installation/Home',
     component: Installation,
     meta: {
       icon: 'mir install_desktop',
@@ -49,7 +51,7 @@ const routes = [
       icon: 'mir settings',
     },
   },
-] as const
+] as unknown as RouteRecordRaw[]
 
 const router = createRouter({
   history: createMemoryHistory(),
@@ -65,47 +67,32 @@ export function setupRouterGuards(router: Router) {
 
     const installationConfig = useInstallationConfigStore()
 
-    // Show confirmation when leaving config page (except to progress)
-    if (from.path === '/Installation/Config' && to.path !== '/Installation/Progress') {
-      try {
-        await showLeaveConfirmation()
-      } catch {
-        return false
+    // Auto redirect for '/Installation' based on installationConfig.page
+    if (to.path === '/Installation') {
+      let path = ''
+      switch (installationConfig.page) {
+        case 'Home':
+          path = '/Installation/Home'
+          break
+        case 'Config':
+          path = '/Installation/Config'
+          break
+        case 'Progress':
+          path = '/Installation/Progress'
+          break
+        case 'Finish':
+          path = '/Installation/Progress'
+          break
       }
-      installationConfig.$reset()
+      return { path }
     }
 
-    // Reset when leaving progress page
-    if (from.path === '/Installation/Progress') {
+    // Clear data only when navigating to '/Installation/Home'
+    if (to.path === '/Installation/Home') {
       installationConfig.$reset()
     }
 
     return true
-  })
-}
-
-// Promisified confirmation dialog
-function showLeaveConfirmation(): Promise<boolean> {
-  const confirm = useConfirm()
-  return new Promise((resolve, reject) => {
-    confirm.require({
-      message: 'Are you sure you want to leave? All changes will be lost.',
-      group: 'dialog',
-      header: 'Confirm',
-      icon: 'mir warning',
-      rejectProps: {
-        label: 'Cancel',
-        severity: 'secondary',
-        outlined: true,
-        icon: 'mir close',
-      },
-      acceptProps: {
-        label: 'Leave',
-        icon: 'mir navigate_next',
-      },
-      accept: () => resolve(true),
-      reject: () => reject(),
-    })
   })
 }
 

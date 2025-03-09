@@ -14,6 +14,7 @@ import ZipPreview from './components/ZipPreview.vue'
 
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
+installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
 
