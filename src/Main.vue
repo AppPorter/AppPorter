@@ -292,7 +292,11 @@ onMounted(() => {
 
     <!-- Main Content Area -->
     <div class="pt-[6.5rem] px-4 pb-2 h-full z-30 gap-2 flex">
-      <RouterView />
+      <router-view v-slot="{ Component, route }">
+        <keep-alive>
+          <component :is="Component" :key="route.path" />
+        </keep-alive>
+      </router-view>
     </div>
 
     <!-- Context Menu -->

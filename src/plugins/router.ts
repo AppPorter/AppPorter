@@ -80,9 +80,6 @@ export function setupRouterGuards(router: Router) {
         case 'Progress':
           path = '/Installation/Progress'
           break
-        case 'Finish':
-          path = '/Installation/Progress'
-          break
       }
       return { path }
     }

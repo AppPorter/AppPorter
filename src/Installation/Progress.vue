@@ -75,7 +75,6 @@ onMounted(() => {
       currentStatus.value = 'Installation completed successfully!'
       isFinished.value = true
       canClose.value = true
-      installationConfig.page = 'Finish'
     }
   })
 
@@ -115,7 +114,6 @@ onMounted(() => {
       console.error('Installation failed:', error)
       currentStatus.value = 'Installation failed. Please try again.'
       canClose.value = true
-      installationConfig.page = 'Finish'
     })
 })
 
