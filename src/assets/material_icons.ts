@@ -31,6 +31,8 @@ const USED_ICONS = [
   'unfold_more',
   'unfold_less',
   'verified',
+  'info',
+  'error',
 ] as const
 
 /**
