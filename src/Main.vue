@@ -297,7 +297,7 @@ onMounted(() => {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[6.5rem] px-4 pb-2 h-full z-30 gap-2 flex">
+    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex">
       <router-view v-slot="{ Component, route }">
         <keep-alive :include="cachedComponents ? undefined : []">
           <component :is="Component" :key="route.path" />

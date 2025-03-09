@@ -33,6 +33,7 @@ interface CustomTreeNode extends TreeNode {
   children?: CustomTreeNode[]
   selectable?: boolean
   data?: CustomNodeData
+  containsExecutable?: boolean
 }
 
 // Constants
@@ -109,6 +110,14 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
     }
   })
 
+  // Identify paths that are executable files
+  const executablePaths = new Set<string>()
+  paths.forEach((path) => {
+    if (!path.endsWith('\\') && /\.(exe|bat|ps1)$/i.test(path.toLowerCase())) {
+      executablePaths.add(path)
+    }
+  })
+
   // Build tree
   const root: CustomTreeNode[] = []
 
@@ -141,6 +150,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
             path: currentPath,
             isExecutable: isFile && isExecutable,
           },
+          containsExecutable: isExecutable,
         }
 
         current.push(node)
@@ -151,6 +161,54 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
       }
     })
   })
+
+  // Check if directories contain executables and mark them
+  function markExecutableContainers(nodes: CustomTreeNode[]): boolean {
+    let containsExecutable = false
+
+    for (const node of nodes) {
+      if (node.children?.length) {
+        // Process children first
+        node.containsExecutable = markExecutableContainers(node.children)
+        containsExecutable = containsExecutable || node.containsExecutable
+      } else if (node.data?.isExecutable) {
+        // This is an executable file
+        containsExecutable = true
+      }
+    }
+
+    return containsExecutable
+  }
+
+  // Filter out directories without executables based on filter mode
+  function filterEmptyDirectories(nodes: CustomTreeNode[]): CustomTreeNode[] {
+    if (filterMode.value === 'all') {
+      return nodes
+    }
+
+    return nodes.filter((node) => {
+      if (node.children?.length) {
+        // For directories, first filter their children
+        node.children = filterEmptyDirectories(node.children)
+        // Then check if there are any children left after filtering
+        return node.children.length > 0
+      }
+
+      // For files, keep executables based on filter mode
+      if (filterMode.value === 'exe') {
+        return node.data?.path.toLowerCase().endsWith('.exe')
+      } else {
+        // 'executable'
+        return node.data?.isExecutable
+      }
+    })
+  }
+
+  // Mark directories that contain executables
+  markExecutableContainers(root)
+
+  // Filter out directories without executables based on filter mode
+  const filteredRoot = filterEmptyDirectories(root)
 
   // Sort nodes (directories first, then executables, then alphabetical)
   const sortNodes = (nodes: CustomTreeNode[]): void => {
@@ -182,14 +240,14 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
     })
   }
 
-  sortNodes(root)
+  sortNodes(filteredRoot)
 
   // Auto-expand if single top folder
-  if (root.length === 1 && root[0].children) {
-    expandedKeys.value[root[0].key] = true
+  if (filteredRoot.length === 1 && filteredRoot[0].children) {
+    expandedKeys.value[filteredRoot[0].key] = true
   }
 
-  return root
+  return filteredRoot
 }
 
 function handleNodeSelect(node: TreeNode) {

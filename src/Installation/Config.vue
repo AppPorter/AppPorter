@@ -144,7 +144,7 @@ async function handleInstallClick() {
   </div>
 
   <!-- Installation Button -->
-  <div class="fixed bottom-6 right-6 z-40">
+  <div class="fixed bottom-4 right-6 z-40">
     <Button
       severity="primary"
       size="large"
