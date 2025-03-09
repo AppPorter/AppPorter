@@ -33,6 +33,7 @@ const USED_ICONS = [
   'verified',
   'info',
   'error',
+  'arrow_back',
 ] as const
 
 /**

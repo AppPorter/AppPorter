@@ -32,6 +32,11 @@ function handleDetailsProgress(value: number) {
   detailsLoadingProgress.value = value
 }
 
+// Return to Home page
+function handleBackClick() {
+  goTo('/Installation/Home')
+}
+
 async function handleInstallClick() {
   // Reset validation errors
   nameError.value = ''
@@ -140,6 +145,19 @@ async function handleInstallClick() {
       :details-loading="detailsLoading"
       @loading="(value) => (detailsLoading = value)"
       @progress="handleDetailsProgress"
+    />
+  </div>
+
+  <!-- Back Button -->
+  <div class="fixed bottom-4 left-6 z-40">
+    <Button
+      severity="secondary"
+      size="large"
+      class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
+      @click="handleBackClick"
+      icon="mir arrow_back"
+      label="Back"
+      outlined
     />
   </div>
 
