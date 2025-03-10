@@ -4,6 +4,7 @@ import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 
 import Main from '@/Main.vue'
+import { setupI18n } from '@/plugins/i18n'
 import router, { setupRouterGuards } from '@/plugins/router'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -69,13 +70,18 @@ window.onCloseRequested(async () => {
 const pinia = createPinia()
 const app = createApp(Main)
 
-app.use(pinia).use(router).use(ToastService).use(ConfirmationService)
-setupRouterGuards(router)
+app.use(pinia)
 
-// Initialize settings and theme
+// Initialize settings first
 const settingsStore = useSettingsStore()
 await settingsStore.loadSettings()
 
+// Then initialize i18n with the loaded language
+const i18n = setupI18n(settingsStore.language)
+app.use(router).use(ToastService).use(ConfirmationService).use(i18n)
+setupRouterGuards(router)
+
+// Initialize theme
 const UserColor = definePreset(Aura, {
   semantic: {
     primary: {

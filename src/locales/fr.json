@@ -1,0 +1,50 @@
+{
+  "select_file": "Sélectionner un fichier",
+  "settings": {
+    "title": "Paramètres",
+    "description": "Gérer les préférences de l'application",
+    "basic": {
+      "title": "Paramètres de base",
+      "language": "Langue",
+      "theme": "Thème",
+      "minimize_tray": "Réduire dans la barre d'état lors de la fermeture"
+    },
+    "theme": {
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "installation": {
+      "title": "Paramètres d'installation",
+      "current_user_only": "Utilisateur actuel uniquement",
+      "desktop_shortcut": "Créer un raccourci sur le bureau",
+      "registry_key": "Créer une clé de registre",
+      "start_menu": "Créer un raccourci dans le menu Démarrer",
+      "current_user": {
+        "title": "Paramètres de l'utilisateur actuel"
+      },
+      "all_users": {
+        "title": "Paramètres pour tous les utilisateurs"
+      }
+    },
+    "save_changes": "Enregistrer les modifications"
+  },
+  "installation": {
+    "title": "Sélectionner le Package d'Installation",
+    "description": "Sélectionnez un fichier package à installer",
+    "archives": "Fichiers d'archives",
+    "browse": "Parcourir",
+    "next": "Suivant",
+    "select_placeholder": "Choisissez un fichier package..."
+  },
+  "languages": {
+    "en": "Anglais",
+    "zh": "Chinois",
+    "fr": "Français",
+    "de": "Allemand",
+    "es": "Espagnol",
+    "ja": "Japonais",
+    "ko": "Coréen",
+    "ru": "Russe"
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "select_file": "ファイルを選択",
+  "settings": {
+    "title": "設定",
+    "description": "アプリケーションの環境設定を管理する",
+    "basic": {
+      "title": "基本設定",
+      "language": "言語",
+      "theme": "テーマ",
+      "minimize_tray": "閉じる時にトレイに最小化"
+    },
+    "theme": {
+      "system": "システム",
+      "light": "ライト",
+      "dark": "ダーク"
+    },
+    "installation": {
+      "title": "インストール設定",
+      "current_user_only": "現在のユーザーのみ",
+      "desktop_shortcut": "デスクトップショートカットを作成",
+      "registry_key": "レジストリキーを作成",
+      "start_menu": "スタートメニューショートカットを作成",
+      "current_user": {
+        "title": "現在のユーザー設定"
+      },
+      "all_users": {
+        "title": "すべてのユーザー設定"
+      }
+    },
+    "save_changes": "変更を保存"
+  },
+  "installation": {
+    "title": "インストールパッケージを選択",
+    "description": "インストールするパッケージファイルを選択してください",
+    "archives": "アーカイブファイル",
+    "browse": "参照",
+    "next": "次へ",
+    "select_placeholder": "パッケージファイルを選択..."
+  },
+  "languages": {
+    "en": "英語",
+    "zh": "中国語",
+    "fr": "フランス語",
+    "de": "ドイツ語",
+    "es": "スペイン語",
+    "ja": "日本語",
+    "ko": "韓国語",
+    "ru": "ロシア語"
+  }
+}

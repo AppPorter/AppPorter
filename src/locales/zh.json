@@ -1,1 +1,50 @@
-{}
+{
+  "select_file": "选择文件",
+  "settings": {
+    "title": "设置",
+    "description": "管理应用程序首选项",
+    "basic": {
+      "title": "基本设置",
+      "language": "语言",
+      "theme": "主题",
+      "minimize_tray": "关闭时最小化到托盘"
+    },
+    "theme": {
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    },
+    "installation": {
+      "title": "安装设置",
+      "current_user_only": "仅当前用户",
+      "desktop_shortcut": "创建桌面快捷方式",
+      "registry_key": "创建注册表项",
+      "start_menu": "创建开始菜单快捷方式",
+      "current_user": {
+        "title": "当前用户设置"
+      },
+      "all_users": {
+        "title": "所有用户设置"
+      }
+    },
+    "save_changes": "保存更改"
+  },
+  "installation": {
+    "title": "选择安装包",
+    "description": "选择要安装的包文件",
+    "archives": "压缩文件",
+    "browse": "浏览",
+    "next": "下一步",
+    "select_placeholder": "选择一个包文件..."
+  },
+  "languages": {
+    "en": "英语",
+    "zh": "中文",
+    "fr": "法语",
+    "de": "德语",
+    "es": "西班牙语",
+    "ja": "日语",
+    "ko": "韩语",
+    "ru": "俄语"
+  }
+}

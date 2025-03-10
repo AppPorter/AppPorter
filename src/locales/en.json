@@ -1,3 +1,50 @@
 {
-  "select_file": "Select file"
+  "select_file": "Select file",
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your application preferences",
+    "basic": {
+      "title": "Basic Settings",
+      "language": "Language",
+      "theme": "Theme",
+      "minimize_tray": "Minimize to Tray on Close"
+    },
+    "theme": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "installation": {
+      "title": "Installation Settings",
+      "current_user_only": "Current User Only",
+      "desktop_shortcut": "Create Desktop Shortcut",
+      "registry_key": "Create Registry Key",
+      "start_menu": "Create Start Menu Shortcut",
+      "current_user": {
+        "title": "Current User Settings"
+      },
+      "all_users": {
+        "title": "All Users Settings"
+      }
+    },
+    "save_changes": "Save Changes"
+  },
+  "installation": {
+    "title": "Select Installation Package",
+    "description": "Select a package file to install",
+    "archives": "Archive Files",
+    "browse": "Browse",
+    "next": "Next",
+    "select_placeholder": "Choose a package file..."
+  },
+  "languages": {
+    "en": "English",
+    "zh": "Chinese",
+    "fr": "French",
+    "de": "German",
+    "es": "Spanish",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "ru": "Russian"
+  }
 }

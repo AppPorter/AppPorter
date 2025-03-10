@@ -1,0 +1,50 @@
+{
+  "select_file": "Datei auswählen",
+  "settings": {
+    "title": "Einstellungen",
+    "description": "Anwendungseinstellungen verwalten",
+    "basic": {
+      "title": "Grundeinstellungen",
+      "language": "Sprache",
+      "theme": "Design",
+      "minimize_tray": "Beim Schließen in die Taskleiste minimieren"
+    },
+    "theme": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "installation": {
+      "title": "Installationseinstellungen",
+      "current_user_only": "Nur aktueller Benutzer",
+      "desktop_shortcut": "Desktop-Verknüpfung erstellen",
+      "registry_key": "Registry-Schlüssel erstellen",
+      "start_menu": "Startmenü-Verknüpfung erstellen",
+      "current_user": {
+        "title": "Einstellungen für aktuellen Benutzer"
+      },
+      "all_users": {
+        "title": "Einstellungen für alle Benutzer"
+      }
+    },
+    "save_changes": "Änderungen speichern"
+  },
+  "installation": {
+    "title": "Installationspaket auswählen",
+    "description": "Wählen Sie eine Paketdatei zum Installieren",
+    "archives": "Archivdateien",
+    "browse": "Durchsuchen",
+    "next": "Weiter",
+    "select_placeholder": "Wählen Sie eine Paketdatei..."
+  },
+  "languages": {
+    "en": "Englisch",
+    "zh": "Chinesisch",
+    "fr": "Französisch",
+    "de": "Deutsch",
+    "es": "Spanisch",
+    "ja": "Japanisch",
+    "ko": "Koreanisch",
+    "ru": "Russisch"
+  }
+}

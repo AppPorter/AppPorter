@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings'
 
 const settings = useSettingsStore()
 const isSettingsChanged = ref(false)
 const initialSettings = ref({})
+const { t } = useI18n()
 
 const saveSettings = async () => {
   await settings.saveSettings()
@@ -14,12 +16,18 @@ const saveSettings = async () => {
 const languageOptions = [
   { label: 'English', value: 'en' },
   { label: '中文', value: 'zh' },
+  { label: 'Français', value: 'fr' },
+  { label: 'Deutsch', value: 'de' },
+  { label: 'Español', value: 'es' },
+  { label: '日本語', value: 'ja' },
+  { label: '한국어', value: 'ko' },
+  { label: 'Русский', value: 'ru' },
 ]
 
 const themeOptions = [
-  { label: 'System', value: 'system' },
-  { label: 'Light', value: 'light' },
-  { label: 'Dark', value: 'dark' },
+  { label: t('settings.theme.system'), value: 'system' },
+  { label: t('settings.theme.light'), value: 'light' },
+  { label: t('settings.theme.dark'), value: 'dark' },
 ]
 
 onMounted(() => {
@@ -44,9 +52,11 @@ watch(
           <span class="mir settings text-xl"></span>
         </div>
         <div>
-          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">Settings</h2>
+          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
+            {{ t('settings.title') }}
+          </h2>
           <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
-            Manage your application preferences
+            {{ t('settings.description') }}
           </p>
         </div>
       </div>
@@ -59,12 +69,12 @@ watch(
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir tune"></span>
-            <span>Basic Settings</span>
+            <span>{{ t('settings.basic.title') }}</span>
           </div>
         </template>
-        <div class="*:h-12">
+        <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <label>Language</label>
+            <label>{{ t('settings.basic.language') }}</label>
             <Select
               v-model="settings.language"
               :options="languageOptions"
@@ -74,7 +84,7 @@ watch(
             />
           </div>
           <div class="flex items-center justify-between">
-            <label>Theme</label>
+            <label>{{ t('settings.basic.theme') }}</label>
             <Select
               v-model="settings.theme"
               :options="themeOptions"
@@ -84,7 +94,7 @@ watch(
             />
           </div>
           <div class="flex items-center justify-between">
-            <label>Minimize to Tray on Close</label>
+            <label>{{ t('settings.basic.minimize_tray') }}</label>
             <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
           </div>
         </div>
@@ -95,12 +105,12 @@ watch(
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir install_desktop"></span>
-            <span>Installation Settings</span>
+            <span>{{ t('settings.installation.title') }}</span>
           </div>
         </template>
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <label>Current User Only</label>
+            <label>{{ t('settings.installation.current_user_only') }}</label>
             <ToggleSwitch v-model="settings.installation.current_user_only" />
           </div>
 
@@ -110,22 +120,22 @@ watch(
               <template #header>
                 <div class="flex items-center gap-2">
                   <span class="mir person"></span>
-                  <span>Current User Settings</span>
+                  <span>{{ t('settings.installation.current_user.title') }}</span>
                 </div>
               </template>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <label>Create Desktop Shortcut</label>
+                  <label>{{ t('settings.installation.desktop_shortcut') }}</label>
                   <ToggleSwitch
                     v-model="settings.installation.current_user.create_desktop_shortcut"
                   />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>Create Registry Key</label>
+                  <label>{{ t('settings.installation.registry_key') }}</label>
                   <ToggleSwitch v-model="settings.installation.current_user.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>Create Start Menu Shortcut</label>
+                  <label>{{ t('settings.installation.start_menu') }}</label>
                   <ToggleSwitch
                     v-model="settings.installation.current_user.create_start_menu_shortcut"
                   />
@@ -138,20 +148,20 @@ watch(
               <template #header>
                 <div class="flex items-center gap-2">
                   <span class="mir group"></span>
-                  <span>All Users Settings</span>
+                  <span>{{ t('settings.installation.all_users.title') }}</span>
                 </div>
               </template>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <label>Create Desktop Shortcut</label>
+                  <label>{{ t('settings.installation.desktop_shortcut') }}</label>
                   <ToggleSwitch v-model="settings.installation.all_users.create_desktop_shortcut" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>Create Registry Key</label>
+                  <label>{{ t('settings.installation.registry_key') }}</label>
                   <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>Create Start Menu Shortcut</label>
+                  <label>{{ t('settings.installation.start_menu') }}</label>
                   <ToggleSwitch
                     v-model="settings.installation.all_users.create_start_menu_shortcut"
                   />
@@ -167,7 +177,7 @@ watch(
     <div class="pt-4 flex justify-end">
       <Button
         icon="mir save"
-        label="Save Changes"
+        :label="t('settings.save_changes')"
         @click="saveSettings"
         severity="primary"
         :disabled="!isSettingsChanged"

@@ -1,0 +1,50 @@
+{
+  "select_file": "파일 선택",
+  "settings": {
+    "title": "설정",
+    "description": "애플리케이션 환경설정 관리",
+    "basic": {
+      "title": "기본 설정",
+      "language": "언어",
+      "theme": "테마",
+      "minimize_tray": "닫을 때 트레이로 최소화"
+    },
+    "theme": {
+      "system": "시스템",
+      "light": "밝은 테마",
+      "dark": "어두운 테마"
+    },
+    "installation": {
+      "title": "설치 설정",
+      "current_user_only": "현재 사용자만",
+      "desktop_shortcut": "바탕화면 바로가기 만들기",
+      "registry_key": "레지스트리 키 만들기",
+      "start_menu": "시작 메뉴 바로가기 만들기",
+      "current_user": {
+        "title": "현재 사용자 설정"
+      },
+      "all_users": {
+        "title": "모든 사용자 설정"
+      }
+    },
+    "save_changes": "변경사항 저장"
+  },
+  "installation": {
+    "title": "설치 패키지 선택",
+    "description": "설치할 패키지 파일을 선택하세요",
+    "archives": "압축 파일",
+    "browse": "찾아보기",
+    "next": "다음",
+    "select_placeholder": "패키지 파일을 선택하세요..."
+  },
+  "languages": {
+    "en": "영어",
+    "zh": "중국어",
+    "fr": "프랑스어",
+    "de": "독일어",
+    "es": "스페인어",
+    "ja": "일본어",
+    "ko": "한국어",
+    "ru": "러시아어"
+  }
+}

@@ -4,6 +4,7 @@ import { goTo } from '@/plugins/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
+import { useI18n } from 'vue-i18n'
 
 // PrimeVue components
 import Button from 'primevue/button'
@@ -14,6 +15,7 @@ import Panel from 'primevue/panel'
 const installationConfig = useInstallationConfigStore()
 installationConfig.page = 'Home'
 const { zip_path } = storeToRefs(installationConfig)
+const { t } = useI18n()
 
 // File selection handler
 async function selectZipFile() {
@@ -22,7 +24,7 @@ async function selectZipFile() {
     directory: false,
     filters: [
       {
-        name: 'Archives',
+        name: t('installation.archives'),
         extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab'],
       },
     ],
@@ -48,10 +50,10 @@ async function selectZipFile() {
         </div>
         <div>
           <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
-            Select Installation Package
+            {{ t('installation.title') }}
           </h2>
           <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
-            Choose a zip file to install
+            {{ t('installation.description') }}
           </p>
         </div>
       </div>
@@ -63,7 +65,7 @@ async function selectZipFile() {
       <div class="flex items-center gap-2">
         <InputText
           v-model="zip_path"
-          placeholder="Select a zip file to install"
+          :placeholder="t('installation.select_placeholder')"
           class="flex-1 text-sm h-9"
         />
         <Button
@@ -71,7 +73,7 @@ async function selectZipFile() {
           severity="secondary"
           class="h-9 px-4"
           icon="mir folder_open"
-          label="Browse"
+          :label="t('installation.browse')"
         />
       </div>
 
@@ -83,7 +85,7 @@ async function selectZipFile() {
           severity="primary"
           class="h-9 px-6"
           icon="mir navigate_next"
-          label="Next"
+          :label="t('installation.next')"
         />
       </div>
     </div>
