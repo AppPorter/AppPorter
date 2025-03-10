@@ -87,7 +87,6 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
     }
 
     let mut is_output_section = false;
-
     let output_str = String::from_utf8_lossy(&output.stdout).to_string();
 
     let mut list: Vec<String> = Vec::new();
@@ -99,12 +98,15 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
         }
 
         // Only process lines between separators
-        if is_output_section {
-            if let Some(last_field) = line.split_whitespace().last() {
-                list.push(last_field.to_owned());
+        if is_output_section && !line.trim().is_empty() {
+            if line.len() > 53 {
+                let file_path = line[53..].trim();
+                if !file_path.is_empty() {
+                    list.push(file_path.to_owned());
+                }
             }
         }
     }
-
+    println!("{:#?}", list);
     Ok(serde_json::to_string(&list)?)
 }
