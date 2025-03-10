@@ -107,6 +107,5 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
             }
         }
     }
-    println!("{:#?}", list);
     Ok(serde_json::to_string(&list)?)
 }
