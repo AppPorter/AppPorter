@@ -19,6 +19,7 @@ interface Settings {
   language: string
   theme: string
   minimize_to_tray_on_close: boolean
+  first_run: boolean // Flag to check if this is the first run
 
   // System info
   color: string
@@ -37,6 +38,7 @@ export const useSettingsStore = defineStore('settings', {
     language: '',
     theme: '',
     minimize_to_tray_on_close: false,
+    first_run: true, // Default to true
 
     color: '',
     debug: false,
@@ -77,6 +79,11 @@ export const useSettingsStore = defineStore('settings', {
           settings: this.$state,
         },
       })
+    },
+
+    async acknowledgeFirstRun() {
+      this.first_run = false
+      await this.saveSettings()
     },
   },
 })

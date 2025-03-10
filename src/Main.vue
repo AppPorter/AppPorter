@@ -60,6 +60,46 @@ defineExpose({ errorToast })
 
 const dismissWarning = ref(false)
 
+// Check for first run and show disclaimer
+onMounted(async () => {
+  if (settingsStore.first_run) {
+    confirm.require({
+      group: 'disclaimer',
+      header: 'Disclaimer',
+      message:
+        'Thank you for choosing AppPorter. Please note that this software is provided "as is" without warranty of any kind. ' +
+        'By using this application, you acknowledge that you are responsible for your actions when packaging and distributing software. ' +
+        'Please ensure you have proper permissions to package and distribute any third-party applications. ' +
+        'The developers of AppPorter are not responsible for any misuse of this tool.',
+      icon: 'mir info',
+      acceptLabel: 'I understand and agree',
+      acceptProps: {
+        label: 'I understand and agree',
+        icon: 'mir check',
+        severity: 'primary',
+      },
+      rejectProps: {
+        label: 'Exit',
+        icon: 'mir close',
+        severity: 'secondary',
+        outlined: true,
+      },
+      accept: async () => {
+        await settingsStore.acknowledgeFirstRun()
+        toast.add({
+          severity: 'info',
+          summary: 'Welcome to AppPorter',
+          detail: 'Thank you for acknowledging the disclaimer.',
+          life: 3000,
+        })
+      },
+      reject: () => {
+        exit(0)
+      },
+    })
+  }
+})
+
 // Window control handlers
 function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
@@ -243,6 +283,8 @@ onMounted(() => {
       </template>
     </Toast>
     <ConfirmDialog group="dialog"> </ConfirmDialog>
+    <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false">
+    </ConfirmDialog>
 
     <!-- Window Controls -->
     <div class="fixed top-0 right-0 h-auto z-50 flex">

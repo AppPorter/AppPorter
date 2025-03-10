@@ -34,6 +34,7 @@ const USED_ICONS = [
   'info',
   'error',
   'arrow_back',
+  'check',
 ] as const
 
 /**

@@ -13,6 +13,8 @@ pub struct Settings {
     #[serde(default)]
     pub minimize_to_tray_on_close: bool,
     #[serde(default)]
+    pub first_run: bool,
+    #[serde(default)]
     pub color: String,
 
     #[serde(default)]
@@ -69,6 +71,7 @@ impl ConfigFile for Settings {
             language: String::from("en"),
             theme: String::from("system"),
             minimize_to_tray_on_close: false,
+            first_run: true,
             color: String::new(),
             debug: cfg!(debug_assertions),
             elevated: is_elevated()?,
