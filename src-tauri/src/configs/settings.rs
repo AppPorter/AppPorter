@@ -4,12 +4,26 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use tokio::process::Command;
 
+// Add a custom enum for theme
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(untagged)]
+pub enum ThemeType {
+    System(String),
+    Bool(bool),
+}
+
+impl Default for ThemeType {
+    fn default() -> Self {
+        Self::System("system".to_owned())
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Settings {
     #[serde(default)]
     pub language: String,
     #[serde(default)]
-    pub theme: String,
+    pub theme: ThemeType,
     #[serde(default)]
     pub minimize_to_tray_on_close: bool,
     #[serde(default)]
@@ -69,7 +83,7 @@ impl ConfigFile for Settings {
 
         let default_settings = Self {
             language: String::from("en"),
-            theme: String::from("system"),
+            theme: ThemeType::System("system".to_string()),
             minimize_to_tray_on_close: false,
             first_run: true,
             color: String::new(),

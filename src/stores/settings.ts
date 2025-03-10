@@ -14,10 +14,13 @@ interface Installation {
   current_user: InstallSettings
 }
 
+export type ThemeType = true | false | 'system'
+export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
+
 interface Settings {
   // App preferences
-  language: string
-  theme: string
+  language: LanguageType
+  theme: ThemeType
   minimize_to_tray_on_close: boolean
   first_run: boolean // Flag to check if this is the first run
 
@@ -35,8 +38,8 @@ interface Settings {
 // Store definition
 export const useSettingsStore = defineStore('settings', {
   state: (): Settings => ({
-    language: '',
-    theme: '',
+    language: 'en',
+    theme: 'system',
     minimize_to_tray_on_close: false,
     first_run: true, // Default to true
 

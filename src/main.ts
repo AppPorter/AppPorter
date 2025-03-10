@@ -89,7 +89,7 @@ app.use(PrimeVue, {
     preset: UserColor,
     options: {
       prefix: 'p',
-      darkModeSelector: 'system',
+      darkModeSelector: settingsStore.theme,
       cssLayer: false,
     },
   },

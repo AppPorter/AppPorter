@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from './stores/settings'
 
@@ -7,6 +7,20 @@ const settings = useSettingsStore()
 const isSettingsChanged = ref(false)
 const initialSettings = ref({})
 const { t } = useI18n()
+
+// Computed property for theme binding
+const currentTheme = computed({
+  get: () => {
+    if (settings.theme === true) return 'dark'
+    if (settings.theme === false) return 'light'
+    return 'system'
+  },
+  set: (value: string) => {
+    if (value === 'dark') settings.theme = true
+    else if (value === 'light') settings.theme = false
+    else settings.theme = 'system'
+  },
+})
 
 const saveSettings = async () => {
   await settings.saveSettings()
@@ -86,7 +100,7 @@ watch(
           <div class="flex items-center justify-between">
             <label>{{ t('settings.basic.theme') }}</label>
             <Select
-              v-model="settings.theme"
+              v-model="currentTheme"
               :options="themeOptions"
               optionLabel="label"
               optionValue="value"
