@@ -30,12 +30,94 @@
     "save_changes": "Enregistrer les modifications"
   },
   "installation": {
-    "title": "Sélectionner le Package d'Installation",
+    "title": "Sélectionner le package d'installation",
     "description": "Sélectionnez un fichier package à installer",
-    "archives": "Fichiers d'archives",
+    "archives": "Fichiers d'archive",
     "browse": "Parcourir",
     "next": "Suivant",
-    "select_placeholder": "Choisissez un fichier package..."
+    "select_placeholder": "Choisir un fichier package...",
+    "progress": {
+      "title": "Progression de l'installation",
+      "description": "Installation de l'application sur votre système",
+      "preparing": "Préparation de l'installation...",
+      "extracting": "Extraction des fichiers ({progress}%)...",
+      "preparing_extract": "Préparation de l'extraction des fichiers...",
+      "completed": "Installation terminée avec succès !",
+      "failed": "L'installation a échoué. Veuillez réessayer.",
+      "installed_location": "Emplacement d'installation",
+      "copy_path": "Copier le chemin",
+      "executable_path": "Chemin de l'exécutable",
+      "install_settings": "Paramètres d'installation",
+      "copy_settings": "Copier les paramètres",
+      "package_info": "Informations sur le package",
+      "copy_package_info": "Copier les infos du package",
+      "source_archive": "Archive source",
+      "selected_executable": "Exécutable sélectionné",
+      "finish": "Terminer",
+      "close": "Fermer"
+    },
+    "preview": {
+      "title": "Fichiers dans l'archive",
+      "expand_all": "Tout développer",
+      "collapse_all": "Tout réduire",
+      "no_files": "Aucun fichier trouvé",
+      "reading_archive": "Lecture de l'archive",
+      "completed": "Terminé",
+      "loading": "Chargement...",
+      "filter": {
+        "exe": "Fichiers .exe uniquement",
+        "executable": "Fichiers exécutables",
+        "all": "Tous les fichiers"
+      }
+    },
+    "config": {
+      "installation_options": "Options d'installation",
+      "selected_file": "Fichier sélectionné",
+      "install_mode": "Mode d'installation",
+      "all_users": "Tous les utilisateurs",
+      "current_user": "Utilisateur actuel",
+      "install_path": "Chemin d'installation",
+      "choose_dir": "Choisir le répertoire d'installation",
+      "browse": "Parcourir",
+      "shortcuts": "Raccourcis",
+      "desktop_shortcut": "Créer un raccourci sur le bureau",
+      "start_menu_shortcut": "Créer un raccourci dans le menu Démarrer",
+      "registry_entry": "Créer une entrée dans le registre",
+      "back": "Retour",
+      "install": "Installer",
+      "confirm_install": "Voulez-vous démarrer le processus d'installation maintenant ?",
+      "start_installation": "Démarrer l'installation",
+      "cancel": "Annuler"
+    },
+    "app_details": {
+      "title": "Détails de l'application",
+      "icon": "Icône",
+      "icon_optional": "(Facultatif)",
+      "icon_extract_hint": "L'icône sera automatiquement extraite de l'application",
+      "name": "Nom",
+      "publisher": "Éditeur",
+      "publisher_optional": "(Facultatif)",
+      "version": "Version",
+      "version_optional": "(Facultatif)",
+      "auto_fill": "Remplissage auto",
+      "auto_filled": "Rempli auto",
+      "loading_details": "Chargement des détails",
+      "loading": "Chargement...",
+      "preparing": "Préparation",
+      "extracting": "Extraction",
+      "reading": "Lecture",
+      "processing": "Traitement"
+    },
+    "validation": {
+      "executable_missing": "Exécutable manquant",
+      "select_executable": "Veuillez sélectionner un fichier exécutable dans l'archive",
+      "name_required": "Le nom de l'application est requis",
+      "enter_name": "Veuillez entrer un nom d'application",
+      "path_required": "Le chemin d'installation est requis",
+      "select_path": "Veuillez sélectionner un chemin d'installation",
+      "invalid_path": "Chemin d'installation invalide",
+      "select_valid_path": "Veuillez sélectionner un chemin d'installation valide"
+    }
   },
   "system": {
     "disclaimer": {

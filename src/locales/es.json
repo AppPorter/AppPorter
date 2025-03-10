@@ -30,12 +30,94 @@
     "save_changes": "Guardar cambios"
   },
   "installation": {
-    "title": "Seleccionar Paquete de Instalación",
+    "title": "Seleccionar paquete de instalación",
     "description": "Seleccione un archivo de paquete para instalar",
     "archives": "Archivos comprimidos",
     "browse": "Examinar",
     "next": "Siguiente",
-    "select_placeholder": "Elegir un archivo de paquete..."
+    "select_placeholder": "Elegir un archivo de paquete...",
+    "progress": {
+      "title": "Progreso de instalación",
+      "description": "Instalando aplicación en su sistema",
+      "preparing": "Preparando instalación...",
+      "extracting": "Extrayendo archivos ({progress}%)...",
+      "preparing_extract": "Preparando para extraer archivos...",
+      "completed": "¡Instalación completada con éxito!",
+      "failed": "La instalación falló. Por favor, inténtelo de nuevo.",
+      "installed_location": "Ubicación de instalación",
+      "copy_path": "Copiar ruta",
+      "executable_path": "Ruta del ejecutable",
+      "install_settings": "Configuración de instalación",
+      "copy_settings": "Copiar configuración",
+      "package_info": "Información del paquete",
+      "copy_package_info": "Copiar información del paquete",
+      "source_archive": "Archivo fuente",
+      "selected_executable": "Ejecutable seleccionado",
+      "finish": "Finalizar",
+      "close": "Cerrar"
+    },
+    "config": {
+      "installation_options": "Opciones de instalación",
+      "selected_file": "Archivo seleccionado",
+      "install_mode": "Modo de instalación",
+      "all_users": "Todos los usuarios",
+      "current_user": "Usuario actual",
+      "install_path": "Ruta de instalación",
+      "choose_dir": "Elegir directorio de instalación",
+      "browse": "Examinar",
+      "shortcuts": "Accesos directos",
+      "desktop_shortcut": "Crear acceso directo en el escritorio",
+      "start_menu_shortcut": "Crear acceso directo en el menú Inicio",
+      "registry_entry": "Crear entrada en el registro",
+      "back": "Atrás",
+      "install": "Instalar",
+      "confirm_install": "¿Desea iniciar el proceso de instalación ahora?",
+      "start_installation": "Iniciar instalación",
+      "cancel": "Cancelar"
+    },
+    "app_details": {
+      "title": "Detalles de la aplicación",
+      "icon": "Ícono",
+      "icon_optional": "(Opcional)",
+      "icon_extract_hint": "El ícono se extraerá automáticamente de la aplicación",
+      "name": "Nombre",
+      "publisher": "Editor",
+      "publisher_optional": "(Opcional)",
+      "version": "Versión",
+      "version_optional": "(Opcional)",
+      "auto_fill": "Auto completar",
+      "auto_filled": "Auto completado",
+      "loading_details": "Cargando detalles de la aplicación",
+      "loading": "Cargando...",
+      "preparing": "Preparando",
+      "extracting": "Extrayendo",
+      "reading": "Leyendo",
+      "processing": "Procesando"
+    },
+    "validation": {
+      "executable_missing": "Falta el ejecutable",
+      "select_executable": "Por favor, seleccione un archivo ejecutable del archivo",
+      "name_required": "Se requiere el nombre de la aplicación",
+      "enter_name": "Por favor, ingrese un nombre de aplicación",
+      "path_required": "Se requiere la ruta de instalación",
+      "select_path": "Por favor, seleccione una ruta de instalación",
+      "invalid_path": "Ruta de instalación inválida",
+      "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
+    },
+    "preview": {
+      "title": "Archivos en el paquete",
+      "expand_all": "Expandir todo",
+      "collapse_all": "Contraer todo",
+      "no_files": "No se encontraron archivos",
+      "reading_archive": "Leyendo archivo",
+      "completed": "Completado",
+      "loading": "Cargando...",
+      "filter": {
+        "exe": "Solo archivos .exe",
+        "executable": "Archivos ejecutables",
+        "all": "Todos los archivos"
+      }
+    }
   },
   "system": {
     "disclaimer": {

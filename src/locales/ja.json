@@ -30,12 +30,94 @@
     "save_changes": "変更を保存"
   },
   "installation": {
-    "title": "インストールパッケージを選択",
-    "description": "インストールするパッケージファイルを選択してください",
+    "title": "インストールパッケージの選択",
+    "description": "インストールするパッケージファイルを選択",
     "archives": "アーカイブファイル",
     "browse": "参照",
     "next": "次へ",
-    "select_placeholder": "パッケージファイルを選択..."
+    "select_placeholder": "パッケージファイルを選択...",
+    "progress": {
+      "title": "インストールの進行状況",
+      "description": "システムにアプリケーションをインストールしています",
+      "preparing": "インストールの準備中...",
+      "extracting": "ファイルを展開中（{progress}%）...",
+      "preparing_extract": "ファイルの展開を準備中...",
+      "completed": "インストールが正常に完了しました！",
+      "failed": "インストールに失敗しました。もう一度お試しください。",
+      "installed_location": "インストール場所",
+      "copy_path": "パスをコピー",
+      "executable_path": "実行ファイルのパス",
+      "install_settings": "インストール設定",
+      "copy_settings": "設定をコピー",
+      "package_info": "パッケージ情報",
+      "copy_package_info": "パッケージ情報をコピー",
+      "source_archive": "ソースアーカイブ",
+      "selected_executable": "選択された実行ファイル",
+      "finish": "完了",
+      "close": "閉じる"
+    },
+    "preview": {
+      "title": "アーカイブ内のファイル",
+      "expand_all": "すべて展開",
+      "collapse_all": "すべて折りたたむ",
+      "no_files": "ファイルが見つかりません",
+      "reading_archive": "アーカイブを読み込み中",
+      "completed": "完了",
+      "loading": "読み込み中...",
+      "filter": {
+        "exe": ".exeのみ",
+        "executable": "実行可能ファイル",
+        "all": "すべてのファイル"
+      }
+    },
+    "config": {
+      "installation_options": "インストールオプション",
+      "selected_file": "選択されたファイル",
+      "install_mode": "インストールモード",
+      "all_users": "すべてのユーザー",
+      "current_user": "現在のユーザー",
+      "install_path": "インストールパス",
+      "choose_dir": "インストールディレクトリを選択",
+      "browse": "参照",
+      "shortcuts": "ショートカット",
+      "desktop_shortcut": "デスクトップショートカットを作成",
+      "start_menu_shortcut": "スタートメニューショートカットを作成",
+      "registry_entry": "レジストリエントリを作成",
+      "back": "戻る",
+      "install": "インストール",
+      "confirm_install": "インストールプロセスを開始しますか？",
+      "start_installation": "インストール開始",
+      "cancel": "キャンセル"
+    },
+    "app_details": {
+      "title": "アプリケーションの詳細",
+      "icon": "アイコン",
+      "icon_optional": "（オプション）",
+      "icon_extract_hint": "アイコンはアプリケーションから自動的に抽出されます",
+      "name": "名前",
+      "publisher": "発行元",
+      "publisher_optional": "（オプション）",
+      "version": "バージョン",
+      "version_optional": "（オプション）",
+      "auto_fill": "自動入力",
+      "auto_filled": "自動入力済み",
+      "loading_details": "アプリケーションの詳細を読み込み中",
+      "loading": "読み込み中...",
+      "preparing": "準備中",
+      "extracting": "抽出中",
+      "reading": "読み取り中",
+      "processing": "処理中"
+    },
+    "validation": {
+      "executable_missing": "実行ファイルがありません",
+      "select_executable": "アーカイブから実行ファイルを選択してください",
+      "name_required": "アプリケーション名は必須です",
+      "enter_name": "アプリケーション名を入力してください",
+      "path_required": "インストールパスは必須です",
+      "select_path": "インストールパスを選択してください",
+      "invalid_path": "無効なインストールパス",
+      "select_valid_path": "有効なインストールパスを選択してください"
+    }
   },
   "system": {
     "disclaimer": {

@@ -3,14 +3,13 @@ import { useInstallationConfigStore } from '@/stores/installation_config'
 import { useSettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
-import { watchEffect } from 'vue'
-
-// PrimeVue components
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ToggleSwitch from 'primevue/toggleswitch'
+import { watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps<{
   pathError: string
@@ -31,6 +30,8 @@ const {
   create_start_menu_shortcut,
   install_path,
 } = storeToRefs(installationConfig)
+
+const { t } = useI18n()
 
 // Sync settings between installation modes
 function updateConfig(isCurrentUser: boolean) {
@@ -77,11 +78,12 @@ watchEffect(() => {
         <div class="flex items-center gap-1.5">
           <span class="mir settings text-lg text-surface-600 dark:text-surface-400"></span>
           <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">
-            Installation Options
+            {{ t('installation.config.installation_options') }}
           </h2>
         </div>
         <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 ml-6">
-          Selected file: <span class="font-medium">{{ zip_path }}</span>
+          {{ t('installation.config.selected_file') }}:
+          <span class="font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>
@@ -91,25 +93,25 @@ watchEffect(() => {
     >
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
-        <span class="w-24 text-sm font-medium">Install Mode</span>
+        <span class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</span>
         <div class="flex items-center gap-2 px-2 py-1 rounded-lg">
-          <span class="text-sm">All Users</span>
+          <span class="text-sm">{{ t('installation.config.all_users') }}</span>
           <ToggleSwitch
             v-model="current_user_only"
             @change="handleInstallModeChange"
             class="mx-1"
           />
-          <span class="text-sm">Current User</span>
+          <span class="text-sm">{{ t('installation.config.current_user') }}</span>
         </div>
       </div>
 
       <!-- Install Path -->
       <div class="flex items-center gap-2 w-full">
-        <span class="w-24 text-sm font-medium">Install Path</span>
+        <span class="w-24 text-sm font-medium">{{ t('installation.config.install_path') }}</span>
         <div class="flex-1 flex gap-2">
           <InputText
             v-model="install_path"
-            placeholder="Choose installation directory"
+            :placeholder="t('installation.config.choose_dir')"
             class="w-full text-sm h-8"
             :invalid="!!pathError"
             :title="pathError"
@@ -119,18 +121,20 @@ watchEffect(() => {
             severity="secondary"
             @click="select_install_path"
             icon="mir folder_open"
-            label="Browse"
+            :label="t('installation.config.browse')"
           />
         </div>
       </div>
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <span class="w-24 mt-1 text-sm font-medium">Shortcuts</span>
+        <span class="w-24 mt-1 text-sm font-medium">{{ t('installation.config.shortcuts') }}</span>
         <div class="space-y-1 p-1.5 rounded-lg flex-1">
           <div class="flex items-center gap-2">
             <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
-            <label for="desktop_shortcut" class="text-sm">Create Desktop Shortcut</label>
+            <label for="desktop_shortcut" class="text-sm">{{
+              t('installation.config.desktop_shortcut')
+            }}</label>
           </div>
           <div class="flex items-center gap-2">
             <Checkbox
@@ -138,11 +142,15 @@ watchEffect(() => {
               :binary="true"
               inputId="start_menu_shortcut"
             />
-            <label for="start_menu_shortcut" class="text-sm">Create Start Menu Shortcut</label>
+            <label for="start_menu_shortcut" class="text-sm">{{
+              t('installation.config.start_menu_shortcut')
+            }}</label>
           </div>
           <div class="flex items-center gap-2">
             <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
-            <label for="registry_key" class="text-sm">Create Registry Entry</label>
+            <label for="registry_key" class="text-sm">{{
+              t('installation.config.registry_entry')
+            }}</label>
           </div>
         </div>
       </div>

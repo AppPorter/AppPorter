@@ -6,7 +6,9 @@ import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
+import ProgressBar from 'primevue/progressbar'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 defineProps<{
   nameError: string
@@ -18,6 +20,7 @@ defineProps<{
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
 const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
+const { t } = useI18n()
 
 const autoConfirmed = ref(false)
 
@@ -76,7 +79,9 @@ function clearIcon() {
       <div class="flex justify-between items-center w-full py-0">
         <div class="flex items-center gap-1.5">
           <span class="mir apps text-lg text-surface-600 dark:text-surface-400"></span>
-          <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">App Details</h2>
+          <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">
+            {{ t('installation.app_details.title') }}
+          </h2>
         </div>
         <Button
           :severity="autoConfirmed ? 'success' : 'secondary'"
@@ -84,7 +89,11 @@ function clearIcon() {
           :disabled="detailsLoading || executable_path === ''"
           @click="confirmSelection"
           :icon="autoConfirmed ? 'mir verified' : 'mir auto_awesome'"
-          :label="autoConfirmed ? 'Auto Filled' : 'Auto Fill'"
+          :label="
+            autoConfirmed
+              ? t('installation.app_details.auto_filled')
+              : t('installation.app_details.auto_fill')
+          "
         />
       </div>
     </template>
@@ -93,8 +102,12 @@ function clearIcon() {
       <!-- App Icon -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Icon</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
+            t('installation.app_details.icon')
+          }}</span>
+          <p class="text-xs text-surface-500 dark:text-surface-400">
+            {{ t('installation.app_details.icon_optional') }}
+          </p>
         </div>
         <div class="w-full">
           <div class="flex items-center gap-2">
@@ -118,7 +131,7 @@ function clearIcon() {
               </Button>
             </div>
             <span v-if="!icon" class="text-xs text-surface-500 dark:text-surface-400">
-              Icon will be automatically extracted from the application
+              {{ t('installation.app_details.icon_extract_hint') }}
             </span>
           </div>
         </div>
@@ -127,12 +140,14 @@ function clearIcon() {
       <!-- App Name -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Name</span>
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
+            t('installation.app_details.name')
+          }}</span>
         </div>
         <div class="w-full">
           <InputText
             v-model="name"
-            placeholder="Application Name"
+            :placeholder="t('installation.app_details.name')"
             class="w-full text-sm h-8"
             :invalid="!!nameError"
             :title="nameError"
@@ -143,22 +158,38 @@ function clearIcon() {
       <!-- Publisher -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Publisher</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
+            t('installation.app_details.publisher')
+          }}</span>
+          <p class="text-xs text-surface-500 dark:text-surface-400">
+            {{ t('installation.app_details.publisher_optional') }}
+          </p>
         </div>
         <div class="w-full">
-          <InputText v-model="publisher" placeholder="Publisher Name" class="w-full text-sm h-8" />
+          <InputText
+            v-model="publisher"
+            :placeholder="t('installation.app_details.publisher')"
+            class="w-full text-sm h-8"
+          />
         </div>
       </div>
 
       <!-- Version -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">Version</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">(Optional)</p>
+          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
+            t('installation.app_details.version')
+          }}</span>
+          <p class="text-xs text-surface-500 dark:text-surface-400">
+            {{ t('installation.app_details.version_optional') }}
+          </p>
         </div>
         <div class="w-full">
-          <InputText v-model="version" placeholder="1.0.0" class="w-full text-sm h-8" />
+          <InputText
+            v-model="version"
+            :placeholder="t('installation.app_details.version')"
+            class="w-full text-sm h-8"
+          />
         </div>
       </div>
     </div>
@@ -169,14 +200,17 @@ function clearIcon() {
       class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-[0.5rem] transition-all duration-300"
     >
       <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">
-        Loading App Details
+        {{ t('installation.app_details.loading_details') }}
       </h3>
       <ProgressBar :mode="progressMode" :value="detailsLoadingProgress" class="w-40" />
       <p class="text-sm text-surface-600 dark:text-surface-400">
         {{
-          ['Preparing', 'Extracting', 'Reading', 'Processing'][
-            Math.floor(detailsLoadingProgress / 25) - 1
-          ] || 'Loading...'
+          [
+            t('installation.app_details.preparing'),
+            t('installation.app_details.extracting'),
+            t('installation.app_details.reading'),
+            t('installation.app_details.processing'),
+          ][Math.floor(detailsLoadingProgress / 25) - 1] || t('installation.app_details.loading')
         }}
       </p>
     </div>

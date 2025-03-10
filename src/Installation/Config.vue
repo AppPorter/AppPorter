@@ -6,6 +6,7 @@ import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 // Components
 import AppDetails from './components/AppDetails.vue'
@@ -17,6 +18,7 @@ const { zip_path } = installationConfig
 installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
+const { t } = useI18n()
 
 // UI state management
 const detailsLoading = ref(false)
@@ -48,30 +50,30 @@ async function handleInstallClick() {
   if (!installationConfig.executable_path) {
     toast.add({
       severity: 'error',
-      summary: 'Executable Missing',
-      detail: 'Please select an executable file from the archive',
+      summary: t('installation.validation.executable_missing'),
+      detail: t('installation.validation.select_executable'),
       life: 3000,
     })
     hasErrors = true
   }
 
   if (!installationConfig.name) {
-    nameError.value = 'Application name is required'
+    nameError.value = t('installation.validation.name_required')
     toast.add({
       severity: 'error',
-      summary: 'Missing App Name',
-      detail: 'Please enter an application name',
+      summary: t('installation.validation.name_required'),
+      detail: t('installation.validation.enter_name'),
       life: 3000,
     })
     hasErrors = true
   }
 
   if (!installationConfig.install_path) {
-    pathError.value = 'Installation path is required'
+    pathError.value = t('installation.validation.path_required')
     toast.add({
       severity: 'error',
-      summary: 'Missing Install Path',
-      detail: 'Please select an installation path',
+      summary: t('installation.validation.path_required'),
+      detail: t('installation.validation.select_path'),
       life: 3000,
     })
     hasErrors = true
@@ -94,18 +96,18 @@ async function handleInstallClick() {
     // Confirm installation intent
     await new Promise((resolve, reject) => {
       confirm.require({
-        message: 'Do you want to start the installation process now?',
+        message: t('installation.config.confirm_install'),
         group: 'dialog',
         icon: 'mir install_desktop',
-        header: 'Start Installation',
+        header: t('installation.config.start_installation'),
         rejectProps: {
-          label: 'Cancel',
+          label: t('installation.config.cancel'),
           severity: 'secondary',
           outlined: true,
           icon: 'mir close',
         },
         acceptProps: {
-          label: 'Install',
+          label: t('installation.config.install'),
           icon: 'mir navigate_next',
         },
         accept: () => resolve(true),
@@ -118,8 +120,8 @@ async function handleInstallClick() {
     pathError.value = error
     toast.add({
       severity: 'error',
-      summary: 'Invalid Install Path',
-      detail: 'Please select a valid installation path',
+      summary: t('installation.validation.invalid_path'),
+      detail: t('installation.validation.select_valid_path'),
       life: 3000,
     })
   }
@@ -156,7 +158,7 @@ async function handleInstallClick() {
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
       @click="handleBackClick"
       icon="mir arrow_back"
-      label="Back"
+      :label="t('installation.config.back')"
       outlined
     />
   </div>
@@ -169,7 +171,7 @@ async function handleInstallClick() {
       class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
       @click="handleInstallClick"
       icon="mir download"
-      label="Install"
+      :label="t('installation.config.install')"
     />
   </div>
 </template>

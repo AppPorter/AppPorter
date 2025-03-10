@@ -10,18 +10,20 @@ import ProgressBar from 'primevue/progressbar'
 import Tooltip from 'primevue/tooltip'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 // Installation state
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
 const isFinished = ref(false)
-const currentStatus = ref('Preparing installation...')
+const currentStatus = ref(null)
 const canClose = ref(false)
 const finalExecutablePath = ref('')
 
 const installationConfig = useInstallationConfigStore()
 installationConfig.page = 'Progress'
 const toast = useToast()
+const { t } = useI18n()
 
 // Compute full installation path including app folder
 const fullInstallPath = computed(() => {
@@ -35,7 +37,9 @@ const fullInstallPath = computed(() => {
 
 // Helper functions
 const getInstallMode = (isCurrentUser: boolean) =>
-  isCurrentUser ? 'Current User Only' : 'All Users'
+  isCurrentUser
+    ? t('settings.installation.current_user_only')
+    : t('settings.installation.all_users')
 
 const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
@@ -43,10 +47,10 @@ const getShortcutsList = (config: {
   create_registry_key: boolean
 }) => {
   const shortcuts = []
-  if (config.create_desktop_shortcut) shortcuts.push('Desktop')
-  if (config.create_start_menu_shortcut) shortcuts.push('Start Menu')
-  if (config.create_registry_key) shortcuts.push('Registry Entry')
-  return shortcuts.length ? shortcuts.join(', ') : 'None'
+  if (config.create_desktop_shortcut) shortcuts.push(t('settings.installation.desktop_shortcut'))
+  if (config.create_start_menu_shortcut) shortcuts.push(t('settings.installation.start_menu'))
+  if (config.create_registry_key) shortcuts.push(t('settings.installation.registry_key'))
+  return shortcuts.length ? shortcuts.join(', ') : t('installation.config.shortcuts')
 }
 
 // Copy to clipboard handler
@@ -55,7 +59,7 @@ const handleCopy = async (text: string, type: string) => {
     await navigator.clipboard.writeText(text)
     toast.add({
       severity: 'info',
-      summary: 'Copied',
+      summary: t('system.edit.copy'),
       detail: `${type} copied to clipboard`,
       life: 2000,
     })
@@ -65,14 +69,17 @@ const handleCopy = async (text: string, type: string) => {
 }
 
 onMounted(() => {
+  // Initial status
+  currentStatus.value = t('installation.progress.preparing')
+
   // Setup event listeners for installation progress
   listen('installation', (event) => {
     if (event.payload === 0) {
       progressMode.value = 'indeterminate'
-      currentStatus.value = 'Preparing to extract files...'
+      currentStatus.value = t('installation.progress.preparing_extract')
     }
     if (event.payload === 101) {
-      currentStatus.value = 'Installation completed successfully!'
+      currentStatus.value = t('installation.progress.completed')
       isFinished.value = true
       canClose.value = true
     }
@@ -81,7 +88,7 @@ onMounted(() => {
   listen('installation_extract', (event) => {
     progressMode.value = 'determinate'
     extractProgress.value = event.payload as number
-    currentStatus.value = `Extracting files (${extractProgress.value}%)...`
+    currentStatus.value = t('installation.progress.extracting', { progress: extractProgress.value })
   })
 
   // Start installation process
@@ -112,7 +119,7 @@ onMounted(() => {
     })
     .catch((error) => {
       console.error('Installation failed:', error)
-      currentStatus.value = 'Installation failed. Please try again.'
+      currentStatus.value = t('installation.progress.failed')
       canClose.value = true
     })
 })
@@ -158,10 +165,10 @@ defineOptions({
             </div>
             <div class="min-w-0 flex-shrink">
               <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
-                Installation Progress
+                {{ t('installation.progress.title') }}
               </h2>
               <p class="text-xs text-surface-600 dark:text-surface-400">
-                Installing application to your system
+                {{ t('installation.progress.description') }}
               </p>
             </div>
           </div>
@@ -219,15 +226,17 @@ defineOptions({
             <div class="flex items-center justify-between w-full py-1">
               <div class="flex items-center gap-2">
                 <span class="mir terminal text-surface-600 dark:text-surface-400"></span>
-                <span class="text-sm font-medium">Installed Location</span>
+                <span class="text-sm font-medium">{{
+                  t('installation.progress.installed_location')
+                }}</span>
               </div>
               <Button
                 severity="secondary"
                 outlined
-                v-tooltip.top="'Copy path'"
+                v-tooltip.top="t('installation.progress.copy_path')"
                 class="w-8 h-7"
                 icon="mir content_copy"
-                @click="handleCopy(finalExecutablePath, 'Executable path')"
+                @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
               />
             </div>
           </template>
@@ -246,12 +255,14 @@ defineOptions({
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir settings text-surface-600 dark:text-surface-400"></span>
-                  <span class="text-sm font-medium">Installation Settings</span>
+                  <span class="text-sm font-medium">{{
+                    t('installation.progress.install_settings')
+                  }}</span>
                 </div>
                 <Button
                   severity="secondary"
                   outlined
-                  v-tooltip.top="'Copy settings'"
+                  v-tooltip.top="t('installation.progress.copy_settings')"
                   class="w-8 h-7"
                   icon="mir content_copy"
                   @click="
@@ -266,19 +277,25 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Install Mode</span>
+                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
+                    t('installation.config.install_mode')
+                  }}</span>
                   <p class="text-sm font-medium">
                     {{ getInstallMode(installationConfig.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Shortcuts</span>
+                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
+                    t('installation.config.shortcuts')
+                  }}</span>
                   <p class="text-sm font-medium">
                     {{ getShortcutsList(installationConfig) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Install Path</span>
+                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
+                    t('installation.config.install_path')
+                  }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ fullInstallPath }}
                   </p>
@@ -293,12 +310,14 @@ defineOptions({
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir folder_zip text-surface-600 dark:text-surface-400"></span>
-                  <span class="text-sm font-medium">Package Information</span>
+                  <span class="text-sm font-medium">{{
+                    t('installation.progress.package_info')
+                  }}</span>
                 </div>
                 <Button
                   severity="secondary"
                   outlined
-                  v-tooltip.top="'Copy package info'"
+                  v-tooltip.top="t('installation.progress.copy_package_info')"
                   class="w-8 h-7"
                   icon="mir content_copy"
                   @click="
@@ -313,15 +332,17 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">Source Archive</span>
+                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
+                    t('installation.progress.source_archive')
+                  }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400"
-                    >Selected Executable</span
-                  >
+                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
+                    t('installation.progress.selected_executable')
+                  }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.executable_path }}
                   </p>
@@ -339,7 +360,9 @@ defineOptions({
             :severity="isFinished ? 'success' : 'danger'"
             class="w-24 h-8"
             :icon="isFinished ? 'mir home' : 'mir close'"
-            :label="isFinished ? 'Finish' : 'Close'"
+            :label="
+              isFinished ? t('installation.progress.finish') : t('installation.progress.close')
+            "
           />
         </div>
       </div>

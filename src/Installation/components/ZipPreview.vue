@@ -11,6 +11,7 @@ import RadioButton from 'primevue/radiobutton'
 import Tree from 'primevue/tree'
 import type { TreeNode } from 'primevue/treenode'
 import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 // Store setup
 const settingsStore = useSettingsStore()
@@ -36,11 +37,17 @@ interface CustomTreeNode extends TreeNode {
   containsExecutable?: boolean
 }
 
+const { t } = useI18n()
+
 // Constants
 const FILTER_MODES = {
-  exe: { value: 'exe', label: '.exe Only', icon: 'mir terminal' },
-  executable: { value: 'executable', label: 'Executable Files', icon: 'mir code' },
-  all: { value: 'all', label: 'All Files', icon: 'mir description' },
+  exe: { value: 'exe', label: t('installation.preview.filter.exe'), icon: 'mir terminal' },
+  executable: {
+    value: 'executable',
+    label: t('installation.preview.filter.executable'),
+    icon: 'mir code',
+  },
+  all: { value: 'all', label: t('installation.preview.filter.all'), icon: 'mir description' },
 }
 
 // Props & emits
@@ -399,7 +406,7 @@ onMounted(() => {
       <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-1 flex-1 min-w-0">
           <span class="mir folder_zip text-lg opacity-80"></span>
-          <span class="text-base font-medium">Files in Archive</span>
+          <span class="text-base font-medium">{{ t('installation.preview.title') }}</span>
         </div>
         <div class="flex gap-1 ml-2 shrink-0">
           <Button
@@ -407,7 +414,7 @@ onMounted(() => {
             class="p-1 h-6 min-w-0 hover:bg-surface-100 dark:hover:bg-surface-600"
             severity="secondary"
             :disabled="isExpanding"
-            v-tooltip.bottom="'Expand All'"
+            v-tooltip.bottom="t('installation.preview.expand_all')"
             @click="expandAll"
             :icon="isExpanding ? 'mir progress_activity' : 'mir unfold_more'"
           />
@@ -416,7 +423,7 @@ onMounted(() => {
             class="p-1 h-6 min-w-0 hover:bg-surface-100 dark:hover:bg-surface-600"
             severity="secondary"
             :disabled="isCollapsing"
-            v-tooltip.bottom="'Collapse All'"
+            v-tooltip.bottom="t('installation.preview.collapse_all')"
             @click="collapseAll"
             :icon="isCollapsing ? 'mir progress_activity' : 'mir unfold_less'"
           />
@@ -444,7 +451,9 @@ onMounted(() => {
           class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2"
         >
           <span class="mir folder_off text-4xl text-surface-400 dark:text-surface-600"></span>
-          <p class="text-sm text-surface-600 dark:text-surface-400">No files found</p>
+          <p class="text-sm text-surface-600 dark:text-surface-400">
+            {{ t('installation.preview.no_files') }}
+          </p>
         </div>
       </div>
 
@@ -475,10 +484,16 @@ onMounted(() => {
       v-if="props.detailsLoading"
       class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-2 transition-all duration-300"
     >
-      <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">Reading Archive</h3>
+      <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">
+        {{ t('installation.preview.reading_archive') }}
+      </h3>
       <ProgressBar :mode="progressMode" :value="loadingProgress" class="w-40" />
       <p class="text-sm text-surface-600 dark:text-surface-400">
-        {{ loadingProgress === 100 ? 'Completed' : 'Loading...' }}
+        {{
+          loadingProgress === 100
+            ? t('installation.preview.completed')
+            : t('installation.preview.loading')
+        }}
       </p>
     </div>
   </Panel>
