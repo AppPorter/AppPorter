@@ -40,7 +40,7 @@ async function selectZipFile() {
   <!-- Main Selection Panel -->
   <Panel
     class="w-full max-w-3xl m-auto shadow-sm border border-surface-200 dark:border-surface-700 h-52"
-    header="Select Installation Package"
+    :header="t('installation.title')"
   >
     <!-- Header Section -->
     <template #header>

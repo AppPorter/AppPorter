@@ -1,26 +1,21 @@
 import '@/assets/main.css'
-
-import { createPinia } from 'pinia'
-import { createApp } from 'vue'
-
 import Main from '@/Main.vue'
 import { setupI18n } from '@/plugins/i18n'
 import router, { setupRouterGuards } from '@/plugins/router'
 import { useSettingsStore } from '@/stores/settings'
-
-import Aura from '@primeuix/themes/aura'
-import PrimeVue from 'primevue/config'
-import ConfirmationService from 'primevue/confirmationservice'
-import ToastService from 'primevue/toastservice'
-
 import { definePreset } from '@primeuix/themes'
+import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
 import { exit } from '@tauri-apps/plugin-process'
-
 import Color from 'color'
+import { createPinia } from 'pinia'
+import PrimeVue from 'primevue/config'
+import ConfirmationService from 'primevue/confirmationservice'
+import ToastService from 'primevue/toastservice'
+import { createApp } from 'vue'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -29,36 +24,25 @@ export const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'
 
 // Configure tray menu with basic actions
-const menu = await Menu.new({
-  items: [
-    {
-      id: 'open',
-      text: 'Open',
-      action: () => {
-        window.show()
-        window.unminimize()
-        window.setFocus()
+const createTrayMenu = (t: (key: string) => string) => {
+  return Menu.new({
+    items: [
+      {
+        id: 'open',
+        text: t('system.menu.open'),
+        action: () => {
+          window.show()
+          window.unminimize()
+          window.setFocus()
+        },
       },
-    },
-    {
-      id: 'quit',
-      text: 'Quit',
-      action: () => exit(0),
-    },
-  ],
-})
-
-const trayOptions = {
-  icon,
-  menu,
-  menuOnLeftClick: false,
-  action: (event: TrayIconEvent) => {
-    if (event.type === 'Click' && event.button === 'Left' && event.buttonState === 'Down') {
-      window.show()
-      window.unminimize()
-      window.setFocus()
-    }
-  },
+      {
+        id: 'quit',
+        text: t('system.menu.quit'),
+        action: () => exit(0),
+      },
+    ],
+  })
 }
 
 // Hide window instead of closing
@@ -113,6 +97,20 @@ app.use(PrimeVue, {
 
 // Initialize tray if needed
 if (settingsStore.minimize_to_tray_on_close) {
+  const { t } = i18n.global
+  const menu = await createTrayMenu(t)
+  const trayOptions = {
+    icon,
+    menu,
+    menuOnLeftClick: false,
+    action: (event: TrayIconEvent) => {
+      if (event.type === 'Click' && event.button === 'Left' && event.buttonState === 'Down') {
+        window.show()
+        window.unminimize()
+        window.setFocus()
+      }
+    },
+  }
   await TrayIcon.new(trayOptions).catch(console.error)
 }
 

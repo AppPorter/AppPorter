@@ -18,10 +18,12 @@ import SplitButton from 'primevue/splitbutton'
 import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
+import { useI18n } from 'vue-i18n'
 
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()
 const toast = useToast()
+const { t } = useI18n()
 
 // Global toast service for error handling
 const errorToast = {
@@ -35,7 +37,7 @@ const errorToast = {
       try {
         errorMessage = JSON.stringify(error)
       } catch {
-        errorMessage = 'Unknown error object'
+        errorMessage = t('system.error.unknown')
       }
     } else {
       errorMessage = String(error)
@@ -48,7 +50,7 @@ const errorToast = {
 
     toast.add({
       severity: 'error',
-      summary: 'Error',
+      summary: t('system.error.title'),
       detail: errorMessage,
       life: 0, // Set to 0 so it will never auto-dismiss
     })
@@ -65,21 +67,17 @@ onMounted(async () => {
   if (settingsStore.first_run) {
     confirm.require({
       group: 'disclaimer',
-      header: 'Disclaimer',
-      message:
-        'Thank you for choosing AppPorter. Please note that this software is provided "as is" without warranty of any kind. ' +
-        'By using this application, you acknowledge that you are responsible for your actions when packaging and distributing software. ' +
-        'Please ensure you have proper permissions to package and distribute any third-party applications. ' +
-        'The developers of AppPorter are not responsible for any misuse of this tool.',
+      header: t('system.disclaimer.title'),
+      message: t('system.disclaimer.message'),
       icon: 'mir info',
-      acceptLabel: 'I understand and agree',
+      acceptLabel: t('system.disclaimer.accept'),
       acceptProps: {
-        label: 'I understand and agree',
+        label: t('system.disclaimer.accept'),
         icon: 'mir check',
         severity: 'primary',
       },
       rejectProps: {
-        label: 'Exit',
+        label: t('system.disclaimer.exit'),
         icon: 'mir close',
         severity: 'secondary',
         outlined: true,
@@ -88,8 +86,8 @@ onMounted(async () => {
         await settingsStore.acknowledgeFirstRun()
         toast.add({
           severity: 'info',
-          summary: 'Welcome to AppPorter',
-          detail: 'Thank you for acknowledging the disclaimer.',
+          summary: t('system.welcome.title'),
+          detail: t('system.welcome.message'),
           life: 3000,
         })
       },
@@ -117,16 +115,16 @@ function handleMinimize() {
 const handleAdminPrompt = (event) => {
   confirm.require({
     target: event.currentTarget,
-    message: 'Do you want to restart the application with administrator privileges?',
+    message: t('system.admin.prompt'),
     group: 'admin_popup',
     icon: 'mir warning',
     rejectProps: {
-      label: 'Cancel',
+      label: t('system.admin.dismiss'),
       severity: 'secondary',
       outlined: true,
     },
     acceptProps: {
-      label: 'Yes',
+      label: t('system.disclaimer.accept'),
     },
     accept: () => {
       if (!settingsStore.debug) {
@@ -138,9 +136,8 @@ const handleAdminPrompt = (event) => {
         })
         toast.add({
           severity: 'success',
-          summary: 'Restart to apply the change',
-          detail:
-            'You have to restart the application to run the application with administrator privileges.',
+          summary: t('system.admin.success'),
+          detail: t('system.admin.restart_message'),
           life: 3000,
         })
       }
@@ -151,7 +148,7 @@ const handleAdminPrompt = (event) => {
 
 const warningActions = [
   {
-    label: 'Dismiss Once',
+    label: t('system.admin.dismiss'),
     command: () => {
       dismissWarning.value = true
     },
@@ -161,18 +158,18 @@ const warningActions = [
 // Navigation menu configuration
 const menuItems = [
   {
-    label: 'Installation',
+    label: t('system.menu.installation'),
     icon: 'mir install_desktop',
     command: () => goTo('/'),
   },
   {
-    label: 'AppList',
+    label: t('system.menu.applist'),
     icon: 'mir apps',
     command: () => goTo('/AppList'),
   },
   { separator: true },
   {
-    label: 'Settings',
+    label: t('system.menu.settings'),
     icon: 'mir settings',
     command: () => goTo('/Settings'),
     class: 'absolute right-7',
@@ -183,24 +180,24 @@ const menuItems = [
 const contextMenu = ref()
 const editMenuItems = ref<MenuItem[]>([
   {
-    label: 'Cut',
+    label: t('system.edit.cut'),
     icon: 'mir content_cut',
     command: () => document.execCommand('cut'),
   },
   {
-    label: 'Copy',
+    label: t('system.edit.copy'),
     icon: 'mir content_copy',
     command: () => document.execCommand('copy'),
   },
   {
-    label: 'Paste',
+    label: t('system.edit.paste'),
     icon: 'mir content_paste',
     command: async () =>
       document.execCommand('insertText', false, await navigator.clipboard.readText()),
   },
   { separator: true },
   {
-    label: 'Select All',
+    label: t('system.edit.select_all'),
     icon: 'mir select_all',
     command: () => document.execCommand('selectAll'),
   },
@@ -317,12 +314,11 @@ onMounted(() => {
           v-if="!settingsStore.elevated && !dismissWarning"
           icon="mir warning"
         >
-          Application is not running with administrator privileges. Some features may be
-          unavailable.
+          {{ t('system.admin.warning') }}
           <ConfirmPopup group="admin_popup"></ConfirmPopup>
           <SplitButton
             @click="handleAdminPrompt($event)"
-            label="Solve"
+            :label="t('system.admin.solve')"
             outlined
             severity="warn"
             class="z-40 left-2"

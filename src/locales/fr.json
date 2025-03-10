@@ -37,14 +37,41 @@
     "next": "Suivant",
     "select_placeholder": "Choisissez un fichier package..."
   },
-  "languages": {
-    "en": "Anglais",
-    "zh": "Chinois",
-    "fr": "Français",
-    "de": "Allemand",
-    "es": "Espagnol",
-    "ja": "Japonais",
-    "ko": "Coréen",
-    "ru": "Russe"
+  "system": {
+    "disclaimer": {
+      "title": "Avis de non-responsabilité",
+      "message": "Merci d'avoir choisi AppPorter. Veuillez noter que ce logiciel est fourni \"tel quel\", sans aucune garantie. En utilisant cette application, vous reconnaissez être responsable de vos propres actions lors de l'empaquetage et de la distribution de logiciels. Assurez-vous d'avoir les autorisations appropriées pour empaqueter et distribuer toute application tierce. Les développeurs d'AppPorter n'assument aucune responsabilité pour toute utilisation abusive de cet outil.",
+      "accept": "Je comprends et j'accepte",
+      "exit": "Quitter"
+    },
+    "error": {
+      "title": "Erreur",
+      "unknown": "Objet d'erreur inconnu"
+    },
+    "welcome": {
+      "title": "Bienvenue sur AppPorter",
+      "message": "Merci d'avoir confirmé l'avis de non-responsabilité."
+    },
+    "admin": {
+      "warning": "L'application ne s'exécute pas avec les privilèges administrateur. Certaines fonctionnalités peuvent être indisponibles.",
+      "prompt": "Voulez-vous redémarrer l'application avec les privilèges administrateur ?",
+      "solve": "Résoudre",
+      "dismiss": "Ignorer pour l'instant",
+      "success": "Effectif après le redémarrage",
+      "restart_message": "Vous devez redémarrer l'application pour l'exécuter avec les privilèges administrateur."
+    },
+    "menu": {
+      "installation": "Installation",
+      "applist": "Liste des applications",
+      "settings": "Paramètres",
+      "open": "Ouvrir",
+      "quit": "Quitter"
+    },
+    "edit": {
+      "cut": "Couper",
+      "copy": "Copier",
+      "paste": "Coller",
+      "select_all": "Tout sélectionner"
+    }
   }
 }

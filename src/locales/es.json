@@ -37,14 +37,41 @@
     "next": "Siguiente",
     "select_placeholder": "Elegir un archivo de paquete..."
   },
-  "languages": {
-    "en": "Inglés",
-    "zh": "Chino",
-    "fr": "Francés",
-    "de": "Alemán",
-    "es": "Español",
-    "ja": "Japonés",
-    "ko": "Coreano",
-    "ru": "Ruso"
+  "system": {
+    "disclaimer": {
+      "title": "Aviso Legal",
+      "message": "Gracias por elegir AppPorter. Tenga en cuenta que este software se proporciona \"tal cual\", sin ningún tipo de garantía. Al utilizar esta aplicación, usted reconoce que es responsable de sus propias acciones al empaquetar y distribuir software. Asegúrese de tener los permisos apropiados para empaquetar y distribuir cualquier aplicación de terceros. Los desarrolladores de AppPorter no asumen ninguna responsabilidad por el mal uso de esta herramienta.",
+      "accept": "Entiendo y acepto",
+      "exit": "Salir"
+    },
+    "error": {
+      "title": "Error",
+      "unknown": "Objeto de error desconocido"
+    },
+    "welcome": {
+      "title": "Bienvenido a AppPorter",
+      "message": "Gracias por confirmar el aviso legal."
+    },
+    "admin": {
+      "warning": "La aplicación no se está ejecutando con privilegios de administrador. Algunas funciones pueden no estar disponibles.",
+      "prompt": "¿Desea reiniciar la aplicación con privilegios de administrador?",
+      "solve": "Resolver",
+      "dismiss": "Ignorar por ahora",
+      "success": "Efectivo después de reiniciar",
+      "restart_message": "Necesita reiniciar la aplicación para ejecutarla con privilegios de administrador."
+    },
+    "menu": {
+      "installation": "Instalación",
+      "applist": "Lista de Apps",
+      "settings": "Configuración",
+      "open": "Abrir",
+      "quit": "Salir"
+    },
+    "edit": {
+      "cut": "Cortar",
+      "copy": "Copiar",
+      "paste": "Pegar",
+      "select_all": "Seleccionar todo"
+    }
   }
 }

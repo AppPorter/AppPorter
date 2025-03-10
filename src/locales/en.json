@@ -37,14 +37,41 @@
     "next": "Next",
     "select_placeholder": "Choose a package file..."
   },
-  "languages": {
-    "en": "English",
-    "zh": "Chinese",
-    "fr": "French",
-    "de": "German",
-    "es": "Spanish",
-    "ja": "Japanese",
-    "ko": "Korean",
-    "ru": "Russian"
+  "system": {
+    "disclaimer": {
+      "title": "Disclaimer",
+      "message": "Thank you for choosing AppPorter. Please note that this software is provided \"as is\" without any warranty. By using this application, you acknowledge that you are responsible for your own actions when packaging and distributing software. Please ensure you have appropriate permissions to package and distribute any third-party applications. The developers of AppPorter assume no responsibility for any misuse of this tool.",
+      "accept": "I understand and agree",
+      "exit": "Exit"
+    },
+    "error": {
+      "title": "Error",
+      "unknown": "Unknown error object"
+    },
+    "welcome": {
+      "title": "Welcome to AppPorter",
+      "message": "Thank you for confirming the disclaimer."
+    },
+    "admin": {
+      "warning": "Application is not running with administrator privileges. Some features may be unavailable.",
+      "prompt": "Would you like to restart the application with administrator privileges?",
+      "solve": "Solve",
+      "dismiss": "Dismiss for now",
+      "success": "Effective after restart",
+      "restart_message": "You need to restart the application to run it with administrator privileges."
+    },
+    "menu": {
+      "installation": "Installation",
+      "applist": "App List",
+      "settings": "Settings",
+      "open": "Open",
+      "quit": "Quit"
+    },
+    "edit": {
+      "cut": "Cut",
+      "copy": "Copy",
+      "paste": "Paste",
+      "select_all": "Select All"
+    }
   }
 }

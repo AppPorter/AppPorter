@@ -37,14 +37,41 @@
     "next": "Weiter",
     "select_placeholder": "Wählen Sie eine Paketdatei..."
   },
-  "languages": {
-    "en": "Englisch",
-    "zh": "Chinesisch",
-    "fr": "Französisch",
-    "de": "Deutsch",
-    "es": "Spanisch",
-    "ja": "Japanisch",
-    "ko": "Koreanisch",
-    "ru": "Russisch"
+  "system": {
+    "disclaimer": {
+      "title": "Haftungsausschluss",
+      "message": "Vielen Dank, dass Sie sich für AppPorter entschieden haben. Bitte beachten Sie, dass diese Software \"wie besehen\" und ohne jegliche Garantie bereitgestellt wird. Mit der Nutzung dieser Anwendung erkennen Sie an, dass Sie für Ihre eigenen Handlungen beim Verpacken und Verteilen von Software verantwortlich sind. Bitte stellen Sie sicher, dass Sie über die entsprechenden Berechtigungen zum Verpacken und Verteilen von Drittanbieter-Anwendungen verfügen. Die Entwickler von AppPorter übernehmen keine Verantwortung für den Missbrauch dieses Tools.",
+      "accept": "Ich verstehe und stimme zu",
+      "exit": "Beenden"
+    },
+    "error": {
+      "title": "Fehler",
+      "unknown": "Unbekanntes Fehlerobjekt"
+    },
+    "welcome": {
+      "title": "Willkommen bei AppPorter",
+      "message": "Danke für die Bestätigung des Haftungsausschlusses."
+    },
+    "admin": {
+      "warning": "Die Anwendung läuft nicht mit Administratorrechten. Einige Funktionen sind möglicherweise nicht verfügbar.",
+      "prompt": "Möchten Sie die Anwendung mit Administratorrechten neu starten?",
+      "solve": "Beheben",
+      "dismiss": "Vorerst ignorieren",
+      "success": "Wird nach Neustart wirksam",
+      "restart_message": "Sie müssen die Anwendung neu starten, um sie mit Administratorrechten auszuführen."
+    },
+    "menu": {
+      "installation": "Installation",
+      "applist": "App-Liste",
+      "settings": "Einstellungen",
+      "open": "Öffnen",
+      "quit": "Beenden"
+    },
+    "edit": {
+      "cut": "Ausschneiden",
+      "copy": "Kopieren",
+      "paste": "Einfügen",
+      "select_all": "Alles auswählen"
+    }
   }
 }

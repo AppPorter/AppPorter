@@ -37,14 +37,41 @@
     "next": "下一步",
     "select_placeholder": "选择一个包文件..."
   },
-  "languages": {
-    "en": "英语",
-    "zh": "中文",
-    "fr": "法语",
-    "de": "德语",
-    "es": "西班牙语",
-    "ja": "日语",
-    "ko": "韩语",
-    "ru": "俄语"
+  "system": {
+    "disclaimer": {
+      "title": "免责声明",
+      "message": "感谢您选择 AppPorter。请注意，本软件按\"原样\"提供，不提供任何形式的保证。使用此应用程序即表示您承认在打包和分发软件时对自己的行为负责。请确保您有适当的权限打包和分发任何第三方应用程序。AppPorter 的开发者对此工具的任何滥用不承担责任。",
+      "accept": "我理解并同意",
+      "exit": "退出"
+    },
+    "error": {
+      "title": "错误",
+      "unknown": "未知错误对象"
+    },
+    "welcome": {
+      "title": "欢迎使用 AppPorter",
+      "message": "感谢您确认免责声明。"
+    },
+    "admin": {
+      "warning": "应用程序未以管理员权限运行。某些功能可能不可用。",
+      "prompt": "是否要以管理员权限重启应用程序？",
+      "solve": "解决",
+      "dismiss": "暂时忽略",
+      "success": "重启后生效",
+      "restart_message": "您需要重启应用程序以使用管理员权限运行。"
+    },
+    "menu": {
+      "installation": "安装",
+      "applist": "应用列表",
+      "settings": "设置",
+      "open": "打开",
+      "quit": "退出"
+    },
+    "edit": {
+      "cut": "剪切",
+      "copy": "复制",
+      "paste": "粘贴",
+      "select_all": "全选"
+    }
   }
 }
