@@ -17,6 +17,6 @@
 
 ### Fix
 
-- [ ] window control button hover effect
-- [ ] border of zip preview panel
+- [ ] Optimize UI for some languages
+- [ ] Border of zip preview panel
 - [ ] x-scrollbar of zip preview panel
