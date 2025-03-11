@@ -37,46 +37,48 @@ async function selectZipFile() {
 </script>
 
 <template>
-  <Panel class="w-full max-w-3xl mx-auto shadow-sm h-52">
-    <template #header>
-      <div class="flex items-center gap-2">
-        <span class="mir folder_zip text-xl"></span>
-        <div>
-          <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
-          <p class="text-xs mt-0.5">{{ t('installation.description') }}</p>
+  <div class="flex items-center justify-center h-full w-full">
+    <Panel class="w-full max-w-3xl shadow-sm h-52 px-4">
+      <template #header>
+        <div class="flex items-center gap-2">
+          <span class="mir folder_zip text-xl"></span>
+          <div>
+            <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
+            <p class="text-xs mt-0.5">{{ t('installation.description') }}</p>
+          </div>
+        </div>
+      </template>
+
+      <!-- Content Section -->
+      <div class="space-y-6">
+        <!-- File Selection Input -->
+        <div class="flex items-center gap-2">
+          <InputText
+            v-model="zip_path"
+            :placeholder="t('installation.select_placeholder')"
+            class="flex-1 text-sm h-9"
+          />
+          <Button
+            @click="selectZipFile"
+            severity="secondary"
+            class="h-9 px-4"
+            icon="mir folder_open"
+            :label="t('installation.browse')"
+          />
+        </div>
+
+        <!-- Navigation Button -->
+        <div class="flex justify-end">
+          <Button
+            @click="goTo('/Installation/Config')"
+            :disabled="!zip_path"
+            severity="primary"
+            class="h-9 px-6"
+            icon="mir navigate_next"
+            :label="t('installation.next')"
+          />
         </div>
       </div>
-    </template>
-
-    <!-- Content Section -->
-    <div class="space-y-6">
-      <!-- File Selection Input -->
-      <div class="flex items-center gap-2">
-        <InputText
-          v-model="zip_path"
-          :placeholder="t('installation.select_placeholder')"
-          class="flex-1 text-sm h-9"
-        />
-        <Button
-          @click="selectZipFile"
-          severity="secondary"
-          class="h-9 px-4"
-          icon="mir folder_open"
-          :label="t('installation.browse')"
-        />
-      </div>
-
-      <!-- Navigation Button -->
-      <div class="flex justify-end">
-        <Button
-          @click="goTo('/Installation/Config')"
-          :disabled="!zip_path"
-          severity="primary"
-          class="h-9 px-6"
-          icon="mir navigate_next"
-          :label="t('installation.next')"
-        />
-      </div>
-    </div>
-  </Panel>
+    </Panel>
+  </div>
 </template>
