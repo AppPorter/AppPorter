@@ -4,6 +4,25 @@ use serde::{Deserialize, Serialize};
 use std::error::Error;
 use tokio::process::Command;
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum LanguageType {
+    En,
+    Zh,
+    Fr,
+    De,
+    Es,
+    Ja,
+    Ko,
+    Ru,
+}
+
+impl Default for LanguageType {
+    fn default() -> Self {
+        Self::En
+    }
+}
+
 // Add a custom enum for theme
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(untagged)]
@@ -21,7 +40,7 @@ impl Default for ThemeType {
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Settings {
     #[serde(default)]
-    pub language: String,
+    pub language: LanguageType,
     #[serde(default)]
     pub theme: ThemeType,
     #[serde(default)]
@@ -82,7 +101,7 @@ impl ConfigFile for Settings {
         let username = std::env::var("USERNAME")?;
 
         let default_settings = Self {
-            language: String::from("en"),
+            language: LanguageType::En,
             theme: ThemeType::System("system".to_string()),
             minimize_to_tray_on_close: false,
             first_run: true,
