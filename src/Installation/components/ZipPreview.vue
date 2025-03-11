@@ -402,14 +402,14 @@ onMounted(() => {
     <!-- Header -->
     <template #header>
       <div class="flex justify-between items-center w-full">
-        <div class="flex items-center gap-1 flex-1 min-w-0">
+        <div class="flex items-center gap-1">
           <span class="mir folder_zip text-lg"></span>
           <span class="text-base font-medium">{{ t('installation.preview.title') }}</span>
         </div>
-        <div class="flex gap-1 ml-2 shrink-0">
+        <div class="flex gap-1 ml-2">
           <Button
             type="button"
-            class="p-1 h-6 min-w-0"
+            class="p-1 h-6"
             severity="secondary"
             :disabled="isExpanding"
             v-tooltip.bottom="t('installation.preview.expand_all')"
@@ -418,7 +418,7 @@ onMounted(() => {
           />
           <Button
             type="button"
-            class="p-1 h-6 min-w-0"
+            class="p-1 h-6"
             severity="secondary"
             :disabled="isCollapsing"
             v-tooltip.bottom="t('installation.preview.collapse_all')"
@@ -480,7 +480,7 @@ onMounted(() => {
     <!-- Loading Overlay -->
     <div
       v-if="props.detailsLoading"
-      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2 transition-all duration-300"
+      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.preview.reading_archive') }}

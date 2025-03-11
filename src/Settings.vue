@@ -62,9 +62,7 @@ watch(
     <!-- Header Section -->
     <template #header>
       <div class="flex items-center gap-2">
-        <div class="p-1 rounded-md">
-          <span class="mir settings text-xl"></span>
-        </div>
+        <span class="mir settings text-xl"></span>
         <div>
           <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
           <p class="text-xs mt-0.5">{{ t('settings.description') }}</p>
@@ -72,10 +70,9 @@ watch(
       </div>
     </template>
 
-    <!-- Content Section -->
     <div class="space-y-2">
       <!-- Basic Settings -->
-      <Panel header="Basic Settings">
+      <Panel>
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir tune"></span>
@@ -111,7 +108,7 @@ watch(
       </Panel>
 
       <!-- Installation Settings -->
-      <Panel header="Installation Settings">
+      <Panel>
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir install_desktop"></span>

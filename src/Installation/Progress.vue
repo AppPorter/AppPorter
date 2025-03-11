@@ -143,14 +143,7 @@ defineOptions({
         <div class="flex items-center justify-between py-1 w-full min-w-0">
           <!-- Progress Title -->
           <div class="flex items-center gap-2 min-w-0 flex-shrink">
-            <div
-              class="p-1.5 rounded-md shrink-0"
-              :class="[
-                isFinished
-                  ? 'bg-green-50 dark:bg-green-900/20'
-                  : 'bg-primary-50 dark:bg-primary-900/20',
-              ]"
-            >
+            <div class="p-1.5 rounded-md shrink-0">
               <span
                 class="text-xl mir"
                 :class="[
@@ -194,9 +187,11 @@ defineOptions({
                 alt="App Icon"
               />
               <span v-else class="mir apps text-2xl"></span>
+              <!-- Progress Section -->
             </div>
           </div>
         </div>
+        <!-- Progress Section -->
       </template>
 
       <div class="space-y-4">
@@ -208,7 +203,6 @@ defineOptions({
           <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
         </div>
 
-        <!-- Final Executable Path Card -->
         <Card v-if="isFinished" class="shadow-none border">
           <template #title>
             <div class="flex items-center justify-between w-full py-1">
@@ -235,9 +229,7 @@ defineOptions({
           </template>
         </Card>
 
-        <!-- Installation Details Grid -->
         <div class="grid grid-cols-2 gap-3">
-          <!-- Installation Settings Card -->
           <Card class="shadow-none border">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
@@ -286,7 +278,6 @@ defineOptions({
             </template>
           </Card>
 
-          <!-- Package Information Card -->
           <Card class="shadow-none border">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
@@ -330,7 +321,6 @@ defineOptions({
           </Card>
         </div>
 
-        <!-- Action Buttons -->
         <div class="flex justify-end">
           <Button
             v-if="canClose"

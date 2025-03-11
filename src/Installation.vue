@@ -37,14 +37,10 @@ async function selectZipFile() {
 </script>
 
 <template>
-  <!-- Main Selection Panel -->
-  <Panel class="w-full max-w-3xl m-auto shadow-sm h-52" :header="t('installation.title')">
-    <!-- Header Section -->
+  <Panel class="w-full max-w-3xl mx-auto shadow-sm h-52">
     <template #header>
       <div class="flex items-center gap-2">
-        <div class="p-1 rounded-md">
-          <span class="mir folder_zip text-xl"></span>
-        </div>
+        <span class="mir folder_zip text-xl"></span>
         <div>
           <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
           <p class="text-xs mt-0.5">{{ t('installation.description') }}</p>

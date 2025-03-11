@@ -74,7 +74,7 @@ watchEffect(() => {
 <template>
   <Panel class="shadow-sm border">
     <template #header>
-      <div class="flex flex-col py-0">
+      <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
           <span class="mir settings text-lg"></span>
           <h2 class="text-base font-medium">
@@ -91,7 +91,7 @@ watchEffect(() => {
     <div class="space-y-2 p-2">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
-        <span class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</span>
+        <label class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</label>
         <div class="flex items-center gap-2 px-2 py-1 rounded-lg">
           <span class="text-sm">{{ t('installation.config.all_users') }}</span>
           <ToggleSwitch
@@ -104,8 +104,8 @@ watchEffect(() => {
       </div>
 
       <!-- Install Path -->
-      <div class="flex items-center gap-2 w-full">
-        <span class="w-24 text-sm font-medium">{{ t('installation.config.install_path') }}</span>
+      <div class="flex items-center gap-2">
+        <label class="w-24 text-sm font-medium">{{ t('installation.config.install_path') }}</label>
         <div class="flex-1 flex gap-2">
           <InputText
             v-model="install_path"
@@ -126,7 +126,9 @@ watchEffect(() => {
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <span class="w-24 mt-1 text-sm font-medium">{{ t('installation.config.shortcuts') }}</span>
+        <label class="w-24 mt-1 text-sm font-medium">{{
+          t('installation.config.shortcuts')
+        }}</label>
         <div class="space-y-1 p-1.5 rounded-lg flex-1">
           <div class="flex items-center gap-2">
             <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />

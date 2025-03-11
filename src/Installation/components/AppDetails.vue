@@ -72,18 +72,18 @@ function clearIcon() {
 </script>
 
 <template>
-  <Panel class="shadow-sm border relative overflow-hidden">
+  <Panel class="shadow-sm border relative">
     <template #header>
-      <div class="flex justify-between items-center w-full py-0">
+      <div class="flex justify-between items-center w-full">
         <div class="flex items-center gap-1.5">
-          <span class="mir apps text-lg"></span>
+          <span class="mir apps"></span>
           <h2 class="text-base font-medium">
             {{ t('installation.app_details.title') }}
           </h2>
         </div>
         <Button
           :severity="autoConfirmed ? 'success' : 'secondary'"
-          class="h-8 text-sm min-w-[6.5rem] transition-all duration-200"
+          class="h-8 min-w-[6.5rem] transition-all duration-200"
           :disabled="detailsLoading || executable_path === ''"
           @click="confirmSelection"
           :icon="autoConfirmed ? 'mir verified' : 'mir auto_awesome'"
@@ -97,7 +97,6 @@ function clearIcon() {
     </template>
 
     <div class="space-y-3 p-3">
-      <!-- App Icon -->
       <div class="flex items-center gap-2">
         <div class="w-24">
           <span class="text-sm font-medium">{{ t('installation.app_details.icon') }}</span>
@@ -133,7 +132,6 @@ function clearIcon() {
         </div>
       </div>
 
-      <!-- App Name -->
       <div class="flex items-center gap-2">
         <div class="w-24">
           <span class="text-sm font-medium">{{ t('installation.app_details.name') }}</span>
@@ -149,7 +147,6 @@ function clearIcon() {
         </div>
       </div>
 
-      <!-- Publisher -->
       <div class="flex items-center gap-2">
         <div class="w-24">
           <span class="text-sm font-medium">{{ t('installation.app_details.publisher') }}</span>
@@ -166,7 +163,6 @@ function clearIcon() {
         </div>
       </div>
 
-      <!-- Version -->
       <div class="flex items-center gap-2">
         <div class="w-24">
           <span class="text-sm font-medium">{{ t('installation.app_details.version') }}</span>
@@ -184,10 +180,9 @@ function clearIcon() {
       </div>
     </div>
 
-    <!-- Loading Overlay -->
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-[0.5rem] transition-all duration-300"
+      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-[0.5rem]"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.app_details.loading_details') }}

@@ -129,7 +129,6 @@ async function handleInstallClick() {
 </script>
 
 <template>
-  <!-- Left Column: Options & App Details -->
   <div class="flex-1 min-w-[25rem] space-y-2">
     <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
     <AppDetails
@@ -140,7 +139,6 @@ async function handleInstallClick() {
     />
   </div>
 
-  <!-- Right Column: ZIP Preview -->
   <div class="min-w-[22rem] w-[40%] h-[calc(100vh-10.625rem)]">
     <ZipPreview
       :zip-path="zip_path"
@@ -150,12 +148,10 @@ async function handleInstallClick() {
     />
   </div>
 
-  <!-- Back Button -->
   <div class="fixed bottom-4 left-6 z-40">
     <Button
       severity="secondary"
-      size="large"
-      class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
+      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
       @click="handleBackClick"
       icon="mir arrow_back"
       :label="t('installation.config.back')"
@@ -163,12 +159,10 @@ async function handleInstallClick() {
     />
   </div>
 
-  <!-- Installation Button -->
   <div class="fixed bottom-4 right-6 z-40">
     <Button
       severity="primary"
-      size="large"
-      class="w-28 h-8 text-sm shadow-lg hover:shadow-xl transition-all duration-300"
+      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
       @click="handleInstallClick"
       icon="mir download"
       :label="t('installation.config.install')"
