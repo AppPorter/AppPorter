@@ -66,12 +66,8 @@ watch(
           <span class="mir settings text-xl"></span>
         </div>
         <div>
-          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
-            {{ t('settings.title') }}
-          </h2>
-          <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
-            {{ t('settings.description') }}
-          </p>
+          <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
+          <p class="text-xs mt-0.5">{{ t('settings.description') }}</p>
         </div>
       </div>
     </template>

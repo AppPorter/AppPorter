@@ -138,9 +138,7 @@ defineOptions({
 
 <template>
   <div class="p-1.5 pb-12 flex items-center w-full">
-    <Panel
-      class="border border-surface-200 dark:border-surface-700 shadow-sm max-w-5xl w-full mx-auto"
-    >
+    <Panel class="shadow-sm border max-w-5xl w-full mx-auto">
       <template #header>
         <div class="flex items-center justify-between py-1 w-full min-w-0">
           <!-- Progress Title -->
@@ -164,10 +162,10 @@ defineOptions({
               ></span>
             </div>
             <div class="min-w-0 flex-shrink">
-              <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
+              <h2 class="text-lg font-medium">
                 {{ t('installation.progress.title') }}
               </h2>
-              <p class="text-xs text-surface-600 dark:text-surface-400">
+              <p class="text-xs">
                 {{ t('installation.progress.description') }}
               </p>
             </div>
@@ -176,18 +174,18 @@ defineOptions({
           <!-- App Details -->
           <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
             <div class="text-right">
-              <h3 class="text-base font-medium text-surface-900 dark:text-surface-0 leading-none">
+              <h3 class="text-base font-medium leading-none">
                 {{ installationConfig.name }}
               </h3>
-              <p class="text-xs text-surface-600 dark:text-surface-400 mt-1">
+              <p class="text-xs mt-1">
                 {{ installationConfig.version || 'Version N/A' }}
               </p>
-              <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5">
+              <p class="text-xs mt-0.5">
                 {{ installationConfig.publisher || 'Publisher N/A' }}
               </p>
             </div>
             <div
-              class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800 border border-surface-200 dark:border-surface-700"
+              class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800"
             >
               <img
                 v-if="installationConfig.icon"
@@ -195,7 +193,7 @@ defineOptions({
                 class="w-8 h-8 object-contain"
                 alt="App Icon"
               />
-              <span v-else class="mir apps text-2xl text-surface-400 dark:text-surface-600"></span>
+              <span v-else class="mir apps text-2xl"></span>
             </div>
           </div>
         </div>
@@ -204,28 +202,18 @@ defineOptions({
       <div class="space-y-4">
         <!-- Progress Section -->
         <div class="space-y-2">
-          <p
-            class="text-sm"
-            :class="[
-              isFinished
-                ? 'text-green-600 dark:text-green-400'
-                : 'text-surface-600 dark:text-surface-400',
-            ]"
-          >
+          <p class="text-sm" :class="[isFinished ? 'text-green-600 dark:text-green-400' : '']">
             {{ currentStatus }}
           </p>
           <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
         </div>
 
         <!-- Final Executable Path Card -->
-        <Card
-          v-if="isFinished"
-          class="shadow-none border border-surface-200 dark:border-surface-700"
-        >
+        <Card v-if="isFinished" class="shadow-none border">
           <template #title>
             <div class="flex items-center justify-between w-full py-1">
               <div class="flex items-center gap-2">
-                <span class="mir terminal text-surface-600 dark:text-surface-400"></span>
+                <span class="mir terminal"></span>
                 <span class="text-sm font-medium">{{
                   t('installation.progress.installed_location')
                 }}</span>
@@ -250,11 +238,11 @@ defineOptions({
         <!-- Installation Details Grid -->
         <div class="grid grid-cols-2 gap-3">
           <!-- Installation Settings Card -->
-          <Card class="shadow-none border border-surface-200 dark:border-surface-700">
+          <Card class="shadow-none border">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
-                  <span class="mir settings text-surface-600 dark:text-surface-400"></span>
+                  <span class="mir settings"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.install_settings')
                   }}</span>
@@ -277,25 +265,19 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
-                    t('installation.config.install_mode')
-                  }}</span>
+                  <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
                   <p class="text-sm font-medium">
                     {{ getInstallMode(installationConfig.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
-                    t('installation.config.shortcuts')
-                  }}</span>
+                  <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
                   <p class="text-sm font-medium">
                     {{ getShortcutsList(installationConfig) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
-                    t('installation.config.install_path')
-                  }}</span>
+                  <span class="text-sm">{{ t('installation.config.install_path') }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ fullInstallPath }}
                   </p>
@@ -305,11 +287,11 @@ defineOptions({
           </Card>
 
           <!-- Package Information Card -->
-          <Card class="shadow-none border border-surface-200 dark:border-surface-700">
+          <Card class="shadow-none border">
             <template #title>
               <div class="flex items-center justify-between w-full py-1">
                 <div class="flex items-center gap-2">
-                  <span class="mir folder_zip text-surface-600 dark:text-surface-400"></span>
+                  <span class="mir folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.package_info')
                   }}</span>
@@ -332,17 +314,13 @@ defineOptions({
             <template #content>
               <div class="space-y-3 select-text">
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
-                    t('installation.progress.source_archive')
-                  }}</span>
+                  <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm text-surface-600 dark:text-surface-400">{{
-                    t('installation.progress.selected_executable')
-                  }}</span>
+                  <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
                   <p class="text-sm font-medium break-all">
                     {{ installationConfig.executable_path }}
                   </p>

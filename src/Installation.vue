@@ -38,10 +38,7 @@ async function selectZipFile() {
 
 <template>
   <!-- Main Selection Panel -->
-  <Panel
-    class="w-full max-w-3xl m-auto shadow-sm border border-surface-200 dark:border-surface-700 h-52"
-    :header="t('installation.title')"
-  >
+  <Panel class="w-full max-w-3xl m-auto shadow-sm h-52" :header="t('installation.title')">
     <!-- Header Section -->
     <template #header>
       <div class="flex items-center gap-2">
@@ -49,12 +46,8 @@ async function selectZipFile() {
           <span class="mir folder_zip text-xl"></span>
         </div>
         <div>
-          <h2 class="text-lg font-medium text-surface-900 dark:text-surface-0">
-            {{ t('installation.title') }}
-          </h2>
-          <p class="text-xs text-surface-600 dark:text-surface-400 mt-0.5">
-            {{ t('installation.description') }}
-          </p>
+          <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
+          <p class="text-xs mt-0.5">{{ t('installation.description') }}</p>
         </div>
       </div>
     </template>

@@ -72,25 +72,23 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Panel class="shadow-sm border border-surface-200 dark:border-surface-700">
+  <Panel class="shadow-sm border">
     <template #header>
       <div class="flex flex-col py-0">
         <div class="flex items-center gap-1.5">
-          <span class="mir settings text-lg text-surface-600 dark:text-surface-400"></span>
-          <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">
+          <span class="mir settings text-lg"></span>
+          <h2 class="text-base font-medium">
             {{ t('installation.config.installation_options') }}
           </h2>
         </div>
-        <p class="text-xs text-surface-500 dark:text-surface-400 mt-0.5 ml-6">
+        <p class="text-xs mt-0.5 ml-6">
           {{ t('installation.config.selected_file') }}:
           <span class="font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>
 
-    <div
-      class="space-y-2 p-2 bg-gradient-to-b from-transparent to-surface-50/5 dark:to-surface-900/5"
-    >
+    <div class="space-y-2 p-2">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <span class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</span>

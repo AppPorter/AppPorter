@@ -72,14 +72,12 @@ function clearIcon() {
 </script>
 
 <template>
-  <Panel
-    class="shadow-sm border border-surface-200 dark:border-surface-700 relative overflow-hidden"
-  >
+  <Panel class="shadow-sm border relative overflow-hidden">
     <template #header>
       <div class="flex justify-between items-center w-full py-0">
         <div class="flex items-center gap-1.5">
-          <span class="mir apps text-lg text-surface-600 dark:text-surface-400"></span>
-          <h2 class="text-base font-medium text-surface-900 dark:text-surface-0">
+          <span class="mir apps text-lg"></span>
+          <h2 class="text-base font-medium">
             {{ t('installation.app_details.title') }}
           </h2>
         </div>
@@ -102,10 +100,8 @@ function clearIcon() {
       <!-- App Icon -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
-            t('installation.app_details.icon')
-          }}</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">
+          <span class="text-sm font-medium">{{ t('installation.app_details.icon') }}</span>
+          <p class="text-xs">
             {{ t('installation.app_details.icon_optional') }}
           </p>
         </div>
@@ -113,10 +109,10 @@ function clearIcon() {
           <div class="flex items-center gap-2">
             <div class="relative group">
               <div
-                class="w-12 h-12 border border-surface-200 dark:border-surface-700 rounded-lg flex items-center justify-center overflow-hidden bg-surface-50 dark:bg-surface-800"
+                class="w-12 h-12 border rounded-lg flex items-center justify-center overflow-hidden"
               >
                 <img v-if="icon" :src="icon" class="w-12 h-12 object-contain" alt="App Icon" />
-                <span v-else class="mir apps text-2xl text-surface-300 dark:text-surface-600" />
+                <span v-else class="mir apps text-2xl" />
               </div>
               <Button
                 v-if="icon"
@@ -130,7 +126,7 @@ function clearIcon() {
                 <span class="mir close !text-xs" />
               </Button>
             </div>
-            <span v-if="!icon" class="text-xs text-surface-500 dark:text-surface-400">
+            <span v-if="!icon" class="text-xs">
               {{ t('installation.app_details.icon_extract_hint') }}
             </span>
           </div>
@@ -140,9 +136,7 @@ function clearIcon() {
       <!-- App Name -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
-            t('installation.app_details.name')
-          }}</span>
+          <span class="text-sm font-medium">{{ t('installation.app_details.name') }}</span>
         </div>
         <div class="w-full">
           <InputText
@@ -158,10 +152,8 @@ function clearIcon() {
       <!-- Publisher -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
-            t('installation.app_details.publisher')
-          }}</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">
+          <span class="text-sm font-medium">{{ t('installation.app_details.publisher') }}</span>
+          <p class="text-xs">
             {{ t('installation.app_details.publisher_optional') }}
           </p>
         </div>
@@ -177,10 +169,8 @@ function clearIcon() {
       <!-- Version -->
       <div class="flex items-center gap-2">
         <div class="w-24">
-          <span class="text-sm font-medium text-surface-900 dark:text-surface-0">{{
-            t('installation.app_details.version')
-          }}</span>
-          <p class="text-xs text-surface-500 dark:text-surface-400">
+          <span class="text-sm font-medium">{{ t('installation.app_details.version') }}</span>
+          <p class="text-xs">
             {{ t('installation.app_details.version_optional') }}
           </p>
         </div>
@@ -197,13 +187,13 @@ function clearIcon() {
     <!-- Loading Overlay -->
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 backdrop-blur-[0.125rem] bg-surface-0/60 dark:bg-surface-900/60 flex flex-col items-center justify-center gap-[0.5rem] transition-all duration-300"
+      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-[0.5rem] transition-all duration-300"
     >
-      <h3 class="text-base font-semibold text-surface-900 dark:text-surface-0">
+      <h3 class="text-base font-semibold">
         {{ t('installation.app_details.loading_details') }}
       </h3>
       <ProgressBar :mode="progressMode" :value="detailsLoadingProgress" class="w-40" />
-      <p class="text-sm text-surface-600 dark:text-surface-400">
+      <p class="text-sm">
         {{
           [
             t('installation.app_details.preparing'),
