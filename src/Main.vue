@@ -5,7 +5,7 @@ import { goTo } from '@/plugins/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
-import { computed, defineExpose, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 import ConfirmDialog from 'primevue/confirmdialog'
