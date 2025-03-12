@@ -2,6 +2,7 @@
   "name": "app-porter",
   "private": true,
   "version": "0.1.0",
+  "license": "MPL-2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,15 +14,13 @@
     "fmt": "pnpm ffmt && pnpm bfmt",
     "d": "pnpm tauri dev",
     "b": "pnpm tauri build",
-    "check-deps": "depcheck"
+    "dep": "depcheck"
   },
   "dependencies": {
     "@tauri-apps/api": "2.3.0",
     "@tauri-apps/plugin-dialog": "2.2.0",
-    "@tauri-apps/plugin-fs": "2.2.0",
     "@tauri-apps/plugin-process": "2.2.0",
     "color": "5.0.0",
-    "jszip": "3.10.1",
     "pinia": "3.0.1",
     "primevue": "4.3.1",
     "tailwindcss-primeui": "0.5.1",
@@ -45,10 +44,8 @@
     "tailwindcss": "3.4.17",
     "typescript": "5.8.2",
     "unplugin-vue-components": "28.4.1",
-    "unplugin-vue-inspector": "2.3.1",
     "vite": "6.2.1",
     "vite-plugin-vue-devtools": "7.7.2",
-    "vite-plugin-vue-inspector": "5.3.1",
     "vue-tsc": "2.2.8"
   },
   "packageManager": "pnpm@9.15.2+sha512.93e57b0126f0df74ce6bff29680394c0ba54ec47246b9cf321f0121d8d9bb03f750a705f24edc3c1180853afd7c2c3b94196d0a3d53d3e069d9e2793ef11f321"
