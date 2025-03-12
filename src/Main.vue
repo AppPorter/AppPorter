@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { generateMaterialIconsClasses } from '@/assets/material_icons'
+import { generateMaterialIconsClasses } from '@/assets/styles/icons/material_icons'
 import { window as tauriWindow } from '@/main'
-import { goTo } from '@/plugins/router'
+import { goTo } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'

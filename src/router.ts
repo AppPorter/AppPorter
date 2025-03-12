@@ -4,11 +4,11 @@ import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
 // Page components
-import AppList from '@/AppList.vue'
-import Installation from '@/Installation.vue'
-import Installation_Config from '@/Installation/Config.vue'
-import Installation_Progress from '@/Installation/Progress.vue'
-import Settings from '@/Settings.vue'
+import AppList from '@/pages/AppList.vue'
+import Installation_Config from '@/pages/Installation/Config.vue'
+import Installation from '@/pages/Installation/Index.vue'
+import Installation_Progress from '@/pages/Installation/Progress.vue'
+import Settings from '@/pages/Settings.vue'
 
 const Dummy = { render: () => null }
 

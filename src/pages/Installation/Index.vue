@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // Core imports
-import { goTo } from '@/plugins/router'
+import { goTo } from '@/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
