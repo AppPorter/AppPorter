@@ -1,19 +1,27 @@
-# <div align="center"><img style="vertical-align:middle" src="./src/assets/appporter.svg" width="80" height="80"> AppPorter</div>
+<div align="center">
+<img src="./src/assets/appporter.svg" width="128" height="128" alt="AppPorter">
+<h1>AppPorter</h1>
+</div>
 
-## Todo
+## Overview
 
-### Feature
+## Features
 
+- [x] Installation
+- [x] Settings
+- [x] AppPorter-Ext
 - [ ] AppList
 - [ ] Uninstallation
 - [ ] Update
 - [ ] Custom app icon
 
+## Todo
+
 ### Change
 
 - [ ] Replace Powershell commands
-- [ ] Small Window
-- [ ] Fullscreen
+- [ ] Small window support
+- [ ] Maximum window support
 
 ### Fix
 
