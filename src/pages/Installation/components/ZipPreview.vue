@@ -431,27 +431,33 @@ onMounted(() => {
 
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
-      <div class="card h-[54vh] pb-[7.5rem]">
-        <Tree
-          v-if="hasScanned && !isEmpty"
-          :value="fileTree"
-          v-model:selectionKeys="selectedNode"
-          v-model:expandedKeys="expandedKeys"
-          class="h-full overflow-auto"
-          selectionMode="single"
-          toggleOnClick
-          @node-select="handleNodeSelect"
-        />
+      <div class="relative flex-1 min-h-[54vh]">
+        <div class="absolute inset-0 bottom-[7.5rem]">
+          <div
+            class="h-full border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden"
+          >
+            <Tree
+              v-if="hasScanned && !isEmpty"
+              :value="fileTree"
+              v-model:selectionKeys="selectedNode"
+              v-model:expandedKeys="expandedKeys"
+              class="w-full h-full overflow-auto"
+              selectionMode="single"
+              toggleOnClick
+              @node-select="handleNodeSelect"
+            />
 
-        <!-- Empty State -->
-        <div
-          v-if="hasScanned && isEmpty"
-          class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
-        >
-          <span class="mir folder_off text-4xl"></span>
-          <p class="text-sm">
-            {{ t('installation.preview.no_files') }}
-          </p>
+            <!-- Empty State -->
+            <div
+              v-if="hasScanned && isEmpty"
+              class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
+            >
+              <span class="mir folder_off text-4xl"></span>
+              <p class="text-sm">
+                {{ t('installation.preview.no_files') }}
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
