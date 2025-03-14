@@ -431,7 +431,7 @@ onMounted(() => {
 
     <div class="flex-1 flex flex-col p-1">
       <!-- File Tree -->
-      <div class="card h-[54vh]">
+      <div class="card h-[54vh] pb-[7.5rem]">
         <Tree
           v-if="hasScanned && !isEmpty"
           :value="fileTree"
@@ -456,8 +456,8 @@ onMounted(() => {
       </div>
 
       <!-- Filter Controls -->
-      <div class="absolute bottom-2 left-2 w-full">
-        <div class="rounded-md p-2 space-y-1.5">
+      <div class="absolute bottom-2 left-0 right-0">
+        <div class="rounded-md p-2 space-y-1.5 mx-2">
           <div
             v-for="mode in Object.values(FILTER_MODES)"
             :key="mode.value"

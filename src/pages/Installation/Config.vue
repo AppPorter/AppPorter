@@ -151,7 +151,7 @@ async function handleInstallClick() {
   <div class="fixed bottom-4 left-6 z-40">
     <Button
       severity="secondary"
-      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
+      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200 backdrop-blur-md"
       @click="handleBackClick"
       icon="mir arrow_back"
       :label="t('installation.config.back')"

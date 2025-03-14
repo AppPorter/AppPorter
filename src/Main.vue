@@ -300,7 +300,7 @@ onMounted(() => {
     </div>
 
     <!-- Title Bar & Navigation -->
-    <div class="fixed w-full z-30">
+    <div class="fixed w-full z-30 backdrop-blur-md">
       <div class="flex items-center pr-24 w-full" style="-webkit-app-region: drag">
         <span class="text-lg font-semibold py-3 pl-6 flex items-center whitespace-nowrap">
           <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
@@ -335,7 +335,7 @@ onMounted(() => {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex">
+    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex overflow-y-auto overflow-x-hidden">
       <router-view v-slot="{ Component, route }">
         <keep-alive :include="cachedComponents ? undefined : []">
           <component :is="Component" :key="route.path" />
