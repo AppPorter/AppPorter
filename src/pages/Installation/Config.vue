@@ -141,7 +141,7 @@ async function handleInstallClick() {
         />
       </div>
 
-      <div class="w-full md:w-[40%] min-w-[18rem] h-full max-h-[calc(100vh-8rem)]">
+      <div class="w-full md:w-[40%] min-w-[18rem] h-full max-h-[calc(100vh-11rem)]">
         <ZipPreview
           :zip-path="zip_path"
           :details-loading="detailsLoading"
