@@ -434,7 +434,7 @@ onMounted(() => {
       <div class="relative flex-1 min-h-[54vh]">
         <div class="absolute inset-0 bottom-[7.5rem]">
           <div
-            class="h-full border border-slate-200 dark:border-zinc-700 rounded-lg overflow-hidden"
+            class="h-full border border-slate-200 dark:border-zinc-600 rounded-lg overflow-hidden"
           >
             <Tree
               v-if="hasScanned && !isEmpty"

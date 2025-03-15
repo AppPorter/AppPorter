@@ -108,7 +108,7 @@ function clearIcon() {
           <div class="flex items-center gap-2">
             <div class="relative group">
               <div
-                class="w-12 h-12 border border-slate-200 dark:border-zinc-700 rounded-lg flex items-center justify-center overflow-hidden"
+                class="w-12 h-12 border border-slate-200 dark:border-zinc-600 rounded-lg flex items-center justify-center overflow-hidden"
               >
                 <img v-if="icon" :src="icon" class="w-12 h-12 object-contain" alt="App Icon" />
                 <span v-else class="mir apps text-2xl" />
