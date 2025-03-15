@@ -398,7 +398,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Panel class="h-full flex flex-col shadow-sm border rounded-md overflow-hidden relative">
+  <Panel class="h-full flex flex-col shadow-sm border rounded-md overflow-auto relative">
     <!-- Header -->
     <template #header>
       <div class="flex justify-between items-center w-full">
@@ -429,41 +429,40 @@ onMounted(() => {
       </div>
     </template>
 
-    <div class="flex-1 flex flex-col p-1">
-      <!-- File Tree -->
-      <div class="relative flex-1 min-h-[54vh]">
-        <div class="absolute inset-0 bottom-[7.5rem]">
-          <div
-            class="h-full border border-slate-200 dark:border-zinc-600 rounded-lg overflow-hidden"
-          >
-            <Tree
-              v-if="hasScanned && !isEmpty"
-              :value="fileTree"
-              v-model:selectionKeys="selectedNode"
-              v-model:expandedKeys="expandedKeys"
-              class="w-full h-full overflow-auto"
-              selectionMode="single"
-              toggleOnClick
-              @node-select="handleNodeSelect"
-            />
+    <div class="h-full flex flex-col p-1">
+      <!-- Main content area - flex-1 to take all available space -->
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- File Tree - flex-1 and overflow-auto to allow scrolling -->
+        <div
+          class="flex-1 min-h-0 border border-slate-200 dark:border-zinc-600 rounded-lg relative overflow-auto"
+        >
+          <Tree
+            v-if="hasScanned && !isEmpty"
+            :value="fileTree"
+            v-model:selectionKeys="selectedNode"
+            v-model:expandedKeys="expandedKeys"
+            class="w-full h-full"
+            selectionMode="single"
+            toggleOnClick
+            @node-select="handleNodeSelect"
+          />
 
-            <!-- Empty State -->
-            <div
-              v-if="hasScanned && isEmpty"
-              class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
-            >
-              <span class="mir folder_off text-4xl"></span>
-              <p class="text-sm">
-                {{ t('installation.preview.no_files') }}
-              </p>
-            </div>
+          <!-- Empty State -->
+          <div
+            v-if="hasScanned && isEmpty"
+            class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
+          >
+            <span class="mir folder_off text-4xl"></span>
+            <p class="text-sm">
+              {{ t('installation.preview.no_files') }}
+            </p>
           </div>
         </div>
       </div>
 
-      <!-- Filter Controls -->
-      <div class="absolute bottom-2 left-0 right-0">
-        <div class="rounded-md p-2 space-y-1.5 mx-2">
+      <!-- Filter Controls - mt-auto pushes it to the bottom -->
+      <div class="mt-auto pt-2 flex-shrink-0">
+        <div class="rounded-md p-2 space-y-1.5">
           <div
             v-for="mode in Object.values(FILTER_MODES)"
             :key="mode.value"
