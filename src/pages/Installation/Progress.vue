@@ -136,191 +136,194 @@ defineOptions({
 </script>
 
 <template>
-  <div class="p-1.5 pb-12 flex items-center w-full">
-    <Panel class="shadow-sm border max-w-5xl w-full mx-auto">
-      <template #header>
-        <div class="flex items-center justify-between py-1 w-full min-w-0">
-          <!-- Progress Title -->
-          <div class="flex items-center gap-2 min-w-0 flex-shrink">
-            <div class="p-1.5 rounded-md shrink-0">
-              <span
-                class="text-xl mir"
-                :class="[
-                  isFinished ? 'task_alt' : 'install_desktop',
-                  isFinished
-                    ? 'text-green-600 dark:text-green-400'
-                    : 'text-primary-600 dark:text-primary-400',
-                ]"
-              ></span>
+  <div class="w-full h-full flex flex-col">
+    <div class="p-1.5 pb-6 flex-1 overflow-auto">
+      <Panel class="shadow-sm border max-w-5xl w-full mx-auto">
+        <template #header>
+          <div class="flex items-center justify-between py-1 w-full min-w-0">
+            <!-- Progress Title -->
+            <div class="flex items-center gap-2 min-w-0 flex-shrink">
+              <div class="p-1.5 rounded-md shrink-0">
+                <span
+                  class="text-xl mir"
+                  :class="[
+                    isFinished ? 'task_alt' : 'install_desktop',
+                    isFinished
+                      ? 'text-green-600 dark:text-green-400'
+                      : 'text-primary-600 dark:text-primary-400',
+                  ]"
+                ></span>
+              </div>
+              <div class="min-w-0 flex-shrink">
+                <h2 class="text-lg font-medium">
+                  {{ t('installation.progress.title') }}
+                </h2>
+                <p class="text-xs">
+                  {{ t('installation.progress.description') }}
+                </p>
+              </div>
             </div>
-            <div class="min-w-0 flex-shrink">
-              <h2 class="text-lg font-medium">
-                {{ t('installation.progress.title') }}
-              </h2>
-              <p class="text-xs">
-                {{ t('installation.progress.description') }}
-              </p>
+
+            <!-- App Details -->
+            <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
+              <div class="text-right">
+                <h3 class="text-base font-medium leading-none">
+                  {{ installationConfig.name }}
+                </h3>
+                <p class="text-xs mt-1">
+                  {{ installationConfig.version || 'Version N/A' }}
+                </p>
+                <p class="text-xs mt-0.5">
+                  {{ installationConfig.publisher || 'Publisher N/A' }}
+                </p>
+              </div>
+              <div
+                class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800"
+              >
+                <img
+                  v-if="installationConfig.icon"
+                  :src="installationConfig.icon"
+                  class="w-8 h-8 object-contain"
+                  alt="App Icon"
+                />
+                <span v-else class="mir apps text-2xl"></span>
+              </div>
             </div>
           </div>
+        </template>
 
-          <!-- App Details -->
-          <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
-            <div class="text-right">
-              <h3 class="text-base font-medium leading-none">
-                {{ installationConfig.name }}
-              </h3>
-              <p class="text-xs mt-1">
-                {{ installationConfig.version || 'Version N/A' }}
-              </p>
-              <p class="text-xs mt-0.5">
-                {{ installationConfig.publisher || 'Publisher N/A' }}
-              </p>
-            </div>
-            <div
-              class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800"
-            >
-              <img
-                v-if="installationConfig.icon"
-                :src="installationConfig.icon"
-                class="w-8 h-8 object-contain"
-                alt="App Icon"
+        <div class="space-y-4">
+          <!-- Progress Section -->
+          <div class="space-y-2">
+            <p class="text-sm" :class="[isFinished ? 'text-green-600 dark:text-green-400' : '']">
+              {{ currentStatus }}
+            </p>
+            <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
+          </div>
+
+          <div
+            v-if="isFinished"
+            class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4"
+          >
+            <div class="flex items-center justify-between w-full py-1">
+              <div class="flex items-center gap-2">
+                <span class="mir terminal"></span>
+                <span class="text-sm font-medium">{{
+                  t('installation.progress.installed_location')
+                }}</span>
+              </div>
+              <Button
+                severity="secondary"
+                outlined
+                v-tooltip.top="t('installation.progress.copy_path')"
+                class="w-8 h-7"
+                icon="mir content_copy"
+                @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
               />
-              <span v-else class="mir apps text-2xl"></span>
-              <!-- Progress Section -->
+            </div>
+            <p class="text-sm font-medium break-all select-text">
+              {{ finalExecutablePath }}
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
+              <div class="flex items-center justify-between w-full py-1">
+                <div class="flex items-center gap-2">
+                  <span class="mir settings"></span>
+                  <span class="text-sm font-medium">{{
+                    t('installation.progress.install_settings')
+                  }}</span>
+                </div>
+                <Button
+                  severity="secondary"
+                  outlined
+                  v-tooltip.top="t('installation.progress.copy_settings')"
+                  class="w-8 h-7"
+                  icon="mir content_copy"
+                  @click="
+                    handleCopy(
+                      `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
+                      'Settings'
+                    )
+                  "
+                />
+              </div>
+              <div class="space-y-3 select-text">
+                <div class="space-y-1">
+                  <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
+                  <p class="text-sm font-medium">
+                    {{ getInstallMode(installationConfig.current_user_only) }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
+                  <p class="text-sm font-medium">
+                    {{ getShortcutsList(installationConfig) }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <span class="text-sm">{{ t('installation.config.install_path') }}</span>
+                  <p class="text-sm font-medium break-all">
+                    {{ fullInstallPath }}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
+              <div class="flex items-center justify-between w-full py-1">
+                <div class="flex items-center gap-2">
+                  <span class="mir folder_zip"></span>
+                  <span class="text-sm font-medium">{{
+                    t('installation.progress.package_info')
+                  }}</span>
+                </div>
+                <Button
+                  severity="secondary"
+                  outlined
+                  v-tooltip.top="t('installation.progress.copy_package_info')"
+                  class="w-8 h-7"
+                  icon="mir content_copy"
+                  @click="
+                    handleCopy(
+                      `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
+                      'Package info'
+                    )
+                  "
+                />
+              </div>
+              <div class="space-y-3 select-text">
+                <div class="space-y-1">
+                  <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
+                  <p class="text-sm font-medium break-all">
+                    {{ installationConfig.zip_path }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
+                  <p class="text-sm font-medium break-all">
+                    {{ installationConfig.executable_path }}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-        <!-- Progress Section -->
-      </template>
 
-      <div class="space-y-4">
-        <!-- Progress Section -->
-        <div class="space-y-2">
-          <p class="text-sm" :class="[isFinished ? 'text-green-600 dark:text-green-400' : '']">
-            {{ currentStatus }}
-          </p>
-          <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
-        </div>
-
-        <div v-if="isFinished" class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
-          <div class="flex items-center justify-between w-full py-1">
-            <div class="flex items-center gap-2">
-              <span class="mir terminal"></span>
-              <span class="text-sm font-medium">{{
-                t('installation.progress.installed_location')
-              }}</span>
-            </div>
+          <div class="flex justify-end">
             <Button
-              severity="secondary"
-              outlined
-              v-tooltip.top="t('installation.progress.copy_path')"
-              class="w-8 h-7"
-              icon="mir content_copy"
-              @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
+              v-if="canClose"
+              @click="handleClose"
+              :severity="isFinished ? 'success' : 'danger'"
+              class="w-24 h-8"
+              :icon="isFinished ? 'mir home' : 'mir close'"
+              :label="
+                isFinished ? t('installation.progress.finish') : t('installation.progress.close')
+              "
             />
           </div>
-          <p class="text-sm font-medium break-all select-text">
-            {{ finalExecutablePath }}
-          </p>
         </div>
-
-        <div class="grid grid-cols-2 gap-3">
-          <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
-            <div class="flex items-center justify-between w-full py-1">
-              <div class="flex items-center gap-2">
-                <span class="mir settings"></span>
-                <span class="text-sm font-medium">{{
-                  t('installation.progress.install_settings')
-                }}</span>
-              </div>
-              <Button
-                severity="secondary"
-                outlined
-                v-tooltip.top="t('installation.progress.copy_settings')"
-                class="w-8 h-7"
-                icon="mir content_copy"
-                @click="
-                  handleCopy(
-                    `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
-                    'Settings'
-                  )
-                "
-              />
-            </div>
-            <div class="space-y-3 select-text">
-              <div class="space-y-1">
-                <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
-                <p class="text-sm font-medium">
-                  {{ getInstallMode(installationConfig.current_user_only) }}
-                </p>
-              </div>
-              <div class="space-y-1">
-                <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
-                <p class="text-sm font-medium">
-                  {{ getShortcutsList(installationConfig) }}
-                </p>
-              </div>
-              <div class="space-y-1">
-                <span class="text-sm">{{ t('installation.config.install_path') }}</span>
-                <p class="text-sm font-medium break-all">
-                  {{ fullInstallPath }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
-            <div class="flex items-center justify-between w-full py-1">
-              <div class="flex items-center gap-2">
-                <span class="mir folder_zip"></span>
-                <span class="text-sm font-medium">{{
-                  t('installation.progress.package_info')
-                }}</span>
-              </div>
-              <Button
-                severity="secondary"
-                outlined
-                v-tooltip.top="t('installation.progress.copy_package_info')"
-                class="w-8 h-7"
-                icon="mir content_copy"
-                @click="
-                  handleCopy(
-                    `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
-                    'Package info'
-                  )
-                "
-              />
-            </div>
-            <div class="space-y-3 select-text">
-              <div class="space-y-1">
-                <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
-                <p class="text-sm font-medium break-all">
-                  {{ installationConfig.zip_path }}
-                </p>
-              </div>
-              <div class="space-y-1">
-                <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
-                <p class="text-sm font-medium break-all">
-                  {{ installationConfig.executable_path }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="flex justify-end">
-          <Button
-            v-if="canClose"
-            @click="handleClose"
-            :severity="isFinished ? 'success' : 'danger'"
-            class="w-24 h-8"
-            :icon="isFinished ? 'mir home' : 'mir close'"
-            :label="
-              isFinished ? t('installation.progress.finish') : t('installation.progress.close')
-            "
-          />
-        </div>
-      </div>
-    </Panel>
+      </Panel>
+    </div>
   </div>
 </template>

@@ -335,10 +335,10 @@ onMounted(() => {
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex overflow-y-auto overflow-x-hidden">
-      <router-view v-slot="{ Component, route }">
-        <keep-alive :include="cachedComponents ? undefined : []">
-          <component :is="Component" :key="route.path" />
+    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex overflow-hidden">
+      <router-view v-slot="{ Component, route }" class="w-full flex">
+        <keep-alive :include="cachedComponents ? undefined : []" class="w-full overflow-auto">
+          <component :is="Component" :key="route.path" class="flex-1" />
         </keep-alive>
       </router-view>
     </div>

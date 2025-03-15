@@ -129,43 +129,48 @@ async function handleInstallClick() {
 </script>
 
 <template>
-  <div class="flex-1 min-w-[25rem] space-y-2">
-    <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
-    <AppDetails
-      :name-error="nameError"
-      :details-loading="detailsLoading"
-      :details-loading-progress="detailsLoadingProgress"
-      :progress-mode="progressMode"
-    />
-  </div>
+  <div class="w-full h-full flex flex-col overflow-hidden">
+    <div class="flex-1 flex flex-wrap md:flex-nowrap gap-4 overflow-auto p-1">
+      <div class="flex-1 min-w-[18rem] space-y-2">
+        <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
+        <AppDetails
+          :name-error="nameError"
+          :details-loading="detailsLoading"
+          :details-loading-progress="detailsLoadingProgress"
+          :progress-mode="progressMode"
+        />
+      </div>
 
-  <div class="min-w-[22rem] w-[40%] h-[calc(100vh-10.625rem)]">
-    <ZipPreview
-      :zip-path="zip_path"
-      :details-loading="detailsLoading"
-      @loading="(value) => (detailsLoading = value)"
-      @progress="handleDetailsProgress"
-    />
-  </div>
+      <div class="w-full md:w-[40%] min-w-[18rem] h-full max-h-[calc(100vh-8rem)]">
+        <ZipPreview
+          :zip-path="zip_path"
+          :details-loading="detailsLoading"
+          @loading="(value) => (detailsLoading = value)"
+          @progress="handleDetailsProgress"
+          class="h-full"
+        />
+      </div>
+    </div>
 
-  <div class="fixed bottom-4 left-6 z-40">
-    <Button
-      severity="secondary"
-      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200 backdrop-blur-md"
-      @click="handleBackClick"
-      icon="mir arrow_back"
-      :label="t('installation.config.back')"
-      outlined
-    />
-  </div>
+    <div class="fixed bottom-4 left-6 z-40">
+      <Button
+        severity="secondary"
+        class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200 backdrop-blur-md"
+        @click="handleBackClick"
+        icon="mir arrow_back"
+        :label="t('installation.config.back')"
+        outlined
+      />
+    </div>
 
-  <div class="fixed bottom-4 right-6 z-40">
-    <Button
-      severity="primary"
-      class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
-      @click="handleInstallClick"
-      icon="mir download"
-      :label="t('installation.config.install')"
-    />
+    <div class="fixed bottom-4 right-6 z-40">
+      <Button
+        severity="primary"
+        class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
+        @click="handleInstallClick"
+        icon="mir download"
+        :label="t('installation.config.install')"
+      />
+    </div>
   </div>
 </template>
