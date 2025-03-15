@@ -58,137 +58,143 @@ watch(
 </script>
 
 <template>
-  <Panel class="h-full w-full overflow-auto">
-    <!-- Header Section -->
-    <template #header>
-      <div class="flex items-center gap-2">
-        <span class="mir settings text-xl"></span>
-        <div>
-          <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
-          <p class="text-xs mt-0.5">{{ t('settings.description') }}</p>
+  <div class="w-full h-full flex flex-col overflow-auto">
+    <Panel class="max-w-5xl w-full mx-auto">
+      <!-- Header Section -->
+      <template #header>
+        <div class="flex items-center gap-2">
+          <span class="mir settings text-xl"></span>
+          <div>
+            <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
+            <p class="text-xs mt-0.5">{{ t('settings.description') }}</p>
+          </div>
         </div>
+      </template>
+
+      <div class="space-y-2">
+        <!-- Basic Settings -->
+        <Panel>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <span class="mir tune"></span>
+              <span>{{ t('settings.basic.title') }}</span>
+            </div>
+          </template>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <label>{{ t('settings.basic.language') }}</label>
+              <Select
+                v-model="settings.language"
+                :options="languageOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-48"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <label>{{ t('settings.basic.theme') }}</label>
+              <Select
+                v-model="currentTheme"
+                :options="themeOptions"
+                optionLabel="label"
+                optionValue="value"
+                class="w-48"
+              />
+            </div>
+            <div class="flex items-center justify-between">
+              <label>{{ t('settings.basic.minimize_tray') }}</label>
+              <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
+            </div>
+          </div>
+        </Panel>
+
+        <!-- Installation Settings -->
+        <Panel>
+          <template #header>
+            <div class="flex items-center gap-2">
+              <span class="mir install_desktop"></span>
+              <span>{{ t('settings.installation.title') }}</span>
+            </div>
+          </template>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <label>{{ t('settings.installation.current_user_only') }}</label>
+              <ToggleSwitch v-model="settings.installation.current_user_only" />
+            </div>
+
+            <div class="flex flex-wrap md:flex-nowrap gap-4">
+              <!-- Current User Settings -->
+              <Panel class="flex-1 min-w-[250px]">
+                <template #header>
+                  <div class="flex items-center gap-2">
+                    <span class="mir person"></span>
+                    <span>{{ t('settings.installation.current_user.title') }}</span>
+                  </div>
+                </template>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.desktop_shortcut') }}</label>
+                    <ToggleSwitch
+                      v-model="settings.installation.current_user.create_desktop_shortcut"
+                    />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.registry_key') }}</label>
+                    <ToggleSwitch
+                      v-model="settings.installation.current_user.create_registry_key"
+                    />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.start_menu') }}</label>
+                    <ToggleSwitch
+                      v-model="settings.installation.current_user.create_start_menu_shortcut"
+                    />
+                  </div>
+                </div>
+              </Panel>
+
+              <!-- All Users Settings -->
+              <Panel class="flex-1 min-w-[250px]">
+                <template #header>
+                  <div class="flex items-center gap-2">
+                    <span class="mir group"></span>
+                    <span>{{ t('settings.installation.all_users.title') }}</span>
+                  </div>
+                </template>
+                <div class="space-y-4">
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.desktop_shortcut') }}</label>
+                    <ToggleSwitch
+                      v-model="settings.installation.all_users.create_desktop_shortcut"
+                    />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.registry_key') }}</label>
+                    <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
+                  </div>
+                  <div class="flex items-center justify-between">
+                    <label>{{ t('settings.installation.start_menu') }}</label>
+                    <ToggleSwitch
+                      v-model="settings.installation.all_users.create_start_menu_shortcut"
+                    />
+                  </div>
+                </div>
+              </Panel>
+            </div>
+          </div>
+        </Panel>
       </div>
-    </template>
 
-    <div class="space-y-2">
-      <!-- Basic Settings -->
-      <Panel>
-        <template #header>
-          <div class="flex items-center gap-2">
-            <span class="mir tune"></span>
-            <span>{{ t('settings.basic.title') }}</span>
-          </div>
-        </template>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <label>{{ t('settings.basic.language') }}</label>
-            <Select
-              v-model="settings.language"
-              :options="languageOptions"
-              optionLabel="label"
-              optionValue="value"
-              class="w-48"
-            />
-          </div>
-          <div class="flex items-center justify-between">
-            <label>{{ t('settings.basic.theme') }}</label>
-            <Select
-              v-model="currentTheme"
-              :options="themeOptions"
-              optionLabel="label"
-              optionValue="value"
-              class="w-48"
-            />
-          </div>
-          <div class="flex items-center justify-between">
-            <label>{{ t('settings.basic.minimize_tray') }}</label>
-            <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
-          </div>
-        </div>
-      </Panel>
-
-      <!-- Installation Settings -->
-      <Panel>
-        <template #header>
-          <div class="flex items-center gap-2">
-            <span class="mir install_desktop"></span>
-            <span>{{ t('settings.installation.title') }}</span>
-          </div>
-        </template>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <label>{{ t('settings.installation.current_user_only') }}</label>
-            <ToggleSwitch v-model="settings.installation.current_user_only" />
-          </div>
-
-          <div class="flex gap-4">
-            <!-- Current User Settings -->
-            <Panel class="flex-1">
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <span class="mir person"></span>
-                  <span>{{ t('settings.installation.current_user.title') }}</span>
-                </div>
-              </template>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.desktop_shortcut') }}</label>
-                  <ToggleSwitch
-                    v-model="settings.installation.current_user.create_desktop_shortcut"
-                  />
-                </div>
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.registry_key') }}</label>
-                  <ToggleSwitch v-model="settings.installation.current_user.create_registry_key" />
-                </div>
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.start_menu') }}</label>
-                  <ToggleSwitch
-                    v-model="settings.installation.current_user.create_start_menu_shortcut"
-                  />
-                </div>
-              </div>
-            </Panel>
-
-            <!-- All Users Settings -->
-            <Panel class="flex-1">
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <span class="mir group"></span>
-                  <span>{{ t('settings.installation.all_users.title') }}</span>
-                </div>
-              </template>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.desktop_shortcut') }}</label>
-                  <ToggleSwitch v-model="settings.installation.all_users.create_desktop_shortcut" />
-                </div>
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.registry_key') }}</label>
-                  <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
-                </div>
-                <div class="flex items-center justify-between">
-                  <label>{{ t('settings.installation.start_menu') }}</label>
-                  <ToggleSwitch
-                    v-model="settings.installation.all_users.create_start_menu_shortcut"
-                  />
-                </div>
-              </div>
-            </Panel>
-          </div>
-        </div>
-      </Panel>
-    </div>
-
-    <!-- Footer Section -->
-    <div class="pt-4 flex justify-end">
-      <Button
-        icon="mir save"
-        :label="t('settings.save_changes')"
-        @click="saveSettings"
-        severity="primary"
-        :disabled="!isSettingsChanged"
-      />
-    </div>
-  </Panel>
+      <!-- Footer Section -->
+      <div class="pt-4 flex justify-end">
+        <Button
+          icon="mir save"
+          :label="t('settings.save_changes')"
+          @click="saveSettings"
+          severity="primary"
+          :disabled="!isSettingsChanged"
+        />
+      </div>
+    </Panel>
+  </div>
 </template>
