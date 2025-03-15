@@ -4,7 +4,6 @@ import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
-import Card from 'primevue/card'
 import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
 import Tooltip from 'primevue/tooltip'
@@ -203,122 +202,110 @@ defineOptions({
           <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
         </div>
 
-        <Card v-if="isFinished" class="shadow-none border">
-          <template #title>
+        <div v-if="isFinished" class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
+          <div class="flex items-center justify-between w-full py-1">
+            <div class="flex items-center gap-2">
+              <span class="mir terminal"></span>
+              <span class="text-sm font-medium">{{
+                t('installation.progress.installed_location')
+              }}</span>
+            </div>
+            <Button
+              severity="secondary"
+              outlined
+              v-tooltip.top="t('installation.progress.copy_path')"
+              class="w-8 h-7"
+              icon="mir content_copy"
+              @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
+            />
+          </div>
+          <p class="text-sm font-medium break-all select-text">
+            {{ finalExecutablePath }}
+          </p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
             <div class="flex items-center justify-between w-full py-1">
               <div class="flex items-center gap-2">
-                <span class="mir terminal"></span>
+                <span class="mir settings"></span>
                 <span class="text-sm font-medium">{{
-                  t('installation.progress.installed_location')
+                  t('installation.progress.install_settings')
                 }}</span>
               </div>
               <Button
                 severity="secondary"
                 outlined
-                v-tooltip.top="t('installation.progress.copy_path')"
+                v-tooltip.top="t('installation.progress.copy_settings')"
                 class="w-8 h-7"
                 icon="mir content_copy"
-                @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
+                @click="
+                  handleCopy(
+                    `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
+                    'Settings'
+                  )
+                "
               />
             </div>
-          </template>
-          <template #content>
-            <p class="text-sm font-medium break-all select-text">
-              {{ finalExecutablePath }}
-            </p>
-          </template>
-        </Card>
+            <div class="space-y-3 select-text">
+              <div class="space-y-1">
+                <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
+                <p class="text-sm font-medium">
+                  {{ getInstallMode(installationConfig.current_user_only) }}
+                </p>
+              </div>
+              <div class="space-y-1">
+                <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
+                <p class="text-sm font-medium">
+                  {{ getShortcutsList(installationConfig) }}
+                </p>
+              </div>
+              <div class="space-y-1">
+                <span class="text-sm">{{ t('installation.config.install_path') }}</span>
+                <p class="text-sm font-medium break-all">
+                  {{ fullInstallPath }}
+                </p>
+              </div>
+            </div>
+          </div>
 
-        <div class="grid grid-cols-2 gap-3">
-          <Card class="shadow-none border">
-            <template #title>
-              <div class="flex items-center justify-between w-full py-1">
-                <div class="flex items-center gap-2">
-                  <span class="mir settings"></span>
-                  <span class="text-sm font-medium">{{
-                    t('installation.progress.install_settings')
-                  }}</span>
-                </div>
-                <Button
-                  severity="secondary"
-                  outlined
-                  v-tooltip.top="t('installation.progress.copy_settings')"
-                  class="w-8 h-7"
-                  icon="mir content_copy"
-                  @click="
-                    handleCopy(
-                      `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
-                      'Settings'
-                    )
-                  "
-                />
+          <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
+            <div class="flex items-center justify-between w-full py-1">
+              <div class="flex items-center gap-2">
+                <span class="mir folder_zip"></span>
+                <span class="text-sm font-medium">{{
+                  t('installation.progress.package_info')
+                }}</span>
               </div>
-            </template>
-            <template #content>
-              <div class="space-y-3 select-text">
-                <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
-                  <p class="text-sm font-medium">
-                    {{ getInstallMode(installationConfig.current_user_only) }}
-                  </p>
-                </div>
-                <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
-                  <p class="text-sm font-medium">
-                    {{ getShortcutsList(installationConfig) }}
-                  </p>
-                </div>
-                <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.install_path') }}</span>
-                  <p class="text-sm font-medium break-all">
-                    {{ fullInstallPath }}
-                  </p>
-                </div>
+              <Button
+                severity="secondary"
+                outlined
+                v-tooltip.top="t('installation.progress.copy_package_info')"
+                class="w-8 h-7"
+                icon="mir content_copy"
+                @click="
+                  handleCopy(
+                    `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
+                    'Package info'
+                  )
+                "
+              />
+            </div>
+            <div class="space-y-3 select-text">
+              <div class="space-y-1">
+                <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
+                <p class="text-sm font-medium break-all">
+                  {{ installationConfig.zip_path }}
+                </p>
               </div>
-            </template>
-          </Card>
-
-          <Card class="shadow-none border">
-            <template #title>
-              <div class="flex items-center justify-between w-full py-1">
-                <div class="flex items-center gap-2">
-                  <span class="mir folder_zip"></span>
-                  <span class="text-sm font-medium">{{
-                    t('installation.progress.package_info')
-                  }}</span>
-                </div>
-                <Button
-                  severity="secondary"
-                  outlined
-                  v-tooltip.top="t('installation.progress.copy_package_info')"
-                  class="w-8 h-7"
-                  icon="mir content_copy"
-                  @click="
-                    handleCopy(
-                      `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
-                      'Package info'
-                    )
-                  "
-                />
+              <div class="space-y-1">
+                <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
+                <p class="text-sm font-medium break-all">
+                  {{ installationConfig.executable_path }}
+                </p>
               </div>
-            </template>
-            <template #content>
-              <div class="space-y-3 select-text">
-                <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
-                  <p class="text-sm font-medium break-all">
-                    {{ installationConfig.zip_path }}
-                  </p>
-                </div>
-                <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
-                  <p class="text-sm font-medium break-all">
-                    {{ installationConfig.executable_path }}
-                  </p>
-                </div>
-              </div>
-            </template>
-          </Card>
+            </div>
+          </div>
         </div>
 
         <div class="flex justify-end">
