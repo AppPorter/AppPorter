@@ -432,6 +432,27 @@ onMounted(() => {
     <div class="h-full flex flex-col p-1">
       <!-- Main content area - flex-1 to take all available space -->
       <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Filter Controls -->
+        <div class="mb-2 flex-shrink-0">
+          <div class="rounded-md p-2 space-y-1.5">
+            <div
+              v-for="mode in Object.values(FILTER_MODES)"
+              :key="mode.value"
+              class="flex items-center gap-2"
+            >
+              <RadioButton
+                v-model="filterMode"
+                :value="mode.value"
+                :inputId="'filter-' + mode.value"
+              />
+              <label :for="'filter-' + mode.value" class="flex items-center gap-2.5 cursor-pointer">
+                <span class="mir" :class="mode.icon"></span>
+                <span class="text-sm">{{ mode.label }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
         <!-- File Tree - flex-1 and overflow-auto to allow scrolling -->
         <div
           class="flex-1 min-h-0 border border-slate-200 dark:border-zinc-600 rounded-lg relative overflow-auto"
@@ -456,27 +477,6 @@ onMounted(() => {
             <p class="text-sm">
               {{ t('installation.preview.no_files') }}
             </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Filter Controls - mt-auto pushes it to the bottom -->
-      <div class="mt-auto pt-2 flex-shrink-0">
-        <div class="rounded-md p-2 space-y-1.5">
-          <div
-            v-for="mode in Object.values(FILTER_MODES)"
-            :key="mode.value"
-            class="flex items-center gap-2"
-          >
-            <RadioButton
-              v-model="filterMode"
-              :value="mode.value"
-              :inputId="'filter-' + mode.value"
-            />
-            <label :for="'filter-' + mode.value" class="flex items-center gap-2.5 cursor-pointer">
-              <span class="mir" :class="mode.icon"></span>
-              <span class="text-sm">{{ mode.label }}</span>
-            </label>
           </div>
         </div>
       </div>
