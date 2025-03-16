@@ -306,7 +306,7 @@ onMounted(() => {
     <div class="fixed z-30 w-full backdrop-blur-md">
       <div class="flex w-full items-center pr-24" style="-webkit-app-region: drag">
         <span class="flex items-center whitespace-nowrap py-3 pl-6 text-lg font-semibold">
-          <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
+          <img src="/public/appporter.svg" class="mr-1" />AppPorter
         </span>
 
         <!-- Admin Privileges Warning -->
