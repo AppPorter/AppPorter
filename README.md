@@ -1,17 +1,17 @@
 <div align="center">
 <img src="public/appporter.svg" width="128" height="128" alt="AppPorter">
 <h1>AppPorter</h1>
-<p>Simplify the installation and management of portable softwares</p>
+<p>Simplify the installation and management of portable software</p>
 </div>
 
 ## Overview
 
-![Screenshot1](/public/Screenshot1.png)
-![Screenshot2](/public/Screenshot2.png)
+![Screenshot 1](/public/Screenshot1.png)
+![Screenshot 2](/public/Screenshot2.png)
 
-AppPorter is a desktop application designed to simplify the installation and management of portable softwares (ZIP-packaged applications).
+AppPorter is a desktop application designed to simplify the installation and management of portable software (ZIP-packaged applications).
 
-(todo) ~~With its browser extension integration, users can install apps directly from their web browser and subscribe the links of them for later use.~~
+(todo) ~~With its browser extension integration, users can install apps directly from their web browser and subscribe to the links of them for later use.~~
 
 The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 
