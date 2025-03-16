@@ -14,7 +14,7 @@ interface Installation {
   current_user: InstallSettings
 }
 
-export type ThemeType = true | false | 'system'
+export type ThemeType = 'system' | 'light' | 'dark'
 export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
 
 interface Settings {

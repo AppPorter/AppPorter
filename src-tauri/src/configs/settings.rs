@@ -25,15 +25,16 @@ impl Default for LanguageType {
 
 // Add a custom enum for theme
 #[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(untagged)]
+#[serde(rename_all = "lowercase")]
 pub enum ThemeType {
-    System(String),
-    Bool(bool),
+    System,
+    Light,
+    Dark,
 }
 
 impl Default for ThemeType {
     fn default() -> Self {
-        Self::System("system".to_owned())
+        Self::System
     }
 }
 
@@ -102,7 +103,7 @@ impl ConfigFile for Settings {
 
         let default_settings = Self {
             language: LanguageType::En,
-            theme: ThemeType::System("system".to_string()),
+            theme: ThemeType::System,
             minimize_to_tray_on_close: false,
             first_run: true,
             color: String::new(),
