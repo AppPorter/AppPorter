@@ -8,11 +8,6 @@ const isSettingsChanged = ref(false)
 const initialSettings = ref({})
 const { t } = useI18n()
 
-const saveSettings = async () => {
-  await settings.saveSettings()
-  window.location.reload()
-}
-
 const languageOptions = [
   { label: 'English', value: 'en' },
   { label: '中文', value: 'zh' },
@@ -36,8 +31,12 @@ onMounted(() => {
 
 watch(
   () => settings.$state,
-  (newValue) => {
+  async (newValue) => {
     isSettingsChanged.value = JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
+    if (isSettingsChanged.value) {
+      await settings.saveSettings()
+      window.location.reload()
+    }
   },
   { deep: true }
 )
@@ -169,17 +168,6 @@ watch(
             </div>
           </div>
         </Panel>
-      </div>
-
-      <!-- Footer Section -->
-      <div class="pt-4 flex justify-end">
-        <Button
-          icon="mir save"
-          :label="t('settings.save_changes')"
-          @click="saveSettings"
-          severity="primary"
-          :disabled="!isSettingsChanged"
-        />
       </div>
     </Panel>
   </div>
