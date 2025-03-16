@@ -256,14 +256,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="select-none w-screen h-screen" @contextmenu="handleContextMenu">
+  <div class="h-screen w-screen select-none" @contextmenu="handleContextMenu">
     <!-- System Dialogs -->
-    <Toast position="bottom-left" class="z-40 custom-toast">
+    <Toast position="bottom-left" class="custom-toast z-40">
       <template #message="slotProps">
-        <div class="flex items-center w-full max-w-[600px]">
+        <div class="flex w-full max-w-[600px] items-center">
           <i
             :class="[
-              'mir text-lg mr-2',
+              'mir mr-2 text-lg',
               {
                 info: slotProps.message.severity === 'info',
                 warning: slotProps.message.severity === 'warn',
@@ -271,72 +271,75 @@ onMounted(() => {
                 check_circle: slotProps.message.severity === 'success',
               },
             ]"
-          ></i>
-          <div class="flex flex-col grow min-w-0">
-            <div class="font-bold">{{ slotProps.message.summary }}</div>
-            <div class="select-text cursor-text break-all mt-1">{{ slotProps.message.detail }}</div>
+          />
+          <div class="flex min-w-0 grow flex-col">
+            <div class="font-bold">
+              {{ slotProps.message.summary }}
+            </div>
+            <div class="mt-1 cursor-text select-text break-all">
+              {{ slotProps.message.detail }}
+            </div>
           </div>
         </div>
       </template>
     </Toast>
-    <ConfirmDialog group="dialog"> </ConfirmDialog>
-    <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false">
-    </ConfirmDialog>
+    <ConfirmDialog group="dialog" />
+    <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false" />
 
     <!-- Window Controls -->
-    <div class="fixed top-0 right-0 h-auto z-50 flex">
+    <div class="fixed right-0 top-0 z-50 flex h-auto">
       <button
-        class="w-12 h-8 hover:bg-[#e9e9e9] dark:hover:bg-[#2d2d2d] flex items-center justify-center"
+        class="flex h-8 w-12 items-center justify-center hover:bg-[#e9e9e9] dark:hover:bg-[#2d2d2d]"
         @click="handleMinimize"
       >
-        <span class="mir remove"></span>
+        <span class="mir remove" />
       </button>
       <button
-        class="w-12 h-8 hover:bg-[#c42b1c] flex items-center justify-center group"
+        class="group flex h-8 w-12 items-center justify-center hover:bg-[#c42b1c]"
         @click="handleClose"
       >
-        <span class="mir close group-hover:text-white"></span>
+        <span class="mir close group-hover:text-white" />
       </button>
     </div>
 
     <!-- Title Bar & Navigation -->
-    <div class="fixed w-full z-30 backdrop-blur-md">
-      <div class="flex items-center pr-24 w-full" style="-webkit-app-region: drag">
-        <span class="text-lg font-semibold py-3 pl-6 flex items-center whitespace-nowrap">
+    <div class="fixed z-30 w-full backdrop-blur-md">
+      <div class="flex w-full items-center pr-24" style="-webkit-app-region: drag">
+        <span class="flex items-center whitespace-nowrap py-3 pl-6 text-lg font-semibold">
           <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
         </span>
 
         <!-- Admin Privileges Warning -->
         <Message
+          v-if="!settingsStore.elevated && !dismissWarning"
           size="small"
           severity="warn"
-          class="mx-4 py-0 w-full"
-          v-if="!settingsStore.elevated && !dismissWarning"
+          class="mx-4 w-full py-0"
           icon="mir warning"
         >
           {{ t('system.admin.warning') }}
-          <ConfirmPopup group="admin_popup"></ConfirmPopup>
+          <ConfirmPopup group="admin_popup" />
           <SplitButton
-            @click="handleAdminPrompt($event)"
             :label="t('system.admin.solve')"
             outlined
             severity="warn"
-            class="z-40 left-2"
+            class="left-2 z-40"
             size="small"
             :model="warningActions"
-          ></SplitButton>
+            @click="handleAdminPrompt($event)"
+          />
         </Message>
       </div>
 
       <!-- Navigation Menu -->
       <div class="flex px-4">
-        <Menubar :model="menuItems" class="border-none shadow-none w-full"> </Menubar>
+        <Menubar :model="menuItems" class="w-full border-none shadow-none" />
       </div>
     </div>
 
     <!-- Main Content Area -->
-    <div class="pt-[6.8rem] px-4 pb-2 h-full z-30 gap-2 flex overflow-hidden">
-      <router-view v-slot="{ Component, route }" class="w-full flex">
+    <div class="z-30 flex h-full gap-2 overflow-hidden px-4 pb-2 pt-[6.8rem]">
+      <router-view v-slot="{ Component, route }" class="flex w-full">
         <keep-alive :include="cachedComponents ? undefined : []" class="w-full overflow-auto">
           <component :is="Component" :key="route.path" class="flex-1" />
         </keep-alive>

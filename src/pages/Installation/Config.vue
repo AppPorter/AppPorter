@@ -129,9 +129,9 @@ async function handleInstallClick() {
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col overflow-hidden">
-    <div class="flex-1 flex flex-wrap md:flex-nowrap gap-4 overflow-auto p-1">
-      <div class="flex-1 min-w-[18rem] space-y-2">
+  <div class="flex h-full w-full flex-col overflow-hidden">
+    <div class="flex flex-1 flex-wrap gap-4 overflow-auto p-1 md:flex-nowrap">
+      <div class="min-w-[18rem] flex-1 space-y-2">
         <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         <AppDetails
           :name-error="nameError"
@@ -141,7 +141,7 @@ async function handleInstallClick() {
         />
       </div>
 
-      <div class="w-full md:w-[40%] min-w-[18rem] h-full max-h-[calc(100vh-11rem)]">
+      <div class="h-full max-h-[calc(100vh-11rem)] w-full min-w-[18rem] md:w-[40%]">
         <ZipPreview
           :zip-path="zip_path"
           :details-loading="detailsLoading"
@@ -155,7 +155,7 @@ async function handleInstallClick() {
     <div class="fixed bottom-4 left-6 z-40">
       <Button
         severity="secondary"
-        class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200 backdrop-blur-md"
+        class="h-8 w-28 text-sm shadow backdrop-blur-md transition-all duration-200 hover:shadow-lg"
         @click="handleBackClick"
         icon="mir arrow_back"
         :label="t('installation.config.back')"
@@ -166,7 +166,7 @@ async function handleInstallClick() {
     <div class="fixed bottom-4 right-10 z-40">
       <Button
         severity="primary"
-        class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
+        class="h-8 w-28 text-sm shadow transition-all duration-200 hover:shadow-lg"
         @click="handleInstallClick"
         icon="mir install_desktop"
         :label="t('installation.config.install')"

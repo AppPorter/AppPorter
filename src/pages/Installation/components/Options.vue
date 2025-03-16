@@ -72,7 +72,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Panel class="shadow-sm border">
+  <Panel class="border shadow-sm">
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
@@ -81,9 +81,9 @@ watchEffect(() => {
             {{ t('installation.config.installation_options') }}
           </h2>
         </div>
-        <p class="text-xs mt-0.5 ml-6">
+        <p class="ml-6 mt-0.5 text-xs">
           {{ t('installation.config.selected_file') }}:
-          <span class="font-medium break-all overflow-wrap-anywhere">{{ zip_path }}</span>
+          <span class="overflow-wrap-anywhere break-all font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>
@@ -92,7 +92,7 @@ watchEffect(() => {
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</label>
-        <div class="flex items-center gap-2 px-2 py-1 rounded-lg">
+        <div class="flex items-center gap-2 rounded-lg px-2 py-1">
           <span class="text-sm">{{ t('installation.config.all_users') }}</span>
           <ToggleSwitch
             v-model="current_user_only"
@@ -106,11 +106,11 @@ watchEffect(() => {
       <!-- Install Path -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('installation.config.install_path') }}</label>
-        <div class="flex-1 flex gap-2">
+        <div class="flex flex-1 gap-2">
           <InputText
             v-model="install_path"
             :placeholder="t('installation.config.choose_dir')"
-            class="w-full text-sm h-8"
+            class="h-8 w-full text-sm"
             :invalid="!!pathError"
             :title="pathError"
           />
@@ -126,10 +126,10 @@ watchEffect(() => {
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <label class="w-24 mt-1 text-sm font-medium">{{
+        <label class="mt-1 w-24 text-sm font-medium">{{
           t('installation.config.shortcuts')
         }}</label>
-        <div class="space-y-1 p-1.5 rounded-lg flex-1">
+        <div class="flex-1 space-y-1 rounded-lg p-1.5">
           <div class="flex items-center gap-2">
             <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
             <label for="desktop_shortcut" class="text-sm">{{

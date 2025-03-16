@@ -43,15 +43,15 @@ watch(
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col overflow-auto">
-    <Panel class="max-w-5xl w-full mx-auto">
+  <div class="flex h-full w-full flex-col overflow-auto">
+    <Panel class="mx-auto w-full max-w-5xl">
       <!-- Header Section -->
       <template #header>
         <div class="flex items-center gap-2">
           <span class="mir settings text-xl"></span>
           <div>
             <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
-            <p class="text-xs mt-0.5">{{ t('settings.description') }}</p>
+            <p class="mt-0.5 text-xs">{{ t('settings.description') }}</p>
           </div>
         </div>
       </template>
@@ -107,9 +107,9 @@ watch(
               <ToggleSwitch v-model="settings.installation.current_user_only" />
             </div>
 
-            <div class="flex flex-wrap md:flex-nowrap gap-4">
+            <div class="flex flex-wrap gap-4 md:flex-nowrap">
               <!-- Current User Settings -->
-              <Panel class="flex-1 min-w-[250px]">
+              <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir person"></span>
@@ -139,7 +139,7 @@ watch(
               </Panel>
 
               <!-- All Users Settings -->
-              <Panel class="flex-1 min-w-[250px]">
+              <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir group"></span>

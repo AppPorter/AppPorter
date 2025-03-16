@@ -37,14 +37,14 @@ async function selectZipFile() {
 </script>
 
 <template>
-  <div class="flex items-center justify-center h-full w-full">
-    <Panel class="w-full max-w-3xl shadow-sm h-52 px-4">
+  <div class="flex h-full w-full items-center justify-center">
+    <Panel class="h-52 w-full max-w-3xl px-4 shadow-sm">
       <template #header>
         <div class="flex items-center gap-2">
           <span class="mir folder_zip text-xl"></span>
           <div>
             <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
-            <p class="text-xs mt-0.5">{{ t('installation.description') }}</p>
+            <p class="mt-0.5 text-xs">{{ t('installation.description') }}</p>
           </div>
         </div>
       </template>
@@ -56,7 +56,7 @@ async function selectZipFile() {
           <InputText
             v-model="zip_path"
             :placeholder="t('installation.select_placeholder')"
-            class="flex-1 text-sm h-9"
+            class="h-9 flex-1 text-sm"
           />
           <Button
             @click="selectZipFile"

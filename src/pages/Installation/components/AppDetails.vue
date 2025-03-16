@@ -72,9 +72,9 @@ function clearIcon() {
 </script>
 
 <template>
-  <Panel class="shadow-sm border relative">
+  <Panel class="relative border shadow-sm">
     <template #header>
-      <div class="flex justify-between items-center w-full">
+      <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1.5">
           <span class="mir apps"></span>
           <h2 class="text-base font-medium">
@@ -106,11 +106,11 @@ function clearIcon() {
         </div>
         <div class="w-full">
           <div class="flex items-center gap-2">
-            <div class="relative group">
+            <div class="group relative">
               <div
-                class="w-12 h-12 border border-slate-200 dark:border-zinc-600 rounded-lg flex items-center justify-center overflow-hidden"
+                class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600"
               >
-                <img v-if="icon" :src="icon" class="w-12 h-12 object-contain" alt="App Icon" />
+                <img v-if="icon" :src="icon" class="h-12 w-12 object-contain" alt="App Icon" />
                 <span v-else class="mir apps text-2xl" />
               </div>
               <Button
@@ -119,7 +119,7 @@ function clearIcon() {
                 severity="danger"
                 text
                 raised
-                class="!absolute !-top-1.5 !-right-1.5 !min-w-0 !w-5 !h-5 !p-0 invisible opacity-0 scale-75 group-hover:opacity-100 group-hover:visible group-hover:scale-100 transition-all duration-200 ease-out hover:scale-110"
+                class="invisible !absolute !-right-1.5 !-top-1.5 !h-5 !w-5 !min-w-0 scale-75 !p-0 opacity-0 transition-all duration-200 ease-out hover:scale-110 group-hover:visible group-hover:scale-100 group-hover:opacity-100"
                 @click="clearIcon"
               >
                 <span class="mir close !text-xs" />
@@ -140,7 +140,7 @@ function clearIcon() {
           <InputText
             v-model="name"
             :placeholder="t('installation.app_details.name')"
-            class="w-full text-sm h-8"
+            class="h-8 w-full text-sm"
             :invalid="!!nameError"
             :title="nameError"
           />
@@ -158,7 +158,7 @@ function clearIcon() {
           <InputText
             v-model="publisher"
             :placeholder="t('installation.app_details.publisher')"
-            class="w-full text-sm h-8"
+            class="h-8 w-full text-sm"
           />
         </div>
       </div>
@@ -174,7 +174,7 @@ function clearIcon() {
           <InputText
             v-model="version"
             :placeholder="t('installation.app_details.version')"
-            class="w-full text-sm h-8"
+            class="h-8 w-full text-sm"
           />
         </div>
       </div>
@@ -182,7 +182,7 @@ function clearIcon() {
 
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-[0.5rem]"
+      class="absolute inset-0 flex flex-col items-center justify-center gap-[0.5rem] backdrop-blur-[0.125rem]"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.app_details.loading_details') }}

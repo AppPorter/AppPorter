@@ -398,18 +398,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <Panel class="h-full flex flex-col shadow-sm border rounded-md overflow-auto relative">
+  <Panel class="relative flex h-full flex-col overflow-auto rounded-md border shadow-sm">
     <!-- Header -->
     <template #header>
-      <div class="flex justify-between items-center w-full">
+      <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1">
           <span class="mir folder_zip text-lg"></span>
           <span class="text-base font-medium">{{ t('installation.preview.title') }}</span>
         </div>
-        <div class="flex gap-1 ml-2">
+        <div class="ml-2 flex gap-1">
           <Button
             type="button"
-            class="p-1 h-6"
+            class="h-6 p-1"
             severity="secondary"
             :disabled="isExpanding"
             v-tooltip.bottom="t('installation.preview.expand_all')"
@@ -418,7 +418,7 @@ onMounted(() => {
           />
           <Button
             type="button"
-            class="p-1 h-6"
+            class="h-6 p-1"
             severity="secondary"
             :disabled="isCollapsing"
             v-tooltip.bottom="t('installation.preview.collapse_all')"
@@ -429,12 +429,12 @@ onMounted(() => {
       </div>
     </template>
 
-    <div class="h-full flex flex-col p-1">
+    <div class="flex h-full flex-col p-1">
       <!-- Main content area - flex-1 to take all available space -->
-      <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex flex-1 flex-col overflow-hidden">
         <!-- Filter Controls -->
         <div class="mb-2 flex-shrink-0">
-          <div class="rounded-md p-2 space-y-1.5">
+          <div class="space-y-1.5 rounded-md p-2">
             <div
               v-for="mode in Object.values(FILTER_MODES)"
               :key="mode.value"
@@ -445,7 +445,7 @@ onMounted(() => {
                 :value="mode.value"
                 :inputId="'filter-' + mode.value"
               />
-              <label :for="'filter-' + mode.value" class="flex items-center gap-2.5 cursor-pointer">
+              <label :for="'filter-' + mode.value" class="flex cursor-pointer items-center gap-2.5">
                 <span class="mir" :class="mode.icon"></span>
                 <span class="text-sm">{{ mode.label }}</span>
               </label>
@@ -455,14 +455,14 @@ onMounted(() => {
 
         <!-- File Tree - flex-1 and overflow-auto to allow scrolling -->
         <div
-          class="flex-1 min-h-0 border border-slate-200 dark:border-zinc-600 rounded-lg relative overflow-auto"
+          class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 dark:border-zinc-600"
         >
           <Tree
             v-if="hasScanned && !isEmpty"
             :value="fileTree"
             v-model:selectionKeys="selectedNode"
             v-model:expandedKeys="expandedKeys"
-            class="w-full h-full"
+            class="h-full w-full"
             selectionMode="single"
             toggleOnClick
             @node-select="handleNodeSelect"
@@ -471,7 +471,7 @@ onMounted(() => {
           <!-- Empty State -->
           <div
             v-if="hasScanned && isEmpty"
-            class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
+            class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
           >
             <span class="mir folder_off text-4xl"></span>
             <p class="text-sm">
@@ -485,7 +485,7 @@ onMounted(() => {
     <!-- Loading Overlay -->
     <div
       v-if="props.detailsLoading"
-      class="absolute inset-0 backdrop-blur-[0.125rem] flex flex-col items-center justify-center gap-2"
+      class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.preview.reading_archive') }}

@@ -136,16 +136,16 @@ defineOptions({
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col">
-    <div class="p-1.5 pb-6 flex-1 overflow-auto">
-      <Panel class="shadow-sm border max-w-5xl w-full mx-auto">
+  <div class="flex h-full w-full flex-col">
+    <div class="flex-1 overflow-auto p-1.5 pb-6">
+      <Panel class="mx-auto w-full max-w-5xl border shadow-sm">
         <template #header>
-          <div class="flex items-center justify-between py-1 w-full min-w-0">
+          <div class="flex w-full min-w-0 items-center justify-between py-1">
             <!-- Progress Title -->
-            <div class="flex items-center gap-2 min-w-0 flex-shrink">
-              <div class="p-1.5 rounded-md shrink-0">
+            <div class="flex min-w-0 flex-shrink items-center gap-2">
+              <div class="shrink-0 rounded-md p-1.5">
                 <span
-                  class="text-xl mir"
+                  class="mir text-xl"
                   :class="[
                     isFinished ? 'task_alt' : 'install_desktop',
                     isFinished
@@ -165,25 +165,25 @@ defineOptions({
             </div>
 
             <!-- App Details -->
-            <div class="flex items-center gap-3 shrink-0 ml-4 select-text">
+            <div class="ml-4 flex shrink-0 select-text items-center gap-3">
               <div class="text-right">
                 <h3 class="text-base font-medium leading-none">
                   {{ installationConfig.name }}
                 </h3>
-                <p class="text-xs mt-1">
+                <p class="mt-1 text-xs">
                   {{ installationConfig.version || 'Version N/A' }}
                 </p>
-                <p class="text-xs mt-0.5">
+                <p class="mt-0.5 text-xs">
                   {{ installationConfig.publisher || 'Publisher N/A' }}
                 </p>
               </div>
               <div
-                class="w-10 h-10 rounded-lg overflow-hidden shrink-0 flex items-center justify-center bg-surface-50 dark:bg-surface-800"
+                class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
               >
                 <img
                   v-if="installationConfig.icon"
                   :src="installationConfig.icon"
-                  class="w-8 h-8 object-contain"
+                  class="h-8 w-8 object-contain"
                   alt="App Icon"
                 />
                 <span v-else class="mir apps text-2xl"></span>
@@ -203,9 +203,9 @@ defineOptions({
 
           <div
             v-if="isFinished"
-            class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4"
+            class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600"
           >
-            <div class="flex items-center justify-between w-full py-1">
+            <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
                 <span class="mir terminal"></span>
                 <span class="text-sm font-medium">{{
@@ -216,19 +216,19 @@ defineOptions({
                 severity="secondary"
                 outlined
                 v-tooltip.top="t('installation.progress.copy_path')"
-                class="w-8 h-7"
+                class="h-7 w-8"
                 icon="mir content_copy"
                 @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
               />
             </div>
-            <p class="text-sm font-medium break-all select-text">
+            <p class="select-text break-all text-sm font-medium">
               {{ finalExecutablePath }}
             </p>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
-              <div class="flex items-center justify-between w-full py-1">
+          <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
+              <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir settings"></span>
                   <span class="text-sm font-medium">{{
@@ -239,7 +239,7 @@ defineOptions({
                   severity="secondary"
                   outlined
                   v-tooltip.top="t('installation.progress.copy_settings')"
-                  class="w-8 h-7"
+                  class="h-7 w-8"
                   icon="mir content_copy"
                   @click="
                     handleCopy(
@@ -249,7 +249,7 @@ defineOptions({
                   "
                 />
               </div>
-              <div class="space-y-3 select-text">
+              <div class="select-text space-y-3">
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
                   <p class="text-sm font-medium">
@@ -264,15 +264,15 @@ defineOptions({
                 </div>
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('installation.config.install_path') }}</span>
-                  <p class="text-sm font-medium break-all">
+                  <p class="break-all text-sm font-medium">
                     {{ fullInstallPath }}
                   </p>
                 </div>
               </div>
             </div>
 
-            <div class="border border-slate-200 dark:border-zinc-600 rounded-lg p-4">
-              <div class="flex items-center justify-between w-full py-1">
+            <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
+              <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir folder_zip"></span>
                   <span class="text-sm font-medium">{{
@@ -283,7 +283,7 @@ defineOptions({
                   severity="secondary"
                   outlined
                   v-tooltip.top="t('installation.progress.copy_package_info')"
-                  class="w-8 h-7"
+                  class="h-7 w-8"
                   icon="mir content_copy"
                   @click="
                     handleCopy(
@@ -293,16 +293,16 @@ defineOptions({
                   "
                 />
               </div>
-              <div class="space-y-3 select-text">
+              <div class="select-text space-y-3">
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
-                  <p class="text-sm font-medium break-all">
+                  <p class="break-all text-sm font-medium">
                     {{ installationConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
-                  <p class="text-sm font-medium break-all">
+                  <p class="break-all text-sm font-medium">
                     {{ installationConfig.executable_path }}
                   </p>
                 </div>
@@ -315,7 +315,7 @@ defineOptions({
               v-if="canClose"
               @click="handleClose"
               :severity="isFinished ? 'success' : 'danger'"
-              class="w-24 h-8"
+              class="h-8 w-24"
               :icon="isFinished ? 'mir home' : 'mir close'"
               :label="
                 isFinished ? t('installation.progress.finish') : t('installation.progress.close')
