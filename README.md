@@ -37,6 +37,7 @@ Additionally, this project uses parts of the 7-Zip program which is licensed und
 
 ## Todo
 
+- [ ] Complete new features
 - [ ] Replace Powershell commands
 - [ ] Optimize UI for some languages
 - [ ] x-scrollbar of zip preview panel
