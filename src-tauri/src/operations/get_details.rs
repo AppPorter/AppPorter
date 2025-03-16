@@ -1,3 +1,4 @@
+use super::sanitize_path;
 use crate::get_7z_path;
 use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::Deserialize;
@@ -160,23 +161,4 @@ fn get_valid_str(value: &Value) -> Option<&str> {
         .as_str()
         .filter(|s| !s.trim().is_empty())
         .map(|s| s.trim())
-}
-
-// Helper function to sanitize paths by removing potentially dangerous components
-fn sanitize_path(path: &str) -> String {
-    let path = path.replace('/', "\\");
-
-    // Split the path by directory separators
-    let parts: Vec<&str> = path.split('\\').collect();
-
-    // Filter out parts that could lead to path traversal
-    let safe_parts: Vec<&str> = parts
-        .into_iter()
-        .filter(|part| {
-            !part.is_empty() && *part != "." && *part != ".." && !part.contains(':')
-            // Remove drive letters
-        })
-        .collect();
-
-    safe_parts.join("\\")
 }

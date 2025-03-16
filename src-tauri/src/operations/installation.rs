@@ -1,3 +1,4 @@
+use super::sanitize_path;
 use crate::configs::ConfigFile;
 use crate::configs::{
     app_list::{App, AppList, InstalledApp},
@@ -170,25 +171,6 @@ async fn extract_files(
     app.emit("installation_extract", 100)?;
 
     Ok(())
-}
-
-// Helper function to sanitize paths by removing potentially dangerous components
-fn sanitize_path(path: &str) -> String {
-    let path = path.replace('/', "\\");
-
-    // Split the path by directory separators
-    let parts: Vec<&str> = path.split('\\').collect();
-
-    // Filter out parts that could lead to path traversal
-    let safe_parts: Vec<&str> = parts
-        .into_iter()
-        .filter(|part| {
-            !part.is_empty() && *part != "." && *part != ".." && !part.contains(':')
-            // Remove drive letters
-        })
-        .collect();
-
-    safe_parts.join("\\")
 }
 
 fn parse_7z_list_output(output: &str) -> Vec<String> {

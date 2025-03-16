@@ -1,9 +1,9 @@
-use std::{env, fs, io, path::PathBuf};
-
 pub mod command;
 pub mod configs;
 pub mod operations;
 pub mod websocket;
+
+use std::{env, fs, io, path::PathBuf};
 
 // Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
 // The files will be stored in the temp directory: %TEMP%\AppPorter\

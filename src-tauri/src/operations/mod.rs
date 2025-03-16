@@ -1,13 +1,12 @@
-use crate::configs::settings::Settings;
-use crate::configs::ConfigFile;
-use crate::get_7z_path;
-use std::error::Error;
-
 pub mod get_details;
 pub mod installation;
 
+use crate::configs::settings::Settings;
+use crate::configs::ConfigFile;
+use crate::get_7z_path;
 pub use get_details::*;
 pub use installation::*;
+use std::error::Error;
 use tokio::process::Command;
 
 // Modifies Windows registry to enable/disable application elevation privileges
@@ -107,4 +106,23 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
         }
     }
     Ok(serde_json::to_string(&list)?)
+}
+
+// Helper function to sanitize paths by removing potentially dangerous components
+pub fn sanitize_path(path: &str) -> String {
+    let path = path.replace('/', "\\");
+
+    // Split the path by directory separators
+    let parts: Vec<&str> = path.split('\\').collect();
+
+    // Filter out parts that could lead to path traversal
+    let safe_parts: Vec<&str> = parts
+        .into_iter()
+        .filter(|part| {
+            !part.is_empty() && *part != "." && *part != ".." && !part.contains(':')
+            // Remove drive letters
+        })
+        .collect();
+
+    safe_parts.join("\\")
 }
