@@ -1,0 +1,19 @@
+name: TruffleHog OSS
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: TruffleHog OSS
+      uses: trufflesecurity/trufflehog@v3.88.17
