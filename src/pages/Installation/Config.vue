@@ -163,12 +163,12 @@ async function handleInstallClick() {
       />
     </div>
 
-    <div class="fixed bottom-4 right-6 z-40">
+    <div class="fixed bottom-4 right-10 z-40">
       <Button
         severity="primary"
         class="w-28 h-8 text-sm shadow hover:shadow-lg transition-all duration-200"
         @click="handleInstallClick"
-        icon="mir download"
+        icon="mir install_desktop"
         :label="t('installation.config.install')"
       />
     </div>
