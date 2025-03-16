@@ -10,7 +10,7 @@ pub use get_details::*;
 pub use installation::*;
 use tokio::process::Command;
 
-/// Modifies Windows registry for application elevation privileges
+// Modifies Windows registry to enable/disable application elevation privileges
 pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
     let settings = Settings::read().await?;
 
@@ -51,7 +51,6 @@ pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
     Ok("".to_owned())
 }
 
-/// Validates if a path exists and is a directory
 pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
     if !is_valid_path_format(&path) {
         return Err("Invalid drive letter or path format".into());
@@ -64,7 +63,6 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
     }
 }
 
-/// Checks if string has valid Windows path format (drive letter:\..)
 fn is_valid_path_format(path: &str) -> bool {
     let chars: Vec<char> = path.chars().collect();
     chars.first().is_some_and(|c| c.is_ascii_alphabetic())
@@ -72,12 +70,12 @@ fn is_valid_path_format(path: &str) -> bool {
         && chars.get(2).is_some_and(|c| *c == '\\')
 }
 
+// Lists contents of archive file using 7z
 pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>> {
     let output = Command::new(get_7z_path()?)
         .args([
-            "l", // Extract without full paths
-            &path, "-y",   // Auto yes to all prompts
-            "-aoa", // Overwrite all existing files without prompt
+            "l", // List contents command
+            &path, "-y", // Yes to all prompts
         ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
@@ -86,18 +84,19 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
 
+    // Parse 7z output format and extract file paths
     let mut is_output_section = false;
     let output_str = String::from_utf8_lossy(&output.stdout).to_string();
 
     let mut list: Vec<String> = Vec::new();
     for line in output_str.lines() {
         if line.contains("------------------------") {
-            // Toggle output state when separator line is found
+            // Toggle section when separator line is found
             is_output_section = !is_output_section;
             continue;
         }
 
-        // Only process lines between separators
+        // Process lines only between separators and extract file paths
         if is_output_section && !line.trim().is_empty() {
             if line.len() > 53 {
                 let file_path = line[53..].trim();

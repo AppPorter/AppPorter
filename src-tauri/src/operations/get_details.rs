@@ -15,9 +15,10 @@ pub struct ExePath {
     pub executable_path: String,
 }
 
+// Extracts metadata from an executable file within a zip archive
 pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
     app.emit("get_details", 1)?;
-    // Set up temp environment
+
     let temp_dir = tempdir()?;
 
     // Sanitize the executable path to prevent directory traversal
@@ -36,7 +37,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         Some(temp_dir_canonical.clone())
     };
 
-    // Security check: ensure path is within temp directory
+    // Ensure path is within temp directory
     if let Some(parent_path) = parent_canonical {
         if !parent_path.starts_with(&temp_dir_canonical) {
             return Err(format!(
@@ -65,7 +66,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         return Err(String::from_utf8_lossy(&output1.stderr).into());
     }
 
-    // Check if file was extracted - note that we use file_name from the sanitized path
+    // Check if file was extracted
     let file_name = Path::new(&sanitized_path).file_name().unwrap_or_default();
 
     let extracted_file = temp_dir.path().join(file_name);
@@ -80,7 +81,7 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
 
     app.emit("get_details", 2)?;
 
-    // Extract icon as data URL - use the safe extracted file path
+    // Extract icon as data URL
     let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64).unwrap_or_default();
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
@@ -131,7 +132,6 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         return Err(String::from_utf8_lossy(&output2.stderr).into());
     }
 
-    // Parse metadata with fallback priority
     let output_str = String::from_utf8_lossy(&output2.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
 
@@ -150,13 +150,11 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
 
     let copyright = get_valid_str(&details["copyright"]).unwrap_or_default();
 
-    // Clean up temporary resources
     drop(temp_dir);
 
     Ok(json!([product_name, version, copyright, icon_data_url]).to_string())
 }
 
-// Helper function to get valid non-empty string value
 fn get_valid_str(value: &Value) -> Option<&str> {
     value
         .as_str()

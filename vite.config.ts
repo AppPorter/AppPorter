@@ -9,7 +9,6 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 const host = process.env.TAURI_DEV_HOST
 
-// https://vitejs.dev/config/
 export default defineConfig(async () => ({
   css: {
     postcss: {
@@ -27,6 +26,7 @@ export default defineConfig(async () => ({
     target: 'esnext',
     rollupOptions: {
       output: {
+        // Split chunks by node_modules to optimize cache and loading performance
         manualChunks(id: string) {
           if (id.indexOf('node_modules') !== -1) {
             const basic = id.toString().split('node_modules/')[1]
@@ -47,15 +47,16 @@ export default defineConfig(async () => ({
     },
   },
 
-  // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-  //
-  // 1. prevent vite from obscuring rust errors
+  // Configuration specific to Tauri development
+
+  // Disable clearing console to preserve Rust error messages during development
   clearScreen: false,
-  // 2. tauri expects a fixed port, fail if that port is not available
+
   server: {
     port: 1420,
     strictPort: true,
     host: host || false,
+    // Configure Hot Module Replacement (HMR) for development
     hmr: host
       ? {
           protocol: 'ws',
@@ -64,7 +65,7 @@ export default defineConfig(async () => ({
         }
       : undefined,
     watch: {
-      // 3. tell vite to ignore watching `src-tauri`
+      // Exclude Rust backend code from file watching
       ignored: ['**/src-tauri/**'],
     },
   },

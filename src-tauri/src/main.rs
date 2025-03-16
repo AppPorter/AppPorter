@@ -12,20 +12,21 @@ async fn main() {
     }
 }
 
+// Main application setup and initialization
 async fn run() -> Result<(), Box<dyn Error>> {
-    // Extract 7z.exe to temp file on startup
+    // Extract and setup 7z tools
     if let Err(e) = get_7z_path() {
         eprintln!("Failed to extract 7z.exe: {}", e);
     }
 
-    // Start WebSocket server in background thread
+    // Start WebSocket server for browser extension communication
     tokio::spawn(async {
         if let Err(e) = websocket::start_websocket_server().await {
             eprintln!("WebSocket server error: {}", e);
         }
     });
 
-    // Initialize and run Tauri application
+    // Initialize Tauri with plugins and run the application
     tauri::Builder::default()
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let window = app.get_webview_window("main").expect("no main window");

@@ -5,12 +5,13 @@ pub mod configs;
 pub mod operations;
 pub mod websocket;
 
-// Function to get path to 7z.exe, creating both exe and dll if necessary
+// Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
+// The files will be stored in the temp directory: %TEMP%\AppPorter\
 pub fn get_7z_path() -> Result<PathBuf, io::Error> {
     let temp_dir = env::temp_dir().join("AppPorter");
     fs::create_dir_all(&temp_dir)?;
 
-    // Extract 7z.dll
+    // Extract and verify 7z.dll
     let seven_zip_dll_bytes = include_bytes!("../resources/7z.dll");
     let seven_zip_dll_path = temp_dir.join("7z.dll");
     if !seven_zip_dll_path.exists()
@@ -19,7 +20,7 @@ pub fn get_7z_path() -> Result<PathBuf, io::Error> {
         fs::write(&seven_zip_dll_path, seven_zip_dll_bytes)?;
     }
 
-    // Extract 7z.exe
+    // Extract and verify 7z.exe
     let seven_zip_bytes = include_bytes!("../resources/7z.exe");
     let seven_zip_path = temp_dir.join("7z.exe");
     if !seven_zip_path.exists()

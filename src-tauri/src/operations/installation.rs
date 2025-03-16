@@ -32,21 +32,16 @@ pub async fn installation(
 
     app.emit("installation", 0)?;
 
-    // Verify and prepare the installation path
     let target_path = Path::new(&app_path);
     if !target_path.exists() {
         tokio::fs::create_dir_all(target_path).await?;
     }
-
-    // Extract files
     extract_files(&zip_path, &app_path, app.clone()).await?;
 
     app.emit("installation", 101)?;
 
-    // Check if there is a single root folder in the extracted files
     let single_root = find_single_root_folder(&app_path).await?;
 
-    // Get full executable path and perform post-installation tasks
     let full_executable_path = get_full_executable_path(
         &app_path,
         &config.details.executable_path,
@@ -94,9 +89,11 @@ async fn extract_files(
 ) -> Result<(), Box<dyn Error>> {
     let path_7z = get_7z_path()?;
 
-    // First, list all files in the archive to verify them
     let output_list = tokio::process::Command::new(&path_7z)
-        .args(["l", zip_path, "-y"])
+        .args([
+            "l", // List contents command
+            zip_path, "-y", // Yes to all prompts
+        ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
@@ -105,7 +102,6 @@ async fn extract_files(
         return Err("Failed to list archive contents".into());
     }
 
-    // Parse the output to get file paths
     let output_str = String::from_utf8_lossy(&output_list.stdout);
     let paths = parse_7z_list_output(&output_str);
 
@@ -132,11 +128,11 @@ async fn extract_files(
     // If all paths are safe, proceed with extraction
     let mut child = std::process::Command::new(&path_7z)
         .args([
-            "-bsp2",
-            "x",
+            "-bsp2", // set output stream
+            "x",     // Extract files with full paths
             zip_path,
             &format!("-o{}", app_path),
-            "-y",
+            "-y",   // Yes to all prompts
             "-aoa", // Overwrite all existing files without prompt
             "-snl", // Disable symbolic links
         ])
@@ -165,16 +161,12 @@ async fn extract_files(
         }
     });
 
-    // Wait for extraction to complete
     let status = child.wait()?;
     if !status.success() {
         return Err("7-Zip extraction failed".into());
     }
-
-    // Make sure we've waited for the reading thread to finish
     handle.join().unwrap();
 
-    // Ensure extraction progress is completed
     app.emit("installation_extract", 100)?;
 
     Ok(())
@@ -199,7 +191,6 @@ fn sanitize_path(path: &str) -> String {
     safe_parts.join("\\")
 }
 
-// Helper function to parse 7z list output and extract file paths
 fn parse_7z_list_output(output: &str) -> Vec<String> {
     let mut result = Vec::new();
     let mut is_output_section = false;
@@ -242,7 +233,6 @@ async fn find_single_root_folder(app_path: &str) -> Result<Option<String>, Box<d
     Ok(None)
 }
 
-// Helper functions below
 fn get_full_executable_path(
     app_path: &str,
     executable_path: &str,
