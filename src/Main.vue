@@ -292,10 +292,10 @@ onMounted(() => {
         <span class="mir remove"></span>
       </button>
       <button
-        class="w-12 h-8 hover:bg-[#c42b1c] flex items-center justify-center"
+        class="w-12 h-8 hover:bg-[#c42b1c] flex items-center justify-center group"
         @click="handleClose"
       >
-        <span class="mir close"></span>
+        <span class="mir close group-hover:text-white"></span>
       </button>
     </div>
 
