@@ -9,6 +9,6 @@ export default {
     './app/**/*.{js,ts,tsx,vue}',
     './src/**/*.{js,ts,tsx,vue}',
   ],
-  darkMode: ['media'],
+  darkMode: ['selector'],
   plugins: [primeui],
 }

@@ -84,24 +84,27 @@ const UserColor = definePreset(Aura, {
   },
 })
 
-const theme = (() => {
-  switch (settingsStore.theme) {
-    case 'system':
-      return 'system'
-    case 'light':
-      return 'none'
-    case 'dark':
-      document.documentElement.classList.add('dark')
-      return '.dark'
+// Update theme handler
+const updateTheme = (theme: 'system' | 'light' | 'dark') => {
+  if (
+    theme === 'dark' ||
+    (theme === 'system' && globalThis.window.matchMedia('(prefers-color-scheme: dark)').matches)
+  ) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
   }
-})()
+}
+
+// Initial theme setup
+updateTheme(settingsStore.theme)
 
 app.use(PrimeVue, {
   theme: {
     preset: UserColor,
     options: {
       prefix: 'p',
-      darkModeSelector: theme,
+      darkModeSelector: '.dark',
       cssLayer: false,
     },
   },
