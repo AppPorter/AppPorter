@@ -2,17 +2,17 @@
   "select_file": "파일 선택",
   "settings": {
     "title": "설정",
-    "description": "애플리케이션 환경설정 관리",
+    "description": "애플리케이션 설정 관리",
     "basic": {
       "title": "기본 설정",
       "language": "언어",
       "theme": "테마",
-      "minimize_tray": "닫을 때 트레이로 최소화"
+      "minimize_tray": "닫을 때 시스템 트레이로 최소화"
     },
     "theme": {
-      "system": "시스템",
-      "light": "밝은 테마",
-      "dark": "어두운 테마"
+      "system": "시스템 설정",
+      "light": "라이트",
+      "dark": "다크"
     },
     "installation": {
       "title": "설치 설정",
@@ -32,18 +32,18 @@
   },
   "installation": {
     "title": "설치 패키지 선택",
-    "description": "설치할 패키지 파일을 선택하세요",
+    "description": "설치할 패키지를 선택하세요",
     "archives": "아카이브 파일",
     "browse": "찾아보기",
     "next": "다음",
     "select_placeholder": "패키지 파일을 선택하세요...",
     "progress": {
       "title": "설치 진행 상황",
-      "description": "시스템에 애플리케이션을 설치하는 중입니다",
+      "description": "시스템에 애플리케이션을 설치하고 있습니다",
       "preparing": "설치 준비 중...",
       "extracting": "파일 추출 중 ({progress}%)...",
       "preparing_extract": "파일 추출 준비 중...",
-      "completed": "설치가 성공적으로 완료되었습니다!",
+      "completed": "설치가 완료되었습니다!",
       "failed": "설치에 실패했습니다. 다시 시도해 주세요.",
       "installed_location": "설치 위치",
       "copy_path": "경로 복사",
@@ -110,20 +110,20 @@
       "processing": "처리 중"
     },
     "validation": {
-      "executable_missing": "실행 파일 누락",
-      "select_executable": "아카이브에서 실행 파일을 선택해 주세요",
-      "name_required": "애플리케이션 이름이 필요합니다",
+      "executable_missing": "실행 파일을 찾을 수 없습니다",
+      "select_executable": "압축 파일에서 실행 파일을 선택해 주세요",
+      "name_required": "애플리케이션 이름을 입력해야 합니다",
       "enter_name": "애플리케이션 이름을 입력해 주세요",
-      "path_required": "설치 경로가 필요합니다",
+      "path_required": "설치 경로를 지정해야 합니다",
       "select_path": "설치 경로를 선택해 주세요",
-      "invalid_path": "잘못된 설치 경로",
-      "select_valid_path": "유효한 설치 경로를 선택해 주세요"
+      "invalid_path": "올바르지 않은 설치 경로입니다",
+      "select_valid_path": "올바른 설치 경로를 선택해 주세요"
     }
   },
   "system": {
     "disclaimer": {
       "title": "면책 조항",
-      "message": "AppPorter를 선택해 주셔서 감사합니다. 이 소프트웨어는 \"있는 그대로\" 제공되며 어떠한 보증도 제공되지 않습니다. 이 응용 프로그램을 사용함으로써 귀하는 소프트웨어 패키징 및 배포에 관한 자신의 행동에 책임이 있음을 인정합니다. 제3자 응용 프로그램의 패키징 및 배포에 대한 적절한 권한이 있는지 확인하십시오. AppPorter 개발자는 이 도구의 오용에 대해 어떠한 책임도 지지 않습니다.",
+      "message": "AppPorter를 선택해 주셔서 감사합니다. 이 소프트웨어는 '있는 그대로' 제공되며 어떠한 보증도 제공되지 않습니다. 이 애플리케이션을 사용함으로써 소프트웨어 패키징 및 배포에 관한 모든 책임이 사용자에게 있음을 인정합니다. 제3자 애플리케이션의 패키징 및 배포에 대한 적절한 권한이 있는지 확인하시기 바랍니다. AppPorter 개발팀은 이 도구의 오용에 대해 어떠한 책임도 지지 않습니다.",
       "accept": "이해했으며 동의합니다",
       "exit": "종료"
     },
@@ -136,12 +136,12 @@
       "message": "면책 조항을 확인해 주셔서 감사합니다."
     },
     "admin": {
-      "warning": "응용 프로그램이 관리자 권한으로 실행되지 않고 있습니다. 일부 기능을 사용할 수 없을 수 있습니다.",
-      "prompt": "관리자 권한으로 응용 프로그램을 다시 시작하시겠습니까?",
-      "solve": "해결",
-      "dismiss": "지금은 무시",
-      "success": "재시작 후 적용됨",
-      "restart_message": "관리자 권한으로 실행하려면 응용 프로그램을 다시 시작해야 합니다."
+      "warning": "관리자 권한으로 실행되지 않아 일부 기능을 사용할 수 없습니다",
+      "prompt": "관리자 권한으로 다시 시작하시겠습니까?",
+      "solve": "해결하기",
+      "dismiss": "나중에 처리",
+      "success": "다시 시작 후 적용됩니다",
+      "restart_message": "관리자 권한으로 실행하려면 애플리케이션을 다시 시작해야 합니다"
     },
     "menu": {
       "installation": "설치",

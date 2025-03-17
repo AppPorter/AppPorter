@@ -2,15 +2,15 @@
   "select_file": "Datei auswählen",
   "settings": {
     "title": "Einstellungen",
-    "description": "Anwendungseinstellungen verwalten",
+    "description": "Verwalten Sie Ihre Anwendungseinstellungen",
     "basic": {
       "title": "Grundeinstellungen",
       "language": "Sprache",
-      "theme": "Design",
-      "minimize_tray": "Beim Schließen in die Taskleiste minimieren"
+      "theme": "Erscheinungsbild",
+      "minimize_tray": "Beim Schließen in den System-Tray minimieren"
     },
     "theme": {
-      "system": "System",
+      "system": "Systemeinstellung",
       "light": "Hell",
       "dark": "Dunkel"
     },
@@ -31,20 +31,20 @@
     "save_changes": "Änderungen speichern"
   },
   "installation": {
-    "title": "Installationspaket auswählen",
-    "description": "Wählen Sie eine Paketdatei zum Installieren",
+    "title": "Installationspaket wählen",
+    "description": "Wählen Sie eine Paketdatei zur Installation aus",
     "archives": "Archivdateien",
     "browse": "Durchsuchen",
     "next": "Weiter",
     "select_placeholder": "Paketdatei auswählen...",
     "progress": {
       "title": "Installationsfortschritt",
-      "description": "Installation der Anwendung auf Ihrem System",
+      "description": "Die Anwendung wird auf Ihrem System installiert",
       "preparing": "Installation wird vorbereitet...",
       "extracting": "Dateien werden extrahiert ({progress}%)...",
       "preparing_extract": "Extraktion wird vorbereitet...",
       "completed": "Installation erfolgreich abgeschlossen!",
-      "failed": "Installation fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      "failed": "Installation fehlgeschlagen. Bitte erneut versuchen.",
       "installed_location": "Installationsort",
       "copy_path": "Pfad kopieren",
       "executable_path": "Ausführbare Datei",
@@ -110,20 +110,20 @@
       "processing": "Verarbeitung"
     },
     "validation": {
-      "executable_missing": "Ausführbare Datei fehlt",
-      "select_executable": "Bitte wählen Sie eine ausführbare Datei aus dem Archiv",
-      "name_required": "Anwendungsname ist erforderlich",
+      "executable_missing": "Ausführbare Datei nicht gefunden",
+      "select_executable": "Bitte wählen Sie eine ausführbare Datei aus dem Archiv aus",
+      "name_required": "Der Anwendungsname ist erforderlich",
       "enter_name": "Bitte geben Sie einen Anwendungsnamen ein",
-      "path_required": "Installationspfad ist erforderlich",
-      "select_path": "Bitte wählen Sie einen Installationspfad",
+      "path_required": "Der Installationspfad ist erforderlich",
+      "select_path": "Bitte wählen Sie einen Installationspfad aus",
       "invalid_path": "Ungültiger Installationspfad",
-      "select_valid_path": "Bitte wählen Sie einen gültigen Installationspfad"
+      "select_valid_path": "Bitte wählen Sie einen gültigen Installationspfad aus"
     }
   },
   "system": {
     "disclaimer": {
       "title": "Haftungsausschluss",
-      "message": "Vielen Dank, dass Sie sich für AppPorter entschieden haben. Bitte beachten Sie, dass diese Software \"wie besehen\" und ohne jegliche Garantie bereitgestellt wird. Mit der Nutzung dieser Anwendung erkennen Sie an, dass Sie für Ihre eigenen Handlungen beim Verpacken und Verteilen von Software verantwortlich sind. Bitte stellen Sie sicher, dass Sie über die entsprechenden Berechtigungen zum Verpacken und Verteilen von Drittanbieter-Anwendungen verfügen. Die Entwickler von AppPorter übernehmen keine Verantwortung für den Missbrauch dieses Tools.",
+      "message": "Vielen Dank, dass Sie sich für AppPorter entschieden haben. Bitte beachten Sie, dass diese Software \"wie besehen\" und ohne jegliche Gewährleistung bereitgestellt wird. Durch die Nutzung dieser Anwendung erkennen Sie an, dass Sie für Ihre eigenen Handlungen beim Verpacken und Verteilen von Software verantwortlich sind. Stellen Sie sicher, dass Sie über die entsprechenden Berechtigungen zum Verpacken und Verteilen von Drittanbieter-Anwendungen verfügen. Die Entwickler von AppPorter übernehmen keine Haftung für Missbrauch dieses Tools.",
       "accept": "Ich verstehe und stimme zu",
       "exit": "Beenden"
     },

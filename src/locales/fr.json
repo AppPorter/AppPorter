@@ -2,12 +2,12 @@
   "select_file": "Sélectionner un fichier",
   "settings": {
     "title": "Paramètres",
-    "description": "Gérer les préférences de l'application",
+    "description": "Gérer les paramètres de l'application",
     "basic": {
       "title": "Paramètres de base",
       "language": "Langue",
       "theme": "Thème",
-      "minimize_tray": "Réduire dans la barre d'état lors de la fermeture"
+      "minimize_tray": "Réduire dans la barre d'état système à la fermeture"
     },
     "theme": {
       "system": "Système",
@@ -31,8 +31,8 @@
     "save_changes": "Enregistrer les modifications"
   },
   "installation": {
-    "title": "Sélectionner le package d'installation",
-    "description": "Sélectionnez un fichier package à installer",
+    "title": "Sélection du package d'installation",
+    "description": "Sélectionnez un package à installer",
     "archives": "Fichiers d'archive",
     "browse": "Parcourir",
     "next": "Suivant",
@@ -110,10 +110,10 @@
       "processing": "Traitement"
     },
     "validation": {
-      "executable_missing": "Exécutable manquant",
-      "select_executable": "Veuillez sélectionner un fichier exécutable dans l'archive",
+      "executable_missing": "Fichier exécutable manquant",
+      "select_executable": "Veuillez sélectionner un fichier exécutable de l'archive",
       "name_required": "Le nom de l'application est requis",
-      "enter_name": "Veuillez entrer un nom d'application",
+      "enter_name": "Veuillez saisir un nom d'application",
       "path_required": "Le chemin d'installation est requis",
       "select_path": "Veuillez sélectionner un chemin d'installation",
       "invalid_path": "Chemin d'installation invalide",
@@ -123,7 +123,7 @@
   "system": {
     "disclaimer": {
       "title": "Avis de non-responsabilité",
-      "message": "Merci d'avoir choisi AppPorter. Veuillez noter que ce logiciel est fourni \"tel quel\", sans aucune garantie. En utilisant cette application, vous reconnaissez être responsable de vos propres actions lors de l'empaquetage et de la distribution de logiciels. Assurez-vous d'avoir les autorisations appropriées pour empaqueter et distribuer toute application tierce. Les développeurs d'AppPorter n'assument aucune responsabilité pour toute utilisation abusive de cet outil.",
+      "message": "Merci d'avoir choisi AppPorter. Veuillez noter que ce logiciel est fourni \"tel quel\", sans aucune garantie. En utilisant cette application, vous reconnaissez être responsable de vos actions lors de l'empaquetage et de la distribution de logiciels. Assurez-vous de disposer des autorisations appropriées pour l'empaquetage et la distribution d'applications tierces. Les développeurs d'AppPorter déclinent toute responsabilité quant à une utilisation abusive de cet outil.",
       "accept": "Je comprends et j'accepte",
       "exit": "Quitter"
     },
@@ -137,11 +137,11 @@
     },
     "admin": {
       "warning": "L'application ne s'exécute pas avec les privilèges administrateur. Certaines fonctionnalités peuvent être indisponibles.",
-      "prompt": "Voulez-vous redémarrer l'application avec les privilèges administrateur ?",
+      "prompt": "Souhaitez-vous redémarrer l'application avec les privilèges administrateur ?",
       "solve": "Résoudre",
-      "dismiss": "Ignorer pour l'instant",
+      "dismiss": "Ignorer pour le moment",
       "success": "Effectif après le redémarrage",
-      "restart_message": "Vous devez redémarrer l'application pour l'exécuter avec les privilèges administrateur."
+      "restart_message": "Un redémarrage est nécessaire pour exécuter l'application avec les privilèges administrateur."
     },
     "menu": {
       "installation": "Installation",

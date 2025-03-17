@@ -2,12 +2,12 @@
   "select_file": "Seleccionar archivo",
   "settings": {
     "title": "Configuración",
-    "description": "Administrar preferencias de la aplicación",
+    "description": "Administrar la configuración de la aplicación",
     "basic": {
       "title": "Configuración básica",
       "language": "Idioma",
       "theme": "Tema",
-      "minimize_tray": "Minimizar a la bandeja al cerrar"
+      "minimize_tray": "Minimizar a la bandeja del sistema al cerrar"
     },
     "theme": {
       "system": "Sistema",
@@ -32,17 +32,17 @@
   },
   "installation": {
     "title": "Seleccionar paquete de instalación",
-    "description": "Seleccione un archivo de paquete para instalar",
+    "description": "Seleccione un paquete para instalar",
     "archives": "Archivos comprimidos",
     "browse": "Examinar",
     "next": "Siguiente",
     "select_placeholder": "Elegir un archivo de paquete...",
     "progress": {
       "title": "Progreso de instalación",
-      "description": "Instalando aplicación en su sistema",
-      "preparing": "Preparando instalación...",
+      "description": "Instalando la aplicación en su sistema",
+      "preparing": "Preparando la instalación...",
       "extracting": "Extrayendo archivos ({progress}%)...",
-      "preparing_extract": "Preparando para extraer archivos...",
+      "preparing_extract": "Preparando la extracción de archivos...",
       "completed": "¡Instalación completada con éxito!",
       "failed": "La instalación falló. Por favor, inténtelo de nuevo.",
       "installed_location": "Ubicación de instalación",
@@ -96,13 +96,13 @@
       "processing": "Procesando"
     },
     "validation": {
-      "executable_missing": "Falta el ejecutable",
-      "select_executable": "Por favor, seleccione un archivo ejecutable del archivo",
-      "name_required": "Se requiere el nombre de la aplicación",
-      "enter_name": "Por favor, ingrese un nombre de aplicación",
-      "path_required": "Se requiere la ruta de instalación",
+      "executable_missing": "Falta el archivo ejecutable",
+      "select_executable": "Por favor, seleccione un archivo ejecutable del paquete",
+      "name_required": "El nombre de la aplicación es obligatorio",
+      "enter_name": "Por favor, ingrese el nombre de la aplicación",
+      "path_required": "La ruta de instalación es obligatoria",
       "select_path": "Por favor, seleccione una ruta de instalación",
-      "invalid_path": "Ruta de instalación inválida",
+      "invalid_path": "Ruta de instalación no válida",
       "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
     },
     "preview": {
@@ -122,8 +122,8 @@
   },
   "system": {
     "disclaimer": {
-      "title": "Aviso Legal",
-      "message": "Gracias por elegir AppPorter. Tenga en cuenta que este software se proporciona \"tal cual\", sin ningún tipo de garantía. Al utilizar esta aplicación, usted reconoce que es responsable de sus propias acciones al empaquetar y distribuir software. Asegúrese de tener los permisos apropiados para empaquetar y distribuir cualquier aplicación de terceros. Los desarrolladores de AppPorter no asumen ninguna responsabilidad por el mal uso de esta herramienta.",
+      "title": "Aviso legal",
+      "message": "Gracias por elegir AppPorter. Tenga en cuenta que este software se proporciona \"tal cual\", sin ningún tipo de garantía. Al utilizar esta aplicación, usted reconoce que es responsable de sus propias acciones al empaquetar y distribuir software. Por favor, asegúrese de tener los permisos adecuados para empaquetar y distribuir aplicaciones de terceros. Los desarrolladores de AppPorter no asumen ninguna responsabilidad por el uso indebido de esta herramienta.",
       "accept": "Entiendo y acepto",
       "exit": "Salir"
     },
@@ -140,7 +140,7 @@
       "prompt": "¿Desea reiniciar la aplicación con privilegios de administrador?",
       "solve": "Resolver",
       "dismiss": "Ignorar por ahora",
-      "success": "Efectivo después de reiniciar",
+      "success": "Se aplicará después de reiniciar",
       "restart_message": "Necesita reiniciar la aplicación para ejecutarla con privilegios de administrador."
     },
     "menu": {
