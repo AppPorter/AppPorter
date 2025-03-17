@@ -20,6 +20,7 @@
       "desktop_shortcut": "デスクトップショートカットを作成",
       "registry_key": "レジストリキーを作成",
       "start_menu": "スタートメニューショートカットを作成",
+      "install_path": "インストールパス",
       "current_user": {
         "title": "現在のユーザー設定"
       },

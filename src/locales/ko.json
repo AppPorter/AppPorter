@@ -20,6 +20,7 @@
       "desktop_shortcut": "바탕화면 바로가기 만들기",
       "registry_key": "레지스트리 키 만들기",
       "start_menu": "시작 메뉴 바로가기 만들기",
+      "install_path": "설치 경로",
       "current_user": {
         "title": "현재 사용자 설정"
       },

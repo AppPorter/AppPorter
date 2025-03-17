@@ -20,6 +20,7 @@
       "desktop_shortcut": "创建桌面快捷方式",
       "registry_key": "创建注册表项",
       "start_menu": "创建开始菜单快捷方式",
+      "install_path": "安装路径",
       "current_user": {
         "title": "当前用户设置"
       },

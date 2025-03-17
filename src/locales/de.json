@@ -20,6 +20,7 @@
       "desktop_shortcut": "Desktop-Verknüpfung erstellen",
       "registry_key": "Registry-Schlüssel erstellen",
       "start_menu": "Startmenü-Verknüpfung erstellen",
+      "install_path": "Installationspfad",
       "current_user": {
         "title": "Einstellungen für aktuellen Benutzer"
       },

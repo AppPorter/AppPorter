@@ -20,6 +20,7 @@
       "desktop_shortcut": "Create Desktop Shortcut",
       "registry_key": "Create Registry Key",
       "start_menu": "Create Start Menu Shortcut",
+      "install_path": "Install Path",
       "current_user": {
         "title": "Current User Settings"
       },

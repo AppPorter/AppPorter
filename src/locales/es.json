@@ -20,6 +20,7 @@
       "desktop_shortcut": "Crear acceso directo en el escritorio",
       "registry_key": "Crear clave de registro",
       "start_menu": "Crear acceso directo en el menú Inicio",
+      "install_path": "Ruta de instalación",
       "current_user": {
         "title": "Configuración del usuario actual"
       },

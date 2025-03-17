@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { open } from '@tauri-apps/plugin-dialog'
+import Button from 'primevue/button'
+import InputText from 'primevue/inputtext'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settings'
@@ -42,6 +45,20 @@ watch(
   },
   { deep: true }
 )
+
+async function selectInstallPath(userType: 'current_user' | 'all_users') {
+  const selected = await open({
+    directory: true,
+  })
+
+  if (selected) {
+    if (userType === 'current_user') {
+      settings.installation.current_user.install_path = selected as string
+    } else {
+      settings.installation.all_users.install_path = selected as string
+    }
+  }
+}
 </script>
 
 <template>
@@ -137,6 +154,23 @@ watch(
                       v-model="settings.installation.current_user.create_start_menu_shortcut"
                     />
                   </div>
+                  <div class="space-y-2">
+                    <label>{{ t('settings.installation.install_path') }}</label>
+                    <div class="flex items-center gap-2">
+                      <InputText
+                        v-model="settings.installation.current_user.install_path"
+                        :placeholder="t('settings.installation.install_path')"
+                        class="h-9 flex-1 text-sm"
+                      />
+                      <Button
+                        @click="selectInstallPath('current_user')"
+                        severity="secondary"
+                        class="h-9 px-4"
+                        icon="mir folder_open"
+                        :label="t('installation.browse')"
+                      />
+                    </div>
+                  </div>
                 </div>
               </Panel>
 
@@ -164,6 +198,23 @@ watch(
                     <ToggleSwitch
                       v-model="settings.installation.all_users.create_start_menu_shortcut"
                     />
+                  </div>
+                  <div class="space-y-2">
+                    <label>{{ t('settings.installation.install_path') }}</label>
+                    <div class="flex items-center gap-2">
+                      <InputText
+                        v-model="settings.installation.all_users.install_path"
+                        :placeholder="t('settings.installation.install_path')"
+                        class="h-9 flex-1 text-sm"
+                      />
+                      <Button
+                        @click="selectInstallPath('all_users')"
+                        severity="secondary"
+                        class="h-9 px-4"
+                        icon="mir folder_open"
+                        :label="t('installation.browse')"
+                      />
+                    </div>
                   </div>
                 </div>
               </Panel>
