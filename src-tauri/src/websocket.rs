@@ -49,9 +49,9 @@ async fn handle_extension_message(msg: Message) -> Message {
     }
 }
 
-// Starts WebSocket server on port 9002 for browser extension communication
+// Starts WebSocket server on port 7535 for browser extension communication
 pub async fn start_websocket_server() -> Result<(), Box<dyn Error>> {
-    let addr = "127.0.0.1:9002";
+    let addr = "127.0.0.1:7535";
     let listener = TcpListener::bind(&addr).await?;
 
     while let Ok((stream, _)) = listener.accept().await {
