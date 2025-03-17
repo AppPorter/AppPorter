@@ -11,7 +11,6 @@ import type { TreeNode } from 'primevue/treenode'
 import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-// Store setup
 const store = useInstallationConfigStore()
 const { executable_path } = storeToRefs(store)
 
@@ -95,7 +94,7 @@ function getFileIcon(fileName: string): string {
   return 'mir draft'
 }
 
-// Tree operations
+// Format and build tree structure from flat file paths
 function buildFileTree(paths: string[]): CustomTreeNode[] {
   // Build directory map for quick lookup
   const dirMap = new Map<string, boolean>()
@@ -249,6 +248,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
   return filteredRoot
 }
 
+// Handle tree node selection (folders and files)
 function handleNodeSelect(node: TreeNode) {
   const customNode = node as CustomTreeNode
 
@@ -269,6 +269,7 @@ function handleNodeSelect(node: TreeNode) {
   }
 }
 
+// Try to automatically select an executable if there's only one at root level
 function tryAutoSelectExecutable() {
   if (!fileCache.value) return
 
@@ -283,7 +284,7 @@ function tryAutoSelectExecutable() {
   }
 }
 
-// File loading
+// Load and process archive contents
 async function loadZipContent() {
   if (!props.zipPath) return
 
@@ -339,7 +340,7 @@ async function loadZipContent() {
   }
 }
 
-// Tree expansion handlers
+// Expand all nodes in the tree
 const expandAll = () => {
   if (isExpanding.value) return
   isExpanding.value = true
@@ -359,6 +360,7 @@ const expandAll = () => {
   }
 }
 
+// Collapse all nodes in the tree
 const collapseAll = () => {
   if (isCollapsing.value) return
   isCollapsing.value = true
@@ -384,6 +386,7 @@ watchEffect(() => {
   }
 })
 
+// Setup event listeners and load initial content
 onMounted(() => {
   if (props.zipPath) loadZipContent()
 })

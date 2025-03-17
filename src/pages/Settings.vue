@@ -25,10 +25,12 @@ const themeOptions = [
   { label: t('settings.theme.dark'), value: 'dark' },
 ]
 
+// Store initial settings for change detection
 onMounted(() => {
   initialSettings.value = JSON.parse(JSON.stringify(settings.$state))
 })
 
+// Save settings and reload app when changes are detected
 watch(
   () => settings.$state,
   async (newValue) => {

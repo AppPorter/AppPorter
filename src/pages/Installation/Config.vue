@@ -7,8 +7,6 @@ import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-// Components
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 import ZipPreview from './components/ZipPreview.vue'
@@ -29,16 +27,17 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const pathError = ref('')
 const nameError = ref('')
 
+// Update progress indicator for details loading
 function handleDetailsProgress(value: number) {
   progressMode.value = 'indeterminate'
   detailsLoadingProgress.value = value
 }
 
-// Return to Home page
 function handleBackClick() {
   goTo('/Installation/Home')
 }
 
+// Handle installation process initiation
 async function handleInstallClick() {
   // Reset validation errors
   nameError.value = ''
@@ -79,13 +78,11 @@ async function handleInstallClick() {
     hasErrors = true
   }
 
-  // Stop if validation errors exist
   if (hasErrors) {
     return
   }
 
   try {
-    // Validate installation path on backend
     await invoke('execute_command', {
       command: {
         name: 'ValidatePath',
@@ -93,7 +90,7 @@ async function handleInstallClick() {
       },
     })
 
-    // Confirm installation intent
+    // Confirm installation intent and proceed
     await new Promise((resolve, reject) => {
       confirm.require({
         message: t('installation.config.confirm_install'),

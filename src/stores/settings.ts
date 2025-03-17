@@ -22,7 +22,7 @@ interface Settings {
   language: LanguageType
   theme: ThemeType
   minimize_to_tray_on_close: boolean
-  first_run: boolean // Flag to check if this is the first run
+  first_run: boolean
 
   // System info
   color: string
@@ -41,7 +41,7 @@ export const useSettingsStore = defineStore('settings', {
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
-    first_run: true, // Default to true
+    first_run: true,
 
     color: '',
     debug: false,

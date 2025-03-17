@@ -15,7 +15,6 @@ defineProps<{
   pathError: string
 }>()
 
-// Store setup
 const settingsStore = useSettingsStore()
 const {
   installation: { current_user_only: settings_current_user_only, all_users, current_user },

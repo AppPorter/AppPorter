@@ -1,18 +1,16 @@
-// Core imports
-import { useInstallationConfigStore } from '@/stores/installation_config'
-import type { Router, RouteRecordRaw } from 'vue-router'
-import { createMemoryHistory, createRouter } from 'vue-router'
-
-// Page components
 import AppList from '@/pages/AppList.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation from '@/pages/Installation/Index.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import type { Router, RouteRecordRaw } from 'vue-router'
+import { createMemoryHistory, createRouter } from 'vue-router'
 
+// Empty component for route redirection
 const Dummy = { render: () => null }
 
-// Route definitions
+// Route configuration with metadata
 const routes = [
   { path: '/', redirect: '/Installation' },
   { path: '/Installation', component: Dummy },
@@ -53,6 +51,7 @@ const routes = [
   },
 ] as unknown as RouteRecordRaw[]
 
+// Create router instance with in-memory history mode
 const router = createRouter({
   history: createMemoryHistory(),
   routes,
@@ -60,14 +59,13 @@ const router = createRouter({
 
 export function setupRouterGuards(router: Router) {
   router.beforeEach(async (to, from) => {
-    // Skip guard for same route or direct navigation
     if (to.path === from.path) {
       return true
     }
 
     const installationConfig = useInstallationConfigStore()
 
-    // Auto redirect for '/Installation' based on installationConfig.page
+    // Handle installation wizard navigation based on current page state
     if (to.path === '/Installation') {
       let path = ''
       switch (installationConfig.page) {
@@ -84,7 +82,7 @@ export function setupRouterGuards(router: Router) {
       return { path }
     }
 
-    // Clear data only when navigating to '/Installation/Home'
+    // Reset installation state when returning to home page
     if (to.path === '/Installation/Home') {
       installationConfig.$reset()
     }

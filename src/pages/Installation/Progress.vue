@@ -34,7 +34,7 @@ const fullInstallPath = computed(() => {
   return basePath
 })
 
-// Helper functions
+// Helper functions to format and display installation information
 const getInstallMode = (isCurrentUser: boolean) =>
   isCurrentUser
     ? t('settings.installation.current_user_only')
@@ -52,7 +52,7 @@ const getShortcutsList = (config: {
   return shortcuts.length ? shortcuts.join(', ') : t('installation.config.shortcuts')
 }
 
-// Copy to clipboard handler
+// Copy information to clipboard with feedback
 const handleCopy = async (text: string, type: string) => {
   try {
     await navigator.clipboard.writeText(text)
@@ -68,7 +68,7 @@ const handleCopy = async (text: string, type: string) => {
 }
 
 onMounted(() => {
-  // Initial status
+  // Initial installation setup
   currentStatus.value = t('installation.progress.preparing')
 
   // Setup event listeners for installation progress

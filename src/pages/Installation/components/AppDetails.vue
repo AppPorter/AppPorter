@@ -24,6 +24,7 @@ const { t } = useI18n()
 
 const autoConfirmed = ref(false)
 
+// Automatically fetch and update app details from the selected executable
 async function confirmSelection() {
   emit('loading', true)
   autoConfirmed.value = false
@@ -53,7 +54,6 @@ async function confirmSelection() {
     if (!details) {
       throw new Error('Invalid response format')
     }
-
     // Update app details with received data
     ;[name.value, version.value, publisher.value, icon.value] = details
 

@@ -50,7 +50,6 @@ window.onCloseRequested(async () => {
   window.hide()
 })
 
-// App setup
 const pinia = createPinia()
 const app = createApp(Main)
 

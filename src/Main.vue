@@ -5,9 +5,6 @@ import { goTo } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmPopup from 'primevue/confirmpopup'
 import ContextMenu from 'primevue/contextmenu'
@@ -18,14 +15,16 @@ import SplitButton from 'primevue/splitbutton'
 import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
+import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()
 const toast = useToast()
 const { t } = useI18n()
 
-// Global toast service for error handling
+// Global error handling toast service
 const errorToast = {
   showError: (error: unknown) => {
     let errorMessage = ''
@@ -43,7 +42,7 @@ const errorToast = {
       errorMessage = String(error)
     }
 
-    // Limit message length for better display
+    // Trim long error messages for better display
     if (errorMessage.length > 200) {
       errorMessage = errorMessage.substring(0, 200) + '...'
     }
@@ -52,17 +51,17 @@ const errorToast = {
       severity: 'error',
       summary: t('system.error.title'),
       detail: errorMessage,
-      life: 0, // Set to 0 so it will never auto-dismiss
+      life: 0, // Persist until user dismisses
     })
   },
 }
 
-// Expose errorToast for other components to use
+// Expose error handling for child components
 defineExpose({ errorToast })
 
 const dismissWarning = ref(false)
 
-// Check for first run and show disclaimer
+// First run check and disclaimer handling
 onMounted(async () => {
   if (settingsStore.first_run) {
     confirm.require({
@@ -203,6 +202,7 @@ const editMenuItems = ref<MenuItem[]>([
   },
 ])
 
+// Show context menu only for text input elements
 function handleContextMenu(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
@@ -211,6 +211,7 @@ function handleContextMenu(event: MouseEvent) {
   event.preventDefault()
 }
 
+// Route caching control
 const route = useRoute()
 const cachedComponents = computed(() => {
   return route.path !== '/Installation/Home'
@@ -220,15 +221,15 @@ onBeforeMount(() => {
   generateMaterialIconsClasses()
 })
 
-// Set up global error handling
+// Global error handling setup
 onMounted(() => {
   // Override console.error to show errors in toast
   const originalConsoleError = console.error
   console.error = function (...args) {
-    // Call the original console.error first
+    // Call original first to preserve logging
     originalConsoleError.apply(console, args)
 
-    // Extract error message and show in toast
+    // Format error message for toast display
     const errorMessage = args
       .map((arg) =>
         typeof arg === 'object' && arg !== null
@@ -242,13 +243,13 @@ onMounted(() => {
     errorToast.showError(errorMessage)
   }
 
-  // Capture uncaught errors - using globalThis.window instead of imported Tauri window
+  // Capture uncaught window errors
   globalThis.window.addEventListener('error', (event) => {
     errorToast.showError(event.error || event.message)
     return false
   })
 
-  // Capture unhandled promise rejections - using globalThis.window instead of imported Tauri window
+  // Capture unhandled promise rejections
   globalThis.window.addEventListener('unhandledrejection', (event) => {
     errorToast.showError(event.reason)
   })
@@ -257,7 +258,7 @@ onMounted(() => {
 
 <template>
   <div class="h-screen w-screen select-none" @contextmenu="handleContextMenu">
-    <!-- System Dialogs -->
+    <!-- System Dialogs and Notifications -->
     <Toast position="bottom-left" class="z-40">
       <template #message="slotProps">
         <div class="flex w-full max-w-[600px] items-center">
