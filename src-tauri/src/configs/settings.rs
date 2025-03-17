@@ -23,7 +23,6 @@ impl Default for LanguageType {
     }
 }
 
-// Add a custom enum for theme
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ThemeType {
@@ -162,7 +161,6 @@ impl Settings {
         Ok(())
     }
 
-    // Get current user's SID using PowerShell
     async fn get_user_sid(&self) -> Result<String, Box<dyn Error>> {
         let output = Command::new("powershell")
             .args([
@@ -180,7 +178,6 @@ impl Settings {
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
     }
 
-    // Check if the app is configured to run as admin
     fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error>> {
         let registry_path = format!(
             r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
@@ -218,7 +215,6 @@ impl Settings {
     }
 
     fn update_install_paths(&mut self) {
-        // Set default install paths if empty
         if self.installation.all_users.install_path.is_empty() {
             self.installation.all_users.install_path =
                 format!(r"{}:\Program Files", self.system_drive_letter);
