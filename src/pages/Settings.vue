@@ -43,7 +43,7 @@ watch(
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col overflow-auto">
+  <div class="flex size-full flex-col overflow-auto">
     <Panel class="mx-auto w-full max-w-5xl">
       <!-- Header Section -->
       <template #header>

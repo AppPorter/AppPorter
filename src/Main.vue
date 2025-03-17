@@ -258,7 +258,7 @@ onMounted(() => {
 <template>
   <div class="h-screen w-screen select-none" @contextmenu="handleContextMenu">
     <!-- System Dialogs -->
-    <Toast position="bottom-left" class="custom-toast z-40">
+    <Toast position="bottom-left" class="z-40">
       <template #message="slotProps">
         <div class="flex w-full max-w-[600px] items-center">
           <i
@@ -306,7 +306,7 @@ onMounted(() => {
     <div class="fixed z-30 w-full backdrop-blur-md">
       <div class="flex w-full items-center pr-24" style="-webkit-app-region: drag">
         <span class="flex items-center whitespace-nowrap py-3 pl-6 text-lg font-semibold">
-          <img src="/public/appporter.svg" class="mr-1" />AppPorter
+          <img src="./assets/appporter.svg" class="mr-1" />AppPorter
         </span>
 
         <!-- Admin Privileges Warning -->

@@ -37,7 +37,7 @@ async function selectZipFile() {
 </script>
 
 <template>
-  <div class="flex h-full w-full items-center justify-center">
+  <div class="flex size-full items-center justify-center">
     <Panel class="h-52 w-full max-w-3xl px-4 shadow-sm">
       <template #header>
         <div class="flex items-center gap-2">

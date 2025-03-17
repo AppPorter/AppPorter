@@ -129,9 +129,9 @@ async function handleInstallClick() {
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col overflow-hidden">
+  <div class="flex size-full flex-col overflow-hidden">
     <div class="flex flex-1 flex-wrap gap-4 overflow-auto p-1 md:flex-nowrap">
-      <div class="min-w-[18rem] flex-1 space-y-2">
+      <div class="min-w-72 flex-1 space-y-2">
         <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         <AppDetails
           :name-error="nameError"
@@ -141,7 +141,7 @@ async function handleInstallClick() {
         />
       </div>
 
-      <div class="h-full max-h-[calc(100vh-11rem)] w-full min-w-[18rem] md:w-[40%]">
+      <div class="size-full max-h-[calc(100vh-11rem)] min-w-72 md:w-2/5">
         <ZipPreview
           :zip-path="zip_path"
           :details-loading="detailsLoading"

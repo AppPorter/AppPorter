@@ -10,7 +10,15 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  ...pluginVue.configs['flat/recommended'],
+  ...pluginVue.configs['flat/base'],
   ...tailwind.configs['flat/recommended'],
+  {
+    files: ['**/*.{js,mjs,cjs,ts,vue}'],
+    plugins: { tailwindcss: tailwind },
+    rules: {
+      'tailwindcss/no-custom-classname': 'off',
+      '@typescript-eslint/no-unused-vars': 'warn',
+    },
+  },
   { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tseslint.parser } } },
 ]

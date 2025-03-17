@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
-import Color from 'color'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
@@ -14,7 +12,6 @@ import { computed, nextTick, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Store setup
-const settingsStore = useSettingsStore()
 const store = useInstallationConfigStore()
 const { executable_path } = storeToRefs(store)
 
@@ -72,11 +69,6 @@ const loadingProgress = ref(0)
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const isExpanding = ref(false)
 const isCollapsing = ref(false)
-const selectedColor = ref(
-  Color(settingsStore.color)
-    .lightness(window.matchMedia('(prefers-color-scheme: dark)').matches ? 80 : 20)
-    .hex()
-)
 
 // Computed properties
 const filteredPaths = computed(() => {
@@ -433,7 +425,7 @@ onMounted(() => {
       <!-- Main content area - flex-1 to take all available space -->
       <div class="flex flex-1 flex-col overflow-hidden">
         <!-- Filter Controls -->
-        <div class="mb-2 flex-shrink-0">
+        <div class="mb-2 shrink-0">
           <div class="space-y-1.5 rounded-md p-2">
             <div
               v-for="mode in Object.values(FILTER_MODES)"
@@ -462,7 +454,7 @@ onMounted(() => {
             :value="fileTree"
             v-model:selectionKeys="selectedNode"
             v-model:expandedKeys="expandedKeys"
-            class="h-full w-full"
+            class="size-full"
             selectionMode="single"
             toggleOnClick
             @node-select="handleNodeSelect"

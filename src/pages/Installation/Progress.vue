@@ -136,13 +136,13 @@ defineOptions({
 </script>
 
 <template>
-  <div class="flex h-full w-full flex-col">
+  <div class="flex size-full flex-col">
     <div class="flex-1 overflow-auto p-1.5 pb-6">
       <Panel class="mx-auto w-full max-w-5xl border shadow-sm">
         <template #header>
           <div class="flex w-full min-w-0 items-center justify-between py-1">
             <!-- Progress Title -->
-            <div class="flex min-w-0 flex-shrink items-center gap-2">
+            <div class="flex min-w-0 shrink items-center gap-2">
               <div class="shrink-0 rounded-md p-1.5">
                 <span
                   class="mir text-xl"
@@ -154,7 +154,7 @@ defineOptions({
                   ]"
                 ></span>
               </div>
-              <div class="min-w-0 flex-shrink">
+              <div class="min-w-0 shrink">
                 <h2 class="text-lg font-medium">
                   {{ t('installation.progress.title') }}
                 </h2>
@@ -178,12 +178,12 @@ defineOptions({
                 </p>
               </div>
               <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
+                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
               >
                 <img
                   v-if="installationConfig.icon"
                   :src="installationConfig.icon"
-                  class="h-8 w-8 object-contain"
+                  class="size-8 object-contain"
                   alt="App Icon"
                 />
                 <span v-else class="mir apps text-2xl"></span>

@@ -1,5 +1,5 @@
 <div align="center">
-<img src="public/appporter.svg" width="128" height="128" alt="AppPorter">
+<img src="src/assets/appporter.svg" width="128" height="128" alt="AppPorter">
 <h1>AppPorter</h1>
 <p>Simplify the installation and management of portable software</p>
 </div>

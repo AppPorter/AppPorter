@@ -108,9 +108,9 @@ function clearIcon() {
           <div class="flex items-center gap-2">
             <div class="group relative">
               <div
-                class="flex h-12 w-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600"
+                class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600"
               >
-                <img v-if="icon" :src="icon" class="h-12 w-12 object-contain" alt="App Icon" />
+                <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
                 <span v-else class="mir apps text-2xl" />
               </div>
               <Button
@@ -182,7 +182,7 @@ function clearIcon() {
 
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 flex flex-col items-center justify-center gap-[0.5rem] backdrop-blur-[0.125rem]"
+      class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.app_details.loading_details') }}
