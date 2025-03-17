@@ -2,6 +2,15 @@
 <img src="src/assets/appporter.svg" width="128" height="128" alt="AppPorter">
 <h1>AppPorter</h1>
 <p>Simplify the installation and management of portable software</p>
+
+[![License](https://img.shields.io/github/license/AppPorter/AppPorter)](/LICENSE)
+![Vue](https://img.shields.io/badge/Vue-41b883)
+![Rust](https://img.shields.io/badge/Rust-dea584)
+
+![Repo Size](https://img.shields.io/github/repo-size/AppPorter/AppPorter)
+[![Github Release](https://img.shields.io/github/v/release/AppPorter/AppPorter?filter=*)](https://github.com/AppPorter/AppPorter/releases)
+![GitHub Downloads](https://img.shields.io/github/downloads/AppPorter/AppPorter/total)
+
 </div>
 
 ## Overview
