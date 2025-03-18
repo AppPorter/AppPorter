@@ -5,6 +5,8 @@ import Column from 'primevue/column'
 import ConfirmDialog from 'primevue/confirmdialog'
 import type { DataTableRowContextMenuEvent } from 'primevue/datatable'
 import DataTable from 'primevue/datatable'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Menu from 'primevue/menu'
 import Panel from 'primevue/panel'
@@ -119,7 +121,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="flex size-full flex-col p-4">
+  <div class="flex size-full flex-col overflow-auto">
     <Panel class="mb-4 border shadow-sm">
       <template #header>
         <div class="flex w-full items-center justify-between">
@@ -131,14 +133,16 @@ onMounted(() => {
             </div>
           </div>
 
-          <span class="p-input-icon-left">
-            <i class="mir search" />
+          <IconField>
+            <InputIcon>
+              <i class="mir search" />
+            </InputIcon>
             <InputText
               v-model="filters.global.value"
               :placeholder="t('app_list.search')"
               class="h-8 text-sm"
             />
-          </span>
+          </IconField>
         </div>
       </template>
 
@@ -185,11 +189,11 @@ onMounted(() => {
           </template>
         </Column>
 
-        <Column field="details.publisher" :header="t('app_list.publisher')" sortable />
-
-        <Column field="timestamp" :header="t('app_list.installed_date')" sortable>
+        <Column field="details.publisher" :header="t('app_list.publisher')" sortable>
           <template #body="slotProps">
-            {{ formatTimestamp(slotProps.data.timestamp) }}
+            <div class="break-all text-sm">
+              {{ slotProps.data.details.publisher }}
+            </div>
           </template>
         </Column>
 
@@ -198,6 +202,12 @@ onMounted(() => {
             <div class="break-all text-sm">
               {{ slotProps.data.details.install_path }}
             </div>
+          </template>
+        </Column>
+
+        <Column field="timestamp" :header="t('app_list.installed_date')" sortable>
+          <template #body="slotProps">
+            {{ formatTimestamp(slotProps.data.timestamp) }}
           </template>
         </Column>
 
