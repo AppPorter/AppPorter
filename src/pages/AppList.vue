@@ -122,7 +122,7 @@ onMounted(() => {
 
 <template>
   <div class="flex size-full flex-col overflow-auto">
-    <Panel class="mb-4 border shadow-sm">
+    <Panel class="mb-4 size-full">
       <template #header>
         <div class="flex w-full items-center justify-between">
           <div class="flex items-center gap-2">
