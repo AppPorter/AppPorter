@@ -8,14 +8,13 @@ import { exit } from '@tauri-apps/plugin-process'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmPopup from 'primevue/confirmpopup'
 import ContextMenu from 'primevue/contextmenu'
-import Menubar from 'primevue/menubar'
 import type { MenuItem } from 'primevue/menuitem'
 import Message from 'primevue/message'
 import SplitButton from 'primevue/splitbutton'
 import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
 import { useToast } from 'primevue/usetoast'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
@@ -160,18 +159,21 @@ const menuItems = [
     label: t('system.menu.installation'),
     icon: 'mir-install_desktop',
     command: () => goTo('/'),
+    paths: ['/Installation/Home', '/Installation/Config', '/Installation/Progress'],
   },
   {
     label: t('system.menu.applist'),
     icon: 'mir-apps',
     command: () => goTo('/AppList'),
+    paths: ['/AppList'],
   },
   { separator: true },
   {
     label: t('system.menu.settings'),
     icon: 'mir-settings',
     command: () => goTo('/Settings'),
-    class: 'absolute right-7',
+    paths: ['/Settings'],
+    class: 'right',
   },
 ]
 
@@ -215,6 +217,30 @@ function handleContextMenu(event: MouseEvent) {
 const route = useRoute()
 const cachedComponents = computed(() => {
   return route.path !== '/Installation/Home'
+})
+
+const currentPath = ref(route.path)
+
+// Define type for menu item
+interface NavMenuItem {
+  label?: string
+  icon?: string
+  command?: () => void
+  paths?: string[]
+  separator?: boolean
+  class?: string
+}
+
+// Get active menu item style
+const getActiveClass = (item: NavMenuItem) => {
+  return item.paths?.includes(currentPath.value)
+    ? 'after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-primary-500 dark:after:bg-primary-400 text-primary-700 dark:text-primary-300'
+    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
+}
+
+// Update current path when route changes
+watch(route, (newRoute) => {
+  currentPath.value = newRoute.path
 })
 
 onBeforeMount(() => {
@@ -334,7 +360,40 @@ onMounted(() => {
 
       <!-- Navigation Menu -->
       <div class="flex px-4">
-        <Menubar :model="menuItems" class="w-full border-none shadow-none" />
+        <div
+          class="flex w-full items-center justify-between gap-1 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-900/80"
+        >
+          <div class="flex items-center gap-1">
+            <button
+              v-for="item in menuItems"
+              :key="item.label"
+              v-show="!item.separator && !item.class?.includes('right')"
+              :class="[
+                'relative flex items-center gap-2 px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
+                getActiveClass(item),
+              ]"
+              @click="item.command"
+            >
+              <i :class="item.icon" />
+              <span>{{ item.label }}</span>
+            </button>
+          </div>
+          <div class="flex items-center gap-1">
+            <button
+              v-for="item in menuItems"
+              :key="item.label"
+              v-show="!item.separator && item.class?.includes('right')"
+              :class="[
+                'relative flex items-center gap-2 px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
+                getActiveClass(item),
+              ]"
+              @click="item.command"
+            >
+              <i :class="item.icon" />
+              <span>{{ item.label }}</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
 
