@@ -156,5 +156,24 @@
       "paste": "Pegar",
       "select_all": "Seleccionar todo"
     }
+  },
+  "app_list": {
+    "installed_apps": "Aplicaciones instaladas",
+    "description": "Administrar aplicaciones instaladas",
+    "search": "Buscar aplicaciones",
+    "name": "Nombre",
+    "publisher": "Editor",
+    "location": "Ubicación de instalación",
+    "installed_date": "Fecha de instalación",
+    "open": "Abrir",
+    "uninstall": "Desinstalar",
+    "opening_app": "Abriendo aplicación",
+    "confirm_uninstall_header": "Confirmar desinstalación",
+    "confirm_uninstall_message": "¿Está seguro de que desea desinstalar {name}?",
+    "uninstall_success": "Desinstalación exitosa",
+    "cancel": "Cancelar",
+    "no_apps_found": "No se encontraron aplicaciones instaladas",
+    "install_first": "Por favor, instale una aplicación primero",
+    "load_failed": "Error al cargar la lista de aplicaciones"
   }
 }

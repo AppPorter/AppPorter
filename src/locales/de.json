@@ -156,5 +156,24 @@
       "paste": "Einfügen",
       "select_all": "Alles auswählen"
     }
+  },
+  "app_list": {
+    "installed_apps": "Installierte Anwendungen",
+    "description": "Verwaltung installierter Anwendungen",
+    "search": "Anwendungen suchen",
+    "name": "Name",
+    "publisher": "Herausgeber",
+    "location": "Installationsort",
+    "installed_date": "Installationsdatum",
+    "open": "Öffnen",
+    "uninstall": "Deinstallieren",
+    "opening_app": "Öffne Anwendung",
+    "confirm_uninstall_header": "Deinstallation bestätigen",
+    "confirm_uninstall_message": "Möchten Sie {name} wirklich deinstallieren?",
+    "uninstall_success": "Erfolgreich deinstalliert",
+    "cancel": "Abbrechen",
+    "no_apps_found": "Keine installierten Anwendungen gefunden",
+    "install_first": "Bitte installieren Sie zuerst eine Anwendung",
+    "load_failed": "Laden der Anwendungsliste fehlgeschlagen"
   }
 }

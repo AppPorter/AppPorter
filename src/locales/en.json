@@ -156,5 +156,24 @@
       "paste": "Paste",
       "select_all": "Select All"
     }
+  },
+  "app_list": {
+    "installed_apps": "Installed Apps",
+    "description": "Manage your installed applications",
+    "search": "Search apps",
+    "name": "Name",
+    "publisher": "Publisher",
+    "location": "Installation Location",
+    "installed_date": "Install Date",
+    "open": "Open",
+    "uninstall": "Uninstall",
+    "opening_app": "Opening app",
+    "confirm_uninstall_header": "Confirm Uninstall",
+    "confirm_uninstall_message": "Are you sure you want to uninstall {name}?",
+    "uninstall_success": "Successfully uninstalled",
+    "cancel": "Cancel",
+    "no_apps_found": "No installed apps found",
+    "install_first": "Please install an application first",
+    "load_failed": "Failed to load app list"
   }
 }

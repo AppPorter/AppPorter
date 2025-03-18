@@ -156,5 +156,24 @@
       "paste": "Coller",
       "select_all": "Tout sélectionner"
     }
+  },
+  "app_list": {
+    "installed_apps": "Applications installées",
+    "description": "Gérer les applications installées",
+    "search": "Rechercher des applications",
+    "name": "Nom",
+    "publisher": "Éditeur",
+    "location": "Emplacement d'installation",
+    "installed_date": "Date d'installation",
+    "open": "Ouvrir",
+    "uninstall": "Désinstaller",
+    "opening_app": "Ouverture de l'application",
+    "confirm_uninstall_header": "Confirmer la désinstallation",
+    "confirm_uninstall_message": "Voulez-vous vraiment désinstaller {name} ?",
+    "uninstall_success": "Désinstallation réussie",
+    "cancel": "Annuler",
+    "no_apps_found": "Aucune application installée trouvée",
+    "install_first": "Veuillez d'abord installer une application",
+    "load_failed": "Échec du chargement de la liste des applications"
   }
 }

@@ -156,5 +156,24 @@
       "paste": "粘贴",
       "select_all": "全选"
     }
+  },
+  "app_list": {
+    "installed_apps": "已安装的应用",
+    "description": "管理已安装的应用程序",
+    "search": "搜索应用",
+    "name": "名称",
+    "publisher": "发布者",
+    "location": "安装位置",
+    "installed_date": "安装日期",
+    "open": "打开",
+    "uninstall": "卸载",
+    "opening_app": "正在打开应用",
+    "confirm_uninstall_header": "确认卸载",
+    "confirm_uninstall_message": "确定要卸载 {name} 吗？",
+    "uninstall_success": "卸载成功",
+    "cancel": "取消",
+    "no_apps_found": "未找到已安装的应用",
+    "install_first": "请先安装应用程序",
+    "load_failed": "加载应用列表失败"
   }
 }
