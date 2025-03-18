@@ -36,7 +36,7 @@ async function selectZipFile() {
     <Panel class="h-52 w-full max-w-3xl px-4 shadow-sm">
       <template #header>
         <div class="flex items-center gap-2">
-          <span class="mir folder_zip text-xl"></span>
+          <span class="mir-folder_zip text-xl"></span>
           <div>
             <h2 class="text-lg font-medium">{{ t('installation.title') }}</h2>
             <p class="mt-0.5 text-xs">{{ t('installation.description') }}</p>
@@ -57,7 +57,7 @@ async function selectZipFile() {
             @click="selectZipFile"
             severity="secondary"
             class="h-9 px-4"
-            icon="mir folder_open"
+            icon="mir-folder_open"
             :label="t('installation.browse')"
           />
         </div>
@@ -69,7 +69,7 @@ async function selectZipFile() {
             :disabled="!zip_path"
             severity="primary"
             class="h-9 px-6"
-            icon="mir navigate_next"
+            icon="mir-navigate_next"
             :label="t('installation.next')"
           />
         </div>

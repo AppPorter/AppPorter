@@ -76,7 +76,7 @@ function clearIcon() {
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1.5">
-          <span class="mir apps"></span>
+          <span class="mir-apps"></span>
           <h2 class="text-base font-medium">
             {{ t('installation.app_details.title') }}
           </h2>
@@ -86,7 +86,7 @@ function clearIcon() {
           class="h-8 min-w-[6.5rem] transition-all duration-200"
           :disabled="detailsLoading || executable_path === ''"
           @click="confirmSelection"
-          :icon="autoConfirmed ? 'mir verified' : 'mir auto_awesome'"
+          :icon="autoConfirmed ? 'mir-verified' : 'mir-auto_awesome'"
           :label="
             autoConfirmed
               ? t('installation.app_details.auto_filled')
@@ -111,7 +111,7 @@ function clearIcon() {
                 class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600"
               >
                 <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
-                <span v-else class="mir apps text-2xl" />
+                <span v-else class="mir-apps text-2xl" />
               </div>
               <Button
                 v-if="icon"
@@ -122,7 +122,7 @@ function clearIcon() {
                 class="invisible !absolute !-right-1.5 !-top-1.5 !h-5 !w-5 !min-w-0 scale-75 !p-0 opacity-0 transition-all duration-200 ease-out hover:scale-110 group-hover:visible group-hover:scale-100 group-hover:opacity-100"
                 @click="clearIcon"
               >
-                <span class="mir close !text-xs" />
+                <span class="mir-close !text-xs" />
               </Button>
             </div>
             <span v-if="!icon" class="text-xs">

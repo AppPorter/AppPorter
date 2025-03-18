@@ -145,9 +145,9 @@ defineOptions({
             <div class="flex min-w-0 shrink items-center gap-2">
               <div class="shrink-0 rounded-md p-1.5">
                 <span
-                  class="mir text-xl"
+                  class="mir-text-xl"
                   :class="[
-                    isFinished ? 'task_alt' : 'install_desktop',
+                    isFinished ? 'mir-task_alt' : 'mir-install_desktop',
                     isFinished
                       ? 'text-green-600 dark:text-green-400'
                       : 'text-primary-600 dark:text-primary-400',
@@ -186,7 +186,7 @@ defineOptions({
                   class="size-8 object-contain"
                   alt="App Icon"
                 />
-                <span v-else class="mir apps text-2xl"></span>
+                <span v-else class="mir-apps text-2xl"></span>
               </div>
             </div>
           </div>
@@ -207,7 +207,7 @@ defineOptions({
           >
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
-                <span class="mir terminal"></span>
+                <span class="mir-terminal"></span>
                 <span class="text-sm font-medium">{{
                   t('installation.progress.installed_location')
                 }}</span>
@@ -217,7 +217,7 @@ defineOptions({
                 outlined
                 v-tooltip.top="t('installation.progress.copy_path')"
                 class="h-7 w-8"
-                icon="mir content_copy"
+                icon="mir-content_copy"
                 @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
               />
             </div>
@@ -230,7 +230,7 @@ defineOptions({
             <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
               <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
-                  <span class="mir settings"></span>
+                  <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.install_settings')
                   }}</span>
@@ -240,7 +240,7 @@ defineOptions({
                   outlined
                   v-tooltip.top="t('installation.progress.copy_settings')"
                   class="h-7 w-8"
-                  icon="mir content_copy"
+                  icon="mir-content_copy"
                   @click="
                     handleCopy(
                       `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
@@ -274,7 +274,7 @@ defineOptions({
             <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
               <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
-                  <span class="mir folder_zip"></span>
+                  <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.package_info')
                   }}</span>
@@ -284,7 +284,7 @@ defineOptions({
                   outlined
                   v-tooltip.top="t('installation.progress.copy_package_info')"
                   class="h-7 w-8"
-                  icon="mir content_copy"
+                  icon="mir-content_copy"
                   @click="
                     handleCopy(
                       `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
@@ -316,7 +316,7 @@ defineOptions({
               @click="handleClose"
               :severity="isFinished ? 'success' : 'danger'"
               class="h-8 w-24"
-              :icon="isFinished ? 'mir home' : 'mir close'"
+              :icon="isFinished ? 'mir-home' : 'mir-close'"
               :label="
                 isFinished ? t('installation.progress.finish') : t('installation.progress.close')
               "

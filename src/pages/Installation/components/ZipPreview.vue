@@ -37,13 +37,13 @@ const { t } = useI18n()
 
 // Constants
 const FILTER_MODES = {
-  exe: { value: 'exe', label: t('installation.preview.filter.exe'), icon: 'mir terminal' },
+  exe: { value: 'exe', label: t('installation.preview.filter.exe'), icon: 'mir-terminal' },
   executable: {
     value: 'executable',
     label: t('installation.preview.filter.executable'),
-    icon: 'mir code',
+    icon: 'mir-code',
   },
-  all: { value: 'all', label: t('installation.preview.filter.all'), icon: 'mir description' },
+  all: { value: 'all', label: t('installation.preview.filter.all'), icon: 'mir-description' },
 }
 
 // Props & emits
@@ -89,9 +89,9 @@ const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 // Utility functions
 function getFileIcon(fileName: string): string {
   const lower = fileName.toLowerCase()
-  if (lower.endsWith('.exe')) return 'mir terminal'
-  if (/\.(ps1|bat)$/i.test(lower)) return 'mir code'
-  return 'mir draft'
+  if (lower.endsWith('.exe')) return 'mir-terminal'
+  if (/\.(ps1|bat)$/i.test(lower)) return 'mir-code'
+  return 'mir-draft'
 }
 
 // Format and build tree structure from flat file paths
@@ -398,7 +398,7 @@ onMounted(() => {
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1">
-          <span class="mir folder_zip text-lg"></span>
+          <span class="mir-folder_zip text-lg"></span>
           <span class="text-base font-medium">{{ t('installation.preview.title') }}</span>
         </div>
         <div class="ml-2 flex gap-1">
@@ -409,7 +409,7 @@ onMounted(() => {
             :disabled="isExpanding"
             v-tooltip.bottom="t('installation.preview.expand_all')"
             @click="expandAll"
-            :icon="isExpanding ? 'mir progress_activity' : 'mir unfold_more'"
+            :icon="isExpanding ? 'mir-progress_activity' : 'mir-unfold_more'"
           />
           <Button
             type="button"
@@ -418,7 +418,7 @@ onMounted(() => {
             :disabled="isCollapsing"
             v-tooltip.bottom="t('installation.preview.collapse_all')"
             @click="collapseAll"
-            :icon="isCollapsing ? 'mir progress_activity' : 'mir unfold_less'"
+            :icon="isCollapsing ? 'mir-progress_activity' : 'mir-unfold_less'"
           />
         </div>
       </div>
@@ -468,7 +468,7 @@ onMounted(() => {
             v-if="hasScanned && isEmpty"
             class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
           >
-            <span class="mir folder_off text-4xl"></span>
+            <span class="mir-folder_off text-4xl"></span>
             <p class="text-sm">
               {{ t('installation.preview.no_files') }}
             </p>

@@ -75,7 +75,7 @@ watchEffect(() => {
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <span class="mir settings text-lg"></span>
+          <span class="mir-settings text-lg"></span>
           <h2 class="text-base font-medium">
             {{ t('installation.config.installation_options') }}
           </h2>
@@ -117,7 +117,7 @@ watchEffect(() => {
             class="h-8 w-36"
             severity="secondary"
             @click="select_install_path"
-            icon="mir folder_open"
+            icon="mir-folder_open"
             :label="t('installation.config.browse')"
           />
         </div>

@@ -59,12 +59,12 @@ function showMenu(event: DataTableRowContextMenuEvent) {
 const menuItems = computed(() => [
   {
     label: t('app_list.open'),
-    icon: 'mir terminal',
+    icon: 'mir-terminal',
     command: () => openApp(),
   },
   {
     label: t('app_list.uninstall'),
-    icon: 'mir close',
+    icon: 'mir-close',
     command: () => confirmUninstall(),
   },
 ])
@@ -86,7 +86,7 @@ function confirmUninstall() {
   confirm.require({
     message: t('app_list.confirm_uninstall_message', { name: selectedApp.value.details.name }),
     header: t('app_list.confirm_uninstall_header'),
-    icon: 'mir warning',
+    icon: 'mir-warning',
     acceptLabel: t('app_list.uninstall'),
     rejectLabel: t('app_list.cancel'),
     accept: uninstallApp,
@@ -126,7 +126,7 @@ onMounted(() => {
       <template #header>
         <div class="flex w-full items-center justify-between">
           <div class="flex items-center gap-2">
-            <span class="mir apps text-xl"></span>
+            <span class="mir-apps text-xl"></span>
             <div>
               <h2 class="text-lg font-medium">{{ t('app_list.installed_apps') }}</h2>
               <p class="mt-0.5 text-xs">{{ t('app_list.description') }}</p>
@@ -135,7 +135,7 @@ onMounted(() => {
 
           <IconField>
             <InputIcon>
-              <i class="mir search" />
+              <i class="mir-search" />
             </InputIcon>
             <InputText
               v-model="filters.global.value"
@@ -172,7 +172,7 @@ onMounted(() => {
                   class="size-8 object-contain"
                   alt="App Icon"
                 />
-                <span v-else class="mir apps text-2xl"></span>
+                <span v-else class="mir-apps text-2xl"></span>
               </div>
             </div>
           </template>
@@ -214,7 +214,7 @@ onMounted(() => {
         <Column :exportable="false" style="width: 4rem">
           <template #body="slotProps">
             <Button
-              icon="mir more_vert"
+              icon="mir-more_vert"
               outlined
               severity="secondary"
               class="size-8 p-0"
@@ -232,7 +232,7 @@ onMounted(() => {
 
         <template #empty>
           <div class="flex flex-col items-center justify-center py-8">
-            <span class="mir apps text-4xl opacity-30"></span>
+            <span class="mir-apps text-4xl opacity-30"></span>
             <p class="mt-2 text-center">{{ t('app_list.no_apps_found') }}</p>
             <p class="text-center text-sm opacity-70">{{ t('app_list.install_first') }}</p>
           </div>

@@ -68,16 +68,16 @@ onMounted(async () => {
       group: 'disclaimer',
       header: t('system.disclaimer.title'),
       message: t('system.disclaimer.message'),
-      icon: 'mir info',
+      icon: 'mir-info',
       acceptLabel: t('system.disclaimer.accept'),
       acceptProps: {
         label: t('system.disclaimer.accept'),
-        icon: 'mir check',
+        icon: 'mir-check',
         severity: 'primary',
       },
       rejectProps: {
         label: t('system.disclaimer.exit'),
-        icon: 'mir close',
+        icon: 'mir-close',
         severity: 'secondary',
         outlined: true,
       },
@@ -116,7 +116,7 @@ const handleAdminPrompt = (event) => {
     target: event.currentTarget,
     message: t('system.admin.prompt'),
     group: 'admin_popup',
-    icon: 'mir warning',
+    icon: 'mir-warning',
     rejectProps: {
       label: t('system.admin.dismiss'),
       severity: 'secondary',
@@ -158,18 +158,18 @@ const warningActions = [
 const menuItems = [
   {
     label: t('system.menu.installation'),
-    icon: 'mir install_desktop',
+    icon: 'mir-install_desktop',
     command: () => goTo('/'),
   },
   {
     label: t('system.menu.applist'),
-    icon: 'mir apps',
+    icon: 'mir-apps',
     command: () => goTo('/AppList'),
   },
   { separator: true },
   {
     label: t('system.menu.settings'),
-    icon: 'mir settings',
+    icon: 'mir-settings',
     command: () => goTo('/Settings'),
     class: 'absolute right-7',
   },
@@ -180,24 +180,24 @@ const contextMenu = ref()
 const editMenuItems = ref<MenuItem[]>([
   {
     label: t('system.edit.cut'),
-    icon: 'mir content_cut',
+    icon: 'mir-content_cut',
     command: () => document.execCommand('cut'),
   },
   {
     label: t('system.edit.copy'),
-    icon: 'mir content_copy',
+    icon: 'mir-content_copy',
     command: () => document.execCommand('copy'),
   },
   {
     label: t('system.edit.paste'),
-    icon: 'mir content_paste',
+    icon: 'mir-content_paste',
     command: async () =>
       document.execCommand('insertText', false, await navigator.clipboard.readText()),
   },
   { separator: true },
   {
     label: t('system.edit.select_all'),
-    icon: 'mir select_all',
+    icon: 'mir-select_all',
     command: () => document.execCommand('selectAll'),
   },
 ])
@@ -264,7 +264,7 @@ onMounted(() => {
         <div class="flex w-full max-w-[600px] items-center">
           <i
             :class="[
-              'mir mr-2 text-lg',
+              'mir-mr-2 text-lg',
               {
                 info: slotProps.message.severity === 'info',
                 warning: slotProps.message.severity === 'warn',
@@ -293,13 +293,13 @@ onMounted(() => {
         class="flex h-8 w-12 items-center justify-center hover:bg-[#e9e9e9] dark:hover:bg-[#2d2d2d]"
         @click="handleMinimize"
       >
-        <span class="mir remove" />
+        <span class="mir-remove" />
       </button>
       <button
         class="group flex h-8 w-12 items-center justify-center hover:bg-[#c42b1c]"
         @click="handleClose"
       >
-        <span class="mir close group-hover:text-white" />
+        <span class="mir-close group-hover:text-white" />
       </button>
     </div>
 
@@ -316,7 +316,7 @@ onMounted(() => {
           size="small"
           severity="warn"
           class="mx-4 w-full py-0"
-          icon="mir warning"
+          icon="mir-warning"
         >
           {{ t('system.admin.warning') }}
           <ConfirmPopup group="admin_popup" />

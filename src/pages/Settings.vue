@@ -67,7 +67,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
       <!-- Header Section -->
       <template #header>
         <div class="flex items-center gap-2">
-          <span class="mir settings text-xl"></span>
+          <span class="mir-settings text-xl"></span>
           <div>
             <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
             <p class="mt-0.5 text-xs">{{ t('settings.description') }}</p>
@@ -80,7 +80,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
         <Panel>
           <template #header>
             <div class="flex items-center gap-2">
-              <span class="mir tune"></span>
+              <span class="mir-tune"></span>
               <span>{{ t('settings.basic.title') }}</span>
             </div>
           </template>
@@ -116,7 +116,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
         <Panel>
           <template #header>
             <div class="flex items-center gap-2">
-              <span class="mir install_desktop"></span>
+              <span class="mir-install_desktop"></span>
               <span>{{ t('settings.installation.title') }}</span>
             </div>
           </template>
@@ -131,7 +131,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
               <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
-                    <span class="mir person"></span>
+                    <span class="mir-person"></span>
                     <span>{{ t('settings.installation.current_user.title') }}</span>
                   </div>
                 </template>
@@ -166,7 +166,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
                         @click="selectInstallPath('current_user')"
                         severity="secondary"
                         class="h-9 px-4"
-                        icon="mir folder_open"
+                        icon="mir-folder_open"
                         :label="t('installation.browse')"
                       />
                     </div>
@@ -178,7 +178,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
               <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
-                    <span class="mir group"></span>
+                    <span class="mir-group"></span>
                     <span>{{ t('settings.installation.all_users.title') }}</span>
                   </div>
                 </template>
@@ -211,7 +211,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
                         @click="selectInstallPath('all_users')"
                         severity="secondary"
                         class="h-9 px-4"
-                        icon="mir folder_open"
+                        icon="mir-folder_open"
                         :label="t('installation.browse')"
                       />
                     </div>

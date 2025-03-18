@@ -50,7 +50,7 @@ export function generateMaterialIconsClasses() {
 
   style.textContent = USED_ICONS.map(
     (icon) => `
-    .mir.${icon}::before {
+    .mir-${icon}::before {
       font-family: 'Material Symbols Rounded' !important;
       content: "${icon}" !important;
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;

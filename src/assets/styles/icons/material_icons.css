@@ -7,7 +7,7 @@
 }
 
 /* Base icon container styles */
-.mir {
+[class^='mir-'] {
   display: inline-block;
   height: 1em;
   line-height: 1em;
@@ -15,7 +15,7 @@
 }
 
 /* Icon content styling */
-.mir::before {
+[class^='mir-']::before {
   display: inline-block !important;
   font-style: normal;
   font-weight: normal !important;

@@ -18,35 +18,35 @@ const routes = [
     path: '/Installation/Home',
     component: Installation,
     meta: {
-      icon: 'mir install_desktop',
+      icon: 'mir-install_desktop',
     },
   },
   {
     path: '/Installation/Config',
     component: Installation_Config,
     meta: {
-      icon: 'mir settings_applications',
+      icon: 'mir-settings_applications',
     },
   },
   {
     path: '/Installation/Progress',
     component: Installation_Progress,
     meta: {
-      icon: 'mir pending_actions',
+      icon: 'mir-pending_actions',
     },
   },
   {
     path: '/AppList',
     component: AppList,
     meta: {
-      icon: 'mir apps',
+      icon: 'mir-apps',
     },
   },
   {
     path: '/Settings',
     component: Settings,
     meta: {
-      icon: 'mir settings',
+      icon: 'mir-settings',
     },
   },
 ] as unknown as RouteRecordRaw[]

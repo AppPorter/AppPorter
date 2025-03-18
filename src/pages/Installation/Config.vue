@@ -95,17 +95,17 @@ async function handleInstallClick() {
       confirm.require({
         message: t('installation.config.confirm_install'),
         group: 'dialog',
-        icon: 'mir install_desktop',
+        icon: 'mir-install_desktop',
         header: t('installation.config.start_installation'),
         rejectProps: {
           label: t('installation.config.cancel'),
           severity: 'secondary',
           outlined: true,
-          icon: 'mir close',
+          icon: 'mir-close',
         },
         acceptProps: {
           label: t('installation.config.install'),
-          icon: 'mir navigate_next',
+          icon: 'mir-navigate_next',
         },
         accept: () => resolve(true),
         reject: () => reject(),
@@ -154,7 +154,7 @@ async function handleInstallClick() {
         severity="secondary"
         class="h-8 w-28 text-sm shadow backdrop-blur-md transition-all duration-200 hover:shadow-lg"
         @click="handleBackClick"
-        icon="mir arrow_back"
+        icon="mir-arrow_back"
         :label="t('installation.config.back')"
         outlined
       />
@@ -165,7 +165,7 @@ async function handleInstallClick() {
         severity="primary"
         class="h-8 w-28 text-sm shadow transition-all duration-200 hover:shadow-lg"
         @click="handleInstallClick"
-        icon="mir install_desktop"
+        icon="mir-install_desktop"
         :label="t('installation.config.install')"
       />
     </div>
