@@ -5,6 +5,7 @@ import { goTo } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { exit } from '@tauri-apps/plugin-process'
+import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmPopup from 'primevue/confirmpopup'
 import ContextMenu from 'primevue/contextmenu'
@@ -221,23 +222,6 @@ const cachedComponents = computed(() => {
 
 const currentPath = ref(route.path)
 
-// Define type for menu item
-interface NavMenuItem {
-  label?: string
-  icon?: string
-  command?: () => void
-  paths?: string[]
-  separator?: boolean
-  class?: string
-}
-
-// Get active menu item style
-const getActiveClass = (item: NavMenuItem) => {
-  return item.paths?.includes(currentPath.value)
-    ? 'after:absolute after:bottom-[-1px] after:left-0 after:h-0.5 after:w-full after:bg-primary-500 dark:after:bg-primary-400 text-primary-700 dark:text-primary-300'
-    : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-}
-
 // Update current path when route changes
 watch(route, (newRoute) => {
   currentPath.value = newRoute.path
@@ -361,37 +345,49 @@ onMounted(() => {
       <!-- Navigation Menu -->
       <div class="flex px-4">
         <div
-          class="flex w-full items-center justify-between gap-1 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-900/80"
+          class="flex w-full items-center justify-between gap-1 border-b border-gray-200 bg-white/90 dark:border-gray-700 dark:bg-gray-900/90"
         >
-          <div class="flex items-center gap-2">
-            <button
+          <div class="flex items-center gap-1">
+            <Button
               v-for="item in menuItems"
               :key="item.label"
               v-show="!item.separator && !item.class?.includes('right')"
               :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
-                getActiveClass(item),
+                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium transition-all duration-200',
+                'text-gray-600 dark:text-gray-300',
+                item.paths?.includes(currentPath)
+                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all dark:after:bg-primary-400'
+                  : '',
+                'hover:bg-gray-100 dark:hover:bg-gray-800/50',
               ]"
+              text
+              plain
               @click="item.command"
             >
-              <span :class="[item.icon, 'text-lg']" />
+              <span :class="[item.icon, 'text-[1.1rem]']" />
               <span>{{ item.label }}</span>
-            </button>
+            </Button>
           </div>
-          <div class="flex items-center gap-2">
-            <button
+          <div class="flex items-center gap-1">
+            <Button
               v-for="item in menuItems"
               :key="item.label"
               v-show="!item.separator && item.class?.includes('right')"
               :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
-                getActiveClass(item),
+                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium transition-all duration-200',
+                'text-gray-600 dark:text-gray-300',
+                item.paths?.includes(currentPath)
+                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all dark:after:bg-primary-400'
+                  : '',
+                'hover:bg-gray-100 dark:hover:bg-gray-800/50',
               ]"
+              text
+              plain
               @click="item.command"
             >
-              <span :class="[item.icon, 'text-lg']" />
+              <span :class="[item.icon, 'text-[1.1rem]']" />
               <span>{{ item.label }}</span>
-            </button>
+            </Button>
           </div>
         </div>
       </div>
