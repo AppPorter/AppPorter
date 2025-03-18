@@ -441,7 +441,7 @@ onMounted(() => {
                 :inputId="'filter-' + mode.value"
               />
               <label :for="'filter-' + mode.value" class="flex cursor-pointer items-center gap-2.5">
-                <span class="mir" :class="mode.icon"></span>
+                <span :class="mode.icon"></span>
                 <span class="text-sm">{{ mode.label }}</span>
               </label>
             </div>

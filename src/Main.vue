@@ -363,33 +363,33 @@ onMounted(() => {
         <div
           class="flex w-full items-center justify-between gap-1 border-b border-gray-200 bg-white/80 dark:border-gray-700 dark:bg-gray-900/80"
         >
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-2">
             <button
               v-for="item in menuItems"
               :key="item.label"
               v-show="!item.separator && !item.class?.includes('right')"
               :class="[
-                'relative flex items-center gap-2 px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
+                'relative flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
                 getActiveClass(item),
               ]"
               @click="item.command"
             >
-              <i :class="item.icon" />
+              <span :class="[item.icon, 'text-lg']" />
               <span>{{ item.label }}</span>
             </button>
           </div>
-          <div class="flex items-center gap-1">
+          <div class="flex items-center gap-2">
             <button
               v-for="item in menuItems"
               :key="item.label"
               v-show="!item.separator && item.class?.includes('right')"
               :class="[
-                'relative flex items-center gap-2 px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
+                'relative flex min-w-[120px] items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-gray-700 transition-colors dark:text-gray-200',
                 getActiveClass(item),
               ]"
               @click="item.command"
             >
-              <i :class="item.icon" />
+              <span :class="[item.icon, 'text-lg']" />
               <span>{{ item.label }}</span>
             </button>
           </div>
