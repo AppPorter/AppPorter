@@ -208,9 +208,7 @@ defineOptions({
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
                 <span class="mir-terminal"></span>
-                <span class="text-sm font-medium">{{
-                  t('installation.progress.installed_location')
-                }}</span>
+                <span class="text-sm font-medium">{{ t('installation.progress.full_path') }}</span>
               </div>
               <Button
                 severity="secondary"

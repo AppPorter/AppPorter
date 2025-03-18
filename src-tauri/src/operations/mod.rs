@@ -126,3 +126,14 @@ pub fn sanitize_path(path: &str) -> String {
 
     safe_parts.join("\\")
 }
+
+pub async fn open(path: &str) -> Result<String, Box<dyn Error>> {
+    let output = Command::new(path)
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .output()
+        .await?;
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into());
+    }
+    Ok("".to_owned())
+}

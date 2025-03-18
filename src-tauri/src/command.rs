@@ -19,6 +19,7 @@ pub enum Command {
     LoadAppList,
     SaveAppList { app_list: AppList },
     GetArchiveContent { path: String },
+    Open { path: String },
 }
 
 impl Command {
@@ -35,6 +36,7 @@ impl Command {
             Self::LoadAppList => load_app_list().await,
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
             Self::GetArchiveContent { path } => get_archive_content(path).await,
+            Self::Open { path } => open(&path).await,
         }
     }
 }

@@ -17,6 +17,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     version: '',
     install_path: '',
     executable_path: '',
+    full_path: '',
     current_user_only: false,
     create_desktop_shortcut: false,
     create_start_menu_shortcut: true,

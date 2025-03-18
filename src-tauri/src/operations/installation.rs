@@ -72,10 +72,17 @@ pub async fn installation(
 
     // Add to app list
     let mut app_list = AppList::read().await?;
+
+    // Create a mutable copy of the details
+    let mut updated_details = config.details.clone();
+
+    // Add full_executable_path to the details
+    updated_details.full_path = full_executable_path.clone();
+
     app_list.links.push(App {
         timestamp: chrono::Utc::now().timestamp(),
         installed: true,
-        details: config.details,
+        details: updated_details,
         url: "".to_owned(),
     });
     app_list.save().await?;

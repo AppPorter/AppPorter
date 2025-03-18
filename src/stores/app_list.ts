@@ -8,6 +8,7 @@ export interface InstalledApp {
   version: string
   install_path: string
   executable_path: string
+  full_path: string
   current_user_only: boolean
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
@@ -51,24 +52,8 @@ export const useAppListStore = defineStore('app_list', {
       return this.links.some((link) => link.url === url)
     },
 
-    addLink(url: string) {
-      this.links.push({
-        timestamp: Math.floor(Date.now() / 1000),
-        installed: false,
-        details: {
-          name: '',
-          icon: '',
-          publisher: '',
-          version: '',
-          install_path: '',
-          executable_path: '',
-          current_user_only: false,
-          create_desktop_shortcut: false,
-          create_start_menu_shortcut: false,
-          create_registry_key: false,
-        },
-        url: url,
-      })
+    addLink() {
+      this.links.push()
     },
   },
 })

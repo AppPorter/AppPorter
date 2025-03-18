@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useAppListStore } from '@/stores/app_list'
+import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import Column from 'primevue/column'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -69,15 +70,27 @@ const menuItems = computed(() => [
   },
 ])
 
-function openApp() {
+async function openApp() {
   if (!selectedApp.value) return
 
-  toast.add({
-    severity: 'info',
-    summary: t('app_list.opening_app'),
-    detail: selectedApp.value.details.name,
-    life: 3000,
-  })
+  try {
+    await invoke('execute_command', {
+      command: {
+        name: 'Open',
+        path: selectedApp.value.details.full_path,
+      },
+    })
+  } catch (error) {
+    console.error('Failed to open application:', error)
+    toast.add({
+      severity: 'error',
+      summary: t('app_list.open_failed'),
+      detail: String(error),
+      life: 3000,
+    })
+  } finally {
+    loading.value = false
+  }
 }
 
 function confirmUninstall() {
@@ -181,7 +194,7 @@ onMounted(() => {
         <Column field="details.name" :header="t('app_list.name')" sortable>
           <template #body="slotProps">
             <div class="flex flex-col">
-              <span class="font-medium">{{ slotProps.data.details.name }}</span>
+              <span class="text-sm font-medium">{{ slotProps.data.details.name }}</span>
               <span class="text-xs text-slate-500 dark:text-slate-400">
                 {{ slotProps.data.details.version || 'N/A' }}
               </span>

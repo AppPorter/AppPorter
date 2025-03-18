@@ -35,6 +35,8 @@ pub struct InstalledApp {
     pub install_path: String,
     #[serde(default)]
     pub executable_path: String,
+    #[serde(default)]
+    pub full_path: String,
 
     #[serde(default)]
     pub current_user_only: bool,
