@@ -62,8 +62,8 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
 </script>
 
 <template>
-  <div class="flex size-full flex-col overflow-auto">
-    <Panel class="mx-auto w-full max-w-5xl">
+  <div class="flex size-full flex-col">
+    <Panel class="size-full overflow-auto">
       <!-- Header Section -->
       <template #header>
         <div class="flex items-center gap-2">
@@ -75,7 +75,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
         </div>
       </template>
 
-      <div class="space-y-2">
+      <div class="mx-auto max-w-5xl space-y-2">
         <!-- Basic Settings -->
         <Panel>
           <template #header>
