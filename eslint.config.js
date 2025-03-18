@@ -16,8 +16,13 @@ export default [
     files: ['**/*.{js,mjs,cjs,ts,vue}'],
     plugins: { tailwindcss: tailwind },
     rules: {
-      'tailwindcss/no-custom-classname': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      'tailwindcss/no-custom-classname': [
+        'warn',
+        {
+          whitelist: ['^mir-.*'],
+        },
+      ],
     },
   },
   { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tseslint.parser } } },
