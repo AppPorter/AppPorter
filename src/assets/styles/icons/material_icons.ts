@@ -11,6 +11,7 @@ const USED_ICONS = [
   'navigate_next',
   'remove',
   'close',
+  'delete',
   'warning',
   'apps',
   'content_cut',

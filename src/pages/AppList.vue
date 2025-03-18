@@ -65,7 +65,7 @@ const menuItems = computed(() => [
   },
   {
     label: t('app_list.uninstall'),
-    icon: 'mir-close',
+    icon: 'mir-delete',
     command: () => confirmUninstall(),
   },
 ])
