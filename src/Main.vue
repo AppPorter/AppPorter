@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { generateMaterialIconsClasses } from '@/assets/styles/icons/material_icons'
+import ErrorHandler from '@/components/ErrorHandler.vue'
 import { window as tauriWindow } from '@/main'
 import { goTo } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
@@ -12,52 +13,15 @@ import ContextMenu from 'primevue/contextmenu'
 import type { MenuItem } from 'primevue/menuitem'
 import Message from 'primevue/message'
 import SplitButton from 'primevue/splitbutton'
-import Toast from 'primevue/toast'
 import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()
-const toast = useToast()
 const { t } = useI18n()
-
-// Global error handling toast service
-const errorToast = {
-  showError: (error: unknown) => {
-    let errorMessage = ''
-    if (error instanceof Error) {
-      errorMessage = error.message
-    } else if (typeof error === 'string') {
-      errorMessage = error
-    } else if (error !== null && typeof error === 'object') {
-      try {
-        errorMessage = JSON.stringify(error)
-      } catch {
-        errorMessage = t('system.error.unknown')
-      }
-    } else {
-      errorMessage = String(error)
-    }
-
-    // Trim long error messages for better display
-    if (errorMessage.length > 200) {
-      errorMessage = errorMessage.substring(0, 200) + '...'
-    }
-
-    toast.add({
-      severity: 'error',
-      summary: t('system.error.title'),
-      detail: errorMessage,
-      life: 0, // Persist until user dismisses
-    })
-  },
-}
-
-// Expose error handling for child components
-defineExpose({ errorToast })
+const errorHandler = ref()
 
 const dismissWarning = ref(false)
 
@@ -83,7 +47,7 @@ onMounted(async () => {
       },
       accept: async () => {
         await settingsStore.acknowledgeFirstRun()
-        toast.add({
+        errorHandler.value.errorToast.showError({
           severity: 'info',
           summary: t('system.welcome.title'),
           detail: t('system.welcome.message'),
@@ -133,7 +97,7 @@ const handleAdminPrompt = (event) => {
             revert: false,
           },
         })
-        toast.add({
+        errorHandler.value.errorToast.showError({
           severity: 'success',
           summary: t('system.admin.success'),
           detail: t('system.admin.restart_message'),
@@ -230,70 +194,12 @@ watch(route, (newRoute) => {
 onBeforeMount(() => {
   generateMaterialIconsClasses()
 })
-
-// Global error handling setup
-onMounted(() => {
-  // Override console.error to show errors in toast
-  const originalConsoleError = console.error
-  console.error = function (...args) {
-    // Call original first to preserve logging
-    originalConsoleError.apply(console, args)
-
-    // Format error message for toast display
-    const errorMessage = args
-      .map((arg) =>
-        typeof arg === 'object' && arg !== null
-          ? arg instanceof Error
-            ? arg.message
-            : JSON.stringify(arg)
-          : String(arg)
-      )
-      .join(' ')
-
-    errorToast.showError(errorMessage)
-  }
-
-  // Capture uncaught window errors
-  globalThis.window.addEventListener('error', (event) => {
-    errorToast.showError(event.error || event.message)
-    return false
-  })
-
-  // Capture unhandled promise rejections
-  globalThis.window.addEventListener('unhandledrejection', (event) => {
-    errorToast.showError(event.reason)
-  })
-})
 </script>
 
 <template>
   <div class="h-screen w-screen select-none" @contextmenu="handleContextMenu">
     <!-- System Dialogs and Notifications -->
-    <Toast position="bottom-left" class="z-40">
-      <template #message="slotProps">
-        <div class="flex w-full max-w-[600px] items-center">
-          <i
-            :class="[
-              'mir-mr-2 text-lg',
-              {
-                info: slotProps.message.severity === 'info',
-                warning: slotProps.message.severity === 'warn',
-                error: slotProps.message.severity === 'error',
-                check_circle: slotProps.message.severity === 'success',
-              },
-            ]"
-          />
-          <div class="flex min-w-0 grow flex-col">
-            <div class="font-bold">
-              {{ slotProps.message.summary }}
-            </div>
-            <div class="mt-1 cursor-text select-text break-all">
-              {{ slotProps.message.detail }}
-            </div>
-          </div>
-        </div>
-      </template>
-    </Toast>
+    <ErrorHandler ref="errorHandler" />
     <ConfirmDialog group="dialog" />
     <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false" />
 
