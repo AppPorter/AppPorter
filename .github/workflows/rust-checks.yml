@@ -13,11 +13,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust nightly toolchain
-        uses: dtolnay/rust-toolchain@nightly
-
       - name: Install Rust stable toolchain
         uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
 
       - name: Install cargo-udeps
         run: cargo install cargo-udeps --locked
@@ -25,8 +25,8 @@ jobs:
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      - name: Run Udeps
-        run: cargo udeps --all-targets --all-features
-
       - name: Run Clippy
         run: cargo clippy --all-targets --all-features
+        
+      - name: Run Udeps
+        run: cargo +nightly udeps --all-targets --all-features
