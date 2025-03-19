@@ -96,12 +96,10 @@ pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>>
         }
 
         // Process lines only between separators and extract file paths
-        if is_output_section && !line.trim().is_empty() {
-            if line.len() > 53 {
-                let file_path = line[53..].trim();
-                if !file_path.is_empty() {
-                    list.push(file_path.to_owned());
-                }
+        if is_output_section && !line.trim().is_empty() && line.len() > 53 {
+            let file_path = line[53..].trim();
+            if !file_path.is_empty() {
+                list.push(file_path.to_owned());
             }
         }
     }
