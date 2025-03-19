@@ -72,7 +72,7 @@ async function handleInstallClick() {
 
 <template>
   <div class="flex size-full flex-col overflow-hidden">
-    <div class="flex flex-1 flex-wrap gap-4 overflow-auto p-1 md:flex-nowrap">
+    <div class="flex flex-1 flex-wrap gap-4 overflow-auto px-1 md:flex-nowrap">
       <div class="min-w-72 flex-1 space-y-2">
         <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         <AppDetails

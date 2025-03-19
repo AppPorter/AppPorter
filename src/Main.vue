@@ -298,7 +298,7 @@ const activeIndicatorClass = computed(
     </div>
 
     <!-- Main Content Area -->
-    <div class="z-30 flex h-full gap-2 overflow-hidden px-4 pb-2 pt-[6.8rem]">
+    <div class="z-30 flex h-full gap-2 overflow-hidden px-4 pb-2 pt-[6.5rem]">
       <router-view v-slot="{ Component, route }" class="flex w-full">
         <keep-alive :include="cachedComponents ? undefined : []" class="w-full overflow-auto">
           <component :is="Component" :key="route.path" class="flex-1" />
