@@ -24,6 +24,8 @@ jobs:
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
 
       - name: Run Clippy
         run: cargo +stable clippy --all-targets --all-features
