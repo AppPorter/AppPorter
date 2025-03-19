@@ -107,7 +107,7 @@ const warningActions = [
 ]
 
 // Navigation menu configuration
-const menuItems = [
+const leftMenuItems = [
   {
     label: t('system.menu.installation'),
     icon: 'mir-install_desktop',
@@ -120,13 +120,14 @@ const menuItems = [
     command: () => goTo('/AppList'),
     paths: ['/AppList'],
   },
-  { separator: true },
+]
+
+const rightMenuItems = [
   {
     label: t('system.menu.settings'),
     icon: 'mir-settings',
     command: () => goTo('/Settings'),
     paths: ['/Settings'],
-    class: 'right',
   },
 ]
 
@@ -182,6 +183,21 @@ watch(route, (newRoute) => {
 onBeforeMount(() => {
   generateMaterialIconsClasses()
 })
+
+// Navigation styles
+const navButtonClass = computed(() => [
+  'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
+  'text-gray-600 dark:text-gray-300',
+  'transition-colors duration-200 ease-in-out',
+  'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800/50 dark:hover:text-gray-100',
+])
+
+const activeIndicatorClass = computed(
+  () => (active: boolean) =>
+    active
+      ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
+      : 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:opacity-0 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
+)
 </script>
 
 <template>
@@ -243,18 +259,9 @@ onBeforeMount(() => {
         >
           <div class="flex items-center gap-1">
             <Button
-              v-for="item in menuItems"
+              v-for="item in leftMenuItems"
               :key="item.label"
-              v-show="!item.separator && !item.class?.includes('right')"
-              :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
-                'text-gray-600 dark:text-gray-300',
-                'transition-colors duration-200 ease-in-out',
-                item.paths?.includes(currentPath)
-                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
-                  : 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:opacity-0 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400',
-                'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800/50 dark:hover:text-gray-100',
-              ]"
+              :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]"
               text
               plain
               @click="item.command"
@@ -270,18 +277,9 @@ onBeforeMount(() => {
           </div>
           <div class="flex items-center gap-1">
             <Button
-              v-for="item in menuItems"
+              v-for="item in rightMenuItems"
               :key="item.label"
-              v-show="!item.separator && item.class?.includes('right')"
-              :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
-                'text-gray-600 dark:text-gray-300',
-                'transition-colors duration-200 ease-in-out',
-                item.paths?.includes(currentPath)
-                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
-                  : 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:opacity-0 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400',
-                'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800/50 dark:hover:text-gray-100',
-              ]"
+              :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]"
               text
               plain
               @click="item.command"
