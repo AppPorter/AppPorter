@@ -247,18 +247,24 @@ onBeforeMount(() => {
               :key="item.label"
               v-show="!item.separator && !item.class?.includes('right')"
               :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium transition-all duration-200',
+                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
                 'text-gray-600 dark:text-gray-300',
+                'transition-colors duration-200 ease-in-out',
                 item.paths?.includes(currentPath)
-                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all dark:after:bg-primary-400'
-                  : '',
-                'hover:bg-gray-100 dark:hover:bg-gray-800/50',
+                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
+                  : 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:opacity-0 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400',
+                'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800/50 dark:hover:text-gray-100',
               ]"
               text
               plain
               @click="item.command"
             >
-              <span :class="[item.icon, 'text-[1.1rem]']" />
+              <span
+                :class="[
+                  item.icon,
+                  'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
+                ]"
+              />
               <span>{{ item.label }}</span>
             </Button>
           </div>
@@ -268,18 +274,24 @@ onBeforeMount(() => {
               :key="item.label"
               v-show="!item.separator && item.class?.includes('right')"
               :class="[
-                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium transition-all duration-200',
+                'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
                 'text-gray-600 dark:text-gray-300',
+                'transition-colors duration-200 ease-in-out',
                 item.paths?.includes(currentPath)
-                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all dark:after:bg-primary-400'
-                  : '',
-                'hover:bg-gray-100 dark:hover:bg-gray-800/50',
+                  ? 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-4/5 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400'
+                  : 'after:absolute after:bottom-0 after:left-1/2 after:h-0.5 after:w-0 after:-translate-x-1/2 after:rounded-t-full after:bg-primary-500 after:opacity-0 after:transition-all after:duration-300 after:ease-out dark:after:bg-primary-400',
+                'hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800/50 dark:hover:text-gray-100',
               ]"
               text
               plain
               @click="item.command"
             >
-              <span :class="[item.icon, 'text-[1.1rem]']" />
+              <span
+                :class="[
+                  item.icon,
+                  'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
+                ]"
+              />
               <span>{{ item.label }}</span>
             </Button>
           </div>
