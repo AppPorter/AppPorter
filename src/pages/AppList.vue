@@ -37,19 +37,8 @@ const showPaginator = computed(() => {
 
 async function loadAppList() {
   loading.value = true
-  try {
-    await appListStore.loadAppList()
-  } catch (error) {
-    console.error('Failed to load app list:', error)
-    toast.add({
-      severity: 'error',
-      summary: t('app_list.load_failed'),
-      detail: String(error),
-      life: 3000,
-    })
-  } finally {
-    loading.value = false
-  }
+  await appListStore.loadAppList()
+  loading.value = false
 }
 
 function showMenu(event: DataTableRowContextMenuEvent) {
@@ -73,24 +62,13 @@ const menuItems = computed(() => [
 async function openApp() {
   if (!selectedApp.value) return
 
-  try {
-    await invoke('execute_command', {
-      command: {
-        name: 'Open',
-        path: selectedApp.value.details.full_path,
-      },
-    })
-  } catch (error) {
-    console.error('Failed to open application:', error)
-    toast.add({
-      severity: 'error',
-      summary: t('app_list.open_failed'),
-      detail: String(error),
-      life: 3000,
-    })
-  } finally {
-    loading.value = false
-  }
+  await invoke('execute_command', {
+    command: {
+      name: 'Open',
+      path: selectedApp.value.details.full_path,
+    },
+  })
+  loading.value = false
 }
 
 function confirmUninstall() {

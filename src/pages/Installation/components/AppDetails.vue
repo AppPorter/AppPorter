@@ -29,41 +29,21 @@ async function confirmSelection() {
   emit('loading', true)
   autoConfirmed.value = false
 
-  try {
-    const result = await invoke('execute_command', {
-      command: {
-        name: 'GetDetails',
-        path: {
-          zip_path,
-          executable_path: executable_path.value,
-        },
+  const result = await invoke('execute_command', {
+    command: {
+      name: 'GetDetails',
+      path: {
+        zip_path,
+        executable_path: executable_path.value,
       },
-    })
+    },
+  })
 
-    if (typeof result !== 'string') {
-      throw new Error('Unexpected response type')
-    }
+  const details = JSON.parse(result as string)
+  ;[name.value, version.value, publisher.value, icon.value] = details
 
-    const parsedResult = JSON.parse(result)
-
-    if ('error' in parsedResult) {
-      throw new Error(parsedResult.error)
-    }
-
-    const details = Array.isArray(parsedResult) ? parsedResult : null
-    if (!details) {
-      throw new Error('Invalid response format')
-    }
-    // Update app details with received data
-    ;[name.value, version.value, publisher.value, icon.value] = details
-
-    autoConfirmed.value = true
-  } catch (error) {
-    console.error('Failed to get details:', error)
-    autoConfirmed.value = false
-  } finally {
-    emit('loading', false)
-  }
+  autoConfirmed.value = true
+  emit('loading', false)
 }
 
 function clearIcon() {

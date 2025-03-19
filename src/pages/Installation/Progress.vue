@@ -54,17 +54,13 @@ const getShortcutsList = (config: {
 
 // Copy information to clipboard with feedback
 const handleCopy = async (text: string, type: string) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast.add({
-      severity: 'info',
-      summary: t('system.edit.copy'),
-      detail: `${type} copied to clipboard`,
-      life: 2000,
-    })
-  } catch (error) {
-    console.error('Copy failed:', error)
-  }
+  await navigator.clipboard.writeText(text)
+  toast.add({
+    severity: 'info',
+    summary: t('system.edit.copy'),
+    detail: `${type} copied to clipboard`,
+    life: 2000,
+  })
 }
 
 onMounted(() => {
@@ -110,17 +106,9 @@ onMounted(() => {
         },
       },
     },
+  }).then((result) => {
+    finalExecutablePath.value = result as string
   })
-    .then((result) => {
-      if (typeof result === 'string') {
-        finalExecutablePath.value = result
-      }
-    })
-    .catch((error) => {
-      console.error('Installation failed:', error)
-      currentStatus.value = t('installation.progress.failed')
-      canClose.value = true
-    })
 })
 
 const handleClose = () => {

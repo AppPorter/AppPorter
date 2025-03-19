@@ -82,7 +82,7 @@ watchEffect(() => {
         </div>
         <p class="ml-6 mt-0.5 text-xs">
           {{ t('installation.config.selected_file') }}:
-          <span class="overflow-wrap-anywhere break-all font-medium">{{ zip_path }}</span>
+          <span class="break-all font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>

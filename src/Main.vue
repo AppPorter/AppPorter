@@ -47,12 +47,6 @@ onMounted(async () => {
       },
       accept: async () => {
         await settingsStore.acknowledgeFirstRun()
-        errorHandler.value.errorToast.showError({
-          severity: 'info',
-          summary: t('system.welcome.title'),
-          detail: t('system.welcome.message'),
-          life: 3000,
-        })
       },
       reject: () => {
         exit(0)
@@ -96,12 +90,6 @@ const handleAdminPrompt = (event) => {
             name: 'Elevate',
             revert: false,
           },
-        })
-        errorHandler.value.errorToast.showError({
-          severity: 'success',
-          summary: t('system.admin.success'),
-          detail: t('system.admin.restart_message'),
-          life: 3000,
         })
       }
     },

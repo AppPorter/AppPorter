@@ -14,7 +14,6 @@ import ZipPreview from './components/ZipPreview.vue'
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
 installationConfig.page = 'Config'
-const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
 
@@ -39,89 +38,36 @@ function handleBackClick() {
 
 // Handle installation process initiation
 async function handleInstallClick() {
-  // Reset validation errors
-  nameError.value = ''
-  pathError.value = ''
+  await invoke('execute_command', {
+    command: {
+      name: 'ValidatePath',
+      path: installationConfig.install_path,
+    },
+  })
 
-  let hasErrors = false
-
-  // Validate required fields
-  if (!installationConfig.executable_path) {
-    toast.add({
-      severity: 'error',
-      summary: t('installation.validation.executable_missing'),
-      detail: t('installation.validation.select_executable'),
-      life: 3000,
-    })
-    hasErrors = true
-  }
-
-  if (!installationConfig.name) {
-    nameError.value = t('installation.validation.name_required')
-    toast.add({
-      severity: 'error',
-      summary: t('installation.validation.name_required'),
-      detail: t('installation.validation.enter_name'),
-      life: 3000,
-    })
-    hasErrors = true
-  }
-
-  if (!installationConfig.install_path) {
-    pathError.value = t('installation.validation.path_required')
-    toast.add({
-      severity: 'error',
-      summary: t('installation.validation.path_required'),
-      detail: t('installation.validation.select_path'),
-      life: 3000,
-    })
-    hasErrors = true
-  }
-
-  if (hasErrors) {
-    return
-  }
-
-  try {
-    await invoke('execute_command', {
-      command: {
-        name: 'ValidatePath',
-        path: installationConfig.install_path,
+  // Confirm installation intent and proceed
+  await new Promise((resolve, reject) => {
+    confirm.require({
+      message: t('installation.config.confirm_install'),
+      group: 'dialog',
+      icon: 'mir-install_desktop',
+      header: t('installation.config.start_installation'),
+      rejectProps: {
+        label: t('installation.config.cancel'),
+        severity: 'secondary',
+        outlined: true,
+        icon: 'mir-close',
       },
+      acceptProps: {
+        label: t('installation.config.install'),
+        icon: 'mir-navigate_next',
+      },
+      accept: () => resolve(true),
+      reject: () => reject(),
     })
+  })
 
-    // Confirm installation intent and proceed
-    await new Promise((resolve, reject) => {
-      confirm.require({
-        message: t('installation.config.confirm_install'),
-        group: 'dialog',
-        icon: 'mir-install_desktop',
-        header: t('installation.config.start_installation'),
-        rejectProps: {
-          label: t('installation.config.cancel'),
-          severity: 'secondary',
-          outlined: true,
-          icon: 'mir-close',
-        },
-        acceptProps: {
-          label: t('installation.config.install'),
-          icon: 'mir-navigate_next',
-        },
-        accept: () => resolve(true),
-        reject: () => reject(),
-      })
-    })
-
-    goTo('/Installation/Progress')
-  } catch (error) {
-    pathError.value = error
-    toast.add({
-      severity: 'error',
-      summary: t('installation.validation.invalid_path'),
-      detail: t('installation.validation.select_valid_path'),
-      life: 3000,
-    })
-  }
+  goTo('/Installation/Progress')
 }
 </script>
 

@@ -292,52 +292,41 @@ async function loadZipContent() {
   emit('loading', true)
   progressMode.value = 'indeterminate'
 
-  try {
-    // Get archive content from backend
-    const result = await invoke('execute_command', {
-      command: {
-        name: 'GetArchiveContent',
-        path: props.zipPath,
-      },
-    })
+  // Get archive content from backend
+  const result = await invoke('execute_command', {
+    command: {
+      name: 'GetArchiveContent',
+      path: props.zipPath,
+    },
+  })
 
-    const parsedResult = JSON.parse(result as string)
-    if ('error' in parsedResult) throw new Error(parsedResult.error)
+  const paths = JSON.parse(result as string)
+  const allPaths = [...paths]
+  const directories = new Set<string>()
 
-    // Process file paths
-    const paths = Array.isArray(parsedResult) ? parsedResult : []
-    const allPaths = [...paths]
-    const directories = new Set<string>()
+  // Generate directory paths
+  paths.forEach((path) => {
+    const parts = path.split('\\')
+    let currentDir = ''
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (!parts[i]) continue
+      currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
+      directories.add(`${currentDir}\\`)
+    }
+  })
 
-    // Generate directory paths
-    paths.forEach((path) => {
-      const parts = path.split('\\')
-      let currentDir = ''
-      for (let i = 0; i < parts.length - 1; i++) {
-        if (!parts[i]) continue
-        currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
-        directories.add(`${currentDir}\\`)
-      }
-    })
+  directories.forEach((dir) => {
+    if (!allPaths.includes(dir)) allPaths.push(dir)
+  })
 
-    directories.forEach((dir) => {
-      if (!allPaths.includes(dir)) allPaths.push(dir)
-    })
-
-    // Update state
-    fileCache.value = allPaths
-    loadingProgress.value = 100
-    fileTree.value = buildFileTree(filteredPaths.value)
-    tryAutoSelectExecutable()
-  } catch (error) {
-    console.error('Failed to read zip:', error)
-    fileTree.value = []
-    status.value = 'error'
-  } finally {
-    status.value = 'ready'
-    emit('loading', false)
-    loadingProgress.value = 0
-  }
+  // Update state
+  fileCache.value = allPaths
+  loadingProgress.value = 100
+  fileTree.value = buildFileTree(filteredPaths.value)
+  tryAutoSelectExecutable()
+  status.value = 'ready'
+  emit('loading', false)
+  loadingProgress.value = 0
 }
 
 // Expand all nodes in the tree
@@ -345,30 +334,24 @@ const expandAll = () => {
   if (isExpanding.value) return
   isExpanding.value = true
 
-  try {
-    const expandNode = (node: CustomTreeNode) => {
-      if (node.children?.length) {
-        expandedKeys.value[node.key] = true
-        node.children.forEach(expandNode)
-      }
+  const expandNode = (node: CustomTreeNode) => {
+    if (node.children?.length) {
+      expandedKeys.value[node.key] = true
+      node.children.forEach(expandNode)
     }
-
-    fileTree.value.forEach(expandNode)
-    expandedKeys.value = { ...expandedKeys.value }
-  } finally {
-    isExpanding.value = false
   }
+
+  fileTree.value.forEach(expandNode)
+  expandedKeys.value = { ...expandedKeys.value }
+  isExpanding.value = false
 }
 
 // Collapse all nodes in the tree
 const collapseAll = () => {
   if (isCollapsing.value) return
   isCollapsing.value = true
-  try {
-    expandedKeys.value = {}
-  } finally {
-    isCollapsing.value = false
-  }
+  expandedKeys.value = {}
+  isCollapsing.value = false
 }
 
 // Effects

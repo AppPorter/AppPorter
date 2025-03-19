@@ -10,26 +10,10 @@ const { t } = useI18n()
 // Global error handling toast service
 const errorToast = {
   showError: (error: unknown) => {
-    let errorMessage = ''
-    if (error instanceof Error) {
-      errorMessage = error.message
-    } else if (typeof error === 'string') {
-      errorMessage = error
-    } else if (error !== null && typeof error === 'object') {
-        errorMessage = JSON.stringify(error)
-    } else {
-      errorMessage = String(error)
-    }
-
-    // Trim long error messages for better display
-    if (errorMessage.length > 200) {
-      errorMessage = errorMessage.substring(0, 200) + '...'
-    }
-
     toast.add({
       severity: 'error',
       summary: t('system.error.title'),
-      detail: errorMessage,
+      detail: String(error),
       life: 0, // Persist until user dismisses
     })
   },
@@ -40,26 +24,6 @@ defineExpose({ errorToast })
 
 // Global error handling setup
 onMounted(() => {
-  // Override console.error to show errors in toast
-  const originalConsoleError = console.error
-  console.error = function (...args) {
-    // Call original first to preserve logging
-    originalConsoleError.apply(console, args)
-
-    // Format error message for toast display
-    const errorMessage = args
-      .map((arg) =>
-        typeof arg === 'object' && arg !== null
-          ? arg instanceof Error
-            ? arg.message
-            : JSON.stringify(arg)
-          : String(arg)
-      )
-      .join(' ')
-
-    errorToast.showError(errorMessage)
-  }
-
   // Capture uncaught window errors
   globalThis.window.addEventListener('error', (event) => {
     errorToast.showError(event.error || event.message)
