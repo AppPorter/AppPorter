@@ -1,24 +1,25 @@
-name: clippy
+name: udeps
 
 on: 
   push:
   pull_request:
 
 jobs:
-  clippy:
+  udeps:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
+        uses: dtolnay/rust-toolchain@nightly
 
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
 
-      - name: Run Clippy
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+
+      - name: Run Udeps
         run: |
           cd src-tauri
-          cargo clippy --all-targets --all-features -- -D warnings
+          cargo udeps --all-targets --all-features
