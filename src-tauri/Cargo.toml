@@ -54,7 +54,7 @@
     ] }
     tokio-tungstenite = "0.26.2"
     toml = "0.8.20"
-    windows-registry = "0.5.0"
+    windows-registry = "0.5.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
     tauri-plugin-single-instance = "2.2.2"
