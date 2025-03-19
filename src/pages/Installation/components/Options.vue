@@ -71,7 +71,7 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Panel class="border shadow-sm">
+  <Panel class="">
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">

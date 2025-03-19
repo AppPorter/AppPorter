@@ -126,7 +126,7 @@ defineOptions({
 <template>
   <div class="flex size-full flex-col">
     <div class="flex-1 overflow-auto p-1.5 pb-6">
-      <Panel class="mx-auto w-full max-w-5xl border shadow-sm">
+      <Panel class="mx-auto w-full max-w-5xl">
         <template #header>
           <div class="flex w-full min-w-0 items-center justify-between py-1">
             <!-- Progress Title -->

@@ -33,7 +33,7 @@ async function selectZipFile() {
 
 <template>
   <div class="flex size-full items-center justify-center">
-    <Panel class="h-52 w-full max-w-3xl px-4 shadow-sm">
+    <Panel class="h-52 w-full max-w-3xl px-4">
       <template #header>
         <div class="flex items-center gap-2">
           <span class="mir-folder_zip text-xl"></span>

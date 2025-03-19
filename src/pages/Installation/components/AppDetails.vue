@@ -52,7 +52,7 @@ function clearIcon() {
 </script>
 
 <template>
-  <Panel class="relative border shadow-sm">
+  <Panel class="">
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1.5">

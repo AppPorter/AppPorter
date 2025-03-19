@@ -376,7 +376,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Panel class="relative flex h-full flex-col overflow-auto rounded-md border shadow-sm">
+  <Panel class="relative flex h-full flex-col overflow-auto rounded-md">
     <!-- Header -->
     <template #header>
       <div class="flex w-full items-center justify-between">

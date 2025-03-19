@@ -4,7 +4,6 @@ import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
@@ -98,7 +97,7 @@ async function handleInstallClick() {
     <div class="fixed bottom-4 left-6 z-40">
       <Button
         severity="secondary"
-        class="h-8 w-28 text-sm shadow backdrop-blur-md transition-all duration-200 hover:shadow-lg"
+        class="h-8 w-28 text-sm backdrop-blur-md transition-all duration-200"
         @click="handleBackClick"
         icon="mir-arrow_back"
         :label="t('installation.config.back')"
@@ -109,7 +108,7 @@ async function handleInstallClick() {
     <div class="fixed bottom-4 right-10 z-40">
       <Button
         severity="primary"
-        class="h-8 w-28 text-sm shadow transition-all duration-200 hover:shadow-lg"
+        class="h-8 w-28 text-sm transition-all duration-200"
         @click="handleInstallClick"
         icon="mir-install_desktop"
         :label="t('installation.config.install')"
