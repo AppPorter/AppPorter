@@ -239,7 +239,7 @@ onBeforeMount(() => {
       <!-- Navigation Menu -->
       <div class="flex px-4">
         <div
-          class="flex w-full items-center justify-between gap-1 border-b border-gray-200 bg-white/90 dark:border-gray-700 dark:bg-gray-900/90"
+          class="flex w-full items-center justify-between gap-1 border-b border-gray-200 dark:border-gray-700"
         >
           <div class="flex items-center gap-1">
             <Button
