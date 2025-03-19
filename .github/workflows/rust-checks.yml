@@ -1,0 +1,32 @@
+name: Rust Checks
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  rust-checks:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: src-tauri
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Run Udeps
+        run: cargo udeps --all-targets --all-features
+
+      - name: Run Clippy
+        run: cargo clippy --all-targets --all-features
