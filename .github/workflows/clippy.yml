@@ -7,15 +7,9 @@ env:
 
 jobs:
   clippy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pkg-config libglib2.0-dev libgdk-pixbuf2.0-dev
-      - name: Set PKG_CONFIG_PATH
-        run: echo "PKG_CONFIG_PATH=$(pkg-config --variable pc_path pkg-config)" >> $GITHUB_ENV
       - name: Run Clippy
         run: |
           cd src-tauri
