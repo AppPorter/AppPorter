@@ -84,12 +84,28 @@ pub async fn installation(
         registry_valid: true,
     };
 
-    app_list.links.push(App {
+    let new_app = App {
         timestamp: chrono::Utc::now().timestamp(),
         installed: true,
         details: updated_details,
         url: "".to_owned(),
+    };
+
+    // Remove existing app that matches all fields except timestamp and version
+    app_list.links.retain(|existing_app| {
+        let mut app1 = existing_app.clone();
+        let mut app2 = new_app.clone();
+
+        // Reset timestamp and version for comparison
+        app1.timestamp = 0;
+        app2.timestamp = 0;
+        app1.details.version = String::new();
+        app2.details.version = String::new();
+
+        app1 != app2
     });
+
+    app_list.links.push(new_app);
     app_list.save().await?;
 
     Ok(full_executable_path)

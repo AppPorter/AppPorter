@@ -151,6 +151,20 @@ pub async fn open(path: &str) -> Result<String, Box<dyn Error>> {
     Ok("".to_owned())
 }
 
+pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error>> {
+    let output = Command::new("explorer")
+        .arg("/select,")
+        .arg(path)
+        .creation_flags(0x08000000)
+        .output()
+        .await?;
+    println!("Output: {:#?}", output);
+    if !output.stderr.is_empty() {
+        return Err(String::from_utf8_lossy(&output.stderr).into());
+    }
+    Ok("".to_owned())
+}
+
 pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error>> {
     // Check if directory exists
     if let Ok(mut entries) = tokio::fs::read_dir(path).await {
@@ -161,4 +175,25 @@ pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error>> {
     }
 
     Ok("".to_string())
+}
+
+pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String, Box<dyn Error>> {
+    let regpath = if current_user_only {
+        "HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+    } else {
+        "HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall"
+    };
+
+    let ps_command = format!("regedit /m {regpath}\\{name}");
+
+    let output = Command::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-Command", &ps_command])
+        .creation_flags(0x08000000)
+        .output()
+        .await?;
+
+    if !output.status.success() {
+        return Err(String::from_utf8_lossy(&output.stderr).into());
+    }
+    Ok("".to_owned())
 }

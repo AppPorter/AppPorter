@@ -11,16 +11,41 @@ use tauri::AppHandle;
 #[serde(tag = "name")]
 pub enum Command {
     LoadSettings,
-    GetDetails { path: ExePath },
-    Installation { config: InstallationConfig },
-    Elevate { revert: bool },
-    ValidatePath { path: String },
-    SaveSettings { settings: Settings },
+    GetDetails {
+        path: ExePath,
+    },
+    Installation {
+        config: InstallationConfig,
+    },
+    Elevate {
+        revert: bool,
+    },
+    ValidatePath {
+        path: String,
+    },
+    SaveSettings {
+        settings: Settings,
+    },
     LoadAppList,
-    SaveAppList { app_list: AppList },
-    GetArchiveContent { path: String },
-    Open { path: String },
-    CheckPathEmpty { path: String },
+    SaveAppList {
+        app_list: AppList,
+    },
+    GetArchiveContent {
+        path: String,
+    },
+    Open {
+        path: String,
+    },
+    OpenFolder {
+        path: String,
+    },
+    OpenRegistry {
+        app_name: String,
+        current_user_only: bool,
+    },
+    CheckPathEmpty {
+        path: String,
+    },
 }
 
 impl Command {
@@ -38,6 +63,11 @@ impl Command {
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
             Self::GetArchiveContent { path } => get_archive_content(path).await,
             Self::Open { path } => open(&path).await,
+            Self::OpenFolder { path } => open_folder(&path).await,
+            Self::OpenRegistry {
+                app_name,
+                current_user_only,
+            } => open_registry(&app_name, current_user_only).await,
             Self::CheckPathEmpty { path } => check_path_empty(&path).await,
         }
     }

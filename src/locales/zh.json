@@ -180,6 +180,8 @@
     "load_failed": "加载应用列表失败",
     "confirm_remove_header": "移除应用",
     "confirm_remove_message": "确定要从列表中移除 {name} 吗？",
-    "remove_success": "已移除应用"
+    "remove_success": "已移除应用",
+    "open_install_folder": "打开安装目录",
+    "open_registry": "打开注册表项"
   }
 }

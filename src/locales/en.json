@@ -180,6 +180,8 @@
     "load_failed": "Failed to load app list",
     "confirm_remove_header": "Remove Application",
     "confirm_remove_message": "Are you sure you want to remove {name} from the list?",
-    "remove_success": "Application removed"
+    "remove_success": "Application removed",
+    "open_install_folder": "Open Install Folder",
+    "open_registry": "Open Registry Entry"
   }
 }

@@ -53,6 +53,16 @@ const menuItems = computed(() => [
     command: () => openApp(),
   },
   {
+    label: t('app_list.open_install_folder'),
+    icon: 'mir-folder',
+    command: () => openInstallFolder(),
+  },
+  {
+    label: t('app_list.open_registry'),
+    icon: 'mir-list',
+    command: () => openRegistry(),
+  },
+  {
     label: t('app_list.uninstall'),
     icon: 'mir-delete',
     command: () => confirmUninstall(),
@@ -74,6 +84,29 @@ async function openApp() {
     },
   })
   loading.value = false
+}
+
+async function openInstallFolder() {
+  if (!selectedApp.value) return
+
+  await invoke('execute_command', {
+    command: {
+      name: 'OpenFolder',
+      path: selectedApp.value.details.full_path,
+    },
+  })
+}
+
+async function openRegistry() {
+  if (!selectedApp.value) return
+
+  await invoke('execute_command', {
+    command: {
+      name: 'OpenRegistry',
+      app_name: selectedApp.value.details.name,
+      current_user_only: selectedApp.value.details.current_user_only,
+    },
+  })
 }
 
 function confirmUninstall() {
