@@ -51,6 +51,13 @@ pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
 }
 
 pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
+    fn is_valid_path_format(path: &str) -> bool {
+        let chars: Vec<char> = path.chars().collect();
+        chars.first().is_some_and(|c| c.is_ascii_alphabetic())
+            && chars.get(1).is_some_and(|c| *c == ':')
+            && chars.get(2).is_some_and(|c| *c == '\\')
+    }
+
     if !is_valid_path_format(&path) {
         return Err("Invalid drive letter or path format".into());
     }
@@ -75,13 +82,6 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
         Ok(_) => Err("Path exists but is not a directory".into()),
         Err(e) => Err(format!("Directory does not exist: {}", e).into()),
     }
-}
-
-fn is_valid_path_format(path: &str) -> bool {
-    let chars: Vec<char> = path.chars().collect();
-    chars.first().is_some_and(|c| c.is_ascii_alphabetic())
-        && chars.get(1).is_some_and(|c| *c == ':')
-        && chars.get(2).is_some_and(|c| *c == '\\')
 }
 
 // Lists contents of archive file using 7z
