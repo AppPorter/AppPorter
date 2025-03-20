@@ -1,4 +1,4 @@
-name: truffle-hog
+name: TruffleHog
 
 on: 
   push:
