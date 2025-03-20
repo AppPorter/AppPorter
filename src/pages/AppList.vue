@@ -57,6 +57,11 @@ const menuItems = computed(() => [
     icon: 'mir-delete',
     command: () => confirmUninstall(),
   },
+  {
+    label: t('app_list.remove'),
+    icon: 'mir-close',
+    command: () => removeApp(),
+  },
 ])
 
 async function openApp() {
@@ -90,6 +95,37 @@ function uninstallApp() {
     summary: t('app_list.uninstall_success'),
     detail: selectedApp.value.details.name,
     life: 3000,
+  })
+}
+
+function removeApp() {
+  if (!selectedApp.value) return
+
+  confirm.require({
+    message: t('app_list.confirm_remove_message', { name: selectedApp.value.details.name }),
+    header: t('app_list.confirm_remove_header'),
+    group: 'dialog',
+    icon: 'mir-warning',
+    rejectProps: {
+      label: t('app_list.cancel'),
+      severity: 'secondary',
+      outlined: true,
+      icon: 'mir-close',
+    },
+    acceptProps: {
+      label: t('app_list.remove'),
+      severity: 'danger',
+      icon: 'mir-warning',
+    },
+    accept: () => {
+      appListStore.removeApp(selectedApp.value.url)
+      toast.add({
+        severity: 'info',
+        summary: t('app_list.remove_success'),
+        detail: selectedApp.value.details.name,
+        life: 3000,
+      })
+    },
   })
 }
 
