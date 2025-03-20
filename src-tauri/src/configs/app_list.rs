@@ -8,7 +8,7 @@ pub struct AppList {
     pub links: Vec<App>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct App {
     #[serde(default)]
     pub timestamp: i64,
@@ -20,7 +20,7 @@ pub struct App {
     pub details: InstalledApp,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct InstalledApp {
     #[serde(default)]
     pub name: String,
@@ -51,7 +51,7 @@ pub struct InstalledApp {
     pub validation_status: ValidationStatus,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct ValidationStatus {
     #[serde(default)]
     pub file_exists: bool,
@@ -122,14 +122,49 @@ impl AppList {
                 registry_valid,
             };
         }
-        self.save().await?;
         Ok(())
+    }
+
+    pub fn remove_duplicates(&mut self) {
+        let mut i = 0;
+        while i < self.links.len() {
+            let mut j = i + 1;
+            while j < self.links.len() {
+                if self.links[i].details.full_path == self.links[j].details.full_path {
+                    // Check if all other fields except timestamp and version are identical
+                    let mut app1 = self.links[i].clone();
+                    let mut app2 = self.links[j].clone();
+
+                    // Reset timestamp and version for comparison
+                    app1.timestamp = 0;
+                    app2.timestamp = 0;
+                    app1.details.version = String::new();
+                    app2.details.version = String::new();
+
+                    if app1 == app2 {
+                        // Remove the entry with earlier timestamp
+                        if self.links[i].timestamp < self.links[j].timestamp {
+                            self.links.remove(i);
+                            j = i + 1;
+                            continue;
+                        } else {
+                            self.links.remove(j);
+                            continue;
+                        }
+                    }
+                }
+                j += 1;
+            }
+            i += 1;
+        }
     }
 }
 
 pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
     let mut app_list = AppList::read().await?;
     app_list.validate_installations().await?;
+    app_list.remove_duplicates();
+    app_list.save().await?;
     Ok(serde_json::to_string(&app_list)?)
 }
 
