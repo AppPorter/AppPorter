@@ -15,9 +15,9 @@ pub struct App {
     #[serde(default)]
     pub installed: bool,
     #[serde(default)]
-    pub details: InstalledApp,
-    #[serde(default)]
     pub url: String,
+    #[serde(default)]
+    pub details: InstalledApp,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -46,6 +46,17 @@ pub struct InstalledApp {
     pub create_start_menu_shortcut: bool,
     #[serde(default)]
     pub create_registry_key: bool,
+
+    #[serde(default)]
+    pub validation_status: ValidationStatus,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+pub struct ValidationStatus {
+    #[serde(default)]
+    pub file_exists: bool,
+    #[serde(default)]
+    pub registry_valid: bool,
 }
 
 #[async_trait::async_trait]
@@ -67,10 +78,59 @@ impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
         self.links.iter().any(|link| link.url == url)
     }
+
+    pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error>> {
+        for app in &mut self.links {
+            if !app.installed {
+                continue;
+            }
+
+            // Check if executable exists
+            let file_exists = tokio::fs::try_exists(&app.details.full_path)
+                .await
+                .unwrap_or(false);
+
+            // Check registry Comments value
+            let registry_valid = if app.details.create_registry_key {
+                let registry_path = if app.details.current_user_only {
+                    format!(
+                        r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
+                        app.details.name
+                    )
+                } else {
+                    format!(
+                        r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
+                        app.details.name
+                    )
+                };
+
+                let reg_key = if app.details.current_user_only {
+                    windows_registry::CURRENT_USER.open(&registry_path)
+                } else {
+                    windows_registry::LOCAL_MACHINE.open(&registry_path)
+                };
+
+                reg_key
+                    .and_then(|key| key.get_string("Comments"))
+                    .is_ok_and(|v| v == "Installed with AppPorter")
+            } else {
+                true
+            };
+
+            app.details.validation_status = ValidationStatus {
+                file_exists,
+                registry_valid,
+            };
+        }
+        self.save().await?;
+        Ok(())
+    }
 }
 
 pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
-    Ok(serde_json::to_string(&AppList::read().await?)?)
+    let mut app_list = AppList::read().await?;
+    app_list.validate_installations().await?;
+    Ok(serde_json::to_string(&app_list)?)
 }
 
 pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error>> {

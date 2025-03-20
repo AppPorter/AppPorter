@@ -1,4 +1,5 @@
 use super::sanitize_path;
+use crate::configs::app_list::ValidationStatus;
 use crate::configs::ConfigFile;
 use crate::configs::{
     app_list::{App, AppList, InstalledApp},
@@ -78,6 +79,10 @@ pub async fn installation(
 
     // Add full_executable_path to the details
     updated_details.full_path = full_executable_path.clone();
+    updated_details.validation_status = ValidationStatus {
+        file_exists: true,
+        registry_valid: true,
+    };
 
     app_list.links.push(App {
         timestamp: chrono::Utc::now().timestamp(),
