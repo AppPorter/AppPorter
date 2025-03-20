@@ -37,36 +37,38 @@ function handleBackClick() {
 
 // Handle installation process initiation
 async function handleInstallClick() {
-  await invoke('execute_command', {
-    command: {
-      name: 'ValidatePath',
-      path: installationConfig.install_path,
-    },
-  })
+    const validatedPath = await invoke('execute_command', {
+      command: {
+        name: 'ValidatePath',
+        path: installationConfig.install_path,
+      },
+    }) as string
+  
+    installationConfig.install_path = validatedPath
 
-  // Confirm installation intent and proceed
-  await new Promise((resolve, reject) => {
-    confirm.require({
-      message: t('installation.config.confirm_install'),
-      group: 'dialog',
-      icon: 'mir-install_desktop',
-      header: t('installation.config.start_installation'),
-      rejectProps: {
-        label: t('installation.config.cancel'),
-        severity: 'secondary',
-        outlined: true,
-        icon: 'mir-close',
-      },
-      acceptProps: {
-        label: t('installation.config.install'),
-        icon: 'mir-navigate_next',
-      },
-      accept: () => resolve(true),
-      reject: () => reject(),
+    // Confirm installation intent and proceed
+    await new Promise((resolve, reject) => {
+      confirm.require({
+        message: t('installation.config.confirm_install'),
+        group: 'dialog',
+        icon: 'mir-install_desktop',
+        header: t('installation.config.start_installation'),
+        rejectProps: {
+          label: t('installation.config.cancel'),
+          severity: 'secondary',
+          outlined: true,
+          icon: 'mir-close',
+        },
+        acceptProps: {
+          label: t('installation.config.install'),
+          icon: 'mir-navigate_next',
+        },
+        accept: () => resolve(true),
+        reject: () => reject(),
+      })
     })
-  })
 
-  goTo('/Installation/Progress')
+    goTo('/Installation/Progress')
 }
 </script>
 

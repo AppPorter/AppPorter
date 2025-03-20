@@ -55,8 +55,23 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
         return Err("Invalid drive letter or path format".into());
     }
 
-    match tokio::fs::metadata(&path).await {
-        Ok(metadata) if metadata.is_dir() => Ok("Path is valid".into()),
+    let normalized_path = path
+        .chars()
+        .fold(String::new(), |mut acc, c| {
+            if c == '\\' {
+                if !acc.ends_with('\\') {
+                    acc.push(c);
+                }
+            } else {
+                acc.push(c);
+            }
+            acc
+        })
+        .trim_end_matches('\\')
+        .to_string();
+
+    match tokio::fs::metadata(&normalized_path).await {
+        Ok(metadata) if metadata.is_dir() => Ok(normalized_path),
         Ok(_) => Err("Path exists but is not a directory".into()),
         Err(e) => Err(format!("Directory does not exist: {}", e).into()),
     }
