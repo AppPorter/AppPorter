@@ -88,7 +88,10 @@
       "install": "Installieren",
       "confirm_install": "Möchten Sie den Installationsvorgang jetzt starten?",
       "start_installation": "Installation starten",
-      "cancel": "Abbrechen"
+      "cancel": "Abbrechen",
+      "directory_not_empty": "Das Installationsverzeichnis ist nicht leer. Möchten Sie fortfahren?",
+      "warning": "Warnung",
+      "force_install": "Installation erzwingen"
     },
     "app_details": {
       "title": "App-Details",

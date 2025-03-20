@@ -88,7 +88,10 @@
       "install": "설치",
       "confirm_install": "설치 프로세스를 시작하시겠습니까?",
       "start_installation": "설치 시작",
-      "cancel": "취소"
+      "cancel": "취소",
+      "directory_not_empty": "설치 디렉터리가 비어있지 않습니다. 계속하시겠습니까?",
+      "warning": "경고",
+      "force_install": "강제 설치"
     },
     "app_details": {
       "title": "앱 상세 정보",

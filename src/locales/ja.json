@@ -88,7 +88,10 @@
       "install": "インストール",
       "confirm_install": "インストールプロセスを開始しますか？",
       "start_installation": "インストール開始",
-      "cancel": "キャンセル"
+      "cancel": "キャンセル",
+      "directory_not_empty": "インストール先のディレクトリが空ではありません。続行しますか？",
+      "warning": "警告",
+      "force_install": "強制インストール"
     },
     "app_details": {
       "title": "アプリケーションの詳細",

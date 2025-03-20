@@ -88,7 +88,10 @@
       "install": "Installer",
       "confirm_install": "Voulez-vous démarrer le processus d'installation maintenant ?",
       "start_installation": "Démarrer l'installation",
-      "cancel": "Annuler"
+      "cancel": "Annuler",
+      "directory_not_empty": "Le répertoire d'installation n'est pas vide. Voulez-vous continuer ?",
+      "warning": "Avertissement",
+      "force_install": "Forcer l'installation"
     },
     "app_details": {
       "title": "Détails de l'application",

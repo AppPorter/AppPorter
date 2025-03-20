@@ -74,50 +74,53 @@
       "install": "Instalar",
       "confirm_install": "¿Desea iniciar el proceso de instalación ahora?",
       "start_installation": "Iniciar instalación",
-      "cancel": "Cancelar"
-    },
-    "app_details": {
-      "title": "Detalles de la aplicación",
-      "icon": "Ícono",
-      "icon_optional": "(Opcional)",
-      "icon_extract_hint": "El ícono se extraerá automáticamente de la aplicación",
-      "name": "Nombre",
-      "publisher": "Editor",
-      "publisher_optional": "(Opcional)",
-      "version": "Versión",
-      "version_optional": "(Opcional)",
-      "auto_fill": "Auto completar",
-      "auto_filled": "Auto completado",
-      "loading_details": "Cargando detalles de la aplicación",
-      "loading": "Cargando...",
-      "preparing": "Preparando",
-      "extracting": "Extrayendo",
-      "reading": "Leyendo",
-      "processing": "Procesando"
-    },
-    "validation": {
-      "executable_missing": "Falta el archivo ejecutable",
-      "select_executable": "Por favor, seleccione un archivo ejecutable del paquete",
-      "name_required": "El nombre de la aplicación es obligatorio",
-      "enter_name": "Por favor, ingrese el nombre de la aplicación",
-      "path_required": "La ruta de instalación es obligatoria",
-      "select_path": "Por favor, seleccione una ruta de instalación",
-      "invalid_path": "Ruta de instalación no válida",
-      "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
-    },
-    "preview": {
-      "title": "Archivos en el paquete",
-      "expand_all": "Expandir todo",
-      "collapse_all": "Contraer todo",
-      "no_files": "No se encontraron archivos",
-      "reading_archive": "Leyendo archivo",
-      "completed": "Completado",
-      "loading": "Cargando...",
-      "filter": {
-        "exe": "Solo archivos .exe",
-        "executable": "Archivos ejecutables",
-        "all": "Todos los archivos"
-      }
+      "cancel": "Cancelar",
+      "directory_not_empty": "El directorio de instalación no está vacío. ¿Desea continuar?",
+      "warning": "Advertencia",
+      "force_install": "Forzar instalación"
+    }
+  },
+  "app_details": {
+    "title": "Detalles de la aplicación",
+    "icon": "Ícono",
+    "icon_optional": "(Opcional)",
+    "icon_extract_hint": "El ícono se extraerá automáticamente de la aplicación",
+    "name": "Nombre",
+    "publisher": "Editor",
+    "publisher_optional": "(Opcional)",
+    "version": "Versión",
+    "version_optional": "(Opcional)",
+    "auto_fill": "Auto completar",
+    "auto_filled": "Auto completado",
+    "loading_details": "Cargando detalles de la aplicación",
+    "loading": "Cargando...",
+    "preparing": "Preparando",
+    "extracting": "Extrayendo",
+    "reading": "Leyendo",
+    "processing": "Procesando"
+  },
+  "validation": {
+    "executable_missing": "Falta el archivo ejecutable",
+    "select_executable": "Por favor, seleccione un archivo ejecutable del paquete",
+    "name_required": "El nombre de la aplicación es obligatorio",
+    "enter_name": "Por favor, ingrese el nombre de la aplicación",
+    "path_required": "La ruta de instalación es obligatoria",
+    "select_path": "Por favor, seleccione una ruta de instalación",
+    "invalid_path": "Ruta de instalación no válida",
+    "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
+  },
+  "preview": {
+    "title": "Archivos en el paquete",
+    "expand_all": "Expandir todo",
+    "collapse_all": "Contraer todo",
+    "no_files": "No se encontraron archivos",
+    "reading_archive": "Leyendo archivo",
+    "completed": "Completado",
+    "loading": "Cargando...",
+    "filter": {
+      "exe": "Solo archivos .exe",
+      "executable": "Archivos ejecutables",
+      "all": "Todos los archivos"
     }
   },
   "system": {

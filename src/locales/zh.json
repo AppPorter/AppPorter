@@ -74,7 +74,10 @@
       "install": "安装",
       "confirm_install": "是否开始安装？",
       "start_installation": "开始安装",
-      "cancel": "取消"
+      "cancel": "取消",
+      "directory_not_empty": "安装目录不为空，是否继续？",
+      "warning": "警告",
+      "force_install": "强制安装"
     },
     "app_details": {
       "title": "应用程序信息",

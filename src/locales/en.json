@@ -74,7 +74,10 @@
       "install": "Install",
       "confirm_install": "Do you want to start the installation process now?",
       "start_installation": "Start Installation",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "directory_not_empty": "Installation directory is not empty. Do you want to continue?",
+      "warning": "Warning",
+      "force_install": "Force Install"
     },
     "app_details": {
       "title": "App Details",
