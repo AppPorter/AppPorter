@@ -2,6 +2,7 @@
 import { goTo } from '@/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
+import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
 import { ref } from 'vue'
@@ -13,6 +14,7 @@ import ZipPreview from './components/ZipPreview.vue'
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
 installationConfig.page = 'Config'
+const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
 
@@ -37,38 +39,121 @@ function handleBackClick() {
 
 // Handle installation process initiation
 async function handleInstallClick() {
-    const validatedPath = await invoke('execute_command', {
+  // Reset validation errors
+  nameError.value = ''
+  pathError.value = ''
+
+  let hasErrors = false
+
+  // Validate required fields
+  if (!installationConfig.executable_path) {
+    toast.add({
+      severity: 'error',
+      summary: t('installation.validation.executable_missing'),
+      detail: t('installation.validation.select_executable'),
+      life: 3000,
+    })
+    hasErrors = true
+  }
+
+  if (!installationConfig.name) {
+    nameError.value = t('installation.validation.name_required')
+    toast.add({
+      severity: 'error',
+      summary: t('installation.validation.name_required'),
+      detail: t('installation.validation.enter_name'),
+      life: 3000,
+    })
+    hasErrors = true
+  }
+
+  if (!installationConfig.install_path) {
+    pathError.value = t('installation.validation.path_required')
+    toast.add({
+      severity: 'error',
+      summary: t('installation.validation.path_required'),
+      detail: t('installation.validation.select_path'),
+      life: 3000,
+    })
+    hasErrors = true
+  }
+
+  if (hasErrors) {
+    return
+  }
+
+  try {
+    const validatedPath = (await invoke('execute_command', {
       command: {
         name: 'ValidatePath',
         path: installationConfig.install_path,
       },
-    }) as string
-  
-    installationConfig.install_path = validatedPath
+    })) as string
 
-    // Confirm installation intent and proceed
-    await new Promise((resolve, reject) => {
-      confirm.require({
-        message: t('installation.config.confirm_install'),
-        group: 'dialog',
-        icon: 'mir-install_desktop',
-        header: t('installation.config.start_installation'),
-        rejectProps: {
-          label: t('installation.config.cancel'),
-          severity: 'secondary',
-          outlined: true,
-          icon: 'mir-close',
+    installationConfig.install_path = validatedPath
+    const fullPath = `${validatedPath}\\${installationConfig.name}`
+
+    try {
+      await invoke('execute_command', {
+        command: {
+          name: 'CheckPathEmpty',
+          path: fullPath,
         },
-        acceptProps: {
-          label: t('installation.config.install'),
-          icon: 'mir-navigate_next',
-        },
-        accept: () => resolve(true),
-        reject: () => reject(),
       })
-    })
+
+      await new Promise((resolve, reject) => {
+        confirm.require({
+          message: t('installation.config.confirm_install'),
+          group: 'dialog',
+          icon: 'mir-install_desktop',
+          header: t('installation.config.start_installation'),
+          rejectProps: {
+            label: t('installation.config.cancel'),
+            severity: 'secondary',
+            outlined: true,
+            icon: 'mir-close',
+          },
+          acceptProps: {
+            label: t('installation.config.install'),
+            icon: 'mir-navigate_next',
+          },
+          accept: () => resolve(true),
+          reject: () => reject(),
+        })
+      })
+    } catch (error) {
+      if (error === 'Installation directory is not empty') {
+        await new Promise((resolve, reject) => {
+          confirm.require({
+            message: t('installation.config.directory_not_empty'),
+            group: 'dialog',
+            icon: 'mir-warning',
+            header: t('installation.config.warning'),
+            rejectProps: {
+              label: t('installation.config.cancel'),
+              severity: 'secondary',
+              outlined: true,
+              icon: 'mir-close',
+            },
+            acceptProps: {
+              label: t('installation.config.force_install'),
+              severity: 'danger',
+              icon: 'mir-warning',
+            },
+            accept: () => resolve(true),
+            reject: () => reject(),
+          })
+        })
+      } else {
+        pathError.value = error as string
+        return
+      }
+    }
 
     goTo('/Installation/Progress')
+  } catch (error) {
+    pathError.value = error as string
+  }
 }
 </script>
 

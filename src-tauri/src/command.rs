@@ -20,6 +20,7 @@ pub enum Command {
     SaveAppList { app_list: AppList },
     GetArchiveContent { path: String },
     Open { path: String },
+    CheckPathEmpty { path: String },
 }
 
 impl Command {
@@ -37,6 +38,7 @@ impl Command {
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
             Self::GetArchiveContent { path } => get_archive_content(path).await,
             Self::Open { path } => open(&path).await,
+            Self::CheckPathEmpty { path } => check_path_empty(&path).await,
         }
     }
 }

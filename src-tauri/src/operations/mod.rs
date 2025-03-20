@@ -150,3 +150,15 @@ pub async fn open(path: &str) -> Result<String, Box<dyn Error>> {
     }
     Ok("".to_owned())
 }
+
+pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error>> {
+    // Check if directory exists
+    if let Ok(mut entries) = tokio::fs::read_dir(path).await {
+        // Check if directory has any contents
+        if entries.next_entry().await?.is_some() {
+            return Err("Installation directory is not empty".into());
+        }
+    }
+
+    Ok("".to_string())
+}
