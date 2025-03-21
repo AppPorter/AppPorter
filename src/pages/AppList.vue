@@ -59,7 +59,7 @@ const menuItems = computed(() => [
   },
   {
     label: t('app_list.open_registry'),
-    icon: 'mir-list',
+    icon: 'mir-app_registration',
     command: () => openRegistry(),
   },
   {
