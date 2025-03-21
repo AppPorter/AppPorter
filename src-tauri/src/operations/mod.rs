@@ -158,7 +158,6 @@ pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error>> {
         .creation_flags(0x08000000)
         .output()
         .await?;
-    println!("Output: {:#?}", output);
     if !output.stderr.is_empty() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
