@@ -55,7 +55,22 @@
       "source_archive": "Archivo fuente",
       "selected_executable": "Ejecutable seleccionado",
       "finish": "Finalizar",
-      "close": "Cerrar"
+      "close": "Cerrar",
+      "full_path": "Ruta completa"
+    },
+    "preview": {
+      "title": "Archivos en el paquete",
+      "expand_all": "Expandir todo",
+      "collapse_all": "Contraer todo",
+      "no_files": "No se encontraron archivos",
+      "reading_archive": "Leyendo archivo",
+      "completed": "Completado",
+      "loading": "Cargando...",
+      "filter": {
+        "exe": "Solo archivos .exe",
+        "executable": "Archivos ejecutables",
+        "all": "Todos los archivos"
+      }
     },
     "config": {
       "installation_options": "Opciones de instalación",
@@ -78,49 +93,35 @@
       "directory_not_empty": "El directorio de instalación no está vacío. ¿Desea continuar?",
       "warning": "Advertencia",
       "force_install": "Forzar instalación"
-    }
-  },
-  "app_details": {
-    "title": "Detalles de la aplicación",
-    "icon": "Ícono",
-    "icon_optional": "(Opcional)",
-    "icon_extract_hint": "El ícono se extraerá automáticamente de la aplicación",
-    "name": "Nombre",
-    "publisher": "Editor",
-    "publisher_optional": "(Opcional)",
-    "version": "Versión",
-    "version_optional": "(Opcional)",
-    "auto_fill": "Auto completar",
-    "auto_filled": "Auto completado",
-    "loading_details": "Cargando detalles de la aplicación",
-    "loading": "Cargando...",
-    "preparing": "Preparando",
-    "extracting": "Extrayendo",
-    "reading": "Leyendo",
-    "processing": "Procesando"
-  },
-  "validation": {
-    "executable_missing": "Falta el archivo ejecutable",
-    "select_executable": "Por favor, seleccione un archivo ejecutable del paquete",
-    "name_required": "El nombre de la aplicación es obligatorio",
-    "enter_name": "Por favor, ingrese el nombre de la aplicación",
-    "path_required": "La ruta de instalación es obligatoria",
-    "select_path": "Por favor, seleccione una ruta de instalación",
-    "invalid_path": "Ruta de instalación no válida",
-    "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
-  },
-  "preview": {
-    "title": "Archivos en el paquete",
-    "expand_all": "Expandir todo",
-    "collapse_all": "Contraer todo",
-    "no_files": "No se encontraron archivos",
-    "reading_archive": "Leyendo archivo",
-    "completed": "Completado",
-    "loading": "Cargando...",
-    "filter": {
-      "exe": "Solo archivos .exe",
-      "executable": "Archivos ejecutables",
-      "all": "Todos los archivos"
+    },
+    "app_details": {
+      "title": "Detalles de la aplicación",
+      "icon": "Ícono",
+      "icon_optional": "(Opcional)",
+      "icon_extract_hint": "El ícono se extraerá automáticamente de la aplicación",
+      "name": "Nombre",
+      "publisher": "Editor",
+      "publisher_optional": "(Opcional)",
+      "version": "Versión",
+      "version_optional": "(Opcional)",
+      "auto_fill": "Auto completar",
+      "auto_filled": "Auto completado",
+      "loading_details": "Cargando detalles de la aplicación",
+      "loading": "Cargando...",
+      "preparing": "Preparando",
+      "extracting": "Extrayendo",
+      "reading": "Leyendo",
+      "processing": "Procesando"
+    },
+    "validation": {
+      "executable_missing": "Falta el archivo ejecutable",
+      "select_executable": "Por favor, seleccione un archivo ejecutable del paquete",
+      "name_required": "El nombre de la aplicación es obligatorio",
+      "enter_name": "Por favor, ingrese el nombre de la aplicación",
+      "path_required": "La ruta de instalación es obligatoria",
+      "select_path": "Por favor, seleccione una ruta de instalación",
+      "invalid_path": "Ruta de instalación no válida",
+      "select_valid_path": "Por favor, seleccione una ruta de instalación válida"
     }
   },
   "system": {
@@ -177,6 +178,15 @@
     "cancel": "Cancelar",
     "no_apps_found": "No se encontraron aplicaciones instaladas",
     "install_first": "Por favor, instale una aplicación primero",
-    "load_failed": "Error al cargar la lista de aplicaciones"
+    "load_failed": "Error al cargar la lista de aplicaciones",
+    "open_install_folder": "Abrir carpeta de instalación",
+    "open_registry": "Abrir entrada del registro",
+    "confirm_remove_header": "Eliminar aplicación",
+    "confirm_remove_message": "¿Está seguro de que desea eliminar {name} de la lista?",
+    "remove_success": "Aplicación eliminada",
+    "not_installed": "No instalado",
+    "installed": "Instalado",
+    "validation_error": "Error de validación",
+    "remove": "Eliminar"
   }
 }

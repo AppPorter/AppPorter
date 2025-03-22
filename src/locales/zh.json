@@ -55,7 +55,8 @@
       "source_archive": "源压缩包",
       "selected_executable": "已选择的程序",
       "finish": "完成",
-      "close": "关闭"
+      "close": "关闭",
+      "full_path": "完整路径"
     },
     "config": {
       "installation_options": "安装选项",
@@ -181,7 +182,11 @@
     "confirm_remove_header": "移除应用",
     "confirm_remove_message": "确定要从列表中移除 {name} 吗？",
     "remove_success": "已移除应用",
-    "open_install_folder": "打开安装目录",
-    "open_registry": "打开注册表项"
+    "open_install_folder": "打开安装文件夹",
+    "open_registry": "打开注册表项",
+    "not_installed": "未安装",
+    "installed": "已安装",
+    "validation_error": "验证错误",
+    "remove": "移除"
   }
 }

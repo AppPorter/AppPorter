@@ -55,7 +55,8 @@
       "source_archive": "소스 아카이브",
       "selected_executable": "선택된 실행 파일",
       "finish": "완료",
-      "close": "닫기"
+      "close": "닫기",
+      "full_path": "전체 경로"
     },
     "preview": {
       "title": "압축 파일 내용",
@@ -177,6 +178,15 @@
     "cancel": "취소",
     "no_apps_found": "설치된 앱을 찾을 수 없음",
     "install_first": "애플리케이션을 먼저 설치해 주세요",
-    "load_failed": "앱 목록 로딩 실패"
+    "load_failed": "앱 목록 로딩 실패",
+    "open_install_folder": "설치 폴더 열기",
+    "open_registry": "레지스트리 항목 열기",
+    "confirm_remove_header": "앱 삭제",
+    "confirm_remove_message": "{name}을(를) 목록에서 삭제하시겠습니까?",
+    "remove_success": "앱이 삭제되었습니다",
+    "not_installed": "설치되지 않음",
+    "installed": "설치됨",
+    "validation_error": "유효성 검사 오류",
+    "remove": "제거"
   }
 }

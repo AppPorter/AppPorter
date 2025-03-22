@@ -55,7 +55,8 @@
       "source_archive": "ソースアーカイブ",
       "selected_executable": "選択された実行ファイル",
       "finish": "完了",
-      "close": "閉じる"
+      "close": "閉じる",
+      "full_path": "完全なパス"
     },
     "preview": {
       "title": "アーカイブ内のファイル",
@@ -177,6 +178,15 @@
     "cancel": "キャンセル",
     "no_apps_found": "インストール済みのアプリが見つかりません",
     "install_first": "アプリケーションをインストールしてください",
-    "load_failed": "アプリ一覧の読み込みに失敗しました"
+    "load_failed": "アプリ一覧の読み込みに失敗しました",
+    "open_install_folder": "インストールフォルダを開く",
+    "open_registry": "レジストリエントリを開く",
+    "confirm_remove_header": "アプリケーションを削除",
+    "confirm_remove_message": "{name} をリストから削除しますか？",
+    "remove_success": "アプリケーションを削除しました",
+    "not_installed": "未インストール",
+    "installed": "インストール済み",
+    "validation_error": "検証エラー",
+    "remove": "削除"
   }
 }

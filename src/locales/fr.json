@@ -55,7 +55,8 @@
       "source_archive": "Archive source",
       "selected_executable": "Exécutable sélectionné",
       "finish": "Terminer",
-      "close": "Fermer"
+      "close": "Fermer",
+      "full_path": "Chemin complet"
     },
     "preview": {
       "title": "Fichiers dans l'archive",
@@ -177,6 +178,15 @@
     "cancel": "Annuler",
     "no_apps_found": "Aucune application installée trouvée",
     "install_first": "Veuillez d'abord installer une application",
-    "load_failed": "Échec du chargement de la liste des applications"
+    "load_failed": "Échec du chargement de la liste des applications",
+    "open_install_folder": "Ouvrir le dossier d'installation",
+    "open_registry": "Ouvrir l'entrée du registre",
+    "confirm_remove_header": "Supprimer l'application",
+    "confirm_remove_message": "Voulez-vous vraiment supprimer {name} de la liste ?",
+    "remove_success": "Application supprimée",
+    "not_installed": "Non installé",
+    "installed": "Installé",
+    "validation_error": "Erreur de validation",
+    "remove": "Supprimer"
   }
 }

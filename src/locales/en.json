@@ -55,7 +55,8 @@
       "source_archive": "Source Archive",
       "selected_executable": "Selected Executable",
       "finish": "Finish",
-      "close": "Close"
+      "close": "Close",
+      "full_path": "Full path"
     },
     "config": {
       "installation_options": "Installation Options",
@@ -182,6 +183,10 @@
     "confirm_remove_message": "Are you sure you want to remove {name} from the list?",
     "remove_success": "Application removed",
     "open_install_folder": "Open Install Folder",
-    "open_registry": "Open Registry Entry"
+    "open_registry": "Open Registry Entry",
+    "not_installed": "Not installed",
+    "installed": "Installed",
+    "validation_error": "Validation error",
+    "remove": "Remove"
   }
 }
