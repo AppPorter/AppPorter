@@ -41,6 +41,32 @@ async function loadAppList() {
   loading.value = false
 }
 
+function getAppStatus(data) {
+  if (!data.installed) {
+    return {
+      icon: 'mir-cloud_download',
+      severity: 'secondary',
+      value: t('app_list.not_installed'),
+    }
+  }
+
+  const validation = data.details.validation_status
+  const isValid = validation.file_exists && validation.registry_valid
+
+  if (isValid) {
+    return {
+      icon: 'mir-check',
+      value: t('app_list.installed'),
+    }
+  }
+
+  return {
+    icon: 'mir-error',
+    severity: 'warn',
+    value: t('app_list.validation_error'),
+  }
+}
+
 function showMenu(event: DataTableRowContextMenuEvent) {
   selectedApp.value = event.data
   contextMenu.value.show(event.originalEvent)
@@ -220,6 +246,15 @@ onMounted(() => {
         @row-contextmenu="showMenu"
         responsiveLayout="scroll"
       >
+        <Column header="Status">
+          <template #body="slotProps">
+            <Tag
+              :value="getAppStatus(slotProps.data).value"
+              :severity="getAppStatus(slotProps.data).severity"
+              :icon="getAppStatus(slotProps.data).icon"
+            />
+          </template>
+        </Column>
         <Column field="details.icon" header="" style="width: 56px">
           <template #body="slotProps">
             <div class="flex items-center justify-center">
