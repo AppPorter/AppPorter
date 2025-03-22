@@ -246,7 +246,7 @@ onMounted(() => {
         @row-contextmenu="showMenu"
         responsiveLayout="scroll"
       >
-        <Column header="Status">
+        <Column :header="t('app_list.status')">
           <template #body="slotProps">
             <Tag
               :value="getAppStatus(slotProps.data).value"
