@@ -9,13 +9,11 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     ErrorHandler: typeof import('./src/components/ErrorHandler.vue')['default']
-    Menubar: typeof import('primevue/menubar')['default']
     Panel: typeof import('primevue/panel')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']
     Tag: typeof import('primevue/tag')['default']
-    Toast: typeof import('primevue/toast')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
   }
   export interface ComponentCustomProperties {
