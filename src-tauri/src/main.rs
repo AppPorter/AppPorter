@@ -1,6 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{command, get_7z_path, menu, websocket::start_websocket_server};
+use app_porter_lib::{
+    command, get_7z_path, menu, operations::cli_handler, websocket::start_websocket_server,
+};
 use std::error::Error;
 use tauri::Manager;
 use tauri_plugin_cli::{ArgData, CliExt};
@@ -46,6 +48,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
                         .to_string();
                     if value != "null" {
                         println!("zip_path: {}", value);
+                        cli_handler(app.handle().clone(), value.clone())?;
                     }
                 }
                 Err(_) => {}

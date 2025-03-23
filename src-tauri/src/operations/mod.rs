@@ -7,6 +7,7 @@ use crate::get_7z_path;
 pub use get_details::*;
 pub use installation::*;
 use std::error::Error;
+use tauri::{AppHandle, Emitter};
 use tokio::process::Command;
 
 // Modifies Windows registry to enable/disable application elevation privileges
@@ -207,5 +208,10 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
+    Ok("".to_owned())
+}
+
+pub fn cli_handler(app: AppHandle, path: String) -> Result<String, Box<dyn Error>> {
+    app.emit("install", &path)?;
     Ok("".to_owned())
 }
