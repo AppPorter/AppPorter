@@ -36,5 +36,8 @@
         "installerHooks": "./windows/hooks.nsi"
       }
     }
+  },
+  "plugins": {
+    "cli": {}
   }
 }
