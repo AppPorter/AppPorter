@@ -33,6 +33,7 @@ async fn run() -> Result<(), Box<dyn Error>> {
 
     // Initialize Tauri with plugins and run the application
     tauri::Builder::default()
+        .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let window = app.get_webview_window("main").expect("no main window");
             window.show().expect("window failed to show");

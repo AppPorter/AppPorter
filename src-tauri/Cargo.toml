@@ -57,4 +57,5 @@
     windows-registry = "0.5.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-cli = "2"
     tauri-plugin-single-instance = "2.2.2"
