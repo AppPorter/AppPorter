@@ -1,6 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{command, get_7z_path, websocket};
+use app_porter_lib::{command, get_7z_path, menu, websocket::start_websocket_server};
 use std::error::Error;
 use tauri::Manager;
 
@@ -19,9 +19,14 @@ async fn run() -> Result<(), Box<dyn Error>> {
         eprintln!("Failed to extract 7z.exe: {}", e);
     }
 
+    // Register context menu
+    if let Err(e) = menu::register_context_menu() {
+        eprintln!("Failed to register context menu: {}", e);
+    }
+
     // Start WebSocket server for browser extension communication
     tokio::spawn(async {
-        if let Err(e) = websocket::start_websocket_server().await {
+        if let Err(e) = start_websocket_server().await {
             eprintln!("WebSocket server error: {}", e);
         }
     });
