@@ -216,7 +216,6 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
     loop {
         if let Ok(msg) = receiver.recv().await {
             app.emit("install", &msg)?;
-            println!("{}", msg);
         }
     }
 }

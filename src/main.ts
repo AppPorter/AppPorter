@@ -140,7 +140,6 @@ if (
   typeof value === 'string' &&
   SUPPORTED_EXTENSIONS.some((ext) => value.toLowerCase().endsWith(`.${ext}`))
 ) {
-  console.log('ZIP path:', value)
   useInstallationConfigStore().zip_path = value
   goTo('/Installation/Config')
 }

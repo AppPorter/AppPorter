@@ -15,24 +15,18 @@ async fn main() {
 }
 
 async fn run() -> Result<(), Box<dyn Error>> {
-    // Extract and setup 7z tools
     if let Err(e) = get_7z_path() {
         eprintln!("Failed to extract 7z.exe: {}", e);
     }
-
-    // Register context menu
     if let Err(e) = menu::register_context_menu() {
         eprintln!("Failed to register context menu: {}", e);
     }
-
-    // Start WebSocket server for browser extension communication
     tokio::spawn(async {
         if let Err(e) = start_websocket_server().await {
             eprintln!("WebSocket server error: {}", e);
         }
     });
 
-    // Initialize Tauri with plugins and run the application
     tauri::Builder::default()
         .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_single_instance::init(
@@ -43,7 +37,6 @@ async fn run() -> Result<(), Box<dyn Error>> {
                     .and_then(|ext| ext.to_str())
                 {
                     if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                        println!("2: {}", value);
                         let value_clone = value.to_string();
                         let sender = CHANNEL.0.clone();
                         tokio::spawn(async move {
