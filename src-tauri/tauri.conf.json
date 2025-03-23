@@ -42,6 +42,7 @@
       "args": [
         {
           "name": "zip_path",
+          "index": 1,
           "takesValue": true
         }
       ]

@@ -1,9 +1,9 @@
 pub mod get_details;
 pub mod installation;
 
-use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
 use crate::get_7z_path;
+use crate::{configs::settings::Settings, CHANNEL};
 pub use get_details::*;
 pub use installation::*;
 use std::error::Error;
@@ -211,7 +211,12 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String
     Ok("".to_owned())
 }
 
-pub fn cli_handler(app: AppHandle, path: String) -> Result<String, Box<dyn Error>> {
-    app.emit("install", &path)?;
-    Ok("".to_owned())
+pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
+    let mut receiver = CHANNEL.1.resubscribe();
+    loop {
+        if let Ok(msg) = receiver.recv().await {
+            app.emit("install", &msg)?;
+            println!("{}", msg);
+        }
+    }
 }
