@@ -34,28 +34,6 @@ async fn run() -> Result<(), Box<dyn Error>> {
     // Initialize Tauri with plugins and run the application
     tauri::Builder::default()
         .plugin(tauri_plugin_cli::init())
-        .setup(move |app| {
-            let sender = CHANNEL.0.clone();
-            match app.cli().matches() {
-                Ok(matches) => {
-                    let value = &matches
-                        .args
-                        .get("zip_path")
-                        .unwrap_or(&ArgData::default())
-                        .value
-                        .to_string();
-                    if value != "null" {
-                        println!("1: {}", value);
-                        let value_clone = value.clone();
-                        tokio::spawn(async move {
-                            sender.send(value_clone).unwrap();
-                        });
-                    }
-                }
-                Err(_) => {}
-            }
-            Ok(())
-        })
         .plugin(tauri_plugin_single_instance::init(
             move |app, args, _cwd| {
                 let value = args[1].clone();

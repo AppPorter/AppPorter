@@ -132,6 +132,14 @@ if (settingsStore.minimize_to_tray_on_close) {
   await TrayIcon.new(trayOptions).catch(console.error)
 }
 
+const matches = await getMatches()
+const value = matches.args.zip_path.value
+if (value != null) {
+  console.log('ZIP path:', value)
+  useInstallationConfigStore().zip_path = value as string
+  goTo('/Installation/Config')
+}
+
 await listen('install', (event) => {
   useInstallationConfigStore().zip_path = event.payload as string
   goTo('/Installation/Config')
