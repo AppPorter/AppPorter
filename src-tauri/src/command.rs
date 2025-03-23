@@ -46,6 +46,7 @@ pub enum Command {
     CheckPathEmpty {
         path: String,
     },
+    Cli,
 }
 
 impl Command {
@@ -69,6 +70,7 @@ impl Command {
                 current_user_only,
             } => open_registry(&app_name, current_user_only).await,
             Self::CheckPathEmpty { path } => check_path_empty(&path).await,
+            Self::Cli => cli(app).await,
         }
     }
 }

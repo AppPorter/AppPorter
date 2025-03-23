@@ -4,7 +4,14 @@ pub mod menu;
 pub mod operations;
 pub mod websocket;
 
+use lazy_static::lazy_static;
 use std::{env, fs, io, path::PathBuf};
+use tokio::sync::broadcast;
+
+lazy_static! {
+    pub static ref CHANNEL: (broadcast::Sender<String>, broadcast::Receiver<String>) =
+        broadcast::channel(1);
+}
 
 // Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
 // The files will be stored in the temp directory: %TEMP%\AppPorter\

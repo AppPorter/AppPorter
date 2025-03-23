@@ -6,6 +6,8 @@ import { useSettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
+import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
@@ -130,12 +132,15 @@ if (settingsStore.minimize_to_tray_on_close) {
   await TrayIcon.new(trayOptions).catch(console.error)
 }
 
-const matches = await getMatches()
-const value = matches.args.zip_path.value
-if (value != null) {
-  console.log('ZIP path:', value)
-  useInstallationConfigStore().zip_path = value as string
+await listen('install', (event) => {
+  useInstallationConfigStore().zip_path = event.payload as string
   goTo('/Installation/Config')
-}
+})
+
+invoke('execute_command', {
+  command: {
+    name: 'Cli',
+  },
+})
 
 app.mount('#app')
