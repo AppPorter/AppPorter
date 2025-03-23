@@ -13,6 +13,8 @@ lazy_static! {
         broadcast::channel(1);
 }
 
+pub const SUPPORTED_EXTENSIONS: [&str; 8] = ["zip", "7z", "rar", "tar", "gz", "bz2", "xz", "cab"];
+
 // Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
 // The files will be stored in the temp directory: %TEMP%\AppPorter\
 pub fn get_7z_path() -> Result<PathBuf, io::Error> {

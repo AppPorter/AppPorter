@@ -1,8 +1,7 @@
+use crate::SUPPORTED_EXTENSIONS;
 use check_elevation::is_elevated;
 use std::io;
 use windows_registry::CURRENT_USER;
-
-const SUPPORTED_EXTENSIONS: [&str; 8] = ["zip", "7z", "rar", "tar", "gz", "bz2", "xz", "cab"];
 
 pub fn register_context_menu() -> io::Result<()> {
     println!("Starting context menu registration...");

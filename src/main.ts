@@ -132,11 +132,16 @@ if (settingsStore.minimize_to_tray_on_close) {
   await TrayIcon.new(trayOptions).catch(console.error)
 }
 
+const SUPPORTED_EXTENSIONS = ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab']
+
 const matches = await getMatches()
 const value = matches.args.zip_path.value
-if (value != null) {
+if (
+  typeof value === 'string' &&
+  SUPPORTED_EXTENSIONS.some((ext) => value.toLowerCase().endsWith(`.${ext}`))
+) {
   console.log('ZIP path:', value)
-  useInstallationConfigStore().zip_path = value as string
+  useInstallationConfigStore().zip_path = value
   goTo('/Installation/Config')
 }
 
