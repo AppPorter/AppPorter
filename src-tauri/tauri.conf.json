@@ -38,6 +38,13 @@
     }
   },
   "plugins": {
-    "cli": {}
+    "cli": {
+      "args": [
+        {
+          "name": "zip_path",
+          "takesValue": true
+        }
+      ]
+    }
   }
 }

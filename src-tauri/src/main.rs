@@ -3,6 +3,7 @@
 use app_porter_lib::{command, get_7z_path, menu, websocket::start_websocket_server};
 use std::error::Error;
 use tauri::Manager;
+use tauri_plugin_cli::{ArgData, CliExt};
 
 #[tokio::main]
 async fn main() {
@@ -34,6 +35,23 @@ async fn run() -> Result<(), Box<dyn Error>> {
     // Initialize Tauri with plugins and run the application
     tauri::Builder::default()
         .plugin(tauri_plugin_cli::init())
+        .setup(|app| {
+            match app.cli().matches() {
+                Ok(matches) => {
+                    let value = &matches
+                        .args
+                        .get("zip_path")
+                        .unwrap_or(&ArgData::default())
+                        .value
+                        .to_string();
+                    if value != "null" {
+                        println!("zip_path: {}", value);
+                    }
+                }
+                Err(_) => {}
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
             let window = app.get_webview_window("main").expect("no main window");
             window.show().expect("window failed to show");
