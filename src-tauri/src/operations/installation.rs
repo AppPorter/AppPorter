@@ -67,8 +67,10 @@ pub async fn installation(
         create_desktop_shortcut(&full_executable_path, &config.details.name)?;
     }
 
+    let timestamp = chrono::Utc::now().timestamp();
+
     if config.details.create_registry_key {
-        create_registry_entries(&config, &full_executable_path, &app_path)?;
+        create_registry_entries(&config, &full_executable_path, &app_path, timestamp)?;
     }
 
     // Add to app list
@@ -85,7 +87,7 @@ pub async fn installation(
     };
 
     let new_app = App {
-        timestamp: chrono::Utc::now().timestamp(),
+        timestamp,
         installed: true,
         details: updated_details,
         url: "".to_owned(),
@@ -300,6 +302,7 @@ fn create_registry_entries(
     config: &InstallationConfig,
     executable_path: &str,
     app_path: &str,
+    timestamp: i64,
 ) -> Result<(), Box<dyn Error>> {
     let key = if config.details.current_user_only {
         CURRENT_USER.create(format!(
@@ -324,7 +327,11 @@ fn create_registry_entries(
     key.set_string("Publisher", &config.details.publisher)?;
     key.set_string(
         "UninstallString",
-        std::env::current_exe()?.to_string_lossy(),
+        format!(
+            "\"{}\" uninstall {}",
+            std::env::current_exe()?.to_string_lossy(),
+            timestamp
+        ),
     )?;
     Ok(())
 }
