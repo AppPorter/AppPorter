@@ -135,25 +135,34 @@ async function openRegistry() {
   })
 }
 
-function confirmUninstall() {
+async function confirmUninstall() {
   if (!selectedApp.value) return
-
-  confirm.require({
-    message: t('app_list.confirm_uninstall_message', { name: selectedApp.value.details.name }),
-    header: t('app_list.confirm_uninstall_header'),
-    icon: 'mir-warning',
-    acceptLabel: t('app_list.uninstall'),
-    rejectLabel: t('app_list.cancel'),
-    accept: uninstallApp,
+  await new Promise((resolve, reject) => {
+    confirm.require({
+      message: t('app_list.confirm_uninstall_message', { name: selectedApp.value.details.name }),
+      group: 'dialog',
+      header: t('app_list.confirm_uninstall_header'),
+      icon: 'mir-warning',
+      rejectProps: {
+        label: t('app_list.cancel'),
+        severity: 'secondary',
+        outlined: true,
+        icon: 'mir-close',
+      },
+      acceptProps: {
+        label: t('app_list.uninstall'),
+        severity: 'danger',
+        icon: 'mir-warning',
+      },
+      accept: () => resolve(true),
+      reject: () => reject(),
+    })
   })
-}
-
-function uninstallApp() {
-  toast.add({
-    severity: 'success',
-    summary: t('app_list.uninstall_success'),
-    detail: selectedApp.value.details.name,
-    life: 3000,
+  await invoke('execute_command', {
+    command: {
+      name: 'Uninstallation',
+      timestamp: selectedApp.value.timestamp,
+    },
   })
 }
 
