@@ -1,5 +1,6 @@
 pub mod get_details;
 pub mod installation;
+pub mod uninstallation;
 
 use crate::configs::ConfigFile;
 use crate::get_7z_path;
@@ -9,6 +10,7 @@ pub use installation::*;
 use std::error::Error;
 use tauri::{AppHandle, Emitter};
 use tokio::process::Command;
+pub use uninstallation::*;
 
 // Modifies Windows registry to enable/disable application elevation privileges
 pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {

@@ -17,6 +17,9 @@ pub enum Command {
     Installation {
         config: InstallationConfig,
     },
+    Uninstallation {
+        timestamp: i64,
+    },
     Elevate {
         revert: bool,
     },
@@ -57,6 +60,7 @@ impl Command {
             Self::LoadSettings => load_settings().await,
             Self::GetDetails { path } => get_details(path, app).await,
             Self::Installation { config } => installation(config, app).await,
+            Self::Uninstallation { timestamp } => uninstallation(timestamp, app).await,
             Self::Elevate { revert } => elevate(revert).await,
             Self::ValidatePath { path } => validate_path(path).await,
             Self::SaveSettings { settings } => save_settings(settings).await,
