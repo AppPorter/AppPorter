@@ -55,13 +55,5 @@ export const useAppListStore = defineStore('app_list', {
     addLink() {
       this.links.push()
     },
-
-    removeApp(url: string) {
-      const index = this.links.findIndex((link) => link.url === url)
-      if (index !== -1) {
-        this.links.splice(index, 1)
-        this.saveAppList()
-      }
-    },
   },
 })

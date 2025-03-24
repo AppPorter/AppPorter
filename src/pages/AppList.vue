@@ -12,14 +12,12 @@ import InputText from 'primevue/inputtext'
 import Menu from 'primevue/menu'
 import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
-import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
 const appListStore = useAppListStore()
 const { t } = useI18n()
-const toast = useToast()
 const confirm = useConfirm()
 const contextMenu = ref()
 const selectedApp = ref()
@@ -93,11 +91,6 @@ const menuItems = computed(() => [
     icon: 'mir-delete',
     command: () => confirmUninstall(),
   },
-  {
-    label: t('app_list.remove'),
-    icon: 'mir-close',
-    command: () => removeApp(),
-  },
 ])
 
 async function openApp() {
@@ -164,37 +157,8 @@ async function confirmUninstall() {
       timestamp: selectedApp.value.timestamp,
     },
   })
-}
 
-function removeApp() {
-  if (!selectedApp.value) return
-
-  confirm.require({
-    message: t('app_list.confirm_remove_message', { name: selectedApp.value.details.name }),
-    header: t('app_list.confirm_remove_header'),
-    group: 'dialog',
-    icon: 'mir-warning',
-    rejectProps: {
-      label: t('app_list.cancel'),
-      severity: 'secondary',
-      outlined: true,
-      icon: 'mir-close',
-    },
-    acceptProps: {
-      label: t('app_list.remove'),
-      severity: 'danger',
-      icon: 'mir-warning',
-    },
-    accept: () => {
-      appListStore.removeApp(selectedApp.value.url)
-      toast.add({
-        severity: 'info',
-        summary: t('app_list.remove_success'),
-        detail: selectedApp.value.details.name,
-        life: 3000,
-      })
-    },
-  })
+  await loadAppList()
 }
 
 function formatTimestamp(timestamp) {
