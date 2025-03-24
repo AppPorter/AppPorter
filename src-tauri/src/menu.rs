@@ -19,7 +19,7 @@ pub fn register_context_menu() -> io::Result<()> {
 
         CURRENT_USER
             .create(format!("{}\\command", base_path))?
-            .set_string("", &format!("\"{}\" \"%1\"", app_path))?;
+            .set_string("", &format!("\"{}\" install \"%1\"", app_path))?;
     }
 
     Ok(())

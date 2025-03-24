@@ -36,16 +36,5 @@
         "installerHooks": "./windows/hooks.nsi"
       }
     }
-  },
-  "plugins": {
-    "cli": {
-      "args": [
-        {
-          "name": "zip_path",
-          "index": 1,
-          "takesValue": true
-        }
-      ]
-    }
   }
 }

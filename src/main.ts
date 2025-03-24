@@ -11,7 +11,6 @@ import { listen } from '@tauri-apps/api/event'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { getMatches } from '@tauri-apps/plugin-cli'
 import { exit } from '@tauri-apps/plugin-process'
 import Color from 'color'
 import { createPinia } from 'pinia'
@@ -132,21 +131,19 @@ if (settingsStore.minimize_to_tray_on_close) {
   await TrayIcon.new(trayOptions).catch(console.error)
 }
 
-const SUPPORTED_EXTENSIONS = ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab']
-
-const matches = await getMatches()
-const value = matches.args.zip_path.value
-if (
-  typeof value === 'string' &&
-  SUPPORTED_EXTENSIONS.some((ext) => value.toLowerCase().endsWith(`.${ext}`))
-) {
-  useInstallationConfigStore().zip_path = value
-  goTo('/Installation/Config')
-}
-
 await listen('install', (event) => {
   useInstallationConfigStore().zip_path = event.payload as string
   goTo('/Installation/Config')
+})
+
+await listen('uninstall', (event) => {
+  goTo('/AppList')
+  invoke('execute_command', {
+    command: {
+      name: 'Uninstallation',
+      timestamp: event.payload as number,
+    },
+  })
 })
 
 invoke('execute_command', {

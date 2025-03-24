@@ -1,7 +1,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app_porter_lib::{
-    command, get_7z_path, menu, websocket::start_websocket_server, CHANNEL, SUPPORTED_EXTENSIONS,
+    command, get_7z_path, menu, websocket::start_websocket_server, SubCommands, CHANNEL,
+    SUPPORTED_EXTENSIONS,
 };
 use std::error::Error;
 use tauri::Manager;
@@ -28,21 +29,34 @@ async fn run() -> Result<(), Box<dyn Error>> {
     });
 
     tauri::Builder::default()
-        .plugin(tauri_plugin_cli::init())
         .plugin(tauri_plugin_single_instance::init(
             move |app, args, _cwd| {
-                let value = args[1].clone();
-                if let Some(extension) = std::path::Path::new(&value)
-                    .extension()
-                    .and_then(|ext| ext.to_str())
-                {
-                    if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                        let value_clone = value.to_string();
-                        let sender = CHANNEL.0.clone();
-                        tokio::spawn(async move {
-                            sender.send(value_clone).unwrap();
-                        });
+                match args[1].as_str() {
+                    "install" => {
+                        let value = args[2].clone();
+                        if let Some(extension) = std::path::Path::new(&value)
+                            .extension()
+                            .and_then(|ext| ext.to_str())
+                        {
+                            if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
+                                let value_clone = value.to_string();
+                                let sender = CHANNEL.0.clone();
+                                tokio::spawn(async move {
+                                    sender.send(SubCommands::Install(value_clone)).unwrap();
+                                });
+                            }
+                        }
                     }
+                    "uninstall" => {
+                        let value = args[2].clone();
+                        if let Ok(timestamp) = value.parse::<i64>() {
+                            let sender = CHANNEL.0.clone();
+                            tokio::spawn(async move {
+                                sender.send(SubCommands::Uninstall(timestamp)).unwrap();
+                            });
+                        }
+                    }
+                    _ => {}
                 }
 
                 let window = app.get_webview_window("main").expect("no main window");

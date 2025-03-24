@@ -3,8 +3,8 @@ pub mod installation;
 pub mod uninstallation;
 
 use crate::configs::ConfigFile;
-use crate::get_7z_path;
 use crate::{configs::settings::Settings, CHANNEL};
+use crate::{get_7z_path, SubCommands, SUPPORTED_EXTENSIONS};
 pub use get_details::*;
 pub use installation::*;
 use std::error::Error;
@@ -214,10 +214,42 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String
 }
 
 pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
+    let args: Vec<String> = std::env::args().collect();
+    println!("{:?}", args);
+    if args.len() == 3 {
+        match args[1].as_str() {
+            "install" => {
+                let value = args[2].clone();
+                if let Some(extension) = std::path::Path::new(&value)
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                {
+                    if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
+                        app.emit("install", value)?;
+                    }
+                }
+            }
+            "uninstall" => {
+                let value = args[2].clone();
+                if let Ok(timestamp) = value.parse::<i64>() {
+                    app.emit("uninstall", timestamp)?;
+                }
+            }
+            _ => {}
+        }
+    }
+
     let mut receiver = CHANNEL.1.resubscribe();
     loop {
         if let Ok(msg) = receiver.recv().await {
-            app.emit("install", &msg)?;
+            match msg {
+                SubCommands::Install(zip_path) => {
+                    app.emit("install", zip_path)?;
+                }
+                SubCommands::Uninstall(timestamp) => {
+                    app.emit("uninstall", timestamp)?;
+                }
+            }
         }
     }
 }
