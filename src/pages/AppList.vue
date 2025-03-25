@@ -225,6 +225,7 @@ onMounted(() => {
               :value="getAppStatus(slotProps.data).value"
               :severity="getAppStatus(slotProps.data).severity"
               :icon="getAppStatus(slotProps.data).icon"
+              class="text-center text-xs"
             />
           </template>
         </Column>
