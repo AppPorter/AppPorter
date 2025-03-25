@@ -197,6 +197,7 @@
       "reinstall": "Réinstaller",
       "repair": "Réparer",
       "uninstall": "Désinstaller"
-    }
+    },
+    "status": "État"
   }
 }

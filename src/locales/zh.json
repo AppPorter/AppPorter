@@ -197,6 +197,7 @@
       "reinstall": "重新安装",
       "repair": "修复",
       "uninstall": "卸载"
-    }
+    },
+    "status": "状态"
   }
 }

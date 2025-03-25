@@ -197,6 +197,7 @@
       "reinstall": "재설치",
       "repair": "복구",
       "uninstall": "제거"
-    }
+    },
+    "status": "상태"
   }
 }

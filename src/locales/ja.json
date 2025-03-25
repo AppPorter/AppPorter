@@ -197,6 +197,7 @@
       "reinstall": "再インストール",
       "repair": "修復",
       "uninstall": "アンインストール"
-    }
+    },
+    "status": "ステータス"
   }
 }
