@@ -197,6 +197,7 @@
       "reinstall": "Reinstall",
       "repair": "Repair",
       "uninstall": "Uninstall"
-    }
+    },
+    "status": "Status"
   }
 }

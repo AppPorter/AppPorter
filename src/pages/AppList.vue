@@ -346,7 +346,7 @@ onMounted(() => {
             />
           </template>
         </Column>
-        <Column field="details.icon" header="" style="width: 56px">
+        <Column field="details.icon" header="" class="w-14">
           <template #body="slotProps">
             <div class="flex items-center justify-center">
               <div
@@ -397,7 +397,7 @@ onMounted(() => {
           </template>
         </Column>
 
-        <Column :exportable="false" style="width: 4rem">
+        <Column :exportable="false" class="w-16">
           <template #body="slotProps">
             <Button
               icon="mir-more_vert"
