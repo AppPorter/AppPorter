@@ -187,6 +187,16 @@
     "not_installed": "未安装",
     "installed": "已安装",
     "validation_error": "验证错误",
-    "remove": "移除"
+    "remove": "移除",
+    "validation": {
+      "title": "检测到应用问题",
+      "issue": "{name} 存在问题：",
+      "missing_both": " 安装文件和注册表项均已丢失。",
+      "missing_file": " 安装文件已丢失。",
+      "missing_registry": " 注册表项已丢失。",
+      "reinstall": "重新安装",
+      "repair": "修复",
+      "uninstall": "卸载"
+    }
   }
 }

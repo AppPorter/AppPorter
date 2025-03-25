@@ -187,6 +187,16 @@
     "not_installed": "未インストール",
     "installed": "インストール済み",
     "validation_error": "検証エラー",
-    "remove": "削除"
+    "remove": "削除",
+    "validation": {
+      "title": "アプリケーションの問題を検出",
+      "issue": "{name} に問題があります：",
+      "missing_both": " インストールファイルとレジストリエントリの両方が見つかりません。",
+      "missing_file": " インストールファイルが見つかりません。",
+      "missing_registry": " レジストリエントリが見つかりません。",
+      "reinstall": "再インストール",
+      "repair": "修復",
+      "uninstall": "アンインストール"
+    }
   }
 }

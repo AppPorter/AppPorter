@@ -187,6 +187,16 @@
     "not_installed": "설치되지 않음",
     "installed": "설치됨",
     "validation_error": "유효성 검사 오류",
-    "remove": "제거"
+    "remove": "제거",
+    "validation": {
+      "title": "애플리케이션 문제 발견",
+      "issue": "{name}에 문제가 있습니다:",
+      "missing_both": " 설치 파일과 레지스트리 항목이 모두 누락되었습니다.",
+      "missing_file": " 설치 파일이 누락되었습니다.",
+      "missing_registry": " 레지스트리 항목이 누락되었습니다.",
+      "reinstall": "재설치",
+      "repair": "복구",
+      "uninstall": "제거"
+    }
   }
 }

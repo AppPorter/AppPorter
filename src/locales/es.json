@@ -187,6 +187,16 @@
     "not_installed": "No instalado",
     "installed": "Instalado",
     "validation_error": "Error de validación",
-    "remove": "Eliminar"
+    "remove": "Eliminar",
+    "validation": {
+      "title": "Problema detectado en la aplicación",
+      "issue": "Hay un problema con {name}:",
+      "missing_both": " Faltan los archivos de instalación y las entradas del registro.",
+      "missing_file": " Faltan los archivos de instalación.",
+      "missing_registry": " Faltan las entradas del registro.",
+      "reinstall": "Reinstalar",
+      "repair": "Reparar",
+      "uninstall": "Desinstalar"
+    }
   }
 }

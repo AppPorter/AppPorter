@@ -187,6 +187,16 @@
     "not_installed": "Nicht installiert",
     "installed": "Installiert",
     "validation_error": "Validierungsfehler",
-    "remove": "Entfernen"
+    "remove": "Entfernen",
+    "validation": {
+      "title": "Anwendungsproblem erkannt",
+      "issue": "Es gibt ein Problem mit {name}:",
+      "missing_both": " Installationsdateien und Registrierungseinträge fehlen.",
+      "missing_file": " Installationsdateien fehlen.",
+      "missing_registry": " Registrierungseinträge fehlen.",
+      "reinstall": "Neu installieren",
+      "repair": "Reparieren",
+      "uninstall": "Deinstallieren"
+    }
   }
 }

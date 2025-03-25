@@ -187,6 +187,16 @@
     "not_installed": "Non installé",
     "installed": "Installé",
     "validation_error": "Erreur de validation",
-    "remove": "Supprimer"
+    "remove": "Supprimer",
+    "validation": {
+      "title": "Problème d'application détecté",
+      "issue": "Il y a un problème avec {name} :",
+      "missing_both": " Les fichiers d'installation et les entrées de registre sont manquants.",
+      "missing_file": " Les fichiers d'installation sont manquants.",
+      "missing_registry": " Les entrées de registre sont manquantes.",
+      "reinstall": "Réinstaller",
+      "repair": "Réparer",
+      "uninstall": "Désinstaller"
+    }
   }
 }
