@@ -215,7 +215,6 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String
 
 pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
     let args: Vec<String> = std::env::args().collect();
-    println!("{:?}", args);
     if args.len() == 3 {
         match args[1].as_str() {
             "install" => {
