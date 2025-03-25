@@ -67,10 +67,9 @@ onMounted(async () => {
   // Setup uninstall listener
   await listen('uninstall', async (event) => {
     goTo('/AppList')
-
+    await appListStore.loadAppList()
     const app = appListStore.getAppByTimestamp(event.payload as number)
     if (!app) return
-
     await new Promise((resolve, reject) => {
       confirm.require({
         message: t('app_list.confirm_uninstall_message', {
