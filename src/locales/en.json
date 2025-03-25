@@ -187,6 +187,16 @@
     "not_installed": "Not installed",
     "installed": "Installed",
     "validation_error": "Validation error",
-    "remove": "Remove"
+    "remove": "Remove",
+    "validation": {
+      "title": "Application Issue Detected",
+      "issue": "There is an issue with {name}:",
+      "missing_both": " Both installation files and registry entries are missing.",
+      "missing_file": " Installation files are missing.",
+      "missing_registry": " Registry entries are missing.",
+      "reinstall": "Reinstall",
+      "repair": "Repair",
+      "uninstall": "Uninstall"
+    }
   }
 }

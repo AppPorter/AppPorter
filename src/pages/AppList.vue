@@ -6,7 +6,6 @@ import Column from 'primevue/column'
 import ConfirmDialog from 'primevue/confirmdialog'
 import type { DataTableRowContextMenuEvent } from 'primevue/datatable'
 import DataTable from 'primevue/datatable'
-import Dialog from 'primevue/dialog'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
@@ -163,13 +162,62 @@ async function confirmUninstall() {
   })
 }
 
-const validateDialogVisible = ref(false)
 const appToValidate = ref()
 
 function handleStatusClick(app) {
   if (app.installed) {
     appToValidate.value = app
-    validateDialogVisible.value = true
+
+    const validation = app.details.validation_status
+    const fileExists = validation.file_exists
+    const registryValid = validation.registry_valid
+
+    if (!fileExists && !registryValid) {
+      confirm.require({
+        message:
+          t('app_list.validation.issue', { name: app.details.name }) +
+          t('app_list.validation.missing_both'),
+        header: t('app_list.validation.title'),
+        icon: 'mir-warning',
+        acceptLabel: t('app_list.validation.reinstall'),
+        rejectLabel: t('app_list.validation.uninstall'),
+        acceptIcon: 'mir-refresh',
+        rejectIcon: 'mir-delete',
+        rejectClass: 'p-button-outlined p-button-secondary',
+        accept: () => handleValidationAction('reinstall'),
+        reject: () => handleValidationAction('uninstall'),
+      })
+    } else if (!fileExists) {
+      confirm.require({
+        message:
+          t('app_list.validation.issue', { name: app.details.name }) +
+          t('app_list.validation.missing_file'),
+        header: t('app_list.validation.title'),
+        icon: 'mir-warning',
+        acceptLabel: t('app_list.validation.reinstall'),
+        rejectLabel: t('app_list.validation.uninstall'),
+        acceptIcon: 'mir-refresh',
+        rejectIcon: 'mir-delete',
+        rejectClass: 'p-button-outlined p-button-secondary',
+        accept: () => handleValidationAction('reinstall'),
+        reject: () => handleValidationAction('uninstall'),
+      })
+    } else if (!registryValid) {
+      confirm.require({
+        message:
+          t('app_list.validation.issue', { name: app.details.name }) +
+          t('app_list.validation.missing_registry'),
+        header: t('app_list.validation.title'),
+        icon: 'mir-warning',
+        acceptLabel: t('app_list.validation.repair'),
+        rejectLabel: t('app_list.validation.uninstall'),
+        acceptIcon: 'mir-build',
+        rejectIcon: 'mir-delete',
+        rejectClass: 'p-button-outlined p-button-secondary',
+        accept: () => handleValidationAction('repair'),
+        reject: () => handleValidationAction('uninstall'),
+      })
+    }
   }
 }
 
@@ -187,7 +235,6 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     })
     await loadAppList()
   }
-  validateDialogVisible.value = false
 }
 
 function formatTimestamp(timestamp) {
@@ -338,69 +385,6 @@ onMounted(() => {
         </template>
       </DataTable>
     </Panel>
-
-    <!-- Validation Dialog -->
-    <Dialog
-      v-model:visible="validateDialogVisible"
-      :header="t('app_list.validation.title')"
-      :modal="true"
-      class="min-w-96"
-    >
-      <div class="space-y-4">
-        <p v-if="appToValidate" class="text-sm">
-          {{ appToValidate.details.name }} {{ t('app_list.validation.issue') }}
-        </p>
-
-        <div v-if="appToValidate" class="flex justify-end gap-2">
-          <template
-            v-if="
-              !appToValidate.details.validation_status.file_exists &&
-              !appToValidate.details.validation_status.registry_valid
-            "
-          >
-            <Button @click="handleValidationAction('reinstall')" class="w-28" severity="primary">
-              {{ t('app_list.validation.reinstall') }}
-            </Button>
-            <Button
-              @click="handleValidationAction('uninstall')"
-              class="w-28"
-              severity="secondary"
-              outlined
-            >
-              {{ t('app_list.validation.uninstall') }}
-            </Button>
-          </template>
-
-          <template v-else-if="!appToValidate.details.validation_status.file_exists">
-            <Button @click="handleValidationAction('reinstall')" class="w-28" severity="primary">
-              {{ t('app_list.validation.reinstall') }}
-            </Button>
-            <Button
-              @click="handleValidationAction('uninstall')"
-              class="w-28"
-              severity="secondary"
-              outlined
-            >
-              {{ t('app_list.validation.uninstall') }}
-            </Button>
-          </template>
-
-          <template v-else-if="!appToValidate.details.validation_status.registry_valid">
-            <Button @click="handleValidationAction('repair')" class="w-28" severity="primary">
-              {{ t('app_list.validation.repair') }}
-            </Button>
-            <Button
-              @click="handleValidationAction('uninstall')"
-              class="w-28"
-              severity="secondary"
-              outlined
-            >
-              {{ t('app_list.validation.uninstall') }}
-            </Button>
-          </template>
-        </div>
-      </div>
-    </Dialog>
 
     <!-- Context Menu -->
     <Menu ref="contextMenu" :model="menuItems" :popup="true" />

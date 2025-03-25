@@ -41,6 +41,7 @@ const USED_ICONS = [
   'more_vert',
   'folder',
   'app_registration',
+  'build',
 ] as const
 
 /**
