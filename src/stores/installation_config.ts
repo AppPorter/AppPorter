@@ -22,6 +22,10 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     create_desktop_shortcut: false,
     create_start_menu_shortcut: true,
     create_registry_key: true,
+    validation_status: {
+      file_exists: false,
+      registry_valid: false,
+    },
     page: 'Home',
   }),
 

@@ -13,6 +13,10 @@ export interface InstalledApp {
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
+  validation_status: {
+    file_exists: boolean
+    registry_valid: boolean
+  }
 }
 
 interface App {
@@ -30,6 +34,12 @@ export const useAppListStore = defineStore('app_list', {
   state: (): AppList => ({
     links: [],
   }),
+
+  getters: {
+    installedApps: (state) => {
+      return state.links.filter((app) => app.installed)
+    },
+  },
 
   actions: {
     async loadAppList() {
@@ -52,8 +62,18 @@ export const useAppListStore = defineStore('app_list', {
       return this.links.some((link) => link.url === url)
     },
 
-    addLink() {
-      this.links.push()
+    getAppByTimestamp(timestamp: number) {
+      return this.installedApps.find((app) => app.timestamp === timestamp)
+    },
+
+    async executeUninstall(timestamp: number) {
+      await invoke('execute_command', {
+        command: {
+          name: 'Uninstallation',
+          timestamp,
+        },
+      })
+      await this.loadAppList()
     },
   },
 })

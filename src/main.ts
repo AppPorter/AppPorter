@@ -1,13 +1,11 @@
 import '@/assets/styles/main.css'
 import { setupI18n } from '@/locales/i18n'
 import Main from '@/Main.vue'
-import router, { goTo, setupRouterGuards } from '@/router'
+import router, { setupRouterGuards } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
-import { invoke } from '@tauri-apps/api/core'
-import { listen } from '@tauri-apps/api/event'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
@@ -18,7 +16,6 @@ import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
 import { createApp } from 'vue'
-import { useInstallationConfigStore } from './stores/installation_config'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -130,26 +127,5 @@ if (settingsStore.minimize_to_tray_on_close) {
   }
   await TrayIcon.new(trayOptions).catch(console.error)
 }
-
-await listen('install', (event) => {
-  useInstallationConfigStore().zip_path = event.payload as string
-  goTo('/Installation/Config')
-})
-
-await listen('uninstall', (event) => {
-  goTo('/AppList')
-  invoke('execute_command', {
-    command: {
-      name: 'Uninstallation',
-      timestamp: event.payload as number,
-    },
-  })
-})
-
-invoke('execute_command', {
-  command: {
-    name: 'Cli',
-  },
-})
 
 app.mount('#app')

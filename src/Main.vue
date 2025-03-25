@@ -5,6 +5,7 @@ import { window as tauriWindow } from '@/main'
 import { goTo } from '@/router'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
 import { exit } from '@tauri-apps/plugin-process'
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -17,16 +18,19 @@ import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
+import { useAppListStore } from './stores/app_list'
+import { useInstallationConfigStore } from './stores/installation_config'
 
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 const errorHandler = ref()
-
+const appListStore = useAppListStore()
 const dismissWarning = ref(false)
 
-// First run check and disclaimer handling
+// Setup event listeners after component is mounted
 onMounted(async () => {
+  // First run check
   if (settingsStore.first_run) {
     confirm.require({
       group: 'disclaimer',
@@ -53,6 +57,54 @@ onMounted(async () => {
       },
     })
   }
+
+  // Setup install listener
+  await listen('install', (event) => {
+    useInstallationConfigStore().zip_path = event.payload as string
+    goTo('/Installation/Config')
+  })
+
+  // Setup uninstall listener
+  await listen('uninstall', async (event) => {
+    goTo('/AppList')
+
+    const app = appListStore.getAppByTimestamp(event.payload as number)
+    if (!app) return
+
+    await new Promise((resolve, reject) => {
+      confirm.require({
+        message: t('app_list.confirm_uninstall_message', {
+          name: app.details.name,
+        }),
+        group: 'dialog',
+        header: t('app_list.confirm_uninstall_header'),
+        icon: 'mir-warning',
+        rejectProps: {
+          label: t('app_list.cancel'),
+          severity: 'secondary',
+          outlined: true,
+          icon: 'mir-close',
+        },
+        acceptProps: {
+          label: t('app_list.uninstall'),
+          severity: 'danger',
+          icon: 'mir-warning',
+        },
+        accept: async () => {
+          await appListStore.executeUninstall(event.payload as number)
+          resolve(true)
+        },
+        reject: () => reject(),
+      })
+    })
+  })
+
+  // Execute initial command
+  invoke('execute_command', {
+    command: {
+      name: 'Cli',
+    },
+  })
 })
 
 // Window control handlers
@@ -299,11 +351,20 @@ const activeIndicatorClass = computed(
 
     <!-- Main Content Area -->
     <div class="z-30 flex h-full gap-2 overflow-hidden px-4 pb-2 pt-[6.5rem]">
-      <router-view v-slot="{ Component, route }" class="flex w-full">
-        <keep-alive :include="cachedComponents ? undefined : []" class="w-full overflow-auto">
-          <component :is="Component" :key="route.path" class="flex-1" />
-        </keep-alive>
-      </router-view>
+      <Suspense>
+        <template #default>
+          <router-view v-slot="{ Component, route }" class="flex w-full">
+            <keep-alive :include="cachedComponents ? undefined : []" class="w-full overflow-auto">
+              <component :is="Component" :key="route.path" class="flex-1" />
+            </keep-alive>
+          </router-view>
+        </template>
+        <template #fallback>
+          <div class="flex size-full items-center justify-center">
+            <span class="mir-autorenew animate-spin text-3xl text-primary-500" />
+          </div>
+        </template>
+      </Suspense>
     </div>
 
     <!-- Context Menu -->
