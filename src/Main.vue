@@ -37,7 +37,6 @@ onMounted(async () => {
       header: t('system.disclaimer.title'),
       message: t('system.disclaimer.message'),
       icon: 'mir-info',
-      acceptLabel: t('system.disclaimer.accept'),
       acceptProps: {
         label: t('system.disclaimer.accept'),
         icon: 'mir-check',

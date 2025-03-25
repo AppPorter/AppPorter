@@ -179,11 +179,16 @@ function handleStatusClick(app) {
           t('app_list.validation.missing_both'),
         header: t('app_list.validation.title'),
         icon: 'mir-warning',
-        acceptLabel: t('app_list.validation.reinstall'),
-        rejectLabel: t('app_list.validation.uninstall'),
-        acceptIcon: 'mir-refresh',
-        rejectIcon: 'mir-delete',
-        rejectClass: 'p-button-outlined p-button-secondary',
+        rejectProps: {
+          label: t('app_list.validation.uninstall'),
+          icon: 'mir-delete',
+          severity: 'danger',
+          variant: 'outlined',
+        },
+        acceptProps: {
+          label: t('app_list.validation.reinstall'),
+          icon: 'mir-refresh',
+        },
         accept: () => handleValidationAction('reinstall'),
         reject: () => handleValidationAction('uninstall'),
       })
@@ -194,11 +199,16 @@ function handleStatusClick(app) {
           t('app_list.validation.missing_file'),
         header: t('app_list.validation.title'),
         icon: 'mir-warning',
-        acceptLabel: t('app_list.validation.reinstall'),
-        rejectLabel: t('app_list.validation.uninstall'),
-        acceptIcon: 'mir-refresh',
-        rejectIcon: 'mir-delete',
-        rejectClass: 'p-button-outlined p-button-secondary',
+        rejectProps: {
+          label: t('app_list.validation.uninstall'),
+          icon: 'mir-delete',
+          severity: 'danger',
+          variant: 'outlined',
+        },
+        acceptProps: {
+          label: t('app_list.validation.reinstall'),
+          icon: 'mir-refresh',
+        },
         accept: () => handleValidationAction('reinstall'),
         reject: () => handleValidationAction('uninstall'),
       })
@@ -209,11 +219,16 @@ function handleStatusClick(app) {
           t('app_list.validation.missing_registry'),
         header: t('app_list.validation.title'),
         icon: 'mir-warning',
-        acceptLabel: t('app_list.validation.repair'),
-        rejectLabel: t('app_list.validation.uninstall'),
-        acceptIcon: 'mir-build',
-        rejectIcon: 'mir-delete',
-        rejectClass: 'p-button-outlined p-button-secondary',
+        rejectProps: {
+          label: t('app_list.validation.uninstall'),
+          icon: 'mir-delete',
+          severity: 'danger',
+          variant: 'outlined',
+        },
+        acceptProps: {
+          label: t('app_list.validation.repair'),
+          icon: 'mir-build',
+        },
         accept: () => handleValidationAction('repair'),
         reject: () => handleValidationAction('uninstall'),
       })
@@ -225,7 +240,32 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
   if (!appToValidate.value) return
 
   if (action === 'uninstall') {
-    await confirmUninstall()
+    await new Promise((resolve, reject) => {
+      confirm.require({
+        message: t('app_list.confirm_uninstall_message', {
+          name: appToValidate.value.details.name,
+        }),
+        group: 'dialog',
+        header: t('app_list.confirm_uninstall_header'),
+        icon: 'mir-warning',
+        rejectProps: {
+          label: t('app_list.cancel'),
+          severity: 'secondary',
+          outlined: true,
+          icon: 'mir-close',
+        },
+        acceptProps: {
+          label: t('app_list.uninstall'),
+          severity: 'danger',
+          icon: 'mir-warning',
+        },
+        accept: async () => {
+          await appListStore.executeUninstall(appToValidate.value.timestamp)
+          resolve(true)
+        },
+        reject: () => reject(),
+      })
+    })
   } else {
     await invoke('execute_command', {
       command: {
