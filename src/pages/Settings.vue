@@ -63,7 +63,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
 
 <template>
   <div class="flex size-full flex-col">
-    <Panel class="size-full overflow-auto">
+    <Panel class="size-full overflow-auto shadow-sm">
       <!-- Header Section -->
       <template #header>
         <div class="flex items-center gap-2">
@@ -77,7 +77,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
 
       <div class="mx-auto max-w-5xl space-y-2">
         <!-- Basic Settings -->
-        <Panel>
+        <Panel class="shadow-sm">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-tune"></span>
@@ -113,7 +113,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
         </Panel>
 
         <!-- Installation Settings -->
-        <Panel>
+        <Panel class="shadow-sm">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-install_desktop"></span>
@@ -128,7 +128,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
 
             <div class="flex flex-wrap gap-4 md:flex-nowrap">
               <!-- Current User Settings -->
-              <Panel class="min-w-[250px] flex-1">
+              <Panel class="min-w-[250px] flex-1 shadow-sm">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-person"></span>
@@ -175,7 +175,7 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
               </Panel>
 
               <!-- All Users Settings -->
-              <Panel class="min-w-[250px] flex-1">
+              <Panel class="min-w-[250px] flex-1 shadow-sm">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-group"></span>

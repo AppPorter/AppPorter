@@ -297,7 +297,7 @@ onMounted(() => {
 
 <template>
   <div class="flex size-full flex-col overflow-auto">
-    <Panel class="mb-4 size-full">
+    <Panel class="mb-4 size-full shadow-sm">
       <template #header>
         <div class="flex w-full items-center justify-between">
           <div class="flex items-center gap-2">
@@ -403,7 +403,7 @@ onMounted(() => {
               icon="mir-more_vert"
               outlined
               severity="secondary"
-              class="size-8 p-0"
+              class="size-8 p-0 shadow-sm"
               @click="
                 ($event) =>
                   showMenu({

@@ -126,7 +126,7 @@ defineOptions({
 <template>
   <div class="flex size-full flex-col">
     <div class="flex-1 overflow-auto p-1.5 pb-6">
-      <Panel class="mx-auto w-full max-w-5xl">
+      <Panel class="mx-auto w-full max-w-5xl shadow-sm">
         <template #header>
           <div class="flex w-full min-w-0 items-center justify-between py-1">
             <!-- Progress Title -->
@@ -191,7 +191,7 @@ defineOptions({
 
           <div
             v-if="isFinished"
-            class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600"
+            class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600"
           >
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
@@ -213,7 +213,7 @@ defineOptions({
           </div>
 
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
-            <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
+            <div class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600">
               <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir-settings"></span>
@@ -257,7 +257,7 @@ defineOptions({
               </div>
             </div>
 
-            <div class="rounded-lg border border-slate-200 p-4 dark:border-zinc-600">
+            <div class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600">
               <div class="flex w-full items-center justify-between py-1">
                 <div class="flex items-center gap-2">
                   <span class="mir-folder_zip"></span>

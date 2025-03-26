@@ -376,7 +376,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <Panel class="relative flex h-full flex-col overflow-auto rounded-md">
+  <Panel class="relative flex h-full flex-col overflow-auto rounded-md shadow-sm">
     <!-- Header -->
     <template #header>
       <div class="flex w-full items-center justify-between">
@@ -433,7 +433,7 @@ onMounted(() => {
 
         <!-- File Tree - flex-1 and overflow-auto to allow scrolling -->
         <div
-          class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 dark:border-zinc-600"
+          class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600"
         >
           <Tree
             v-if="hasScanned && !isEmpty"

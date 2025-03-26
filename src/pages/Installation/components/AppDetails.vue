@@ -52,7 +52,7 @@ function clearIcon() {
 </script>
 
 <template>
-  <Panel class="">
+  <Panel class="shadow-sm">
     <template #header>
       <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-1.5">
@@ -88,7 +88,7 @@ function clearIcon() {
           <div class="flex items-center gap-2">
             <div class="group relative">
               <div
-                class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600"
+                class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600"
               >
                 <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
                 <span v-else class="mir-apps text-2xl" />
