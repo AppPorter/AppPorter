@@ -28,7 +28,8 @@
         "title": "Einstellungen für alle Benutzer"
       }
     },
-    "save_changes": "Änderungen speichern"
+    "save_changes": "Änderungen speichern",
+    "reload": "Neu laden"
   },
   "installation": {
     "title": "Installationspaket wählen",

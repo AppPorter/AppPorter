@@ -28,7 +28,8 @@
         "title": "すべてのユーザー設定"
       }
     },
-    "save_changes": "変更を保存"
+    "save_changes": "変更を保存",
+    "reload": "再読み込み"
   },
   "installation": {
     "title": "インストールパッケージの選択",

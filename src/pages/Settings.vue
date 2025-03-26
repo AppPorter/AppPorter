@@ -8,7 +8,9 @@ import { useSettingsStore } from '../stores/settings'
 
 const settings = useSettingsStore()
 const isSettingsChanged = ref(false)
+const isBasicSettingsChanged = ref(false)
 const initialSettings = ref({})
+const initialBasicSettings = ref({})
 const { t } = useI18n()
 
 const languageOptions = [
@@ -31,6 +33,11 @@ const themeOptions = [
 // Store initial settings for change detection
 onMounted(() => {
   initialSettings.value = JSON.parse(JSON.stringify(settings.$state))
+  initialBasicSettings.value = {
+    language: settings.language,
+    theme: settings.theme,
+    minimize_to_tray_on_close: settings.minimize_to_tray_on_close,
+  }
 })
 
 // Save settings and reload app when changes are detected
@@ -38,13 +45,26 @@ watch(
   () => settings.$state,
   async (newValue) => {
     isSettingsChanged.value = JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
+
+    // Check if basic settings have changed
+    const currentBasicSettings = {
+      language: settings.language,
+      theme: settings.theme,
+      minimize_to_tray_on_close: settings.minimize_to_tray_on_close,
+    }
+    isBasicSettingsChanged.value =
+      JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings.value)
+
     if (isSettingsChanged.value) {
       await settings.saveSettings()
-      window.location.reload()
     }
   },
   { deep: true }
 )
+
+function reloadApp() {
+  window.location.reload()
+}
 
 async function selectInstallPath(userType: 'current_user' | 'all_users') {
   const selected = await open({
@@ -223,5 +243,17 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
         </Panel>
       </div>
     </Panel>
+  </div>
+
+  <!-- Fixed position reload button -->
+  <div class="fixed bottom-4 right-10 z-40">
+    <Button
+      v-if="isBasicSettingsChanged"
+      @click="reloadApp"
+      class="h-8 w-28 text-sm transition-all duration-200"
+      severity="primary"
+      :label="t('settings.reload')"
+      icon="mir-refresh"
+    />
   </div>
 </template>

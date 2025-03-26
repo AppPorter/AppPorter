@@ -28,7 +28,8 @@
         "title": "所有用户设置"
       }
     },
-    "save_changes": "保存更改"
+    "save_changes": "保存更改",
+    "reload": "重新加载"
   },
   "installation": {
     "title": "选择安装包",

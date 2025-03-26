@@ -28,7 +28,8 @@
         "title": "All Users Settings"
       }
     },
-    "save_changes": "Save Changes"
+    "save_changes": "Save Changes",
+    "reload": "Reload"
   },
   "installation": {
     "title": "Select Installation Package",

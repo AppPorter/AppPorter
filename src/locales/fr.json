@@ -28,7 +28,8 @@
         "title": "Paramètres pour tous les utilisateurs"
       }
     },
-    "save_changes": "Enregistrer les modifications"
+    "save_changes": "Enregistrer les modifications",
+    "reload": "Recharger"
   },
   "installation": {
     "title": "Sélection du package d'installation",
