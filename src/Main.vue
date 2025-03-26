@@ -285,7 +285,7 @@ const activeIndicatorClass = computed(
           v-if="!settingsStore.elevated && !dismissWarning"
           size="small"
           severity="warn"
-          class="mx-4 w-full py-0"
+          class="mx-4"
           icon="mir-warning"
         >
           {{ t('system.admin.warning') }}
