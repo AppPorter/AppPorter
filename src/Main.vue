@@ -12,8 +12,6 @@ import ConfirmDialog from 'primevue/confirmdialog'
 import ConfirmPopup from 'primevue/confirmpopup'
 import ContextMenu from 'primevue/contextmenu'
 import type { MenuItem } from 'primevue/menuitem'
-import Message from 'primevue/message'
-import SplitButton from 'primevue/splitbutton'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -131,6 +129,7 @@ const handleAdminPrompt = (event) => {
       outlined: true,
     },
     acceptProps: {
+      severity: 'warn',
       label: t('system.disclaimer.accept'),
     },
     accept: () => {
@@ -143,18 +142,11 @@ const handleAdminPrompt = (event) => {
         })
       }
     },
-    reject: () => {},
-  })
-}
-
-const warningActions = [
-  {
-    label: t('system.admin.dismiss'),
-    command: () => {
+    reject: () => {
       dismissWarning.value = true
     },
-  },
-]
+  })
+}
 
 // Navigation menu configuration
 const leftMenuItems = [
@@ -275,31 +267,33 @@ const activeIndicatorClass = computed(
 
     <!-- Title Bar & Navigation -->
     <div class="fixed z-30 w-full backdrop-blur-md">
-      <div class="flex w-full items-center pr-24" style="-webkit-app-region: drag">
-        <span class="flex items-center whitespace-nowrap py-3 pl-6 text-lg font-semibold">
+      <div class="flex w-full items-center justify-between pr-24" style="-webkit-app-region: drag">
+        <!-- Left Side with Logo -->
+        <span class="flex items-center whitespace-nowrap px-6 py-3 text-lg font-semibold">
           <img src="./assets/appporter.svg" class="mr-1" />AppPorter
         </span>
 
-        <!-- Admin Privileges Warning -->
-        <Message
-          v-if="!settingsStore.elevated && !dismissWarning"
-          size="small"
-          severity="warn"
-          class="mx-4"
-          icon="mir-warning"
-        >
-          {{ t('system.admin.warning') }}
-          <ConfirmPopup group="admin_popup" />
-          <SplitButton
-            :label="t('system.admin.solve')"
-            outlined
-            severity="warn"
-            class="left-2 z-40"
-            size="small"
-            :model="warningActions"
-            @click="handleAdminPrompt($event)"
-          />
-        </Message>
+        <!-- Admin Warning -->
+        <div class="flex flex-1 justify-center">
+          <div
+            v-if="!settingsStore.elevated && !dismissWarning"
+            class="flex min-h-7 flex-wrap items-center gap-x-2 gap-y-1 rounded bg-amber-50 px-3 py-1 dark:bg-amber-900/30"
+          >
+            <div class="flex items-center gap-2">
+              <span class="mir-warning text-amber-600 dark:text-amber-400" />
+              <span class="text-sm text-amber-700 dark:text-amber-300">{{
+                t('system.admin.warning')
+              }}</span>
+              <ConfirmPopup group="admin_popup" />
+              <button
+                class="rounded-md bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-200 hover:text-amber-800 dark:bg-amber-800/30 dark:text-amber-400 dark:hover:bg-amber-700/50 dark:hover:text-amber-300"
+                @click="handleAdminPrompt($event)"
+              >
+                {{ t('system.admin.solve') }}
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Navigation Menu -->
