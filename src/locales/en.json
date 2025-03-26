@@ -29,7 +29,8 @@
       }
     },
     "save_changes": "Save Changes",
-    "reload": "Reload"
+    "reload": "Reload",
+    "reload_disabled_during_install": "You must complete the installation and click finish before reloading"
   },
   "installation": {
     "title": "Select Installation Package",

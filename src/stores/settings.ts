@@ -23,6 +23,7 @@ interface Settings {
   theme: ThemeType
   minimize_to_tray_on_close: boolean
   first_run: boolean
+  isBasicSettingsChanged: boolean
 
   // System info
   color: string
@@ -37,11 +38,12 @@ interface Settings {
 
 // Store definition
 export const useSettingsStore = defineStore('settings', {
-  state: (): Settings => ({
+  state: (): Settings & { initialSettings: Settings | null } => ({
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
     first_run: true,
+    isBasicSettingsChanged: false,
 
     color: '',
     debug: false,
@@ -65,6 +67,8 @@ export const useSettingsStore = defineStore('settings', {
         install_path: '',
       },
     },
+
+    initialSettings: null,
   }),
 
   actions: {
@@ -72,7 +76,9 @@ export const useSettingsStore = defineStore('settings', {
       const result = await invoke<string>('execute_command', {
         command: { name: 'LoadSettings' },
       })
-      this.$patch(JSON.parse(result))
+      const settings = JSON.parse(result)
+      this.$patch(settings)
+      this.initialSettings = JSON.parse(JSON.stringify(settings))
     },
 
     async saveSettings() {
@@ -87,6 +93,24 @@ export const useSettingsStore = defineStore('settings', {
     async acknowledgeFirstRun() {
       this.first_run = false
       await this.saveSettings()
+    },
+
+    updateBasicSettingsChanged() {
+      const currentBasicSettings = {
+        language: this.language,
+        theme: this.theme,
+        minimize_to_tray_on_close: this.minimize_to_tray_on_close,
+      }
+
+      if (this.initialSettings) {
+        const initialBasicSettings = {
+          language: this.initialSettings.language,
+          theme: this.initialSettings.theme,
+          minimize_to_tray_on_close: this.initialSettings.minimize_to_tray_on_close,
+        }
+        this.isBasicSettingsChanged =
+          JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
+      }
     },
   },
 })

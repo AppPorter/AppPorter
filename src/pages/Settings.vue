@@ -1,16 +1,18 @@
 <script setup lang="ts">
+import { useInstallationConfigStore } from '@/stores/installation_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-import { onMounted, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useSettingsStore } from '../stores/settings'
 
 const settings = useSettingsStore()
-const isSettingsChanged = ref(false)
-const isBasicSettingsChanged = ref(false)
-const initialSettings = ref({})
-const initialBasicSettings = ref({})
+const installationConfig = useInstallationConfigStore()
+const isSettingsChanged = computed(() => {
+  if (!settings.initialSettings) return false
+  return JSON.stringify(settings.$state) !== JSON.stringify(settings.initialSettings)
+})
 const { t } = useI18n()
 
 const languageOptions = [
@@ -30,31 +32,11 @@ const themeOptions = [
   { label: t('settings.theme.dark'), value: 'dark' },
 ]
 
-// Store initial settings for change detection
-onMounted(() => {
-  initialSettings.value = JSON.parse(JSON.stringify(settings.$state))
-  initialBasicSettings.value = {
-    language: settings.language,
-    theme: settings.theme,
-    minimize_to_tray_on_close: settings.minimize_to_tray_on_close,
-  }
-})
-
 // Save settings and reload app when changes are detected
 watch(
   () => settings.$state,
-  async (newValue) => {
-    isSettingsChanged.value = JSON.stringify(newValue) !== JSON.stringify(initialSettings.value)
-
-    // Check if basic settings have changed
-    const currentBasicSettings = {
-      language: settings.language,
-      theme: settings.theme,
-      minimize_to_tray_on_close: settings.minimize_to_tray_on_close,
-    }
-    isBasicSettingsChanged.value =
-      JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings.value)
-
+  async () => {
+    settings.updateBasicSettingsChanged()
     if (isSettingsChanged.value) {
       await settings.saveSettings()
     }
@@ -79,6 +61,9 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
     }
   }
 }
+
+// Add computed property to check if reload button should be disabled
+const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 </script>
 
 <template>
@@ -248,12 +233,14 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
   <!-- Fixed position reload button -->
   <div class="fixed bottom-4 right-10 z-40">
     <Button
-      v-if="isBasicSettingsChanged"
+      v-if="settings.isBasicSettingsChanged"
       @click="reloadApp"
       class="h-8 w-28 text-sm transition-all duration-200"
       severity="primary"
       :label="t('settings.reload')"
       icon="mir-refresh"
+      :disabled="isReloadDisabled"
+      v-tooltip.top="isReloadDisabled ? t('settings.reload_disabled_during_install') : ''"
     />
   </div>
 </template>

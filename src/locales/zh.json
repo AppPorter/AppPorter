@@ -29,7 +29,8 @@
       }
     },
     "save_changes": "保存更改",
-    "reload": "重新加载"
+    "reload": "重新加载",
+    "reload_disabled_during_install": "您必须完成安装并点击完成按钮后才能重新加载"
   },
   "installation": {
     "title": "选择安装包",
