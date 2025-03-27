@@ -50,6 +50,8 @@ pub struct InstalledApp {
     pub create_start_menu_shortcut: bool,
     #[serde(default)]
     pub create_registry_key: bool,
+    #[serde(default)]
+    pub add_to_path: bool,
 
     #[serde(default)]
     pub validation_status: ValidationStatus,
@@ -278,6 +280,7 @@ impl AppList {
             let create_desktop_shortcut = config.create_desktop_shortcut;
             let create_start_menu_shortcut = config.create_start_menu_shortcut;
             let create_registry_key = config.create_registry_key;
+            let add_to_path = config.add_to_path;
 
             // Create a new InstalledApp
             let app = InstalledApp {
@@ -292,6 +295,7 @@ impl AppList {
                 create_desktop_shortcut,
                 create_start_menu_shortcut,
                 create_registry_key,
+                add_to_path,
                 validation_status: ValidationStatus {
                     file_exists: true,
                     registry_valid: true,

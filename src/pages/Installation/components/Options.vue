@@ -28,6 +28,7 @@ const {
   create_registry_key,
   create_start_menu_shortcut,
   install_path,
+  add_to_path,
 } = storeToRefs(installationConfig)
 
 const { t } = useI18n()
@@ -40,6 +41,7 @@ function updateConfig(isCurrentUser: boolean) {
   create_registry_key.value = sourceConfig.create_registry_key
   create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
   install_path.value = sourceConfig.install_path
+  add_to_path.value = sourceConfig.add_to_path
 }
 
 // Initialize with settings
@@ -149,6 +151,12 @@ watchEffect(() => {
             <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
             <label for="registry_key" class="text-sm">{{
               t('installation.config.registry_entry')
+            }}</label>
+          </div>
+          <div class="flex items-center gap-2">
+            <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
+            <label for="add_to_path" class="text-sm">{{
+              t('installation.config.add_to_path')
             }}</label>
           </div>
         </div>

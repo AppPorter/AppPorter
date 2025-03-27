@@ -88,6 +88,8 @@ pub struct InstallSettings {
     pub create_start_menu_shortcut: bool,
     #[serde(default)]
     pub install_path: String,
+    #[serde(default)]
+    pub add_to_path: bool,
 }
 
 #[async_trait::async_trait]
@@ -120,6 +122,7 @@ impl ConfigFile for Settings {
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
                     install_path: format!(r"{}:\Program Files", system_drive),
+                    add_to_path: false,
                 },
                 current_user: InstallSettings {
                     create_desktop_shortcut: false,
@@ -129,6 +132,7 @@ impl ConfigFile for Settings {
                         r"{}:\Users\{}\AppData\Local\Programs",
                         system_drive, username
                     ),
+                    add_to_path: false,
                 },
             },
         };

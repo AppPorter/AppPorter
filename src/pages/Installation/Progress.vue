@@ -44,11 +44,13 @@ const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
+  add_to_path: boolean
 }) => {
   const shortcuts = []
   if (config.create_desktop_shortcut) shortcuts.push(t('settings.installation.desktop_shortcut'))
   if (config.create_start_menu_shortcut) shortcuts.push(t('settings.installation.start_menu'))
   if (config.create_registry_key) shortcuts.push(t('settings.installation.registry_key'))
+  if (config.add_to_path) shortcuts.push(t('settings.installation.path'))
   return shortcuts.length ? shortcuts.join(', ') : t('installation.config.shortcuts')
 }
 
@@ -103,6 +105,7 @@ onMounted(() => {
           create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
           install_path: installationConfig.install_path,
           executable_path: installationConfig.executable_path,
+          add_to_path: installationConfig.add_to_path,
         },
       },
     },

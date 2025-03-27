@@ -73,6 +73,45 @@ pub async fn installation(
         create_registry_entries(&config, &full_executable_path, &app_path, timestamp)?;
     }
 
+    if config.details.add_to_path {
+        let exe_path = Path::new(&full_executable_path)
+            .parent()
+            .expect("Failed to get parent directory")
+            .to_string_lossy();
+
+        if config.details.current_user_only {
+            std::process::Command::new("powershell")
+                .args([
+                    "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+                    "-Command",
+                    &format!(
+                        "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';{}', 'User')",
+                        exe_path
+                    ),
+                ])
+                .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                .output()?;
+        } else {
+            std::process::Command::new("powershell")
+                .args([
+                    "-Command",
+                    "-NoProfile",
+            "-NonInteractive",
+            "-ExecutionPolicy",
+            "Bypass",
+                    &format!(
+                        "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';{}', 'Machine')",
+                        exe_path
+                    ),
+                ])
+                .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                .output()?;
+        }
+    }
+
     // Add to app list
     let mut app_list = AppList::read().await?;
 

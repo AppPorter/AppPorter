@@ -13,6 +13,7 @@ export interface InstalledApp {
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
+  add_to_path: boolean
   validation_status: {
     file_exists: boolean
     registry_valid: boolean

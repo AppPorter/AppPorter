@@ -6,6 +6,7 @@ interface InstallSettings {
   create_registry_key: boolean
   create_start_menu_shortcut: boolean
   install_path: string
+  add_to_path: boolean
 }
 
 interface Installation {
@@ -59,12 +60,14 @@ export const useSettingsStore = defineStore('settings', {
         create_registry_key: false,
         create_start_menu_shortcut: false,
         install_path: '',
+        add_to_path: false,
       },
       current_user: {
         create_desktop_shortcut: false,
         create_registry_key: false,
         create_start_menu_shortcut: false,
         install_path: '',
+        add_to_path: false,
       },
     },
 
