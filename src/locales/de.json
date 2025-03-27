@@ -86,6 +86,7 @@
       "desktop_shortcut": "Desktop-Verknüpfung erstellen",
       "start_menu_shortcut": "Startmenü-Verknüpfung erstellen",
       "registry_entry": "Registrierungseintrag erstellen",
+      "add_to_path": "Zum System-PATH hinzufügen",
       "back": "Zurück",
       "install": "Installieren",
       "confirm_install": "Möchten Sie den Installationsvorgang jetzt starten?",

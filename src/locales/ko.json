@@ -86,6 +86,7 @@
       "desktop_shortcut": "바탕 화면 바로가기 만들기",
       "start_menu_shortcut": "시작 메뉴 바로가기 만들기",
       "registry_entry": "레지스트리 항목 만들기",
+      "add_to_path": "시스템 PATH에 추가",
       "back": "뒤로",
       "install": "설치",
       "confirm_install": "설치 프로세스를 시작하시겠습니까?",

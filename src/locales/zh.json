@@ -73,6 +73,7 @@
       "desktop_shortcut": "创建桌面快捷方式",
       "start_menu_shortcut": "创建开始菜单快捷方式",
       "registry_entry": "添加注册表项",
+      "add_to_path": "添加到系统环境变量PATH",
       "back": "返回",
       "install": "安装",
       "confirm_install": "是否开始安装？",

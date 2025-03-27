@@ -86,6 +86,7 @@
       "desktop_shortcut": "Créer un raccourci sur le bureau",
       "start_menu_shortcut": "Créer un raccourci dans le menu Démarrer",
       "registry_entry": "Créer une entrée dans le registre",
+      "add_to_path": "Ajouter au PATH système",
       "back": "Retour",
       "install": "Installer",
       "confirm_install": "Voulez-vous démarrer le processus d'installation maintenant ?",

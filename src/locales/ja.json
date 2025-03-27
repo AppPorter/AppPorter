@@ -86,6 +86,7 @@
       "desktop_shortcut": "デスクトップショートカットを作成",
       "start_menu_shortcut": "スタートメニューショートカットを作成",
       "registry_entry": "レジストリエントリを作成",
+      "add_to_path": "システムPATHに追加",
       "back": "戻る",
       "install": "インストール",
       "confirm_install": "インストールプロセスを開始しますか？",

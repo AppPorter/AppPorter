@@ -73,6 +73,7 @@
       "desktop_shortcut": "Create Desktop Shortcut",
       "start_menu_shortcut": "Create Start Menu Shortcut",
       "registry_entry": "Create Registry Entry",
+      "add_to_path": "Add to System PATH",
       "back": "Back",
       "install": "Install",
       "confirm_install": "Do you want to start the installation process now?",

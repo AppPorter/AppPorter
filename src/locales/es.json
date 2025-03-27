@@ -86,6 +86,7 @@
       "desktop_shortcut": "Crear acceso directo en el escritorio",
       "start_menu_shortcut": "Crear acceso directo en el menú Inicio",
       "registry_entry": "Crear entrada en el registro",
+      "add_to_path": "Añadir al PATH del sistema",
       "back": "Atrás",
       "install": "Instalar",
       "confirm_install": "¿Desea iniciar el proceso de instalación ahora?",
