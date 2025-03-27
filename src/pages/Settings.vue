@@ -82,7 +82,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
       <div class="mx-auto max-w-5xl space-y-2">
         <!-- Basic Settings -->
-        <Panel class="shadow-sm">
+        <Panel class="">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-tune"></span>
@@ -118,7 +118,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
         </Panel>
 
         <!-- Installation Settings -->
-        <Panel class="shadow-sm">
+        <Panel class="">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-install_desktop"></span>
@@ -133,7 +133,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
             <div class="flex flex-wrap gap-4 md:flex-nowrap">
               <!-- Current User Settings -->
-              <Panel class="min-w-[250px] flex-1 shadow-sm">
+              <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-person"></span>
@@ -180,7 +180,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               </Panel>
 
               <!-- All Users Settings -->
-              <Panel class="min-w-[250px] flex-1 shadow-sm">
+              <Panel class="min-w-[250px] flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-group"></span>
