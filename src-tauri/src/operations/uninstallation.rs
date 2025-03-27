@@ -1,8 +1,8 @@
 use crate::configs::app_list::AppList;
 use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
+use std::error::Error;
 use std::path::Path;
-use std::{error::Error, os::windows::process::CommandExt};
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
@@ -69,27 +69,30 @@ pub async fn uninstallation(timestamp: i64, app: AppHandle) -> Result<String, Bo
             .to_string_lossy();
 
         if app_config.details.current_user_only {
-            std::process::Command::new("powershell")
-                .args([
-                    "-Command",
-                    &format!(
-                        "[Environment]::SetEnvironmentVariable('Path', [string]::join(';', ([Environment]::GetEnvironmentVariable('Path', 'User').Split(';') | Where-Object {{ $_ -ne '{}' }})), 'User')",
-                        exe_path
-                    ),
-                ])
-                .creation_flags(0x08000000) // CREATE_NO_WINDOW
-                .output()?;
+            let key = CURRENT_USER.create("Environment")?;
+            let current_path = key.get_string("Path")?;
+
+            // Split the path by semicolons and filter out the path we want to remove
+            let new_path: String = current_path
+                .split(';')
+                .filter(|p| p.trim() != exe_path.trim())
+                .collect::<Vec<&str>>()
+                .join(";");
+
+            key.set_expand_string("Path", new_path)?;
         } else {
-            std::process::Command::new("powershell")
-                .args([
-                    "-Command",
-                    &format!(
-                        "[Environment]::SetEnvironmentVariable('Path', [string]::join(';', ([Environment]::GetEnvironmentVariable('Path', 'Machine').Split(';') | Where-Object {{ $_ -ne '{}' }})), 'Machine')",
-                        exe_path
-                    ),
-                ])
-                .creation_flags(0x08000000) // CREATE_NO_WINDOW
-                .output()?;
+            let key = LOCAL_MACHINE
+                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
+            let current_path = key.get_string("path")?;
+
+            // Split the path by semicolons and filter out the path we want to remove
+            let new_path: String = current_path
+                .split(';')
+                .filter(|p| p.trim() != exe_path.trim())
+                .collect::<Vec<&str>>()
+                .join(";");
+
+            key.set_expand_string("path", new_path)?;
         }
     }
 

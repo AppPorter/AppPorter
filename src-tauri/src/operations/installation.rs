@@ -80,35 +80,22 @@ pub async fn installation(
             .to_string_lossy();
 
         if config.details.current_user_only {
-            std::process::Command::new("powershell")
-                .args([
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-ExecutionPolicy",
-                    "Bypass",
-                    "-Command",
-                    &format!(
-                        "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';{}', 'User')",
-                        exe_path
-                    ),
-                ])
-                .creation_flags(0x08000000) // CREATE_NO_WINDOW
-                .output()?;
+            let key = CURRENT_USER.create("Environment")?;
+            let path = key.get_string("Path")?;
+
+            if !path.split(';').any(|p| p.trim() == exe_path.trim()) {
+                let new_path = format!("{};{}", path, exe_path);
+                key.set_expand_string("Path", new_path)?;
+            }
         } else {
-            std::process::Command::new("powershell")
-                .args([
-                    "-Command",
-                    "-NoProfile",
-                    "-NonInteractive",
-                    "-ExecutionPolicy",
-                    "Bypass",
-                    &format!(
-                        "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';{}', 'Machine')",
-                        exe_path
-                    ),
-                ])
-                .creation_flags(0x08000000) // CREATE_NO_WINDOW
-                .output()?;
+            let key = LOCAL_MACHINE
+                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
+            let path = key.get_string("path")?;
+
+            if !path.split(';').any(|p| p.trim() == exe_path.trim()) {
+                let new_path = format!("{};{}", path, exe_path);
+                key.set_expand_string("path", new_path)?;
+            }
         }
     }
 
