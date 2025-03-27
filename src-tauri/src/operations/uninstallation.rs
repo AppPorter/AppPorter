@@ -1,8 +1,8 @@
 use crate::configs::app_list::AppList;
 use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
-use std::error::Error;
 use std::path::Path;
+use std::{error::Error, os::windows::process::CommandExt};
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
@@ -60,6 +60,38 @@ pub async fn uninstallation(timestamp: i64, app: AppHandle) -> Result<String, Bo
     }
 
     app.emit("uninstallation", 75)?;
+
+    // Remove from PATH if it was added
+    if app_config.details.add_to_path {
+        let exe_path = Path::new(&app_config.details.full_path)
+            .parent()
+            .expect("Failed to get parent directory")
+            .to_string_lossy();
+
+        if app_config.details.current_user_only {
+            std::process::Command::new("powershell")
+                .args([
+                    "-Command",
+                    &format!(
+                        "[Environment]::SetEnvironmentVariable('Path', [string]::join(';', ([Environment]::GetEnvironmentVariable('Path', 'User').Split(';') | Where-Object {{ $_ -ne '{}' }})), 'User')",
+                        exe_path
+                    ),
+                ])
+                .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                .output()?;
+        } else {
+            std::process::Command::new("powershell")
+                .args([
+                    "-Command",
+                    &format!(
+                        "[Environment]::SetEnvironmentVariable('Path', [string]::join(';', ([Environment]::GetEnvironmentVariable('Path', 'Machine').Split(';') | Where-Object {{ $_ -ne '{}' }})), 'Machine')",
+                        exe_path
+                    ),
+                ])
+                .creation_flags(0x08000000) // CREATE_NO_WINDOW
+                .output()?;
+        }
+    }
 
     // Remove registry entries
     if app_config.details.create_registry_key {

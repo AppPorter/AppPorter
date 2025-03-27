@@ -83,9 +83,9 @@ pub async fn installation(
             std::process::Command::new("powershell")
                 .args([
                     "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
+                    "-NonInteractive",
+                    "-ExecutionPolicy",
+                    "Bypass",
                     "-Command",
                     &format!(
                         "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'User') + ';{}', 'User')",
@@ -99,9 +99,9 @@ pub async fn installation(
                 .args([
                     "-Command",
                     "-NoProfile",
-            "-NonInteractive",
-            "-ExecutionPolicy",
-            "Bypass",
+                    "-NonInteractive",
+                    "-ExecutionPolicy",
+                    "Bypass",
                     &format!(
                         "[Environment]::SetEnvironmentVariable('Path', [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';{}', 'Machine')",
                         exe_path
