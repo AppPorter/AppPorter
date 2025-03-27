@@ -37,7 +37,7 @@ const fullInstallPath = computed(() => {
 // Helper functions to format and display installation information
 const getInstallMode = (isCurrentUser: boolean) =>
   isCurrentUser
-    ? t('settings.installation.current_user_only.title')
+    ? t('settings.installation.current_user.title')
     : t('settings.installation.all_users.title')
 
 const getShortcutsList = (config: {
