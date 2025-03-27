@@ -159,26 +159,33 @@ async function handleInstallClick() {
 
 <template>
   <div class="flex size-full flex-col overflow-hidden">
-    <div class="flex flex-1 flex-wrap gap-4 overflow-auto px-1 md:flex-nowrap">
-      <div class="min-w-72 flex-1 space-y-2">
-        <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
-        <AppDetails
-          :name-error="nameError"
-          :details-loading="detailsLoading"
-          :details-loading-progress="detailsLoadingProgress"
-          :progress-mode="progressMode"
-        />
+    <!-- Main scrollable container -->
+    <div class="flex-1 overflow-auto">
+      <!-- Content wrapper with additional space at bottom -->
+      <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
+        <div class="min-w-72 flex-1 space-y-2">
+          <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
+          <AppDetails
+            :name-error="nameError"
+            :details-loading="detailsLoading"
+            :details-loading-progress="detailsLoadingProgress"
+            :progress-mode="progressMode"
+          />
+        </div>
+
+        <div class="size-full max-h-[calc(100vh-11rem)] min-w-72 md:w-2/5">
+          <ZipPreview
+            :zip-path="zip_path"
+            :details-loading="detailsLoading"
+            @loading="(value) => (detailsLoading = value)"
+            @progress="handleDetailsProgress"
+            class="h-full"
+          />
+        </div>
       </div>
 
-      <div class="size-full max-h-[calc(100vh-11rem)] min-w-72 md:w-2/5">
-        <ZipPreview
-          :zip-path="zip_path"
-          :details-loading="detailsLoading"
-          @loading="(value) => (detailsLoading = value)"
-          @progress="handleDetailsProgress"
-          class="h-full"
-        />
-      </div>
+      <!-- This is the key element that creates additional scrollable space -->
+      <div class="mt-4 h-20 w-full"></div>
     </div>
 
     <div class="fixed bottom-4 left-6 z-40">
