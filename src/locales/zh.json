@@ -2,7 +2,7 @@
   "select_file": "选择文件",
   "settings": {
     "title": "设置",
-    "description": "管理应用程序设置",
+    "description": "管理软件设置",
     "basic": {
       "title": "基本设置",
       "language": "语言",
@@ -11,7 +11,7 @@
     },
     "theme": {
       "system": "跟随系统",
-      "light": "明亮",
+      "light": "浅色",
       "dark": "深色"
     },
     "installation": {
