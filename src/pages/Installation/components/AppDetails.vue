@@ -41,14 +41,12 @@ function clearIcon() {
       </div>
     </template>
 
-    <div class="space-y-3 p-3">
+    <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
-        <div class="w-24">
-          <span class="text-sm font-medium">{{ t('installation.app_details.icon') }}</span>
-          <p class="text-xs">
-            {{ t('installation.app_details.icon_optional') }}
-          </p>
-        </div>
+        <label class="w-24 text-sm font-medium">
+          {{ t('installation.app_details.icon') }}
+          <p class="text-xs font-normal">{{ t('installation.app_details.icon_optional') }}</p>
+        </label>
         <div class="w-full">
           <div class="flex items-center gap-2">
             <div class="group relative">
@@ -78,9 +76,7 @@ function clearIcon() {
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="w-24">
-          <span class="text-sm font-medium">{{ t('installation.app_details.name') }}</span>
-        </div>
+        <label class="w-24 text-sm font-medium">{{ t('installation.app_details.name') }}</label>
         <div class="w-full">
           <InputText
             v-model="name"
@@ -93,12 +89,10 @@ function clearIcon() {
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="w-24">
-          <span class="text-sm font-medium">{{ t('installation.app_details.publisher') }}</span>
-          <p class="text-xs">
-            {{ t('installation.app_details.publisher_optional') }}
-          </p>
-        </div>
+        <label class="w-24 text-sm font-medium">
+          {{ t('installation.app_details.publisher') }}
+          <p class="text-xs font-normal">{{ t('installation.app_details.publisher_optional') }}</p>
+        </label>
         <div class="w-full">
           <InputText
             v-model="publisher"
@@ -109,12 +103,10 @@ function clearIcon() {
       </div>
 
       <div class="flex items-center gap-2">
-        <div class="w-24">
-          <span class="text-sm font-medium">{{ t('installation.app_details.version') }}</span>
-          <p class="text-xs">
-            {{ t('installation.app_details.version_optional') }}
-          </p>
-        </div>
+        <label class="w-24 text-sm font-medium">
+          {{ t('installation.app_details.version') }}
+          <p class="text-xs font-normal">{{ t('installation.app_details.version_optional') }}</p>
+        </label>
         <div class="w-full">
           <InputText
             v-model="version"
