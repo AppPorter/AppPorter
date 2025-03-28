@@ -29,7 +29,7 @@ function clearIcon() {
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <span class="mir-apps" />
+          <span class="mir-apps text-lg" />
           <h2 class="text-base font-medium">
             {{ t('installation.app_details.title') }}
           </h2>
