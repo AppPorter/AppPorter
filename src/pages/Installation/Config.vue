@@ -156,13 +156,13 @@ async function handleInstallClick() {
       <!-- Content wrapper with additional space at bottom -->
       <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
         <div class="min-w-72 flex-1 space-y-2">
-          <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
           <AppDetails
             :name-error="nameError"
             :details-loading="detailsLoading"
             :details-loading-progress="detailsLoadingProgress"
             :progress-mode="progressMode"
           />
+          <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         </div>
       </div>
 

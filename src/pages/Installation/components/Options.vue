@@ -21,7 +21,6 @@ const {
 } = settingsStore
 
 const installationConfig = useInstallationConfigStore()
-const { zip_path } = installationConfig
 const {
   current_user_only,
   create_desktop_shortcut,
@@ -77,15 +76,11 @@ watchEffect(() => {
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <span class="mir-settings text-lg"></span>
+          <span class="mir-settings" />
           <h2 class="text-base font-medium">
             {{ t('installation.config.installation_options') }}
           </h2>
         </div>
-        <p class="ml-6 mt-0.5 text-xs">
-          {{ t('installation.config.selected_file') }}:
-          <span class="break-all font-medium">{{ zip_path }}</span>
-        </p>
       </div>
     </template>
 

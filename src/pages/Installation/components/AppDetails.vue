@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { invoke } from '@tauri-apps/api/core'
-import { emit } from '@tauri-apps/api/event'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
-import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -19,32 +16,8 @@ defineProps<{
 
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
-const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
+const { name, icon, publisher, version } = storeToRefs(installationConfig)
 const { t } = useI18n()
-
-const autoConfirmed = ref(false)
-
-// Automatically fetch and update app details from the selected executable
-async function confirmSelection() {
-  emit('loading', true)
-  autoConfirmed.value = false
-
-  const result = await invoke('execute_command', {
-    command: {
-      name: 'GetDetails',
-      path: {
-        zip_path,
-        executable_path: executable_path.value,
-      },
-    },
-  })
-
-  const details = JSON.parse(result as string)
-  ;[name.value, version.value, publisher.value, icon.value] = details
-
-  autoConfirmed.value = true
-  emit('loading', false)
-}
 
 function clearIcon() {
   icon.value = ''
@@ -54,25 +27,17 @@ function clearIcon() {
 <template>
   <Panel class="shadow-sm">
     <template #header>
-      <div class="flex w-full items-center justify-between">
+      <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <span class="mir-apps"></span>
+          <span class="mir-apps" />
           <h2 class="text-base font-medium">
             {{ t('installation.app_details.title') }}
           </h2>
         </div>
-        <Button
-          :severity="autoConfirmed ? 'success' : 'secondary'"
-          class="h-8 min-w-[6.5rem] transition-all duration-200"
-          :disabled="detailsLoading || executable_path === ''"
-          @click="confirmSelection"
-          :icon="autoConfirmed ? 'mir-verified' : 'mir-auto_awesome'"
-          :label="
-            autoConfirmed
-              ? t('installation.app_details.auto_filled')
-              : t('installation.app_details.auto_fill')
-          "
-        />
+        <p class="ml-6 mt-0.5 text-xs">
+          {{ t('installation.config.selected_file') }}:
+          <span class="break-all font-medium">{{ zip_path }}</span>
+        </p>
       </div>
     </template>
 
