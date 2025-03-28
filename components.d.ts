@@ -15,6 +15,7 @@ declare module 'vue' {
     Select: typeof import('primevue/select')['default']
     Tag: typeof import('primevue/tag')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
+    ZipPreview: typeof import('./src/components/ZipPreview.vue')['default']
   }
   export interface ComponentCustomProperties {
     Tooltip: typeof import('primevue/tooltip')['default']

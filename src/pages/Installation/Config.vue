@@ -9,10 +9,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
-import ZipPreview from './components/ZipPreview.vue'
 
 const installationConfig = useInstallationConfigStore()
-const { zip_path } = installationConfig
 installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
@@ -26,12 +24,6 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 // Validation states
 const pathError = ref('')
 const nameError = ref('')
-
-// Update progress indicator for details loading
-function handleDetailsProgress(value: number) {
-  progressMode.value = 'indeterminate'
-  detailsLoadingProgress.value = value
-}
 
 function handleBackClick() {
   goTo('/Installation/Home')
@@ -170,16 +162,6 @@ async function handleInstallClick() {
             :details-loading="detailsLoading"
             :details-loading-progress="detailsLoadingProgress"
             :progress-mode="progressMode"
-          />
-        </div>
-
-        <div class="size-full max-h-[calc(100vh-11rem)] min-w-72 md:w-2/5">
-          <ZipPreview
-            :zip-path="zip_path"
-            :details-loading="detailsLoading"
-            @loading="(value) => (detailsLoading = value)"
-            @progress="handleDetailsProgress"
-            class="h-full"
           />
         </div>
       </div>
