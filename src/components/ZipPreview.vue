@@ -21,7 +21,7 @@ interface FileNode {
 // Props & emits
 const props = defineProps<{
   zipPath: string
-  detailsLoading?: boolean
+  filterFunction?: (node: FileNode) => boolean
 }>()
 
 const emits = defineEmits<{
@@ -234,6 +234,17 @@ watchEffect(() => {
 onMounted(() => {
   if (props.zipPath) loadZipContent()
 })
+
+// Expose component interface
+defineExpose({
+  // Exporting types as string literals for parent components to reference
+  nodeTypes: ['file', 'directory'] as const,
+  // Provide methods that parent can use
+  selectNode: handleSelectNode,
+  toggleNode: handleToggleNode,
+  expandAll,
+  collapseAll
+})
 </script>
 
 <template>
@@ -266,12 +277,17 @@ onMounted(() => {
       <div v-if="hasScanned && !isEmpty" class="size-full p-2 text-sm">
         <!-- Recursive Tree Node Template -->
         <template v-for="node in fileTree" :key="node.key">
-          <div class="w-full">
+          <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div 
               :class="[
                 'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                 node.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
-                `pl-${node.level * 4}`
+                node.level === 0 ? 'pl-0' : 
+                node.level === 1 ? 'pl-4' : 
+                node.level === 2 ? 'pl-8' : 
+                node.level === 3 ? 'pl-12' : 
+                node.level === 4 ? 'pl-16' : 
+                node.level === 5 ? 'pl-20' : 'pl-24'
               ]"
               @click="handleSelectNode(node)"
             >
@@ -302,12 +318,17 @@ onMounted(() => {
             <!-- Render children if expanded -->
             <div v-if="node.expanded && node.children?.length" class="pl-4">
               <template v-for="childNode in node.children" :key="childNode.key">
-                <div class="w-full">
+                <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
                   <div 
                     :class="[
                       'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                       childNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
-                      `pl-${childNode.level * 4}`
+                      childNode.level === 0 ? 'pl-0' : 
+                      childNode.level === 1 ? 'pl-4' : 
+                      childNode.level === 2 ? 'pl-8' : 
+                      childNode.level === 3 ? 'pl-12' : 
+                      childNode.level === 4 ? 'pl-16' : 
+                      childNode.level === 5 ? 'pl-20' : 'pl-24'
                     ]"
                     @click="handleSelectNode(childNode)"
                   >
@@ -338,11 +359,16 @@ onMounted(() => {
                   <!-- Recursive rendering for deeper levels -->
                   <div v-if="childNode.expanded && childNode.children?.length" class="pl-4">
                     <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
-                      <div 
+                      <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" 
                         :class="[
                           'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                           grandchildNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
-                          `pl-${grandchildNode.level * 4}`
+                          grandchildNode.level === 0 ? 'pl-0' : 
+                          grandchildNode.level === 1 ? 'pl-4' : 
+                          grandchildNode.level === 2 ? 'pl-8' : 
+                          grandchildNode.level === 3 ? 'pl-12' : 
+                          grandchildNode.level === 4 ? 'pl-16' : 
+                          grandchildNode.level === 5 ? 'pl-20' : 'pl-24'
                         ]"
                         @click="handleSelectNode(grandchildNode)"
                       >
@@ -372,21 +398,22 @@ onMounted(() => {
                       
                       <!-- Even deeper levels (handled with recursion in real implementation) -->
                       <div v-if="grandchildNode.expanded && grandchildNode.children?.length" class="pl-4">
-                        <div 
-                          v-for="deepNode in grandchildNode.children" 
-                          :key="deepNode.key"
-                          class="flex cursor-pointer items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700"
-                          @click="handleSelectNode(deepNode)"
-                        >
-                          <span 
-                            :class="[
-                              'mr-2',
-                              deepNode.type === 'directory' ? 'mir-folder text-amber-500' : 'mir-draft text-slate-500 dark:text-slate-400'
-                            ]"
-                          ></span>
-                          <span class="truncate">{{ deepNode.name }}</span>
-                          <span v-if="deepNode.children?.length" class="ml-1 text-xs text-slate-400">({{ deepNode.children.length }} items)</span>
-                        </div>
+                        <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
+                          <div 
+                            v-if="!props.filterFunction || props.filterFunction(deepNode)"
+                            class="flex cursor-pointer items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700"
+                            @click="handleSelectNode(deepNode)"
+                          >
+                            <span 
+                              :class="[
+                                'mr-2',
+                                deepNode.type === 'directory' ? 'mir-folder text-amber-500' : 'mir-draft text-slate-500 dark:text-slate-400'
+                              ]"
+                            ></span>
+                            <span class="truncate">{{ deepNode.name }}</span>
+                            <span v-if="deepNode.children?.length" class="ml-1 text-xs text-slate-400">({{ deepNode.children.length }} items)</span>
+                          </div>
+                        </template>
                       </div>
                     </div>
                   </div>

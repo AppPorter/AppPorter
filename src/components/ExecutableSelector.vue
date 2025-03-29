@@ -2,8 +2,7 @@
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { storeToRefs } from 'pinia'
 import RadioButton from 'primevue/radiobutton'
-import type { TreeNode } from 'primevue/treenode'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
 
@@ -31,11 +30,45 @@ defineProps<{
 
 // State
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
+const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
 
-// Handle node selection
-function handleNodeSelect(node: TreeNode) {
-  if (node.data?.path) {
-    executable_path.value = node.data.path
+// Define the FileNode interface explicitly
+interface FileNode {
+  path?: string
+  name: string
+  type: string
+}
+
+// File filter function based on selected filter mode
+const fileFilter = computed(() => {
+  return (node: FileNode) => {
+    // Always show directories
+    if (node.type === 'directory') return true
+    
+    // Filter files based on selected mode
+    switch (filterMode.value) {
+      case 'exe':
+        return node.name.toLowerCase().endsWith('.exe')
+      case 'executable':
+        return (
+          node.name.toLowerCase().endsWith('.exe') || 
+          node.name.toLowerCase().endsWith('.bat') || 
+          node.name.toLowerCase().endsWith('.cmd') || 
+          node.name.toLowerCase().endsWith('.ps1') || 
+          node.name.toLowerCase().endsWith('.sh') || 
+          node.name.toLowerCase().endsWith('.jar')
+        )
+      case 'all':
+      default:
+        return true
+    }
+  }
+})
+
+// Handle node selection with proper typing
+function handleNodeSelect(node: FileNode) {
+  if (node?.path) {
+    executable_path.value = node.path
   }
 }
 </script>
@@ -57,7 +90,9 @@ function handleNodeSelect(node: TreeNode) {
       <!-- Main content area -->
       <div class="flex flex-1 flex-col overflow-hidden">
         <ZipPreview
+          ref="zipPreviewRef"
           :zip-path="zipPath"
+          :filter-function="fileFilter"
           :details-loading="detailsLoading"
           @node-select="handleNodeSelect"
         />
