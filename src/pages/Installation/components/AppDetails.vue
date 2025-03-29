@@ -5,6 +5,7 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -22,6 +23,8 @@ const { t } = useI18n()
 function clearIcon() {
   icon.value = ''
 }
+
+const drawerVisible = ref(false)
 </script>
 
 <template>
@@ -55,7 +58,7 @@ function clearIcon() {
             <Button
               class="h-8 w-36"
               severity="secondary"
-              @click="select_executable_path"
+              @click="drawerVisible = true"
               icon="mir-folder_open"
               :label="t('installation.config.browse')"
             />
@@ -160,4 +163,13 @@ function clearIcon() {
       </p>
     </div>
   </Panel>
+  <Drawer
+    v-model:visible="drawerVisible"
+    header="Select Executable"
+    position="bottom"
+    style="height: auto"
+    class="rounded-lg"
+  >
+    <ZipPreview />
+  </Drawer>
 </template>
