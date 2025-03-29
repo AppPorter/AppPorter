@@ -277,15 +277,16 @@ defineExpose({
                 ? handleSelectNode(node) 
                 : undefined"
             >
-              <!-- Toggle button for directories with improved animation -->
               <span 
                 v-if="node.type === 'directory'" 
                 :class="[
-                  'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
+                  'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
                   node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                 ]"
                 @click.stop="handleToggleNode(node)"
               ></span>
+              <!-- Placeholder for files to align with folders -->
+              <span v-else class="mr-1.5 w-4 shrink-0"></span>
               
               <!-- Icon based on node type with enhanced visuals -->
               <span 
@@ -331,15 +332,17 @@ defineExpose({
                       ? handleSelectNode(childNode) 
                       : undefined"
                   >
-                    <!-- Toggle button for directories -->
+                    <!-- Fixed spacing for files to align with folder toggle buttons -->
                     <span 
                       v-if="childNode.type === 'directory'" 
                       :class="[
-                        'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
+                        'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
                         childNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                       ]"
                       @click.stop="handleToggleNode(childNode)"
                     ></span>
+                    <!-- Placeholder for files to align with folders -->
+                    <span v-else class="mr-1.5 w-4 shrink-0"></span>
                     
                     <!-- Icon based on node type -->
                     <span 
@@ -384,15 +387,17 @@ defineExpose({
                           ? handleSelectNode(grandchildNode) 
                           : undefined"
                       >
-                        <!-- Toggle button for directories -->
+                        <!-- Fixed spacing for files to align with folder toggle buttons -->
                         <span 
                           v-if="grandchildNode.type === 'directory'" 
                           :class="[
-                            'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
+                            'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
                             grandchildNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                           ]"
                           @click.stop="handleToggleNode(grandchildNode)"
                         ></span>
+                        <!-- Placeholder for files to align with folders -->
+                        <span v-else class="mr-1.5 w-4 shrink-0"></span>
                         
                         <!-- Icon based on node type -->
                         <span 
@@ -432,6 +437,18 @@ defineExpose({
                               ? handleSelectNode(deepNode) 
                               : undefined"
                           >
+                            <!-- Fixed spacing for files to align with folder toggle buttons -->
+                            <span 
+                              v-if="deepNode.type === 'directory'" 
+                              :class="[
+                                'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
+                                deepNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
+                              ]"
+                              @click.stop="handleToggleNode(deepNode)"
+                            ></span>
+                            <!-- Placeholder for files to align with folders -->
+                            <span v-else class="mr-1.5 w-4 shrink-0"></span>
+                            
                             <span 
                               :class="[
                                 'mr-2 shrink-0',
