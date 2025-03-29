@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Divider: typeof import('primevue/divider')['default']
     ErrorHandler: typeof import('./src/components/ErrorHandler.vue')['default']
     Panel: typeof import('primevue/panel')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

@@ -16,7 +16,7 @@ defineProps<{
 
 const installationConfig = useInstallationConfigStore()
 const { zip_path } = installationConfig
-const { name, icon, publisher, version } = storeToRefs(installationConfig)
+const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
 const { t } = useI18n()
 
 function clearIcon() {
@@ -40,7 +40,30 @@ function clearIcon() {
         </p>
       </div>
     </template>
-
+    <div class="space-y-2 p-2">
+      <div class="flex items-center gap-2">
+        <label class="w-24 text-sm font-medium">{{
+          t('installation.config.executable_path')
+        }}</label>
+        <div class="w-full">
+          <div class="flex flex-1 gap-2">
+            <InputText
+              v-model="executable_path"
+              :placeholder="t('installation.config.choose_dir')"
+              class="h-8 w-full text-sm"
+            />
+            <Button
+              class="h-8 w-36"
+              severity="secondary"
+              @click="select_executable_path"
+              icon="mir-folder_open"
+              :label="t('installation.config.browse')"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+    <Divider />
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
