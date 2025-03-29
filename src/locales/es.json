@@ -117,7 +117,8 @@
       "preparing": "Preparando",
       "extracting": "Extrayendo",
       "reading": "Leyendo",
-      "processing": "Procesando"
+      "processing": "Procesando",
+      "select_executable_path": "Seleccionar ruta del ejecutable"
     },
     "validation": {
       "executable_missing": "Falta el archivo ejecutable",

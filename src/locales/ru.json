@@ -116,7 +116,8 @@
       "preparing": "Подготовка",
       "extracting": "Извлечение",
       "reading": "Чтение",
-      "processing": "Обработка"
+      "processing": "Обработка",
+      "select_executable_path": "Выберите путь к исполняемому файлу"
     },
     "validation": {
       "executable_missing": "Исполняемый файл не найден",

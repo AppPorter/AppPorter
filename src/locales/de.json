@@ -117,7 +117,8 @@
       "preparing": "Vorbereitung",
       "extracting": "Extraktion",
       "reading": "Lesen",
-      "processing": "Verarbeitung"
+      "processing": "Verarbeitung",
+      "select_executable_path": "Ausführbare Datei auswählen"
     },
     "validation": {
       "executable_missing": "Ausführbare Datei nicht gefunden",

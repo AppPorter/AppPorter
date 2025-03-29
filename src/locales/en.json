@@ -101,7 +101,8 @@
       "preparing": "Preparing",
       "extracting": "Extracting",
       "reading": "Reading",
-      "processing": "Processing"
+      "processing": "Processing",
+      "select_executable_path": "Select executable path"
     },
     "validation": {
       "executable_missing": "Executable Missing",

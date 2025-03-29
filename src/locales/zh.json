@@ -101,7 +101,8 @@
       "preparing": "准备中",
       "extracting": "提取中",
       "reading": "读取中",
-      "processing": "处理中"
+      "processing": "处理中",
+      "select_executable_path": "选择可执行文件路径"
     },
     "validation": {
       "executable_missing": "未找到可执行文件",

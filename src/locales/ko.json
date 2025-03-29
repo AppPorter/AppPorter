@@ -117,7 +117,8 @@
       "preparing": "준비 중",
       "extracting": "추출 중",
       "reading": "읽는 중",
-      "processing": "처리 중"
+      "processing": "처리 중",
+      "select_executable_path": "실행 파일 경로 선택"
     },
     "validation": {
       "executable_missing": "실행 파일을 찾을 수 없습니다",

@@ -117,7 +117,8 @@
       "preparing": "Préparation",
       "extracting": "Extraction",
       "reading": "Lecture",
-      "processing": "Traitement"
+      "processing": "Traitement",
+      "select_executable_path": "Sélectionner le chemin de l'exécutable"
     },
     "validation": {
       "executable_missing": "Fichier exécutable manquant",

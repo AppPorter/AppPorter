@@ -117,7 +117,8 @@
       "preparing": "準備中",
       "extracting": "抽出中",
       "reading": "読み取り中",
-      "processing": "処理中"
+      "processing": "処理中",
+      "select_executable_path": "実行可能ファイルのパスを選択"
     },
     "validation": {
       "executable_missing": "実行可能ファイルが見つかりません",

@@ -55,7 +55,7 @@ const drawerVisible = ref(false)
           <div class="flex flex-1 gap-2">
             <InputText
               v-model="executable_path"
-              :placeholder="t('installation.config.choose_dir')"
+              :placeholder="t('installation.app_details.select_executable_path')"
               class="h-8 w-full text-sm"
             />
             <Button
