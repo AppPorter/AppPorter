@@ -18,19 +18,16 @@ const FILTER_MODES = {
     value: 'exe', 
     label: t('installation.preview.filter.exe'), 
     icon: 'mir-terminal',
-    description: t('installation.preview.filter.exe_desc') 
   },
   executable: {
     value: 'executable',
     label: t('installation.preview.filter.executable'),
     icon: 'mir-code',
-    description: t('installation.preview.filter.executable_desc')
   },
   all: { 
     value: 'all', 
     label: t('installation.preview.filter.all'), 
     icon: 'mir-description',
-    description: t('installation.preview.filter.all_desc')
   },
 }
 
