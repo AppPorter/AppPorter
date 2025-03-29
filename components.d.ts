@@ -11,6 +11,7 @@ declare module 'vue' {
     Divider: typeof import('primevue/divider')['default']
     Drawer: typeof import('primevue/drawer')['default']
     ErrorHandler: typeof import('./src/components/ErrorHandler.vue')['default']
+    ExecutableSelector: typeof import('./src/components/ExecutableSelector.vue')['default']
     Panel: typeof import('primevue/panel')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']

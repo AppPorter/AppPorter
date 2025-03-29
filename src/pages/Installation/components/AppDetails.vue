@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import ExecutableSelector from '@/components/ExecutableSelector.vue'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
+import Divider from 'primevue/divider'
+import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
@@ -170,6 +173,6 @@ const drawerVisible = ref(false)
     style="height: auto"
     class="rounded-lg"
   >
-    <ZipPreview />
+    <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" />
   </Drawer>
 </template>
