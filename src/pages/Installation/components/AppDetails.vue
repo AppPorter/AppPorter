@@ -170,9 +170,11 @@ const drawerVisible = ref(false)
     v-model:visible="drawerVisible"
     header="Select Executable"
     position="bottom"
-    style="height: auto"
+    :style="{ height: '95vh' }"
     class="rounded-lg"
   >
-    <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" />
+    <div class="h-full overflow-hidden">
+      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" />
+    </div>
   </Drawer>
 </template>

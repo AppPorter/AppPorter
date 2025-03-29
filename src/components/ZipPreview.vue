@@ -22,6 +22,7 @@ interface FileNode {
 const props = defineProps<{
   zipPath: string
   filterFunction?: (node: FileNode) => boolean
+  isSelectableFunction?: (node: FileNode) => boolean
 }>()
 
 const emits = defineEmits<{
@@ -174,6 +175,13 @@ function handleToggleNode(node: FileNode) {
 
 // Handle node selection
 function handleSelectNode(node: FileNode) {
+  // For directories, just toggle expansion instead of selecting
+  if (node.type === 'directory') {
+    handleToggleNode(node)
+    return
+  }
+  
+  // For files, proceed with selection logic
   // Deselect all nodes first
   const deselectAll = (nodes: FileNode[]) => {
     nodes.forEach(node => {
@@ -248,9 +256,9 @@ defineExpose({
 </script>
 
 <template>
-  <div class="relative flex h-full flex-col overflow-auto">
+  <div class="flex h-full min-h-0 flex-col">
     <!-- Control buttons -->
-    <div class="mb-2 flex gap-1 px-1">
+    <div class="mb-2 flex shrink-0 gap-1 px-1">
       <button 
         type="button"
         class="inline-flex h-6 items-center justify-center rounded-md border border-slate-200 bg-white p-1 text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
@@ -271,25 +279,31 @@ defineExpose({
       </button>
     </div>
 
-    <!-- File Tree -->
-    <div class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
-      <!-- Tree Content -->
-      <div v-if="hasScanned && !isEmpty" class="size-full p-2 text-sm">
+    <!-- File Tree Container with improved scrolling -->
+    <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
+      <!-- Scrollable Tree Content -->
+      <div v-if="hasScanned && !isEmpty" class="h-full overflow-auto p-2 text-sm">
         <!-- Recursive Tree Node Template -->
         <template v-for="node in fileTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div 
               :class="[
-                'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                 node.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                 node.level === 0 ? 'pl-0' : 
                 node.level === 1 ? 'pl-4' : 
                 node.level === 2 ? 'pl-8' : 
                 node.level === 3 ? 'pl-12' : 
                 node.level === 4 ? 'pl-16' : 
-                node.level === 5 ? 'pl-20' : 'pl-24'
+                node.level === 5 ? 'pl-20' : 'pl-24',
+                // Add cursor styles based on selectability
+                node.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(node))
+                  ? 'cursor-pointer' 
+                  : 'cursor-not-allowed opacity-60'
               ]"
-              @click="handleSelectNode(node)"
+              @click="node.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(node)) 
+                ? handleSelectNode(node) 
+                : undefined"
             >
               <!-- Toggle button for directories -->
               <span 
@@ -321,16 +335,22 @@ defineExpose({
                 <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
                   <div 
                     :class="[
-                      'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                      'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                       childNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                       childNode.level === 0 ? 'pl-0' : 
                       childNode.level === 1 ? 'pl-4' : 
                       childNode.level === 2 ? 'pl-8' : 
                       childNode.level === 3 ? 'pl-12' : 
                       childNode.level === 4 ? 'pl-16' : 
-                      childNode.level === 5 ? 'pl-20' : 'pl-24'
+                      childNode.level === 5 ? 'pl-20' : 'pl-24',
+                      // Add cursor styles based on selectability
+                      childNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(childNode))
+                        ? 'cursor-pointer' 
+                        : 'cursor-not-allowed opacity-60'
                     ]"
-                    @click="handleSelectNode(childNode)"
+                    @click="childNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(childNode)) 
+                      ? handleSelectNode(childNode) 
+                      : undefined"
                   >
                     <!-- Toggle button for directories -->
                     <span 
@@ -361,16 +381,22 @@ defineExpose({
                     <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
                       <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" 
                         :class="[
-                          'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                          'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
                           grandchildNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
                           grandchildNode.level === 0 ? 'pl-0' : 
                           grandchildNode.level === 1 ? 'pl-4' : 
                           grandchildNode.level === 2 ? 'pl-8' : 
                           grandchildNode.level === 3 ? 'pl-12' : 
                           grandchildNode.level === 4 ? 'pl-16' : 
-                          grandchildNode.level === 5 ? 'pl-20' : 'pl-24'
+                          grandchildNode.level === 5 ? 'pl-20' : 'pl-24',
+                          // Add cursor styles based on selectability
+                          grandchildNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
+                            ? 'cursor-pointer' 
+                            : 'cursor-not-allowed opacity-60'
                         ]"
-                        @click="handleSelectNode(grandchildNode)"
+                        @click="grandchildNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(grandchildNode)) 
+                          ? handleSelectNode(grandchildNode) 
+                          : undefined"
                       >
                         <!-- Toggle button for directories -->
                         <span 
@@ -401,8 +427,17 @@ defineExpose({
                         <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
                           <div 
                             v-if="!props.filterFunction || props.filterFunction(deepNode)"
-                            class="flex cursor-pointer items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700"
-                            @click="handleSelectNode(deepNode)"
+                            :class="[
+                              'flex items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                              deepNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                              // Add cursor styles based on selectability
+                              deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode))
+                                ? 'cursor-pointer' 
+                                : 'cursor-not-allowed opacity-60'
+                            ]"
+                            @click="deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode)) 
+                              ? handleSelectNode(deepNode) 
+                              : undefined"
                           >
                             <span 
                               :class="[

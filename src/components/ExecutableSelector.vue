@@ -39,42 +39,53 @@ interface FileNode {
   type: string
 }
 
+// Executable file extensions
+const EXECUTABLE_EXTENSIONS = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+
 // File filter function based on selected filter mode
 const fileFilter = computed(() => {
   return (node: FileNode) => {
-    // Always show directories
+    // Always show directories for navigation
     if (node.type === 'directory') return true
     
     // Filter files based on selected mode
     switch (filterMode.value) {
       case 'exe':
+        // Show only .exe files
         return node.name.toLowerCase().endsWith('.exe')
       case 'executable':
-        return (
-          node.name.toLowerCase().endsWith('.exe') || 
-          node.name.toLowerCase().endsWith('.bat') || 
-          node.name.toLowerCase().endsWith('.cmd') || 
-          node.name.toLowerCase().endsWith('.ps1') || 
-          node.name.toLowerCase().endsWith('.sh') || 
-          node.name.toLowerCase().endsWith('.jar')
+        // Show all executable file types
+        return EXECUTABLE_EXTENSIONS.some(ext => 
+          node.name.toLowerCase().endsWith(ext)
         )
       case 'all':
       default:
+        // Show all files
         return true
     }
   }
 })
 
+// Determine if a file is selectable - only executable files are selectable
+const isSelectableFile = (node: FileNode): boolean => {
+  if (node.type !== 'file') return false
+  
+  return EXECUTABLE_EXTENSIONS.some(ext => 
+    node.name.toLowerCase().endsWith(ext)
+  )
+}
+
 // Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
-  if (node?.path) {
+  // Only allow selecting executable files, not directories
+  if (node?.path && isSelectableFile(node)) {
     executable_path.value = node.path
   }
 }
 </script>
 
 <template>
-  <div class="relative flex h-full flex-col overflow-auto">
+  <div class="flex h-full flex-col">
     <div class="flex h-full flex-col">
       <!-- Filter options -->
       <div class="mb-2 flex flex-wrap items-center gap-4 px-2">
@@ -87,12 +98,13 @@ function handleNodeSelect(node: FileNode) {
         </div>
       </div>
 
-      <!-- Main content area -->
-      <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- Main content area with fixed height and proper overflow handling -->
+      <div class="min-h-0 flex-1 overflow-hidden">
         <ZipPreview
           ref="zipPreviewRef"
           :zip-path="zipPath"
           :filter-function="fileFilter"
+          :is-selectable-function="isSelectableFile"
           :details-loading="detailsLoading"
           @node-select="handleNodeSelect"
         />
