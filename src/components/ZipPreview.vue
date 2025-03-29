@@ -1,24 +1,21 @@
 <script setup lang="ts">
 import { invoke } from '@tauri-apps/api/core'
-import Button from 'primevue/button'
-import Tree from 'primevue/tree'
-import type { TreeNode } from 'primevue/treenode'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Types and interfaces
 type FileStatus = 'ready' | 'loading' | 'error'
+type NodeType = 'file' | 'directory'
 
-interface CustomNodeData {
-  path: string
-}
-
-interface CustomTreeNode extends TreeNode {
+interface FileNode {
   key: string
-  label: string
-  icon?: string
-  children?: CustomTreeNode[]
-  data?: CustomNodeData
+  name: string
+  path: string
+  type: NodeType
+  children?: FileNode[]
+  expanded?: boolean
+  selected?: boolean
+  level: number
 }
 
 // Props & emits
@@ -27,18 +24,17 @@ const props = defineProps<{
   detailsLoading?: boolean
 }>()
 
-const emit = defineEmits<{
+const emits = defineEmits<{
   (event: 'loading', value: boolean): void
   (event: 'progress', value: number): void
-  (event: 'node-select', node: TreeNode): void
+  (event: 'node-select', node: FileNode): void
 }>()
 
 const { t } = useI18n()
 
 // State
 const status = ref<FileStatus>('ready')
-const expandedKeys = ref<Record<string, boolean>>({})
-const fileTree = ref<CustomTreeNode[]>([])
+const fileTree = ref<FileNode[]>([])
 const fileCache = ref<string[] | null>(null)
 const isExpanding = ref(false)
 const isCollapsing = ref(false)
@@ -47,13 +43,8 @@ const isCollapsing = ref(false)
 const hasScanned = computed(() => fileCache.value !== null)
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 
-// Utility functions
-function getFileIcon(): string {
-  return 'mir-draft'
-}
-
 // Format and build tree structure from flat file paths
-function buildFileTree(paths: string[]): CustomTreeNode[] {
+function buildFileTree(paths: string[]): FileNode[] {
   // Build directory map for quick lookup
   const dirMap = new Map<string, boolean>()
   paths.forEach((path) => {
@@ -67,7 +58,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
   })
 
   // Build tree
-  const root: CustomTreeNode[] = []
+  const root: FileNode[] = []
 
   paths.forEach((path) => {
     if (!path.trim()) return
@@ -77,24 +68,26 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
     let current = root
     let currentPath = ''
+    let level = 0
 
     parts.forEach((part, index) => {
       currentPath = currentPath ? `${currentPath}\\${part}` : part
       const isLast = index === parts.length - 1
       const isFile = isLast && !dirMap.has(currentPath)
-
+      
       // Find or create node
-      let node = current.find((n) => n.label === part)
+      let node = current.find((n) => n.name === part)
 
       if (!node) {
         node = {
           key: currentPath,
-          label: part,
-          icon: isFile ? getFileIcon() : 'folder',
+          name: part,
+          path: currentPath,
+          type: isFile ? 'file' : 'directory',
+          level,
           children: isFile ? undefined : [],
-          data: {
-            path: currentPath,
-          },
+          expanded: false,
+          selected: false
         }
 
         current.push(node)
@@ -102,21 +95,19 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
       if (node.children) {
         current = node.children
+        level++
       }
     })
   })
 
   // Sort nodes (directories first, then alphabetically)
-  const sortNodes = (nodes: CustomTreeNode[]): void => {
+  const sortNodes = (nodes: FileNode[]): void => {
     nodes.sort((a, b) => {
-      const aIsDir = !!a.children
-      const bIsDir = !!b.children
-
       // Directories first
-      if (aIsDir !== bIsDir) return aIsDir ? -1 : 1
-
-      // Alphabetical by default
-      return a.label.localeCompare(b.label)
+      if (a.type !== b.type) return a.type === 'directory' ? -1 : 1
+      
+      // Alphabetical by name
+      return a.name.localeCompare(b.name)
     })
 
     // Sort children recursively
@@ -129,7 +120,7 @@ function buildFileTree(paths: string[]): CustomTreeNode[] {
 
   // Auto-expand if single top folder
   if (root.length === 1 && root[0].children) {
-    expandedKeys.value[root[0].key] = true
+    root[0].expanded = true
   }
 
   return root
@@ -140,7 +131,7 @@ async function loadZipContent() {
   if (!props.zipPath) return
 
   status.value = 'loading'
-  emit('loading', true)
+  emits('loading', true)
 
   // Get archive content from backend
   const result = await invoke('execute_command', {
@@ -173,7 +164,31 @@ async function loadZipContent() {
   fileCache.value = allPaths
   fileTree.value = buildFileTree(fileCache.value)
   status.value = 'ready'
-  emit('loading', false)
+  emits('loading', false)
+}
+
+// Toggle node expansion
+function handleToggleNode(node: FileNode) {
+  node.expanded = !node.expanded
+}
+
+// Handle node selection
+function handleSelectNode(node: FileNode) {
+  // Deselect all nodes first
+  const deselectAll = (nodes: FileNode[]) => {
+    nodes.forEach(node => {
+      node.selected = false
+      if (node.children) deselectAll(node.children)
+    })
+  }
+  
+  deselectAll(fileTree.value)
+  
+  // Select the clicked node
+  node.selected = true
+  
+  // Emit selection event with node info
+  emits('node-select', node)
 }
 
 // Expand all nodes in the tree
@@ -181,15 +196,14 @@ const expandAll = () => {
   if (isExpanding.value) return
   isExpanding.value = true
 
-  const expandNode = (node: CustomTreeNode) => {
+  const expandNode = (node: FileNode) => {
     if (node.children?.length) {
-      expandedKeys.value[node.key] = true
+      node.expanded = true
       node.children.forEach(expandNode)
     }
   }
 
   fileTree.value.forEach(expandNode)
-  expandedKeys.value = { ...expandedKeys.value }
   isExpanding.value = false
 }
 
@@ -197,7 +211,15 @@ const expandAll = () => {
 const collapseAll = () => {
   if (isCollapsing.value) return
   isCollapsing.value = true
-  expandedKeys.value = {}
+  
+  const collapseNode = (node: FileNode) => {
+    if (node.children?.length) {
+      node.expanded = false
+      node.children.forEach(collapseNode)
+    }
+  }
+  
+  fileTree.value.forEach(collapseNode)
   isCollapsing.value = false
 }
 
@@ -216,39 +238,177 @@ onMounted(() => {
 
 <template>
   <div class="relative flex h-full flex-col overflow-auto">
+    <!-- Control buttons -->
     <div class="mb-2 flex gap-1 px-1">
-      <Button
+      <button 
         type="button"
-        class="h-6 p-1"
-        severity="secondary"
+        class="inline-flex h-6 items-center justify-center rounded-md border border-slate-200 bg-white p-1 text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
         :disabled="isExpanding"
         v-tooltip.bottom="t('installation.preview.expand_all')"
         @click="expandAll"
-        :icon="isExpanding ? 'mir-progress_activity' : 'mir-unfold_more'"
-      />
-      <Button
+      >
+        <span :class="isExpanding ? 'mir-progress_activity' : 'mir-unfold_more'"></span>
+      </button>
+      <button 
         type="button"
-        class="h-6 p-1"
-        severity="secondary"
+        class="inline-flex h-6 items-center justify-center rounded-md border border-slate-200 bg-white p-1 text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
         :disabled="isCollapsing"
         v-tooltip.bottom="t('installation.preview.collapse_all')"
         @click="collapseAll"
-        :icon="isCollapsing ? 'mir-progress_activity' : 'mir-unfold_less'"
-      />
+      >
+        <span :class="isCollapsing ? 'mir-progress_activity' : 'mir-unfold_less'"></span>
+      </button>
     </div>
 
     <!-- File Tree -->
-    <div
-      class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600"
-    >
-      <Tree
-        v-if="hasScanned && !isEmpty"
-        :value="fileTree"
-        v-model:expandedKeys="expandedKeys"
-        class="size-full"
-        toggleOnClick
-        @node-select="node => emit('node-select', node)"
-      />
+    <div class="relative min-h-0 flex-1 overflow-auto rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
+      <!-- Tree Content -->
+      <div v-if="hasScanned && !isEmpty" class="size-full p-2 text-sm">
+        <!-- Recursive Tree Node Template -->
+        <template v-for="node in fileTree" :key="node.key">
+          <div class="w-full">
+            <div 
+              :class="[
+                'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                node.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                `pl-${node.level * 4}`
+              ]"
+              @click="handleSelectNode(node)"
+            >
+              <!-- Toggle button for directories -->
+              <span 
+                v-if="node.type === 'directory'" 
+                :class="[
+                  'mr-1 cursor-pointer transition-transform',
+                  node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
+                ]"
+                @click.stop="handleToggleNode(node)"
+              ></span>
+              
+              <!-- Icon based on node type -->
+              <span 
+                :class="[
+                  'mr-2', 
+                  node.type === 'directory' 
+                    ? (node.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
+                    : 'mir-draft text-slate-500 dark:text-slate-400'
+                ]"
+              ></span>
+              
+              <!-- Node name -->
+              <span class="truncate">{{ node.name }}</span>
+            </div>
+            
+            <!-- Render children if expanded -->
+            <div v-if="node.expanded && node.children?.length" class="pl-4">
+              <template v-for="childNode in node.children" :key="childNode.key">
+                <div class="w-full">
+                  <div 
+                    :class="[
+                      'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                      childNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                      `pl-${childNode.level * 4}`
+                    ]"
+                    @click="handleSelectNode(childNode)"
+                  >
+                    <!-- Toggle button for directories -->
+                    <span 
+                      v-if="childNode.type === 'directory'" 
+                      :class="[
+                        'mr-1 cursor-pointer transition-transform',
+                        childNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
+                      ]"
+                      @click.stop="handleToggleNode(childNode)"
+                    ></span>
+                    
+                    <!-- Icon based on node type -->
+                    <span 
+                      :class="[
+                        'mr-2', 
+                        childNode.type === 'directory' 
+                          ? (childNode.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
+                          : 'mir-draft text-slate-500 dark:text-slate-400'
+                      ]"
+                    ></span>
+                    
+                    <!-- Node name -->
+                    <span class="truncate">{{ childNode.name }}</span>
+                  </div>
+                  
+                  <!-- Recursive rendering for deeper levels -->
+                  <div v-if="childNode.expanded && childNode.children?.length" class="pl-4">
+                    <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
+                      <div 
+                        :class="[
+                          'flex cursor-pointer items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                          grandchildNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                          `pl-${grandchildNode.level * 4}`
+                        ]"
+                        @click="handleSelectNode(grandchildNode)"
+                      >
+                        <!-- Toggle button for directories -->
+                        <span 
+                          v-if="grandchildNode.type === 'directory'" 
+                          :class="[
+                            'mr-1 cursor-pointer transition-transform',
+                            grandchildNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
+                          ]"
+                          @click.stop="handleToggleNode(grandchildNode)"
+                        ></span>
+                        
+                        <!-- Icon based on node type -->
+                        <span 
+                          :class="[
+                            'mr-2', 
+                            grandchildNode.type === 'directory' 
+                              ? (grandchildNode.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
+                              : 'mir-draft text-slate-500 dark:text-slate-400'
+                          ]"
+                        ></span>
+                        
+                        <!-- Node name -->
+                        <span class="truncate">{{ grandchildNode.name }}</span>
+                      </div>
+                      
+                      <!-- Even deeper levels (handled with recursion in real implementation) -->
+                      <div v-if="grandchildNode.expanded && grandchildNode.children?.length" class="pl-4">
+                        <div 
+                          v-for="deepNode in grandchildNode.children" 
+                          :key="deepNode.key"
+                          class="flex cursor-pointer items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700"
+                          @click="handleSelectNode(deepNode)"
+                        >
+                          <span 
+                            :class="[
+                              'mr-2',
+                              deepNode.type === 'directory' ? 'mir-folder text-amber-500' : 'mir-draft text-slate-500 dark:text-slate-400'
+                            ]"
+                          ></span>
+                          <span class="truncate">{{ deepNode.name }}</span>
+                          <span v-if="deepNode.children?.length" class="ml-1 text-xs text-slate-400">({{ deepNode.children.length }} items)</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
+            </div>
+          </div>
+        </template>
+      </div>
+
+      <!-- Loading indicator -->
+      <div 
+        v-if="status === 'loading'" 
+        class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[0.125rem] dark:bg-zinc-900/80"
+      >
+        <div class="flex flex-col items-center gap-2">
+          <span class="mir-progress_activity text-2xl"></span>
+          <p class="text-sm text-slate-600 dark:text-slate-300">
+            {{ t('common.loading') }}
+          </p>
+        </div>
+      </div>
 
       <!-- Empty State -->
       <div
