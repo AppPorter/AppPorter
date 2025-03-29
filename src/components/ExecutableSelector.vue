@@ -153,14 +153,32 @@ function handleSelect() {
     </div>
     
     <!-- Selected file and button container -->
-    <div v-if="selectedPath" class="mt-3 flex items-center justify-between gap-4">
-      <div class="flex flex-1 items-center gap-2 rounded-md bg-green-50 p-2 text-sm dark:bg-green-900/20">
-        <span class="mir-check_circle text-green-500 dark:text-green-400"></span>
-        <span class="font-medium text-green-800 dark:text-green-300">{{ t('installation.preview.selected') }}:</span>
-        <span class="truncate text-green-700 dark:text-green-400">{{ selectedPath }}</span>
+    <div class="mt-3 flex items-center justify-between gap-4">
+      <div :class="[
+        'flex flex-1 items-center gap-2 rounded-md p-2 text-sm transition-colors',
+        selectedPath 
+          ? 'bg-green-50 dark:bg-green-900/20' 
+          : 'bg-slate-50 dark:bg-zinc-800/50'
+      ]">
+        <span :class="[
+          selectedPath ? 'mir-check_circle text-green-500 dark:text-green-400' : 'mir-info text-slate-500 dark:text-slate-400'
+        ]"></span>
+        <span :class="[
+          'font-medium',
+          selectedPath 
+            ? 'text-green-800 dark:text-green-300'
+            : 'text-slate-700 dark:text-slate-300'
+        ]">{{ selectedPath ? t('installation.preview.selected') : t('installation.preview.select_prompt') }}:</span>
+        <span :class="[
+          'truncate',
+          selectedPath 
+            ? 'text-green-700 dark:text-green-400'
+            : 'text-slate-600 dark:text-slate-400'
+        ]">{{ selectedPath || t('installation.preview.no_selection') }}</span>
       </div>
       <Button
         severity="primary"
+        :disabled="!selectedPath"
         @click="handleSelect"
       >
         {{ t('common.select') }}
