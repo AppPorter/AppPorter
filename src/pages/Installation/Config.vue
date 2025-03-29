@@ -24,6 +24,7 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 // Validation states
 const pathError = ref('')
 const nameError = ref('')
+const executablePathError = ref('')
 
 function handleBackClick() {
   goTo('/Installation/Home')
@@ -34,11 +35,13 @@ async function handleInstallClick() {
   // Reset validation errors
   nameError.value = ''
   pathError.value = ''
+  executablePathError.value = ''
 
   let hasErrors = false
 
   // Validate required fields
   if (!installationConfig.executable_path) {
+    executablePathError.value = t('installation.validation.executable_missing')
     toast.add({
       severity: 'error',
       summary: t('installation.validation.executable_missing'),
@@ -161,6 +164,7 @@ async function handleInstallClick() {
             :details-loading="detailsLoading"
             :details-loading-progress="detailsLoadingProgress"
             :progress-mode="progressMode"
+            :executable-path-error="executablePathError"
           />
           <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         </div>

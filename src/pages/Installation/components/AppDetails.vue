@@ -16,6 +16,7 @@ defineProps<{
   detailsLoading: boolean
   detailsLoadingProgress: number
   progressMode: 'indeterminate' | 'determinate'
+  executablePathError?: string
 }>()
 
 const installationConfig = useInstallationConfigStore()
@@ -57,6 +58,8 @@ const drawerVisible = ref(false)
               v-model="executable_path"
               :placeholder="t('installation.app_details.select_executable_path')"
               class="h-8 w-full text-sm"
+              :invalid="!!executablePathError"
+              :title="executablePathError"
             />
             <Button
               class="h-8 w-36"
