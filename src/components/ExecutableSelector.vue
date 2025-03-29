@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { storeToRefs } from 'pinia'
-import RadioButton from 'primevue/radiobutton'
 import Button from 'primevue/button'
+import RadioButton from 'primevue/radiobutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
@@ -111,13 +111,13 @@ function handleSelect() {
     <!-- Enhanced Filter UI -->
     <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
       <div class="flex flex-col gap-3">        
-        <!-- Filter options with improved layout -->
-        <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <!-- Filter options with horizontal layout -->
+        <div class="flex gap-2">
           <div 
             v-for="option in FILTER_MODES" 
             :key="option.value"
             :class="[
-              'flex cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
+              'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
               'hover:bg-white dark:border-zinc-700 dark:hover:bg-zinc-800',
               filterMode === option.value ? 'bg-white ring-2 ring-blue-500 dark:bg-zinc-800 dark:ring-blue-400' : ''
             ]"
