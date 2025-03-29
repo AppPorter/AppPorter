@@ -250,9 +250,9 @@ defineExpose({
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col">
+  <div class="flex h-full min-h-0 flex-col shadow-sm">
     <!-- File Tree Container with improved scrolling -->
-    <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
+    <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600">
       <!-- Scrollable Tree Content -->
       <div v-if="hasScanned && !isEmpty" class="h-full overflow-auto p-2 text-sm">
         <!-- Recursive Tree Node Template -->
@@ -478,7 +478,7 @@ defineExpose({
         v-if="status === 'loading'" 
         class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm transition-all duration-300 dark:bg-zinc-900/90"
       >
-        <div class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-lg backdrop-blur-md dark:bg-zinc-800/60">
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-md dark:bg-zinc-800/60">
           <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
             {{ t('common.loading') }}
@@ -491,7 +491,7 @@ defineExpose({
         v-if="hasScanned && isEmpty"
         class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60"
       >
-        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-800">
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
           <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
             {{ t('installation.preview.no_files') }}

@@ -109,7 +109,7 @@ function handleSelect() {
 <template>
   <div class="flex h-full flex-col">
     <!-- Enhanced Filter UI -->
-    <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-zinc-700 dark:bg-zinc-800/50">
+    <div class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
       <div class="flex flex-col gap-3">        
         <!-- Filter options with improved layout -->
         <div class="grid grid-cols-1 gap-2 sm:grid-cols-3">
