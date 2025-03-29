@@ -71,7 +71,10 @@
         "exe": "Fichiers .exe uniquement",
         "executable": "Fichiers exécutables",
         "all": "Tous les fichiers"
-      }
+      },
+      "selected": "Fichier sélectionné",
+      "select_prompt": "Veuillez sélectionner un fichier",
+      "no_selection": "Aucun fichier sélectionné"
     },
     "config": {
       "installation_options": "Options d'installation",
@@ -94,7 +97,8 @@
       "cancel": "Annuler",
       "directory_not_empty": "Le répertoire d'installation n'est pas vide. Voulez-vous continuer ?",
       "warning": "Avertissement",
-      "force_install": "Forcer l'installation"
+      "force_install": "Forcer l'installation",
+      "executable_path": "Chemin de l'exécutable"
     },
     "app_details": {
       "title": "Détails de l'application",
@@ -201,5 +205,9 @@
       "uninstall": "Désinstaller"
     },
     "status": "État"
+  },
+  "common": {
+    "select": "Sélectionner",
+    "loading": "Chargement..."
   }
 }

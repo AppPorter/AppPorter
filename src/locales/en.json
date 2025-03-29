@@ -81,7 +81,8 @@
       "cancel": "Cancel",
       "directory_not_empty": "Installation directory is not empty. Do you want to continue?",
       "warning": "Warning",
-      "force_install": "Force Install"
+      "force_install": "Force Install",
+      "executable_path": "Executable Path"
     },
     "app_details": {
       "title": "App Details",
@@ -124,7 +125,10 @@
         "exe": ".exe Only",
         "executable": "Executable Files",
         "all": "All Files"
-      }
+      },
+      "selected": "Selected file",
+      "select_prompt": "Please select a file",
+      "no_selection": "No file selected"
     }
   },
   "system": {
@@ -202,5 +206,9 @@
       "uninstall": "Uninstall"
     },
     "status": "Status"
+  },
+  "common": {
+    "select": "Select",
+    "loading": "Loading..."
   }
 }

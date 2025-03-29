@@ -71,7 +71,10 @@
         "exe": "Только .exe",
         "executable": "Исполняемые файлы",
         "all": "Все файлы"
-      }
+      },
+      "selected": "Выбранный файл",
+      "select_prompt": "Пожалуйста, выберите файл",
+      "no_selection": "Файл не выбран"
     },
     "config": {
       "installation_options": "Параметры установки",
@@ -201,5 +204,9 @@
       "uninstall": "Удалить"
     },
     "status": "Статус"
+  },
+  "common": {
+    "select": "Выбрать",
+    "loading": "Загрузка..."
   }
 }

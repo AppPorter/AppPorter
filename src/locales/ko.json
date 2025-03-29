@@ -71,7 +71,10 @@
         "exe": ".exe 파일만",
         "executable": "실행 파일",
         "all": "모든 파일"
-      }
+      },
+      "selected": "선택된 파일",
+      "select_prompt": "파일을 선택해 주세요",
+      "no_selection": "파일이 선택되지 않음"
     },
     "config": {
       "installation_options": "설치 옵션",
@@ -94,7 +97,8 @@
       "cancel": "취소",
       "directory_not_empty": "설치 디렉터리가 비어있지 않습니다. 계속하시겠습니까?",
       "warning": "경고",
-      "force_install": "강제 설치"
+      "force_install": "강제 설치",
+      "executable_path": "실행 파일 경로"
     },
     "app_details": {
       "title": "앱 상세 정보",
@@ -201,5 +205,9 @@
       "uninstall": "제거"
     },
     "status": "상태"
+  },
+  "common": {
+    "select": "선택",
+    "loading": "로딩 중..."
   }
 }
