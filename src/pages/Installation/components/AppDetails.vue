@@ -168,7 +168,7 @@ const drawerVisible = ref(false)
   </Panel>
   <Drawer
     v-model:visible="drawerVisible"
-    header="Select Executable"
+    :header="t('installation.config.select_executable')"
     position="bottom"
     :style="{ height: '95vh' }"
     class="rounded-lg"

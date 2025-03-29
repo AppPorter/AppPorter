@@ -98,7 +98,8 @@
       "directory_not_empty": "インストール先のディレクトリが空ではありません。続行しますか？",
       "warning": "警告",
       "force_install": "強制インストール",
-      "executable_path": "実行ファイルのパス"
+      "executable_path": "実行ファイルのパス",
+      "select_executable": "実行ファイルを選択"
     },
     "app_details": {
       "title": "アプリケーションの詳細",

@@ -82,7 +82,8 @@
       "directory_not_empty": "安装目录不为空，是否继续？",
       "warning": "警告",
       "force_install": "强制安装",
-      "executable_path": "可执行文件路径"
+      "executable_path": "可执行文件路径",
+      "select_executable": "选择可执行文件"
     },
     "app_details": {
       "title": "应用程序信息",

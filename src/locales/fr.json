@@ -98,7 +98,8 @@
       "directory_not_empty": "Le répertoire d'installation n'est pas vide. Voulez-vous continuer ?",
       "warning": "Avertissement",
       "force_install": "Forcer l'installation",
-      "executable_path": "Chemin de l'exécutable"
+      "executable_path": "Chemin de l'exécutable",
+      "select_executable": "Sélectionner l'exécutable"
     },
     "app_details": {
       "title": "Détails de l'application",

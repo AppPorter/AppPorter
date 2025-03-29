@@ -82,7 +82,8 @@
       "directory_not_empty": "Installation directory is not empty. Do you want to continue?",
       "warning": "Warning",
       "force_install": "Force Install",
-      "executable_path": "Executable Path"
+      "executable_path": "Executable Path",
+      "select_executable": "Select Executable"
     },
     "app_details": {
       "title": "App Details",

@@ -98,7 +98,8 @@
       "directory_not_empty": "El directorio de instalación no está vacío. ¿Desea continuar?",
       "warning": "Advertencia",
       "force_install": "Forzar instalación",
-      "executable_path": "Ruta del ejecutable"
+      "executable_path": "Ruta del ejecutable",
+      "select_executable": "Seleccionar ejecutable"
     },
     "app_details": {
       "title": "Detalles de la aplicación",

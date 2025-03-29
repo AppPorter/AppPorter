@@ -98,7 +98,8 @@
       "directory_not_empty": "Das Installationsverzeichnis ist nicht leer. Möchten Sie fortfahren?",
       "warning": "Warnung",
       "force_install": "Installation erzwingen",
-      "executable_path": "Ausführungspfad"
+      "executable_path": "Ausführungspfad",
+      "select_executable": "Ausführbare Datei wählen"
     },
     "app_details": {
       "title": "App-Details",

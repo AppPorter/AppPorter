@@ -98,7 +98,8 @@
       "directory_not_empty": "설치 디렉터리가 비어있지 않습니다. 계속하시겠습니까?",
       "warning": "경고",
       "force_install": "강제 설치",
-      "executable_path": "실행 파일 경로"
+      "executable_path": "실행 파일 경로",
+      "select_executable": "실행 파일 선택"
     },
     "app_details": {
       "title": "앱 상세 정보",
