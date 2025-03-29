@@ -37,8 +37,6 @@ const { t } = useI18n()
 const status = ref<FileStatus>('ready')
 const fileTree = ref<FileNode[]>([])
 const fileCache = ref<string[] | null>(null)
-const isExpanding = ref(false)
-const isCollapsing = ref(false)
 
 // Computed properties
 const hasScanned = computed(() => fileCache.value !== null)
@@ -199,38 +197,6 @@ function handleSelectNode(node: FileNode) {
   emits('node-select', node)
 }
 
-// Expand all nodes in the tree
-const expandAll = () => {
-  if (isExpanding.value) return
-  isExpanding.value = true
-
-  const expandNode = (node: FileNode) => {
-    if (node.children?.length) {
-      node.expanded = true
-      node.children.forEach(expandNode)
-    }
-  }
-
-  fileTree.value.forEach(expandNode)
-  isExpanding.value = false
-}
-
-// Collapse all nodes in the tree
-const collapseAll = () => {
-  if (isCollapsing.value) return
-  isCollapsing.value = true
-  
-  const collapseNode = (node: FileNode) => {
-    if (node.children?.length) {
-      node.expanded = false
-      node.children.forEach(collapseNode)
-    }
-  }
-  
-  fileTree.value.forEach(collapseNode)
-  isCollapsing.value = false
-}
-
 // Effects
 watchEffect(() => {
   if (!props.zipPath) return
@@ -249,36 +215,12 @@ defineExpose({
   nodeTypes: ['file', 'directory'] as const,
   // Provide methods that parent can use
   selectNode: handleSelectNode,
-  toggleNode: handleToggleNode,
-  expandAll,
-  collapseAll
+  toggleNode: handleToggleNode
 })
 </script>
 
 <template>
   <div class="flex h-full min-h-0 flex-col">
-    <!-- Control buttons -->
-    <div class="mb-2 flex shrink-0 gap-1 px-1">
-      <button 
-        type="button"
-        class="inline-flex h-6 items-center justify-center rounded-md border border-slate-200 bg-white p-1 text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-        :disabled="isExpanding"
-        v-tooltip.bottom="t('installation.preview.expand_all')"
-        @click="expandAll"
-      >
-        <span :class="isExpanding ? 'mir-progress_activity' : 'mir-unfold_more'"></span>
-      </button>
-      <button 
-        type="button"
-        class="inline-flex h-6 items-center justify-center rounded-md border border-slate-200 bg-white p-1 text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-200 dark:hover:bg-zinc-700"
-        :disabled="isCollapsing"
-        v-tooltip.bottom="t('installation.preview.collapse_all')"
-        @click="collapseAll"
-      >
-        <span :class="isCollapsing ? 'mir-progress_activity' : 'mir-unfold_less'"></span>
-      </button>
-    </div>
-
     <!-- File Tree Container with improved scrolling -->
     <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
       <!-- Scrollable Tree Content -->

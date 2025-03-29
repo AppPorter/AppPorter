@@ -88,7 +88,7 @@ function handleNodeSelect(node: FileNode) {
   <div class="flex h-full flex-col">
     <div class="flex h-full flex-col">
       <!-- Filter options -->
-      <div class="mb-2 flex flex-wrap items-center gap-4 px-2">
+      <div class="mb-4 flex flex-wrap items-center gap-4 px-2">
         <div v-for="option in FILTER_MODES" :key="option.value" class="flex items-center gap-1">
           <RadioButton v-model="filterMode" :value="option.value" :inputId="option.value" />
           <label :for="option.value" class="flex cursor-pointer items-center gap-1 text-sm">
