@@ -2,6 +2,7 @@
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { storeToRefs } from 'pinia'
 import RadioButton from 'primevue/radiobutton'
+import Button from 'primevue/button'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
@@ -39,9 +40,14 @@ defineProps<{
   detailsLoading?: boolean
 }>()
 
+const emit = defineEmits<{
+  (e: 'close'): void
+}>()
+
 // State
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
 const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
+const selectedPath = ref('')
 
 // Define the FileNode interface explicitly
 interface FileNode {
@@ -90,8 +96,13 @@ const isSelectableFile = (node: FileNode): boolean => {
 function handleNodeSelect(node: FileNode) {
   // Only allow selecting executable files, not directories
   if (node?.path && isSelectableFile(node)) {
-    executable_path.value = node.path
+    selectedPath.value = node.path
   }
+}
+
+function handleSelect() {
+  executable_path.value = selectedPath.value
+  emit('close')
 }
 </script>
 
@@ -141,14 +152,19 @@ function handleNodeSelect(node: FileNode) {
       />
     </div>
     
-    <!-- Selected file indicator -->
-    <div 
-      v-if="executable_path" 
-      class="mt-3 flex items-center gap-2 rounded-md bg-green-50 p-2 text-sm dark:bg-green-900/20"
-    >
-      <span class="mir-check_circle text-green-500 dark:text-green-400"></span>
-      <span class="font-medium text-green-800 dark:text-green-300">{{ t('installation.preview.selected') }}:</span>
-      <span class="truncate text-green-700 dark:text-green-400">{{ executable_path }}</span>
+    <!-- Selected file and button container -->
+    <div v-if="selectedPath" class="mt-3 flex items-center justify-between gap-4">
+      <div class="flex flex-1 items-center gap-2 rounded-md bg-green-50 p-2 text-sm dark:bg-green-900/20">
+        <span class="mir-check_circle text-green-500 dark:text-green-400"></span>
+        <span class="font-medium text-green-800 dark:text-green-300">{{ t('installation.preview.selected') }}:</span>
+        <span class="truncate text-green-700 dark:text-green-400">{{ selectedPath }}</span>
+      </div>
+      <Button
+        severity="primary"
+        @click="handleSelect"
+      >
+        {{ t('common.select') }}
+      </Button>
     </div>
   </div>
 </template>

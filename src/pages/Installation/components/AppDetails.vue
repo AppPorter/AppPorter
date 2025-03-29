@@ -174,7 +174,11 @@ const drawerVisible = ref(false)
     class="rounded-lg"
   >
     <div class="h-full overflow-hidden">
-      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" />
+      <ExecutableSelector
+        :zip-path="zip_path"
+        :details-loading="detailsLoading"
+        @close="drawerVisible = false"
+      />
     </div>
   </Drawer>
 </template>
