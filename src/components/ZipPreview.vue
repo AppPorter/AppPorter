@@ -42,6 +42,36 @@ const fileCache = ref<string[] | null>(null)
 const hasScanned = computed(() => fileCache.value !== null)
 const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
 
+// Get appropriate icon based on file extension
+function getFileIcon(fileName: string): string {
+  const lowerName = fileName.toLowerCase()
+  
+  // Executable files
+  if (lowerName.endsWith('.exe')) return 'mir-terminal text-indigo-500'
+  if (lowerName.endsWith('.bat') || lowerName.endsWith('.cmd')) return 'mir-terminal text-green-600'
+  if (lowerName.endsWith('.ps1')) return 'mir-terminal text-blue-600'
+  if (lowerName.endsWith('.sh')) return 'mir-terminal text-amber-600'
+  
+  // Archives
+  if (['.zip', '.rar', '.7z', '.tar', '.gz'].some(ext => lowerName.endsWith(ext))) 
+    return 'mir-archive text-amber-600'
+  
+  // Documents
+  if (['.pdf', '.doc', '.docx', '.txt', '.rtf'].some(ext => lowerName.endsWith(ext))) 
+    return 'mir-description text-blue-500'
+  
+  // Images
+  if (['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp'].some(ext => lowerName.endsWith(ext))) 
+    return 'mir-image text-green-500'
+  
+  // Code and config files
+  if (['.xml', '.json', '.ini', '.config', '.yml', '.yaml'].some(ext => lowerName.endsWith(ext))) 
+    return 'mir-code text-slate-500'
+  
+  // Default
+  return 'mir-draft text-slate-500 dark:text-slate-400'
+}
+
 // Format and build tree structure from flat file paths
 function buildFileTree(paths: string[]): FileNode[] {
   // Build directory map for quick lookup
@@ -230,8 +260,8 @@ defineExpose({
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div 
               :class="[
-                'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                node.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                node.selected ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : '',
                 node.level === 0 ? 'pl-0' : 
                 node.level === 1 ? 'pl-4' : 
                 node.level === 2 ? 'pl-8' : 
@@ -247,38 +277,45 @@ defineExpose({
                 ? handleSelectNode(node) 
                 : undefined"
             >
-              <!-- Toggle button for directories -->
+              <!-- Toggle button for directories with improved animation -->
               <span 
                 v-if="node.type === 'directory'" 
                 :class="[
-                  'mr-1 cursor-pointer transition-transform',
+                  'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
                   node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                 ]"
                 @click.stop="handleToggleNode(node)"
               ></span>
               
-              <!-- Icon based on node type -->
+              <!-- Icon based on node type with enhanced visuals -->
               <span 
                 :class="[
-                  'mr-2', 
+                  'mr-2 shrink-0', 
                   node.type === 'directory' 
                     ? (node.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
-                    : 'mir-draft text-slate-500 dark:text-slate-400'
+                    : getFileIcon(node.name)
                 ]"
               ></span>
               
-              <!-- Node name -->
-              <span class="truncate">{{ node.name }}</span>
+              <!-- Node name with better truncation -->
+              <span class="flex-1 truncate">{{ node.name }}</span>
+              
+              <!-- Selection indicator for selectable files -->
+              <span 
+                v-if="node.selected && node.type === 'file'" 
+                class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"
+              ></span>
             </div>
             
-            <!-- Render children if expanded -->
-            <div v-if="node.expanded && node.children?.length" class="pl-4">
+            <!-- Render children if expanded with animation -->
+            <div v-if="node.expanded && node.children?.length" 
+                 class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
               <template v-for="childNode in node.children" :key="childNode.key">
                 <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
                   <div 
                     :class="[
-                      'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                      childNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                      'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                      childNode.selected ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : '',
                       childNode.level === 0 ? 'pl-0' : 
                       childNode.level === 1 ? 'pl-4' : 
                       childNode.level === 2 ? 'pl-8' : 
@@ -298,7 +335,7 @@ defineExpose({
                     <span 
                       v-if="childNode.type === 'directory'" 
                       :class="[
-                        'mr-1 cursor-pointer transition-transform',
+                        'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
                         childNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                       ]"
                       @click.stop="handleToggleNode(childNode)"
@@ -307,24 +344,31 @@ defineExpose({
                     <!-- Icon based on node type -->
                     <span 
                       :class="[
-                        'mr-2', 
+                        'mr-2 shrink-0', 
                         childNode.type === 'directory' 
                           ? (childNode.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
-                          : 'mir-draft text-slate-500 dark:text-slate-400'
+                          : getFileIcon(childNode.name)
                       ]"
                     ></span>
                     
                     <!-- Node name -->
-                    <span class="truncate">{{ childNode.name }}</span>
+                    <span class="flex-1 truncate">{{ childNode.name }}</span>
+                    
+                    <!-- Selection indicator -->
+                    <span 
+                      v-if="childNode.selected && childNode.type === 'file'" 
+                      class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"
+                    ></span>
                   </div>
                   
                   <!-- Recursive rendering for deeper levels -->
-                  <div v-if="childNode.expanded && childNode.children?.length" class="pl-4">
+                  <div v-if="childNode.expanded && childNode.children?.length" 
+                       class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
                     <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
                       <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" 
                         :class="[
-                          'flex items-center py-1 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                          grandchildNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                          'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                          grandchildNode.selected ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : '',
                           grandchildNode.level === 0 ? 'pl-0' : 
                           grandchildNode.level === 1 ? 'pl-4' : 
                           grandchildNode.level === 2 ? 'pl-8' : 
@@ -344,7 +388,7 @@ defineExpose({
                         <span 
                           v-if="grandchildNode.type === 'directory'" 
                           :class="[
-                            'mr-1 cursor-pointer transition-transform',
+                            'mr-1.5 cursor-pointer transition-transform duration-200 ease-in-out',
                             grandchildNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more'
                           ]"
                           @click.stop="handleToggleNode(grandchildNode)"
@@ -353,25 +397,32 @@ defineExpose({
                         <!-- Icon based on node type -->
                         <span 
                           :class="[
-                            'mr-2', 
+                            'mr-2 shrink-0', 
                             grandchildNode.type === 'directory' 
                               ? (grandchildNode.expanded ? 'mir-folder_open text-amber-500' : 'mir-folder text-amber-500') 
-                              : 'mir-draft text-slate-500 dark:text-slate-400'
+                              : getFileIcon(grandchildNode.name)
                           ]"
                         ></span>
                         
                         <!-- Node name -->
-                        <span class="truncate">{{ grandchildNode.name }}</span>
+                        <span class="flex-1 truncate">{{ grandchildNode.name }}</span>
+                        
+                        <!-- Selection indicator -->
+                        <span 
+                          v-if="grandchildNode.selected && grandchildNode.type === 'file'" 
+                          class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"
+                        ></span>
                       </div>
                       
                       <!-- Even deeper levels (handled with recursion in real implementation) -->
-                      <div v-if="grandchildNode.expanded && grandchildNode.children?.length" class="pl-4">
+                      <div v-if="grandchildNode.expanded && grandchildNode.children?.length" 
+                           class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
                         <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
                           <div 
                             v-if="!props.filterFunction || props.filterFunction(deepNode)"
                             :class="[
-                              'flex items-center py-1 pl-4 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                              deepNode.selected ? 'bg-blue-50 dark:bg-blue-900/20' : '',
+                              'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+                              deepNode.selected ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : '',
                               // Add cursor styles based on selectability
                               deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode))
                                 ? 'cursor-pointer' 
@@ -383,12 +434,16 @@ defineExpose({
                           >
                             <span 
                               :class="[
-                                'mr-2',
-                                deepNode.type === 'directory' ? 'mir-folder text-amber-500' : 'mir-draft text-slate-500 dark:text-slate-400'
+                                'mr-2 shrink-0',
+                                deepNode.type === 'directory' ? 'mir-folder text-amber-500' : getFileIcon(deepNode.name)
                               ]"
                             ></span>
-                            <span class="truncate">{{ deepNode.name }}</span>
-                            <span v-if="deepNode.children?.length" class="ml-1 text-xs text-slate-400">({{ deepNode.children.length }} items)</span>
+                            <span class="flex-1 truncate">{{ deepNode.name }}</span>
+                            <span v-if="deepNode.children?.length" class="ml-1 shrink-0 text-xs text-slate-400">({{ deepNode.children.length }})</span>
+                            <span 
+                              v-if="deepNode.selected && deepNode.type === 'file'" 
+                              class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"
+                            ></span>
                           </div>
                         </template>
                       </div>
@@ -401,28 +456,30 @@ defineExpose({
         </template>
       </div>
 
-      <!-- Loading indicator -->
+      <!-- Enhanced loading indicator -->
       <div 
         v-if="status === 'loading'" 
-        class="absolute inset-0 flex items-center justify-center bg-white/80 backdrop-blur-[0.125rem] dark:bg-zinc-900/80"
+        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm transition-all duration-300 dark:bg-zinc-900/90"
       >
-        <div class="flex flex-col items-center gap-2">
-          <span class="mir-progress_activity text-2xl"></span>
-          <p class="text-sm text-slate-600 dark:text-slate-300">
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-lg backdrop-blur-md dark:bg-zinc-800/60">
+          <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
+          <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
             {{ t('common.loading') }}
           </p>
         </div>
       </div>
 
-      <!-- Empty State -->
+      <!-- Enhanced empty state -->
       <div
         v-if="hasScanned && isEmpty"
-        class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60"
       >
-        <span class="mir-folder_off text-4xl"></span>
-        <p class="text-sm">
-          {{ t('installation.preview.no_files') }}
-        </p>
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-lg dark:bg-zinc-800">
+          <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
+          <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ t('installation.preview.no_files') }}
+          </p>
+        </div>
       </div>
     </div>
   </div>
