@@ -23,8 +23,8 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 
 // Validation states
 const pathError = ref('')
-const nameError = ref('')
-const executablePathError = ref('')
+const nameError = ref(false)
+const executablePathError = ref(false)
 
 function handleBackClick() {
   goTo('/Installation/Home')
@@ -33,15 +33,15 @@ function handleBackClick() {
 // Handle installation process initiation
 async function handleInstallClick() {
   // Reset validation errors
-  nameError.value = ''
+  nameError.value = false
   pathError.value = ''
-  executablePathError.value = ''
+  executablePathError.value = false
 
   let hasErrors = false
 
   // Validate required fields
   if (!installationConfig.executable_path) {
-    executablePathError.value = t('installation.validation.executable_missing')
+    executablePathError.value = true
     toast.add({
       severity: 'error',
       summary: t('installation.validation.executable_missing'),
@@ -52,7 +52,7 @@ async function handleInstallClick() {
   }
 
   if (!installationConfig.name) {
-    nameError.value = t('installation.validation.name_required')
+    nameError.value = true
     toast.add({
       severity: 'error',
       summary: t('installation.validation.name_required'),

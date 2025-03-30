@@ -109,6 +109,7 @@ watchEffect(() => {
               :placeholder="t('installation.config.choose_dir')"
               class="h-8 w-full text-sm"
               :invalid="!!pathError"
+              @input="$emit('update:pathError', '')"
               :title="pathError"
             />
             <Button

@@ -12,11 +12,11 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
-  nameError: string
+  nameError: boolean
   detailsLoading: boolean
   detailsLoadingProgress: number
   progressMode: 'indeterminate' | 'determinate'
-  executablePathError?: string
+  executablePathError?: boolean
 }>()
 
 const installationConfig = useInstallationConfigStore()
@@ -58,8 +58,7 @@ const drawerVisible = ref(false)
               v-model="executable_path"
               :placeholder="t('installation.app_details.select_executable_path')"
               class="h-8 w-full text-sm"
-              :invalid="!!executablePathError"
-              :title="executablePathError"
+              :invalid="executablePathError"
             />
             <Button
               class="h-8 w-36"
@@ -114,8 +113,7 @@ const drawerVisible = ref(false)
             v-model="name"
             :placeholder="t('installation.app_details.name')"
             class="h-8 w-full text-sm"
-            :invalid="!!nameError"
-            :title="nameError"
+            :invalid="nameError"
           />
         </div>
       </div>
