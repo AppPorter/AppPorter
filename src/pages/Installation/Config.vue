@@ -156,7 +156,7 @@ async function handleInstallClick() {
   <div class="flex size-full flex-col overflow-hidden">
     <!-- Main scrollable container -->
     <div class="flex-1 overflow-auto">
-      <!-- Content wrapper with additional space at bottom -->
+      <!-- Content wrapper -->
       <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
         <div class="min-w-72 flex-1 space-y-2">
           <AppDetails
@@ -170,29 +170,24 @@ async function handleInstallClick() {
         </div>
       </div>
 
-      <!-- This is the key element that creates additional scrollable space -->
-      <div class="mt-4 h-20 w-full"></div>
-    </div>
-
-    <div class="fixed bottom-4 left-6 z-40">
-      <Button
-        severity="secondary"
-        class="h-8 w-28 text-sm backdrop-blur-md transition-all duration-200"
-        @click="handleBackClick"
-        icon="mir-arrow_back"
-        :label="t('installation.config.back')"
-        outlined
-      />
-    </div>
-
-    <div class="fixed bottom-4 right-10 z-40">
-      <Button
-        severity="primary"
-        class="h-8 w-28 text-sm transition-all duration-200"
-        @click="handleInstallClick"
-        icon="mir-install_desktop"
-        :label="t('installation.config.install')"
-      />
+      <!-- Button container -->
+      <div class="mt-4 flex justify-between px-1 pb-2">
+        <Button
+          severity="secondary"
+          class="h-8 w-28 text-sm transition-all duration-200"
+          @click="handleBackClick"
+          icon="mir-arrow_back"
+          :label="t('installation.config.back')"
+          outlined
+        />
+        <Button
+          severity="primary"
+          class="h-8 w-28 text-sm transition-all duration-200"
+          @click="handleInstallClick"
+          icon="mir-install_desktop"
+          :label="t('installation.config.install')"
+        />
+      </div>
     </div>
   </div>
 </template>
