@@ -2,6 +2,7 @@
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
+import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -45,6 +46,7 @@ const emit = defineEmits<{
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
 const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
 const selectedPath = ref('')
+const isSelecting = ref(false)
 
 // Define the FileNode interface explicitly
 interface FileNode {
@@ -98,7 +100,9 @@ function handleNodeSelect(node: FileNode) {
 }
 
 async function handleSelect() {
+  if (isSelecting.value) return
   try {
+    isSelecting.value = true
     emit('loading', true)
     const result = await invoke('execute_command', {
       command: {
@@ -121,6 +125,7 @@ async function handleSelect() {
     
     emit('close')
   } finally {
+    isSelecting.value = false
     emit('loading', false)
   }
 }
@@ -196,7 +201,9 @@ async function handleSelect() {
             : 'text-slate-600 dark:text-slate-400'
         ]">{{ selectedPath || t('installation.preview.no_selection') }}</span>
       </div>
+      <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button
+        v-else
         severity="primary"
         :disabled="!selectedPath"
         @click="handleSelect"
