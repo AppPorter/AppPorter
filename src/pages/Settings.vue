@@ -68,7 +68,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
 <template>
   <div class="flex size-full flex-col">
-    <Panel class="size-full overflow-auto shadow-sm">
+    <Panel class="flex size-full flex-col overflow-auto">
       <!-- Header Section -->
       <template #header>
         <div class="flex items-center gap-2">
@@ -80,9 +80,9 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
         </div>
       </template>
 
-      <div class="mx-auto max-w-5xl space-y-2">
+      <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4 pb-16">
         <!-- Basic Settings -->
-        <Panel class="">
+        <Panel class="w-full">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-tune"></span>
@@ -118,7 +118,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
         </Panel>
 
         <!-- Installation Settings -->
-        <Panel class="">
+        <Panel class="w-full">
           <template #header>
             <div class="flex items-center gap-2">
               <span class="mir-install_desktop"></span>
@@ -131,9 +131,9 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               <ToggleSwitch v-model="settings.installation.current_user_only" />
             </div>
 
-            <div class="flex flex-wrap gap-4 md:flex-nowrap">
+            <div class="flex min-w-0 flex-col gap-4 lg:flex-row">
               <!-- Current User Settings -->
-              <Panel class="min-w-[250px] flex-1">
+              <Panel class="min-w-0 flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-person"></span>
@@ -161,11 +161,11 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                   </div>
                   <div class="space-y-2">
                     <label>{{ t('settings.installation.install_path') }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="flex min-w-0 items-center gap-2">
                       <InputText
                         v-model="settings.installation.current_user.install_path"
                         :placeholder="t('settings.installation.install_path')"
-                        class="h-9 flex-1 text-sm"
+                        class="h-9 min-w-0 flex-1 text-sm"
                       />
                       <Button
                         @click="selectInstallPath('current_user')"
@@ -180,7 +180,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               </Panel>
 
               <!-- All Users Settings -->
-              <Panel class="min-w-[250px] flex-1">
+              <Panel class="min-w-0 flex-1">
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-group"></span>
@@ -206,11 +206,11 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                   </div>
                   <div class="space-y-2">
                     <label>{{ t('settings.installation.install_path') }}</label>
-                    <div class="flex items-center gap-2">
+                    <div class="flex min-w-0 items-center gap-2">
                       <InputText
                         v-model="settings.installation.all_users.install_path"
                         :placeholder="t('settings.installation.install_path')"
-                        class="h-9 flex-1 text-sm"
+                        class="h-9 min-w-0 flex-1 text-sm"
                       />
                       <Button
                         @click="selectInstallPath('all_users')"
