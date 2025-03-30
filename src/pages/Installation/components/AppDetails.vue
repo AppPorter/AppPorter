@@ -7,15 +7,12 @@ import Divider from 'primevue/divider'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
-import ProgressBar from 'primevue/progressbar'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
   nameError: boolean
   detailsLoading: boolean
-  detailsLoadingProgress: number
-  progressMode: 'indeterminate' | 'determinate'
   executablePathError?: boolean
 }>()
 
@@ -24,11 +21,17 @@ const { zip_path } = installationConfig
 const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
 const { t } = useI18n()
 
+const detailsLoading = ref(false)
+
 function clearIcon() {
   icon.value = ''
 }
 
 const drawerVisible = ref(false)
+
+function handleDetailsLoading(loading: boolean) {
+  detailsLoading.value = loading
+}
 </script>
 
 <template>
@@ -149,22 +152,11 @@ const drawerVisible = ref(false)
 
     <div
       v-if="detailsLoading"
-      class="absolute inset-0 flex flex-col items-center justify-center gap-2 backdrop-blur-[0.125rem]"
+      class="absolute inset-0 flex items-center justify-center backdrop-blur-[0.125rem]"
     >
       <h3 class="text-base font-semibold">
         {{ t('installation.app_details.loading_details') }}
       </h3>
-      <ProgressBar :mode="progressMode" :value="detailsLoadingProgress" class="w-40" />
-      <p class="text-sm">
-        {{
-          [
-            t('installation.app_details.preparing'),
-            t('installation.app_details.extracting'),
-            t('installation.app_details.reading'),
-            t('installation.app_details.processing'),
-          ][Math.floor(detailsLoadingProgress / 25) - 1] || t('installation.app_details.loading')
-        }}
-      </p>
     </div>
   </Panel>
   <Drawer
@@ -179,6 +171,7 @@ const drawerVisible = ref(false)
         :zip-path="zip_path"
         :details-loading="detailsLoading"
         @close="drawerVisible = false"
+        @loading="handleDetailsLoading"
       />
     </div>
   </Drawer>

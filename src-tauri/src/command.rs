@@ -58,7 +58,7 @@ impl Command {
     async fn execute(self, app: AppHandle) -> Result<String, Box<dyn std::error::Error>> {
         match self {
             Self::LoadSettings => load_settings().await,
-            Self::GetDetails { path } => get_details(path, app).await,
+            Self::GetDetails { path } => get_details(path).await,
             Self::Installation { config } => installation(config, app).await,
             Self::Uninstallation { timestamp } => uninstallation(timestamp, app).await,
             Self::Elevate { revert } => elevate(revert).await,

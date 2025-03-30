@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { storeToRefs } from 'pinia'
+import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import RadioButton from 'primevue/radiobutton'
 import { computed, ref } from 'vue'
@@ -8,7 +8,6 @@ import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
 
 const store = useInstallationConfigStore()
-const { executable_path } = storeToRefs(store)
 
 const { t } = useI18n()
 
@@ -32,13 +31,14 @@ const FILTER_MODES = {
 }
 
 // Props
-defineProps<{
+const props = defineProps<{
   zipPath: string
   detailsLoading?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'close'): void
+  (e: 'loading', value: boolean): void
 }>()
 
 // State
@@ -97,9 +97,32 @@ function handleNodeSelect(node: FileNode) {
   }
 }
 
-function handleSelect() {
-  executable_path.value = selectedPath.value
-  emit('close')
+async function handleSelect() {
+  try {
+    emit('loading', true)
+    const result = await invoke('execute_command', {
+      command: {
+        name: 'GetDetails',
+        path: {
+          zip_path: props.zipPath,
+          executable_path: selectedPath.value,
+        },
+      },
+    })
+
+    const details = JSON.parse(result as string)
+    const [name, version, publisher, icon] = details
+    
+    store.name = name
+    store.version = version
+    store.publisher = publisher
+    store.icon = icon
+    store.executable_path = selectedPath.value
+    
+    emit('close')
+  } finally {
+    emit('loading', false)
+  }
 }
 </script>
 

@@ -6,7 +6,6 @@ use serde_json::{json, Value};
 use std::error::Error;
 use std::path::Path;
 use systemicons::get_icon;
-use tauri::{AppHandle, Emitter};
 use tempfile::tempdir;
 use tokio::process::Command;
 
@@ -17,9 +16,7 @@ pub struct ExePath {
 }
 
 // Extracts metadata from an executable file within a zip archive
-pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<dyn Error>> {
-    app.emit("get_details", 1)?;
-
+pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error>> {
     let temp_dir = tempdir()?;
 
     // Sanitize the executable path to prevent directory traversal
@@ -80,8 +77,6 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         .into());
     }
 
-    app.emit("get_details", 2)?;
-
     // Extract icon as data URL
     let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64).unwrap_or_default();
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
@@ -111,8 +106,6 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         safe_path_for_ps
     );
 
-    app.emit("get_details", 3)?;
-
     // Execute PowerShell to get file metadata
     let output2 = Command::new("powershell")
         .args([
@@ -126,8 +119,6 @@ pub async fn get_details(input: ExePath, app: AppHandle) -> Result<String, Box<d
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
-
-    app.emit("get_details", 4)?;
 
     if !output2.status.success() {
         return Err(String::from_utf8_lossy(&output2.stderr).into());
