@@ -21,7 +21,6 @@ const {
 } = settingsStore
 
 const installationConfig = useInstallationConfigStore()
-const { zip_path } = installationConfig
 const {
   current_user_only,
   create_desktop_shortcut,
@@ -77,15 +76,11 @@ watchEffect(() => {
     <template #header>
       <div class="flex flex-col">
         <div class="flex items-center gap-1.5">
-          <span class="mir-settings text-lg"></span>
+          <span class="mir-settings" />
           <h2 class="text-base font-medium">
             {{ t('installation.config.installation_options') }}
           </h2>
         </div>
-        <p class="ml-6 mt-0.5 text-xs">
-          {{ t('installation.config.selected_file') }}:
-          <span class="break-all font-medium">{{ zip_path }}</span>
-        </p>
       </div>
     </template>
 
@@ -93,7 +88,7 @@ watchEffect(() => {
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('installation.config.install_mode') }}</label>
-        <div class="flex items-center gap-2 rounded-lg px-2 py-1">
+        <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
           <span class="text-sm">{{ t('installation.config.all_users') }}</span>
           <ToggleSwitch
             v-model="current_user_only"
@@ -107,21 +102,24 @@ watchEffect(() => {
       <!-- Install Path -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('installation.config.install_path') }}</label>
-        <div class="flex flex-1 gap-2">
-          <InputText
-            v-model="install_path"
-            :placeholder="t('installation.config.choose_dir')"
-            class="h-8 w-full text-sm"
-            :invalid="!!pathError"
-            :title="pathError"
-          />
-          <Button
-            class="h-8 w-36"
-            severity="secondary"
-            @click="select_install_path"
-            icon="mir-folder_open"
-            :label="t('installation.config.browse')"
-          />
+        <div class="w-full">
+          <div class="flex flex-1 gap-2">
+            <InputText
+              v-model="install_path"
+              :placeholder="t('installation.config.choose_dir')"
+              class="h-8 w-full text-sm"
+              :invalid="!!pathError"
+              @input="$emit('update:pathError', '')"
+              :title="pathError"
+            />
+            <Button
+              class="h-8 w-36"
+              severity="secondary"
+              @click="select_install_path"
+              icon="mir-folder_open"
+              :label="t('installation.config.browse')"
+            />
+          </div>
         </div>
       </div>
 
@@ -130,34 +128,40 @@ watchEffect(() => {
         <label class="mt-1 w-24 text-sm font-medium">{{
           t('installation.config.shortcuts')
         }}</label>
-        <div class="flex-1 space-y-1 rounded-lg p-1.5">
-          <div class="flex items-center gap-2">
-            <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
-            <label for="desktop_shortcut" class="text-sm">{{
-              t('installation.config.desktop_shortcut')
-            }}</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <Checkbox
-              v-model="create_start_menu_shortcut"
-              :binary="true"
-              inputId="start_menu_shortcut"
-            />
-            <label for="start_menu_shortcut" class="text-sm">{{
-              t('installation.config.start_menu_shortcut')
-            }}</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
-            <label for="registry_key" class="text-sm">{{
-              t('installation.config.registry_entry')
-            }}</label>
-          </div>
-          <div class="flex items-center gap-2">
-            <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
-            <label for="add_to_path" class="text-sm">{{
-              t('installation.config.add_to_path')
-            }}</label>
+        <div class="w-full">
+          <div class="flex-1 space-y-1 rounded-lg p-1.5">
+            <div class="flex items-center gap-2">
+              <Checkbox
+                v-model="create_desktop_shortcut"
+                :binary="true"
+                inputId="desktop_shortcut"
+              />
+              <label for="desktop_shortcut" class="text-sm">{{
+                t('installation.config.desktop_shortcut')
+              }}</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox
+                v-model="create_start_menu_shortcut"
+                :binary="true"
+                inputId="start_menu_shortcut"
+              />
+              <label for="start_menu_shortcut" class="text-sm">{{
+                t('installation.config.start_menu_shortcut')
+              }}</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
+              <label for="registry_key" class="text-sm">{{
+                t('installation.config.registry_entry')
+              }}</label>
+            </div>
+            <div class="flex items-center gap-2">
+              <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
+              <label for="add_to_path" class="text-sm">{{
+                t('installation.config.add_to_path')
+              }}</label>
+            </div>
           </div>
         </div>
       </div>

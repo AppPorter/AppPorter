@@ -71,7 +71,10 @@
         "exe": "Nur .exe",
         "executable": "Ausführbare Dateien",
         "all": "Alle Dateien"
-      }
+      },
+      "selected": "Ausgewählte Datei",
+      "select_prompt": "Bitte wählen Sie eine Datei aus",
+      "no_selection": "Keine Datei ausgewählt"
     },
     "config": {
       "installation_options": "Installationsoptionen",
@@ -94,7 +97,9 @@
       "cancel": "Abbrechen",
       "directory_not_empty": "Das Installationsverzeichnis ist nicht leer. Möchten Sie fortfahren?",
       "warning": "Warnung",
-      "force_install": "Installation erzwingen"
+      "force_install": "Installation erzwingen",
+      "executable_path": "Ausführungspfad",
+      "select_executable": "Ausführbare Datei wählen"
     },
     "app_details": {
       "title": "App-Details",
@@ -113,7 +118,8 @@
       "preparing": "Vorbereitung",
       "extracting": "Extraktion",
       "reading": "Lesen",
-      "processing": "Verarbeitung"
+      "processing": "Verarbeitung",
+      "select_executable_path": "Ausführbare Datei auswählen"
     },
     "validation": {
       "executable_missing": "Ausführbare Datei nicht gefunden",
@@ -201,5 +207,9 @@
       "uninstall": "Deinstallieren"
     },
     "status": "Status"
+  },
+  "common": {
+    "select": "Auswählen",
+    "loading": "Wird geladen..."
   }
 }

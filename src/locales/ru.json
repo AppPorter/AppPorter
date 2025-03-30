@@ -71,7 +71,10 @@
         "exe": "Только .exe",
         "executable": "Исполняемые файлы",
         "all": "Все файлы"
-      }
+      },
+      "selected": "Выбранный файл",
+      "select_prompt": "Пожалуйста, выберите файл",
+      "no_selection": "Файл не выбран"
     },
     "config": {
       "installation_options": "Параметры установки",
@@ -94,7 +97,9 @@
       "cancel": "Отмена",
       "directory_not_empty": "Директория установки не пуста. Продолжить?",
       "warning": "Предупреждение",
-      "force_install": "Принудительная установка"
+      "force_install": "Принудительная установка",
+      "executable_path": "Путь к исполняемому файлу",
+      "select_executable": "Выберите исполняемый файл"
     },
     "app_details": {
       "title": "Сведения о приложении",
@@ -113,7 +118,8 @@
       "preparing": "Подготовка",
       "extracting": "Извлечение",
       "reading": "Чтение",
-      "processing": "Обработка"
+      "processing": "Обработка",
+      "select_executable_path": "Выберите путь к исполняемому файлу"
     },
     "validation": {
       "executable_missing": "Исполняемый файл не найден",
@@ -201,5 +207,9 @@
       "uninstall": "Удалить"
     },
     "status": "Статус"
+  },
+  "common": {
+    "select": "Выбрать",
+    "loading": "Загрузка..."
   }
 }

@@ -13,10 +13,10 @@
     "windows": [
       {
         "title": "AppPorter",
-        "width": 1000,
+        "width": 600,
         "height": 600,
-        "minWidth": 800,
-        "minHeight": 600,
+        "minWidth": 500,
+        "minHeight": 400,
         "maximizable": false,
         "decorations": false,
         "center": true

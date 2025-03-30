@@ -71,7 +71,10 @@
         "exe": ".exeのみ",
         "executable": "実行可能ファイル",
         "all": "すべてのファイル"
-      }
+      },
+      "selected": "選択されたファイル",
+      "select_prompt": "ファイルを選択してください",
+      "no_selection": "ファイルが選択されていません"
     },
     "config": {
       "installation_options": "インストールオプション",
@@ -94,7 +97,9 @@
       "cancel": "キャンセル",
       "directory_not_empty": "インストール先のディレクトリが空ではありません。続行しますか？",
       "warning": "警告",
-      "force_install": "強制インストール"
+      "force_install": "強制インストール",
+      "executable_path": "実行ファイルのパス",
+      "select_executable": "実行ファイルを選択"
     },
     "app_details": {
       "title": "アプリケーションの詳細",
@@ -113,7 +118,8 @@
       "preparing": "準備中",
       "extracting": "抽出中",
       "reading": "読み取り中",
-      "processing": "処理中"
+      "processing": "処理中",
+      "select_executable_path": "実行可能ファイルのパスを選択"
     },
     "validation": {
       "executable_missing": "実行可能ファイルが見つかりません",
@@ -201,5 +207,9 @@
       "uninstall": "アンインストール"
     },
     "status": "ステータス"
+  },
+  "common": {
+    "select": "選択",
+    "loading": "読み込み中..."
   }
 }

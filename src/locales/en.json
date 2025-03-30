@@ -81,7 +81,9 @@
       "cancel": "Cancel",
       "directory_not_empty": "Installation directory is not empty. Do you want to continue?",
       "warning": "Warning",
-      "force_install": "Force Install"
+      "force_install": "Force Install",
+      "executable_path": "Executable Path",
+      "select_executable": "Select Executable"
     },
     "app_details": {
       "title": "App Details",
@@ -100,7 +102,8 @@
       "preparing": "Preparing",
       "extracting": "Extracting",
       "reading": "Reading",
-      "processing": "Processing"
+      "processing": "Processing",
+      "select_executable_path": "Select executable path"
     },
     "validation": {
       "executable_missing": "Executable Missing",
@@ -124,7 +127,10 @@
         "exe": ".exe Only",
         "executable": "Executable Files",
         "all": "All Files"
-      }
+      },
+      "selected": "Selected file",
+      "select_prompt": "Please select a file",
+      "no_selection": "No file selected"
     }
   },
   "system": {
@@ -202,5 +208,9 @@
       "uninstall": "Uninstall"
     },
     "status": "Status"
+  },
+  "common": {
+    "select": "Select",
+    "loading": "Loading..."
   }
 }

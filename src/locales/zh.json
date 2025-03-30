@@ -81,7 +81,9 @@
       "cancel": "取消",
       "directory_not_empty": "安装目录不为空，是否继续？",
       "warning": "警告",
-      "force_install": "强制安装"
+      "force_install": "强制安装",
+      "executable_path": "可执行文件路径",
+      "select_executable": "选择可执行文件"
     },
     "app_details": {
       "title": "应用程序信息",
@@ -100,7 +102,8 @@
       "preparing": "准备中",
       "extracting": "提取中",
       "reading": "读取中",
-      "processing": "处理中"
+      "processing": "处理中",
+      "select_executable_path": "选择可执行文件路径"
     },
     "validation": {
       "executable_missing": "未找到可执行文件",
@@ -124,7 +127,10 @@
         "exe": "仅 .exe 文件",
         "executable": "可执行文件",
         "all": "所有文件"
-      }
+      },
+      "selected": "已选择文件",
+      "select_prompt": "请选择一个文件",
+      "no_selection": "未选择文件"
     }
   },
   "system": {
@@ -202,5 +208,9 @@
       "uninstall": "卸载"
     },
     "status": "状态"
+  },
+  "common": {
+    "select": "选择",
+    "loading": "加载中..."
   }
 }

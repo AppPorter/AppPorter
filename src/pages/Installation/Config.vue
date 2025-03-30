@@ -9,10 +9,8 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
-import ZipPreview from './components/ZipPreview.vue'
 
 const installationConfig = useInstallationConfigStore()
-const { zip_path } = installationConfig
 installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
@@ -25,13 +23,8 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 
 // Validation states
 const pathError = ref('')
-const nameError = ref('')
-
-// Update progress indicator for details loading
-function handleDetailsProgress(value: number) {
-  progressMode.value = 'indeterminate'
-  detailsLoadingProgress.value = value
-}
+const nameError = ref(false)
+const executablePathError = ref(false)
 
 function handleBackClick() {
   goTo('/Installation/Home')
@@ -40,13 +33,15 @@ function handleBackClick() {
 // Handle installation process initiation
 async function handleInstallClick() {
   // Reset validation errors
-  nameError.value = ''
+  nameError.value = false
   pathError.value = ''
+  executablePathError.value = false
 
   let hasErrors = false
 
   // Validate required fields
   if (!installationConfig.executable_path) {
+    executablePathError.value = true
     toast.add({
       severity: 'error',
       summary: t('installation.validation.executable_missing'),
@@ -57,7 +52,7 @@ async function handleInstallClick() {
   }
 
   if (!installationConfig.name) {
-    nameError.value = t('installation.validation.name_required')
+    nameError.value = true
     toast.add({
       severity: 'error',
       summary: t('installation.validation.name_required'),
@@ -161,52 +156,38 @@ async function handleInstallClick() {
   <div class="flex size-full flex-col overflow-hidden">
     <!-- Main scrollable container -->
     <div class="flex-1 overflow-auto">
-      <!-- Content wrapper with additional space at bottom -->
+      <!-- Content wrapper -->
       <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
         <div class="min-w-72 flex-1 space-y-2">
-          <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
           <AppDetails
             :name-error="nameError"
             :details-loading="detailsLoading"
             :details-loading-progress="detailsLoadingProgress"
             :progress-mode="progressMode"
+            :executable-path-error="executablePathError"
           />
-        </div>
-
-        <div class="size-full max-h-[calc(100vh-11rem)] min-w-72 md:w-2/5">
-          <ZipPreview
-            :zip-path="zip_path"
-            :details-loading="detailsLoading"
-            @loading="(value) => (detailsLoading = value)"
-            @progress="handleDetailsProgress"
-            class="h-full"
-          />
+          <Options :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         </div>
       </div>
 
-      <!-- This is the key element that creates additional scrollable space -->
-      <div class="mt-4 h-20 w-full"></div>
-    </div>
-
-    <div class="fixed bottom-4 left-6 z-40">
-      <Button
-        severity="secondary"
-        class="h-8 w-28 text-sm backdrop-blur-md transition-all duration-200"
-        @click="handleBackClick"
-        icon="mir-arrow_back"
-        :label="t('installation.config.back')"
-        outlined
-      />
-    </div>
-
-    <div class="fixed bottom-4 right-10 z-40">
-      <Button
-        severity="primary"
-        class="h-8 w-28 text-sm transition-all duration-200"
-        @click="handleInstallClick"
-        icon="mir-install_desktop"
-        :label="t('installation.config.install')"
-      />
+      <!-- Button container -->
+      <div class="mt-4 flex justify-between px-1 pb-2">
+        <Button
+          severity="secondary"
+          class="h-8 w-28 text-sm transition-all duration-200"
+          @click="handleBackClick"
+          icon="mir-arrow_back"
+          :label="t('installation.config.back')"
+          outlined
+        />
+        <Button
+          severity="primary"
+          class="h-8 w-28 text-sm transition-all duration-200"
+          @click="handleInstallClick"
+          icon="mir-install_desktop"
+          :label="t('installation.config.install')"
+        />
+      </div>
     </div>
   </div>
 </template>
