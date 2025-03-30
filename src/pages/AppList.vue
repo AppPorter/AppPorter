@@ -325,17 +325,19 @@ onMounted(() => {
   <div class="flex size-full flex-col overflow-auto">
     <Panel class="mb-4 size-full shadow-sm">
       <template #header>
-        <div class="flex w-full items-center justify-between">
+        <div class="flex w-full flex-wrap items-center justify-between gap-4">
           <div class="flex items-center gap-2">
             <span class="mir-apps text-xl"></span>
-            <div>
+            <div class="min-w-32">
               <h2 class="text-lg font-medium">{{ t('app_list.installed_apps') }}</h2>
               <p class="mt-0.5 text-xs">{{ t('app_list.description') }}</p>
             </div>
           </div>
 
-          <div class="flex items-center divide-x divide-surface-200 dark:divide-surface-700">
-            <div class="flex items-center gap-2 px-4">
+          <div
+            class="flex flex-wrap items-center gap-2 divide-x divide-surface-200 dark:divide-surface-700"
+          >
+            <div class="flex items-center gap-2">
               <Dropdown
                 v-model="sortKey"
                 :options="sortOptions"
@@ -347,7 +349,7 @@ onMounted(() => {
                 icon="mir-swap_vert"
                 outlined
                 severity="secondary"
-                class="size-8 p-0 shadow-sm"
+                class="size-8 p-0"
                 @click="sortOrder *= -1"
               />
             </div>
