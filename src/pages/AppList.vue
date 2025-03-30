@@ -335,9 +335,9 @@ onMounted(() => {
           </div>
 
           <div
-            class="flex flex-wrap items-center gap-2 divide-x divide-surface-200 dark:divide-surface-700"
+            class="flex flex-wrap items-center divide-x divide-surface-200 dark:divide-surface-700"
           >
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 px-4">
               <Dropdown
                 v-model="sortKey"
                 :options="sortOptions"
@@ -349,7 +349,7 @@ onMounted(() => {
                 icon="mir-swap_vert"
                 outlined
                 severity="secondary"
-                class="size-8 p-0"
+                class="size-8 p-0 shadow-sm"
                 @click="sortOrder *= -1"
               />
             </div>
