@@ -207,7 +207,12 @@
       "repair": "修复",
       "uninstall": "卸载"
     },
-    "status": "状态"
+    "status": "状态",
+    "sort": {
+      "name": "按名称排序",
+      "publisher": "按发布者排序",
+      "date": "按日期排序"
+    }
   },
   "common": {
     "select": "选择",

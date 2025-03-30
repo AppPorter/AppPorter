@@ -207,7 +207,12 @@
       "repair": "Repair",
       "uninstall": "Uninstall"
     },
-    "status": "Status"
+    "status": "Status",
+    "sort": {
+      "name": "Sort by name",
+      "publisher": "Sort by publisher",
+      "date": "Sort by date"
+    }
   },
   "common": {
     "select": "Select",

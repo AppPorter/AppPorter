@@ -2,15 +2,15 @@
 import { useAppListStore } from '@/stores/app_list'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
-import Column from 'primevue/column'
 import ConfirmDialog from 'primevue/confirmdialog'
-import type { DataTableRowContextMenuEvent } from 'primevue/datatable'
-import DataTable from 'primevue/datatable'
+import DataView from 'primevue/dataview'
+import Dropdown from 'primevue/dropdown'
 import IconField from 'primevue/iconfield'
 import InputIcon from 'primevue/inputicon'
 import InputText from 'primevue/inputtext'
 import Menu from 'primevue/menu'
 import Panel from 'primevue/panel'
+import Tag from 'primevue/tag'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -25,8 +25,34 @@ const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
 
+const sortKey = ref('name')
+const sortOrder = ref(1)
+const sortOptions = [
+  { label: t('app_list.sort.name'), value: 'name' },
+  { label: t('app_list.sort.publisher'), value: 'publisher' },
+  { label: t('app_list.sort.date'), value: 'timestamp' },
+]
+
 const installedApps = computed(() => {
   return appListStore.links.filter((app) => app.installed)
+})
+
+const sortedApps = computed(() => {
+  const apps = [...installedApps.value]
+  return apps.sort((a, b) => {
+    let valueA, valueB
+    if (sortKey.value === 'name') {
+      valueA = a.details.name.toLowerCase()
+      valueB = b.details.name.toLowerCase()
+    } else if (sortKey.value === 'publisher') {
+      valueA = a.details.publisher.toLowerCase()
+      valueB = b.details.publisher.toLowerCase()
+    } else {
+      valueA = a.timestamp
+      valueB = b.timestamp
+    }
+    return sortOrder.value * (valueA < valueB ? -1 : valueA > valueB ? 1 : 0)
+  })
 })
 
 const showPaginator = computed(() => {
@@ -65,7 +91,7 @@ function getAppStatus(data) {
   }
 }
 
-function showMenu(event: DataTableRowContextMenuEvent) {
+function showMenu(event) {
   selectedApp.value = event.data
   contextMenu.value.show(event.originalEvent)
 }
@@ -308,113 +334,111 @@ onMounted(() => {
             </div>
           </div>
 
-          <IconField>
-            <InputIcon>
-              <i class="mir-search" />
-            </InputIcon>
-            <InputText
-              v-model="filters.global.value"
-              :placeholder="t('app_list.search')"
-              class="h-8 text-sm"
-            />
-          </IconField>
+          <div class="flex items-center divide-x divide-surface-200 dark:divide-surface-700">
+            <div class="flex items-center gap-2 px-4">
+              <Dropdown
+                v-model="sortKey"
+                :options="sortOptions"
+                class="w-40 text-sm"
+                optionLabel="label"
+                optionValue="value"
+              />
+              <Button
+                icon="mir-swap_vert"
+                outlined
+                severity="secondary"
+                class="size-8 p-0 shadow-sm"
+                @click="sortOrder *= -1"
+              />
+            </div>
+
+            <div class="pl-4">
+              <IconField>
+                <InputIcon>
+                  <i class="mir-search" />
+                </InputIcon>
+                <InputText
+                  v-model="filters.global.value"
+                  :placeholder="t('app_list.search')"
+                  class="h-8 text-sm"
+                />
+              </IconField>
+            </div>
+          </div>
         </div>
       </template>
 
-      <DataTable
-        :value="installedApps"
+      <DataView
+        :value="sortedApps"
         :loading="loading"
-        v-model:filters="filters"
-        filterDisplay="menu"
-        :globalFilterFields="['details.name', 'details.publisher', 'details.version']"
-        stripedRows
         :paginator="showPaginator"
         :rows="100"
-        :rowsPerPageOptions="[50, 100, 200, 500]"
-        tableStyle="min-width: 50rem"
-        @row-contextmenu="showMenu"
-        responsiveLayout="scroll"
+        :rows-per-page-options="[50, 100, 200, 500]"
+        filterBy="details.name,details.publisher,details.version"
+        :filter-value="filters.global.value"
+        dataKey="timestamp"
       >
-        <Column :header="t('app_list.status')">
-          <template #body="slotProps">
-            <Tag
-              :value="getAppStatus(slotProps.data).value"
-              :severity="getAppStatus(slotProps.data).severity"
-              :icon="getAppStatus(slotProps.data).icon"
-              class="cursor-pointer text-center text-xs"
-              @click="handleStatusClick(slotProps.data)"
-            />
-          </template>
-        </Column>
-        <Column field="details.icon" header="" class="w-14">
-          <template #body="slotProps">
-            <div class="flex items-center justify-center">
+        <template #list="{ items }">
+          <div class="grid">
+            <div
+              v-for="item in items"
+              :key="item.timestamp"
+              class="w-full border-b border-surface-200 dark:border-surface-700"
+            >
               <div
-                class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
+                class="flex items-center p-4"
+                @contextmenu.prevent="showMenu({ originalEvent: $event, data: item })"
               >
-                <img
-                  v-if="slotProps.data.details.icon"
-                  :src="slotProps.data.details.icon"
-                  class="size-8 object-contain"
-                  alt="App Icon"
+                <div class="mr-4 flex items-center justify-center">
+                  <div
+                    class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
+                  >
+                    <img
+                      v-if="item.details.icon"
+                      :src="item.details.icon"
+                      class="size-8 object-contain"
+                      alt="App Icon"
+                    />
+                    <span v-else class="mir-apps text-2xl"></span>
+                  </div>
+                </div>
+
+                <div class="flex-1">
+                  <div class="mb-2 flex flex-col">
+                    <span class="text-sm font-medium">{{ item.details.name }}</span>
+                    <div class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                      <span>{{ item.details.version || 'N/A' }}</span>
+                      <span class="opacity-50">•</span>
+                      <span>{{ item.details.publisher }}</span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2 text-xs">
+                    <span class="break-all opacity-75">{{ item.details.install_path }}</span>
+                    <span class="opacity-50">•</span>
+                    <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
+                  </div>
+                </div>
+
+                <Tag
+                  :value="getAppStatus(item).value"
+                  :severity="getAppStatus(item).severity"
+                  :icon="getAppStatus(item).icon"
+                  class="mr-2 cursor-pointer text-center text-xs"
+                  @click="handleStatusClick(item)"
                 />
-                <span v-else class="mir-apps text-2xl"></span>
+
+                <Button
+                  icon="mir-more_vert"
+                  outlined
+                  severity="secondary"
+                  class="size-8 p-0 shadow-sm"
+                  @click="showMenu({ originalEvent: $event, data: item })"
+                />
               </div>
             </div>
-          </template>
-        </Column>
-
-        <Column field="details.name" :header="t('app_list.name')" sortable>
-          <template #body="slotProps">
-            <div class="flex flex-col">
-              <span class="text-sm font-medium">{{ slotProps.data.details.name }}</span>
-              <span class="text-xs text-slate-500 dark:text-slate-400">
-                {{ slotProps.data.details.version || 'N/A' }}
-              </span>
-            </div>
-          </template>
-        </Column>
-
-        <Column field="details.publisher" :header="t('app_list.publisher')" sortable>
-          <template #body="slotProps">
-            <div class="break-all text-sm">
-              {{ slotProps.data.details.publisher }}
-            </div>
-          </template>
-        </Column>
-
-        <Column field="details.install_path" :header="t('app_list.location')" sortable>
-          <template #body="slotProps">
-            <div class="break-all text-sm">
-              {{ slotProps.data.details.install_path }}
-            </div>
-          </template>
-        </Column>
-
-        <Column field="timestamp" :header="t('app_list.installed_date')" sortable>
-          <template #body="slotProps">
-            {{ formatTimestamp(slotProps.data.timestamp) }}
-          </template>
-        </Column>
-
-        <Column :exportable="false" class="w-16">
-          <template #body="slotProps">
-            <Button
-              icon="mir-more_vert"
-              outlined
-              severity="secondary"
-              class="size-8 p-0 shadow-sm"
-              @click="
-                ($event) =>
-                  showMenu({
-                    originalEvent: $event,
-                    data: slotProps.data,
-                    index: installedApps.indexOf(slotProps.data),
-                  })
-              "
-            />
-          </template>
-        </Column>
+          </div>
+        </template>
 
         <template #empty>
           <div class="flex flex-col items-center justify-center py-8">
@@ -423,7 +447,7 @@ onMounted(() => {
             <p class="text-center text-sm opacity-70">{{ t('app_list.install_first') }}</p>
           </div>
         </template>
-      </DataTable>
+      </DataView>
     </Panel>
 
     <!-- Context Menu -->
