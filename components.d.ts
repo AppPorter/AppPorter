@@ -8,13 +8,13 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    Dialog: typeof import('primevue/dialog')['default']
     ErrorHandler: typeof import('./src/components/ErrorHandler.vue')['default']
     ExecutableSelector: typeof import('./src/components/ExecutableSelector.vue')['default']
     Panel: typeof import('primevue/panel')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Select: typeof import('primevue/select')['default']
-    Tag: typeof import('primevue/tag')['default']
     ToggleSwitch: typeof import('primevue/toggleswitch')['default']
     ZipPreview: typeof import('./src/components/ZipPreview.vue')['default']
   }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { invoke } from '@tauri-apps/api/core'
+import { useInstallationConfigStore } from '@/stores/installation_config'
+import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -33,10 +34,13 @@ const emits = defineEmits<{
 
 const { t } = useI18n()
 
+const installationConfig = useInstallationConfigStore()
+const { archive_content } = storeToRefs(installationConfig)
+
 // State
 const status = ref<FileStatus>('ready')
 const fileTree = ref<FileNode[]>([])
-const fileCache = ref<string[] | null>(null)
+const fileCache = computed(() => archive_content.value)
 
 // Computed properties
 const hasScanned = computed(() => fileCache.value !== null)
@@ -157,25 +161,16 @@ function buildFileTree(paths: string[]): FileNode[] {
 
 // Load and process archive contents
 async function loadZipContent() {
-  if (!props.zipPath) return
+  if (!props.zipPath || !fileCache.value) return
 
   status.value = 'loading'
   emits('loading', true)
 
-  // Get archive content from backend
-  const result = await invoke('execute_command', {
-    command: {
-      name: 'GetArchiveContent',
-      path: props.zipPath,
-    },
-  })
-
-  const paths = JSON.parse(result as string)
-  const allPaths = [...paths]
+  const allPaths = [...fileCache.value]
   const directories = new Set<string>()
 
   // Generate directory paths
-  paths.forEach((path) => {
+  fileCache.value.forEach((path) => {
     const parts = path.split('\\')
     let currentDir = ''
     for (let i = 0; i < parts.length - 1; i++) {
@@ -190,8 +185,7 @@ async function loadZipContent() {
   })
 
   // Update state
-  fileCache.value = allPaths
-  fileTree.value = buildFileTree(fileCache.value)
+  fileTree.value = buildFileTree(allPaths)
   status.value = 'ready'
   emits('loading', false)
 }
@@ -229,14 +223,13 @@ function handleSelectNode(node: FileNode) {
 
 // Effects
 watchEffect(() => {
-  if (!props.zipPath) return
-  fileCache.value = null
+  if (!props.zipPath || !fileCache.value) return
   loadZipContent()
 })
 
 // Setup event listeners and load initial content
 onMounted(() => {
-  if (props.zipPath) loadZipContent()
+  if (props.zipPath && fileCache.value) loadZipContent()
 })
 
 // Expose component interface

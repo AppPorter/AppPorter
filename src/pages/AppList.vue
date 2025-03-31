@@ -2,7 +2,6 @@
 import { useAppListStore } from '@/stores/app_list'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
-import ConfirmDialog from 'primevue/confirmdialog'
 import DataView from 'primevue/dataview'
 import Dropdown from 'primevue/dropdown'
 import IconField from 'primevue/iconfield'
@@ -454,8 +453,5 @@ onMounted(() => {
 
     <!-- Context Menu -->
     <Menu ref="contextMenu" :model="menuItems" :popup="true" />
-
-    <!-- Confirmation Dialog -->
-    <ConfirmDialog />
   </div>
 </template>

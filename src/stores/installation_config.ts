@@ -6,6 +6,7 @@ type Pages = 'Home' | 'Config' | 'Progress'
 interface InstallationConfig extends InstalledApp {
   zip_path: string
   page: Pages
+  archive_content: string[] | null
 }
 
 export const useInstallationConfigStore = defineStore('installation_config', {
@@ -28,6 +29,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
       registry_valid: false,
     },
     page: 'Home',
+    archive_content: null,
   }),
 
   actions: {
@@ -35,6 +37,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
       const zipPath = this.zip_path
       this.$reset()
       this.zip_path = zipPath
+      this.archive_content = null
     },
   },
 })
