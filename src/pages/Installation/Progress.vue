@@ -107,6 +107,7 @@ onMounted(() => {
           executable_path: installationConfig.executable_path,
           add_to_path: installationConfig.add_to_path,
         },
+        timestamp: installationConfig.timestamp,
       },
     },
   }).then((result) => {

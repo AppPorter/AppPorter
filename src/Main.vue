@@ -25,6 +25,7 @@ const { t } = useI18n()
 const errorHandler = ref()
 const appListStore = useAppListStore()
 const dismissWarning = ref(false)
+const InstallationConfig = useInstallationConfigStore()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
@@ -57,7 +58,7 @@ onMounted(async () => {
 
   // Setup install listener
   await listen('install', (event) => {
-    useInstallationConfigStore().zip_path = event.payload as string
+    InstallationConfig.zip_path = event.payload as string
     goTo('/Installation/Config')
   })
 
@@ -93,6 +94,13 @@ onMounted(async () => {
         reject: () => reject(),
       })
     })
+  })
+
+  await listen('installWithTimestamp', (event) => {
+    const payload = event.payload as { zip_path: string; timestamp: number }
+    InstallationConfig.zip_path = payload.zip_path
+    InstallationConfig.timestamp = payload.timestamp
+    goTo('/Installation/Config')
   })
 
   // Execute initial command

@@ -1,5 +1,7 @@
-use crate::configs::app_list::AppList;
+use crate::configs::app_list::App;
 use crate::configs::ConfigFile;
+use crate::CHANNEL;
+use crate::{configs::app_list::AppList, SubCommands};
 use futures_util::{SinkExt, StreamExt};
 use std::error::Error;
 use tokio::net::{TcpListener, TcpStream};
@@ -39,7 +41,23 @@ async fn handle_extension_message(msg: Message) -> Message {
             return Message::Text("Link already exists".into());
         }
 
-        app_list.add_link(text.to_string());
+        let timestamp = chrono::Utc::now().timestamp();
+        let new_app = App {
+            timestamp,
+            installed: false,
+            url: text.to_string(),
+            ..Default::default()
+        };
+        app_list.links.push(new_app);
+
+        let sender = CHANNEL.0.clone();
+        let text_clone = text.to_string();
+        tokio::spawn(async move {
+            sender
+                .send(SubCommands::InstallWithTimestamp(text_clone, timestamp))
+                .unwrap();
+        });
+
         match app_list.save().await {
             Ok(_) => Message::Text("Link added successfully".into()),
             Err(_) => Message::Text("Error: Failed to save link".into()),

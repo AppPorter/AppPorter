@@ -11,6 +11,7 @@ use tokio::sync::broadcast;
 #[derive(Debug, Clone)]
 pub enum SubCommands {
     Install(String),
+    InstallWithTimestamp(String, i64),
     Uninstall(i64),
 }
 

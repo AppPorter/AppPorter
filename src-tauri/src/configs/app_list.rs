@@ -73,14 +73,6 @@ impl ConfigFile for AppList {
 }
 
 impl AppList {
-    pub fn add_link(&mut self, url: String) {
-        self.links.push(App {
-            timestamp: chrono::Utc::now().timestamp(),
-            url,
-            ..Default::default()
-        });
-    }
-
     pub fn has_link(&self, url: &str) -> bool {
         self.links.iter().any(|link| link.url == url)
     }

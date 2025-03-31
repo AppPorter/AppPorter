@@ -248,6 +248,9 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
                 SubCommands::Uninstall(timestamp) => {
                     app.emit("uninstall", timestamp)?;
                 }
+                SubCommands::InstallWithTimestamp(zip_path, timestamp) => {
+                    app.emit("installWithTimestamp", (zip_path, timestamp))?;
+                }
             }
         }
     }
