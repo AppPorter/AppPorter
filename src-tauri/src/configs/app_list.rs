@@ -74,7 +74,9 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
-        self.links.iter().any(|link| link.url == url)
+        self.links
+            .iter()
+            .any(|link| link.url == url && link.installed)
     }
 
     pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error>> {

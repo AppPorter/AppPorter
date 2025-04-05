@@ -5,10 +5,15 @@ pub mod uninstallation;
 use crate::configs::ConfigFile;
 use crate::{configs::settings::Settings, CHANNEL};
 use crate::{get_7z_path, SubCommands, SUPPORTED_EXTENSIONS};
+use futures_util::StreamExt;
 pub use get_details::*;
 pub use installation::*;
+use std::cmp::min;
 use std::error::Error;
+use std::fs::File;
+use std::io::Write;
 use tauri::{AppHandle, Emitter};
+use tempfile::Builder;
 use tokio::process::Command;
 pub use uninstallation::*;
 
@@ -254,4 +259,34 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
             }
         }
     }
+}
+
+pub async fn download_file(url: String) -> Result<String, Box<dyn Error>> {
+    // Create a temporary file with .tmp extension
+    let temp_file = Builder::new().suffix(".tmp").tempfile()?;
+    let temp_path = temp_file.path().to_string_lossy().to_string();
+
+    let client = reqwest::Client::new();
+
+    // Send GET request
+    let res = client.get(&url).send().await?;
+    let total_size = res
+        .content_length()
+        .ok_or(format!("Failed to get content length from '{}'", &url))?;
+
+    // Open file for writing
+    let mut file = File::create(&temp_path)?;
+    let mut downloaded: u64 = 0;
+    let mut stream = res.bytes_stream();
+
+    // download chunks
+    while let Some(item) = stream.next().await {
+        let chunk = item?;
+        file.write_all(&chunk)?;
+        let new = min(downloaded + (chunk.len() as u64), total_size);
+        downloaded = new;
+        println!("{}%", (downloaded * 100) / total_size);
+    }
+
+    Ok(temp_path)
 }

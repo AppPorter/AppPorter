@@ -1,5 +1,6 @@
 use crate::configs::app_list::App;
 use crate::configs::ConfigFile;
+use crate::operations::download_file;
 use crate::CHANNEL;
 use crate::{configs::app_list::AppList, SubCommands};
 use futures_util::{SinkExt, StreamExt};
@@ -50,11 +51,13 @@ async fn handle_extension_message(msg: Message) -> Message {
         };
         app_list.links.push(new_app);
 
+        let downloaded = download_file(text.to_string()).await.unwrap_or_default();
+        println!("Downloaded file path: {}", downloaded);
+
         let sender = CHANNEL.0.clone();
-        let text_clone = text.to_string();
         tokio::spawn(async move {
             sender
-                .send(SubCommands::InstallWithTimestamp(text_clone, timestamp))
+                .send(SubCommands::InstallWithTimestamp(downloaded, timestamp))
                 .unwrap();
         });
 
