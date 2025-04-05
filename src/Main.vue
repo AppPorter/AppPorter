@@ -98,8 +98,9 @@ onMounted(async () => {
 
   await listen('installWithTimestamp', (event) => {
     const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallationConfig.zip_path = payload.zip_path
-    InstallationConfig.timestamp = payload.timestamp
+    console.log(payload)
+    InstallationConfig.zip_path = payload[0]
+    InstallationConfig.timestamp = payload[1]
     goTo('/Installation/Config')
   })
 

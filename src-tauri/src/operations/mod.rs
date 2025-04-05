@@ -10,10 +10,8 @@ pub use get_details::*;
 pub use installation::*;
 use std::cmp::min;
 use std::error::Error;
-use std::fs::File;
 use std::io::Write;
 use tauri::{AppHandle, Emitter};
-use tempfile::Builder;
 use tokio::process::Command;
 pub use uninstallation::*;
 
@@ -254,6 +252,7 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
                     app.emit("uninstall", timestamp)?;
                 }
                 SubCommands::InstallWithTimestamp(zip_path, timestamp) => {
+                    println!("{zip_path}");
                     app.emit("installWithTimestamp", (zip_path, timestamp))?;
                 }
             }
@@ -262,9 +261,14 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
 }
 
 pub async fn download_file(url: String) -> Result<String, Box<dyn Error>> {
-    // Create a temporary file with .tmp extension
-    let temp_file = Builder::new().suffix(".tmp").tempfile()?;
-    let temp_path = temp_file.path().to_string_lossy().to_string();
+    // Get the same temp directory path as used for 7z
+    let temp_dir = std::env::temp_dir().join("AppPorter");
+    std::fs::create_dir_all(&temp_dir)?;
+
+    // Generate a filename from the URL
+    let url_path = url.split('/').last().unwrap_or("downloaded_file");
+    let file_path = temp_dir.join(url_path);
+    let file_path_str = file_path.to_string_lossy().to_string();
 
     let client = reqwest::Client::new();
 
@@ -275,7 +279,7 @@ pub async fn download_file(url: String) -> Result<String, Box<dyn Error>> {
         .ok_or(format!("Failed to get content length from '{}'", &url))?;
 
     // Open file for writing
-    let mut file = File::create(&temp_path)?;
+    let mut file = std::fs::File::create(&file_path)?;
     let mut downloaded: u64 = 0;
     let mut stream = res.bytes_stream();
 
@@ -288,5 +292,5 @@ pub async fn download_file(url: String) -> Result<String, Box<dyn Error>> {
         println!("{}%", (downloaded * 100) / total_size);
     }
 
-    Ok(temp_path)
+    Ok(file_path_str)
 }
