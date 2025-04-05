@@ -68,17 +68,17 @@ setupRouterGuards(router)
 const UserColor = definePreset(Aura, {
   semantic: {
     primary: {
-      50: Color(settingsStore.color).lightness(95).hex(),
-      100: Color(settingsStore.color).lightness(90).hex(),
-      200: Color(settingsStore.color).lightness(80).hex(),
-      300: Color(settingsStore.color).lightness(70).hex(),
-      400: Color(settingsStore.color).lightness(60).hex(),
-      500: Color(settingsStore.color).lightness(50).hex(),
-      600: Color(settingsStore.color).lightness(40).hex(),
-      700: Color(settingsStore.color).lightness(30).hex(),
-      800: Color(settingsStore.color).lightness(20).hex(),
-      900: Color(settingsStore.color).lightness(10).hex(),
-      950: Color(settingsStore.color).lightness(5).hex(),
+      50: Color(settingsStore.color).lighten(0.5).hex(),
+      100: Color(settingsStore.color).lighten(0.4).hex(),
+      200: Color(settingsStore.color).lighten(0.3).hex(),
+      300: Color(settingsStore.color).lighten(0.2).hex(),
+      400: Color(settingsStore.color).lighten(0.1).hex(),
+      500: Color(settingsStore.color).hex(),
+      600: Color(settingsStore.color).darken(0.1).hex(),
+      700: Color(settingsStore.color).darken(0.2).hex(),
+      800: Color(settingsStore.color).darken(0.3).hex(),
+      900: Color(settingsStore.color).darken(0.4).hex(),
+      950: Color(settingsStore.color).darken(0.5).hex(),
     },
   },
 })
