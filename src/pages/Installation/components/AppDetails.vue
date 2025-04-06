@@ -13,6 +13,8 @@ import { useI18n } from 'vue-i18n'
 defineProps<{
   nameError: boolean
   detailsLoading: boolean
+  detailsLoadingProgress: number
+  progressMode: 'indeterminate' | 'determinate'
   executablePathError?: boolean
 }>()
 
