@@ -32,12 +32,8 @@ const sortOptions = [
   { label: t('app_list.sort.date'), value: 'timestamp' },
 ]
 
-const installedApps = computed(() => {
-  return appListStore.links.filter((app) => app.installed)
-})
-
 const sortedApps = computed(() => {
-  const apps = [...installedApps.value]
+  const apps = [...appListStore.links]
   return apps.sort((a, b) => {
     let valueA, valueB
     if (sortKey.value === 'name') {
@@ -55,7 +51,7 @@ const sortedApps = computed(() => {
 })
 
 const showPaginator = computed(() => {
-  return installedApps.value.length > 100
+  return appListStore.links.length > 100
 })
 
 async function loadAppList() {
@@ -328,8 +324,8 @@ onMounted(() => {
           <div class="flex items-center gap-2">
             <span class="mir-apps text-xl"></span>
             <div class="min-w-32">
-              <h2 class="text-lg font-medium">{{ t('app_list.installed_apps') }}</h2>
-              <p class="mt-0.5 text-xs">{{ t('app_list.description') }}</p>
+              <h2 class="text-lg font-medium">{{ t('app_list.all_apps') }}</h2>
+              <p class="mt-0.5 text-xs">{{ t('app_list.all_description') }}</p>
             </div>
           </div>
 
@@ -406,17 +402,19 @@ onMounted(() => {
 
                 <div class="flex-1">
                   <div class="mb-2 flex flex-col">
-                    <span class="text-sm font-medium">{{ item.details.name }}</span>
+                    <span class="text-sm font-medium">{{ item.details.name || item.url }}</span>
                     <div class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <span>{{ item.details.version || 'N/A' }}</span>
+                      <span>{{ item.details.version || t('app_list.unknown_version') }}</span>
                       <span class="opacity-50">•</span>
-                      <span>{{ item.details.publisher }}</span>
+                      <span>{{ item.details.publisher || t('app_list.unknown_publisher') }}</span>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-2 text-xs">
-                    <span class="break-all opacity-75">{{ item.details.install_path }}</span>
-                    <span class="opacity-50">•</span>
+                    <template v-if="item.details.install_path">
+                      <span class="break-all opacity-75">{{ item.details.install_path }}</span>
+                      <span class="opacity-50">•</span>
+                    </template>
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
                   </div>
                 </div>
