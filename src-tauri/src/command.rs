@@ -4,6 +4,7 @@ use crate::{
     operations::*,
 };
 use serde::Deserialize;
+use std::error::Error;
 use tauri::AppHandle;
 
 // Available frontend-to-backend commands
@@ -55,7 +56,7 @@ pub enum Command {
 impl Command {
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
-    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn std::error::Error>> {
+    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
         match self {
             Self::LoadSettings => load_settings().await,
             Self::GetDetails { path } => get_details(path).await,

@@ -16,7 +16,7 @@ use tokio::process::Command;
 pub use uninstallation::*;
 
 // Modifies Windows registry to enable/disable application elevation privileges
-pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
+pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error + Send + Sync>> {
     let settings = Settings::read().await?;
 
     let operation = if !revert {
@@ -56,7 +56,7 @@ pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error>> {
     Ok("".to_owned())
 }
 
-pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
+pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     fn is_valid_path_format(path: &str) -> bool {
         let chars: Vec<char> = path.chars().collect();
         chars.first().is_some_and(|c| c.is_ascii_alphabetic())
@@ -91,7 +91,7 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error>> {
 }
 
 // Lists contents of archive file using 7z
-pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error>> {
+pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     let output = Command::new(get_7z_path()?)
         .args([
             "l", // List contents command
@@ -146,7 +146,7 @@ pub fn sanitize_path(path: &str) -> String {
     safe_parts.join("\\")
 }
 
-pub async fn open(path: &str) -> Result<String, Box<dyn Error>> {
+pub async fn open(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
     let output = Command::new(path)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
@@ -157,7 +157,7 @@ pub async fn open(path: &str) -> Result<String, Box<dyn Error>> {
     Ok("".to_owned())
 }
 
-pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error>> {
+pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
     let output = Command::new("explorer")
         .arg("/select,")
         .arg(path)
@@ -170,7 +170,7 @@ pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error>> {
     Ok("".to_owned())
 }
 
-pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error>> {
+pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Check if directory exists
     if let Ok(mut entries) = tokio::fs::read_dir(path).await {
         // Check if directory has any contents
@@ -182,7 +182,10 @@ pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error>> {
     Ok("".to_string())
 }
 
-pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String, Box<dyn Error>> {
+pub async fn open_registry(
+    name: &str,
+    current_user_only: bool,
+) -> Result<String, Box<dyn Error + Send + Sync>> {
     let regpath = if current_user_only {
         r"HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Uninstall\"
     } else {
@@ -216,7 +219,7 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<String
     Ok("".to_owned())
 }
 
-pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
+pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
     let args: Vec<String> = std::env::args().collect();
     if args.len() == 3 {
         match args[1].as_str() {
@@ -259,7 +262,7 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error>> {
     }
 }
 
-pub async fn download_file(url: String) -> Result<String, Box<dyn Error>> {
+pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Get the same temp directory path as used for 7z
     let temp_dir = std::env::temp_dir().join("AppPorter");
     std::fs::create_dir_all(&temp_dir)?;

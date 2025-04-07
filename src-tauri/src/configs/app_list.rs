@@ -79,7 +79,7 @@ impl AppList {
             .any(|link| link.url == url && link.installed)
     }
 
-    pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         for app in &mut self.links {
             if !app.installed {
                 continue;
@@ -159,7 +159,7 @@ impl AppList {
         }
     }
 
-    pub async fn sync_from_registry(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn sync_from_registry(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         // Get list of installed apps from registry
         let registry_apps = find_registry_apps()?;
 
@@ -183,7 +183,7 @@ impl AppList {
             }
         }
 
-        fn find_registry_apps() -> Result<Vec<InstalledApp>, Box<dyn Error>> {
+        fn find_registry_apps() -> Result<Vec<InstalledApp>, Box<dyn Error + Send + Sync>> {
             let mut result = Vec::new();
 
             // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
@@ -208,7 +208,7 @@ impl AppList {
             hkey: &windows_registry::Key,
             path: &str,
             current_user_only: bool,
-        ) -> Result<(), Box<dyn Error>> {
+        ) -> Result<(), Box<dyn Error + Send + Sync>> {
             if let Ok(uninstall_key) = hkey.open(path) {
                 if let Ok(keys) = uninstall_key.keys() {
                     for key_result in keys {
@@ -234,7 +234,7 @@ impl AppList {
         async fn extract_app_info(
             app_key: &windows_registry::Key,
             current_user_only: bool,
-        ) -> Result<Option<InstalledApp>, Box<dyn Error>> {
+        ) -> Result<Option<InstalledApp>, Box<dyn Error + Send + Sync>> {
             // Extract required values
             let name = match app_key.get_string("DisplayName") {
                 Ok(name) => name,
@@ -303,7 +303,7 @@ impl AppList {
     }
 }
 
-pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
+pub async fn load_app_list() -> Result<String, Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
     app_list.sync_from_registry().await?;
     app_list.validate_installations().await?;
@@ -313,7 +313,7 @@ pub async fn load_app_list() -> Result<String, Box<dyn Error>> {
     Ok(serde_json::to_string(&app_list)?)
 }
 
-pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error>> {
+pub async fn save_app_list(app_list: AppList) -> Result<String, Box<dyn Error + Send + Sync>> {
     app_list.save().await?;
     Ok("AppList saved successfully".to_owned())
 }

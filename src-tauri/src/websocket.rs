@@ -50,6 +50,7 @@ async fn handle_extension_message(msg: Message) -> Message {
             ..Default::default()
         };
         app_list.links.push(new_app);
+        let result = app_list.save().await;
 
         let downloaded = download_file(text.to_string()).await.unwrap_or_default();
         println!("Downloaded file path: {}", downloaded);
@@ -61,7 +62,7 @@ async fn handle_extension_message(msg: Message) -> Message {
                 .unwrap();
         });
 
-        match app_list.save().await {
+        match result {
             Ok(_) => Message::Text("Link added successfully".into()),
             Err(_) => Message::Text("Error: Failed to save link".into()),
         }
@@ -71,7 +72,7 @@ async fn handle_extension_message(msg: Message) -> Message {
 }
 
 // Starts WebSocket server on port 7535 for browser extension communication
-pub async fn start_websocket_server() -> Result<(), Box<dyn Error>> {
+pub async fn start_websocket_server() -> Result<(), Box<dyn Error + Send + Sync>> {
     let addr = "127.0.0.1:7535";
     let listener = TcpListener::bind(&addr).await?;
 
