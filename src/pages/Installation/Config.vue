@@ -4,8 +4,9 @@ import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
@@ -15,6 +16,40 @@ installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
+const showErrorDialog = ref(false)
+
+// Load archive content when component is mounted
+onMounted(async () => {
+  if (!installationConfig.zip_path) {
+    goTo('/Installation/Home')
+    return
+  }
+
+  const result = await invoke('execute_command', {
+    command: {
+      name: 'GetArchiveContent',
+      path: installationConfig.zip_path,
+    },
+  })
+
+  const content = JSON.parse(result as string)
+  const executableExtensions = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+  const hasExecutable = content.some((path) =>
+    executableExtensions.some((ext) => path.toLowerCase().endsWith(ext))
+  )
+
+  if (!hasExecutable) {
+    showErrorDialog.value = true
+    return
+  }
+
+  installationConfig.archive_content = content
+})
+
+async function handleDialogClose() {
+  showErrorDialog.value = false
+  goTo('/Installation/Home')
+}
 
 // UI state management
 const detailsLoading = ref(false)
@@ -189,5 +224,24 @@ async function handleInstallClick() {
         />
       </div>
     </div>
+
+    <!-- Error Dialog -->
+    <Dialog
+      v-model:visible="showErrorDialog"
+      :modal="true"
+      :closable="false"
+      :header="t('installation.error.invalid_archive')"
+      class="w-[30rem]"
+    >
+      <div class="flex items-start gap-3">
+        <span class="mir-error text-xl text-red-500"></span>
+        <p class="text-sm">{{ t('installation.error.no_executable_file') }}</p>
+      </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <Button @click="handleDialogClose" :label="t('installation.error.ok')" icon="mir-close" />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
