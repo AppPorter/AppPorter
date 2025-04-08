@@ -1,8 +1,4 @@
-use crate::{
-    configs::{app_list::*, settings::*},
-    menu::*,
-    operations::*,
-};
+use crate::{configs::*, operations::*};
 use serde::Deserialize;
 use std::error::Error;
 use tauri::AppHandle;

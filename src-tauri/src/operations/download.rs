@@ -1,7 +1,5 @@
+use super::cli::*;
 use futures_util::StreamExt;
-
-use crate::SubCommands;
-use crate::CHANNEL;
 use std::cmp::min;
 use std::error::Error;
 use std::io::Write;

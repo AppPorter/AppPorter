@@ -1,5 +1,6 @@
 pub mod archive;
 pub mod cli;
+pub mod context_menu;
 pub mod download;
 pub mod file_system;
 pub mod get_details;
@@ -9,6 +10,7 @@ pub mod uninstallation;
 
 pub use archive::*;
 pub use cli::*;
+pub use context_menu::*;
 pub use download::*;
 pub use file_system::*;
 pub use get_details::*;

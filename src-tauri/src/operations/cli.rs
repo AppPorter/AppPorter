@@ -1,6 +1,22 @@
-use crate::{SubCommands, CHANNEL, SUPPORTED_EXTENSIONS};
+use crate::SUPPORTED_EXTENSIONS;
+use lazy_static::lazy_static;
 use std::error::Error;
 use tauri::{AppHandle, Emitter};
+use tokio::sync::broadcast;
+
+#[derive(Debug, Clone)]
+pub enum SubCommands {
+    Install(String),
+    InstallWithTimestamp(String, i64),
+    Uninstall(i64),
+}
+
+lazy_static! {
+    pub static ref CHANNEL: (
+        broadcast::Sender<SubCommands>,
+        broadcast::Receiver<SubCommands>
+    ) = broadcast::channel(1);
+}
 
 pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
     let args: Vec<String> = std::env::args().collect();
