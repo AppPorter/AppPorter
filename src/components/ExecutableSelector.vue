@@ -16,17 +16,17 @@ const { t } = useI18n()
 const FILTER_MODES = {
   exe: { 
     value: 'exe', 
-    label: t('installation.preview.filter.exe'), 
+    label: t('common.filter.exe'), 
     icon: 'mir-terminal',
   },
   executable: {
     value: 'executable',
-    label: t('installation.preview.filter.executable'),
+    label: t('common.filter.executable'),
     icon: 'mir-code',
   },
   all: { 
     value: 'all', 
-    label: t('installation.preview.filter.all'), 
+    label: t('common.filter.all'), 
     icon: 'mir-description',
   },
 }

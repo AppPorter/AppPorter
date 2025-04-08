@@ -19,7 +19,7 @@ async function selectZipFile() {
     directory: false,
     filters: [
       {
-        name: t('installation.archives'),
+        name: t('common.archives'),
         extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab'],
       },
     ],

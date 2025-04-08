@@ -36,9 +36,7 @@ const fullInstallPath = computed(() => {
 
 // Helper functions to format and display installation information
 const getInstallMode = (isCurrentUser: boolean) =>
-  isCurrentUser
-    ? t('settings.installation.current_user.title')
-    : t('settings.installation.all_users.title')
+  isCurrentUser ? t('common.installation.current_user') : t('common.installation.all_users')
 
 const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
@@ -47,11 +45,11 @@ const getShortcutsList = (config: {
   add_to_path: boolean
 }) => {
   const shortcuts = []
-  if (config.create_desktop_shortcut) shortcuts.push(t('settings.installation.desktop_shortcut'))
-  if (config.create_start_menu_shortcut) shortcuts.push(t('settings.installation.start_menu'))
-  if (config.create_registry_key) shortcuts.push(t('settings.installation.registry_key'))
-  if (config.add_to_path) shortcuts.push(t('settings.installation.path'))
-  return shortcuts.length ? shortcuts.join(', ') : t('installation.config.shortcuts')
+  if (config.create_desktop_shortcut) shortcuts.push(t('common.shortcuts.desktop'))
+  if (config.create_start_menu_shortcut) shortcuts.push(t('common.shortcuts.start_menu'))
+  if (config.create_registry_key) shortcuts.push(t('common.shortcuts.registry'))
+  if (config.add_to_path) shortcuts.push(t('common.shortcuts.path'))
+  return shortcuts.length ? shortcuts.join(', ') : t('common.shortcuts.none')
 }
 
 // Copy information to clipboard with feedback

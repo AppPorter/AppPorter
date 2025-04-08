@@ -79,8 +79,8 @@ async function handleInstallClick() {
     executablePathError.value = true
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.executable_missing'),
-      detail: t('installation.validation.select_executable'),
+      summary: t('common.validation.executable_missing'),
+      detail: t('common.validation.select_executable'),
       life: 3000,
     })
     hasErrors = true
@@ -90,19 +90,19 @@ async function handleInstallClick() {
     nameError.value = true
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.name_required'),
-      detail: t('installation.validation.enter_name'),
+      summary: t('common.validation.name_required'),
+      detail: t('common.validation.enter_name'),
       life: 3000,
     })
     hasErrors = true
   }
 
   if (!installationConfig.install_path) {
-    pathError.value = t('installation.validation.path_required')
+    pathError.value = t('common.validation.select_path')
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.path_required'),
-      detail: t('installation.validation.select_path'),
+      summary: t('common.validation.path_required'),
+      detail: t('common.validation.select_path'),
       life: 3000,
     })
     hasErrors = true

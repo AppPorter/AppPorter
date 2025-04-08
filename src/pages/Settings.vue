@@ -41,9 +41,9 @@ const languageOptions = [
 ]
 
 const themeOptions = [
-  { label: t('settings.theme.system'), value: 'system' },
-  { label: t('settings.theme.light'), value: 'light' },
-  { label: t('settings.theme.dark'), value: 'dark' },
+  { label: t('common.theme.system'), value: 'system' },
+  { label: t('common.theme.light'), value: 'light' },
+  { label: t('common.theme.dark'), value: 'dark' },
 ]
 
 // Save settings and reload app when changes are detected
