@@ -1,6 +1,6 @@
 use crate::{
-    configs::app_list::{load_app_list, save_app_list, AppList},
-    configs::settings::{load_settings, save_settings, Settings},
+    configs::{app_list::*, settings::*},
+    menu::*,
     operations::*,
 };
 use serde::Deserialize;
@@ -51,6 +51,8 @@ pub enum Command {
         path: String,
     },
     Cli,
+    RegisterContextMenu,
+    UnregisterContextMenu,
 }
 
 impl Command {
@@ -76,6 +78,8 @@ impl Command {
             } => open_registry(&app_name, current_user_only).await,
             Self::CheckPathEmpty { path } => check_path_empty(&path).await,
             Self::Cli => cli(app).await,
+            Self::RegisterContextMenu => register_context_menu(),
+            Self::UnregisterContextMenu => unregister_context_menu(),
         }
     }
 }

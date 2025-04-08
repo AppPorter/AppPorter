@@ -1,10 +1,8 @@
 use crate::SUPPORTED_EXTENSIONS;
-use check_elevation::is_elevated;
-use std::io;
+use std::error::Error;
 use windows_registry::CURRENT_USER;
 
-pub fn register_context_menu() -> io::Result<()> {
-    is_elevated()?;
+pub fn register_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
     let app_path = std::env::current_exe()?.to_str().unwrap_or("").to_string();
 
     for ext in SUPPORTED_EXTENSIONS {
@@ -22,30 +20,16 @@ pub fn register_context_menu() -> io::Result<()> {
             .set_string("", &format!("\"{}\" install \"%1\"", app_path))?;
     }
 
-    Ok(())
+    Ok("".to_owned())
 }
 
-pub fn unregister_context_menu() -> io::Result<()> {
-    is_elevated()?;
-
+pub fn unregister_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
     for ext in SUPPORTED_EXTENSIONS {
         let base_path = format!(
             "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
             ext
         );
-        delete_key(&format!("{}\\command", base_path))?;
-        delete_key(&base_path)?;
+        CURRENT_USER.remove_tree(&base_path)?;
     }
-    Ok(())
-}
-
-fn delete_key(path: &str) -> io::Result<()> {
-    if let Some((parent_path, last_part)) = path.rsplit_once('\\') {
-        if let Ok(parent_key) = CURRENT_USER.open(parent_path) {
-            if parent_key.create(last_part).is_ok() {
-                parent_key.set_string(last_part, "")?;
-            }
-        }
-    }
-    Ok(())
+    Ok("".to_owned())
 }
