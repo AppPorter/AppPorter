@@ -35,7 +35,7 @@ jobs:
         run: cargo install cargo-udeps --locked
 
       - name: Run Clippy
-        run: cargo +stable clippy --all-targets --all-features
+        run: cargo +stable clippy --all-targets --all-features -- -D warnings
 
       - name: Run Udeps
-        run: cargo +nightly udeps --all-targets --all-features
+        run: cargo +nightly udeps --all-targets --all-features || exit 1
