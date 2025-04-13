@@ -79,8 +79,8 @@ async function handleInstallClick() {
     executablePathError.value = true
     toast.add({
       severity: 'error',
-      summary: t('common.validation.executable_missing'),
-      detail: t('common.validation.select_executable'),
+      summary: t('validation.executable_missing'),
+      detail: t('validation.select_executable'),
       life: 3000,
     })
     hasErrors = true
@@ -90,19 +90,19 @@ async function handleInstallClick() {
     nameError.value = true
     toast.add({
       severity: 'error',
-      summary: t('common.validation.name_required'),
-      detail: t('common.validation.enter_name'),
+      summary: t('validation.name_required'),
+      detail: t('validation.enter_name'),
       life: 3000,
     })
     hasErrors = true
   }
 
   if (!installationConfig.install_path) {
-    pathError.value = t('common.validation.select_path')
+    pathError.value = t('validation.select_path')
     toast.add({
       severity: 'error',
-      summary: t('common.validation.path_required'),
-      detail: t('common.validation.select_path'),
+      summary: t('validation.path_required'),
+      detail: t('validation.select_path'),
       life: 3000,
     })
     hasErrors = true
@@ -138,13 +138,13 @@ async function handleInstallClick() {
           icon: 'mir-install_desktop',
           header: t('installation.config.start_installation'),
           rejectProps: {
-            label: t('installation.config.cancel'),
+            label: t('cancel'),
             severity: 'secondary',
             outlined: true,
             icon: 'mir-close',
           },
           acceptProps: {
-            label: t('installation.config.install'),
+            label: t('install'),
             icon: 'mir-navigate_next',
           },
           accept: () => resolve(true),
@@ -158,9 +158,9 @@ async function handleInstallClick() {
             message: t('installation.config.directory_not_empty'),
             group: 'dialog',
             icon: 'mir-warning',
-            header: t('installation.config.warning'),
+            header: t('warning'),
             rejectProps: {
-              label: t('installation.config.cancel'),
+              label: t('cancel'),
               severity: 'secondary',
               outlined: true,
               icon: 'mir-close',
@@ -212,7 +212,7 @@ async function handleInstallClick() {
           class="h-8 w-28 text-sm transition-all duration-200"
           @click="handleBackClick"
           icon="mir-arrow_back"
-          :label="t('installation.config.back')"
+          :label="t('back')"
           outlined
         />
         <Button
@@ -220,7 +220,7 @@ async function handleInstallClick() {
           class="h-8 w-28 text-sm transition-all duration-200"
           @click="handleInstallClick"
           icon="mir-install_desktop"
-          :label="t('installation.config.install')"
+          :label="t('install')"
         />
       </div>
     </div>
@@ -230,16 +230,16 @@ async function handleInstallClick() {
       v-model:visible="showErrorDialog"
       :modal="true"
       :closable="false"
-      :header="t('installation.error.invalid_archive')"
+      :header="t('validate.invalid_archive')"
       class="w-[30rem]"
     >
       <div class="flex items-start gap-3">
         <span class="mir-error text-xl text-red-500"></span>
-        <p class="text-sm">{{ t('installation.error.no_executable_file') }}</p>
+        <p class="text-sm">{{ t('validate.no_executable_file') }}</p>
       </div>
       <template #footer>
         <div class="flex justify-end">
-          <Button @click="handleDialogClose" :label="t('installation.error.ok')" icon="mir-close" />
+          <Button @click="handleDialogClose" :label="t('ok')" icon="mir-close" />
         </div>
       </template>
     </Dialog>

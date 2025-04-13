@@ -47,21 +47,19 @@ function handleDetailsLoading(loading: boolean) {
           </h2>
         </div>
         <p class="ml-6 mt-0.5 text-xs">
-          {{ t('installation.config.selected_file') }}:
+          {{ t('selected_file') }}:
           <span class="break-all font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{
-          t('installation.config.executable_path')
-        }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('executable_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
             <InputText
               v-model="executable_path"
-              :placeholder="t('installation.app_details.select_executable_path')"
+              :placeholder="t('select_executable_path')"
               class="h-8 w-full text-sm"
               :invalid="executablePathError"
             />
@@ -70,7 +68,7 @@ function handleDetailsLoading(loading: boolean) {
               severity="secondary"
               @click="drawerVisible = true"
               icon="mir-folder_open"
-              :label="t('installation.config.browse')"
+              :label="t('browse')"
             />
           </div>
         </div>
@@ -80,8 +78,8 @@ function handleDetailsLoading(loading: boolean) {
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('installation.app_details.icon') }}
-          <p class="text-xs font-normal">{{ t('installation.app_details.icon_optional') }}</p>
+          {{ t('icon') }}
+          <p class="text-xs font-normal">{{ t('optional') }}</p>
         </label>
         <div class="w-full">
           <div class="flex items-center gap-2">
@@ -112,11 +110,11 @@ function handleDetailsLoading(loading: boolean) {
       </div>
 
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('installation.app_details.name') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('app.name') }}</label>
         <div class="w-full">
           <InputText
             v-model="name"
-            :placeholder="t('installation.app_details.name')"
+            :placeholder="t('app.name')"
             class="h-8 w-full text-sm"
             :invalid="nameError"
           />
@@ -125,13 +123,13 @@ function handleDetailsLoading(loading: boolean) {
 
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('installation.app_details.publisher') }}
-          <p class="text-xs font-normal">{{ t('installation.app_details.publisher_optional') }}</p>
+          {{ t('app.publisher') }}
+          <p class="text-xs font-normal">{{ t('optional') }}</p>
         </label>
         <div class="w-full">
           <InputText
             v-model="publisher"
-            :placeholder="t('installation.app_details.publisher')"
+            :placeholder="t('app.publisher')"
             class="h-8 w-full text-sm"
           />
         </div>
@@ -139,15 +137,11 @@ function handleDetailsLoading(loading: boolean) {
 
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('installation.app_details.version') }}
-          <p class="text-xs font-normal">{{ t('installation.app_details.version_optional') }}</p>
+          {{ t('app.version') }}
+          <p class="text-xs font-normal">{{ t('optional') }}</p>
         </label>
         <div class="w-full">
-          <InputText
-            v-model="version"
-            :placeholder="t('installation.app_details.version')"
-            class="h-8 w-full text-sm"
-          />
+          <InputText v-model="version" :placeholder="t('app.version')" class="h-8 w-full text-sm" />
         </div>
       </div>
     </div>
@@ -157,13 +151,13 @@ function handleDetailsLoading(loading: boolean) {
       class="absolute inset-0 flex items-center justify-center backdrop-blur-[0.125rem]"
     >
       <h3 class="text-base font-semibold">
-        {{ t('installation.app_details.loading_details') }}
+        {{ t('loading') }}
       </h3>
     </div>
   </Panel>
   <Drawer
     v-model:visible="drawerVisible"
-    :header="t('installation.config.select_executable')"
+    :header="t('select_executable')"
     position="bottom"
     :style="{ height: '95vh' }"
     class="rounded-lg"

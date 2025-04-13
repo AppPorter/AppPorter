@@ -16,17 +16,17 @@ const { t } = useI18n()
 const FILTER_MODES = {
   exe: { 
     value: 'exe', 
-    label: t('common.filter.exe'), 
+    label: t('executable_selector.filter.exe'), 
     icon: 'mir-terminal',
   },
   executable: {
     value: 'executable',
-    label: t('common.filter.executable'),
+    label: t('executable_selector.filter.executable'),
     icon: 'mir-code',
   },
   all: { 
     value: 'all', 
-    label: t('common.filter.all'), 
+    label: t('executable_selector.filter.all'), 
     icon: 'mir-description',
   },
 }
@@ -193,13 +193,13 @@ async function handleSelect() {
           selectedPath 
             ? 'text-green-800 dark:text-green-300'
             : 'text-slate-700 dark:text-slate-300'
-        ]">{{ selectedPath ? t('installation.preview.selected') : t('installation.preview.select_prompt') }}:</span>
+        ]">{{ selectedPath ? t('executable_selector.selected') : t('executable_selector.select_prompt') }}:</span>
         <span :class="[
           'truncate',
           selectedPath 
             ? 'text-green-700 dark:text-green-400'
             : 'text-slate-600 dark:text-slate-400'
-        ]">{{ selectedPath || t('installation.preview.no_selection') }}</span>
+        ]">{{ selectedPath || t('executable_selector.no_selection') }}</span>
       </div>
       <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button
@@ -208,7 +208,7 @@ async function handleSelect() {
         :disabled="!selectedPath"
         @click="handleSelect"
       >
-        {{ t('common.select') }}
+        {{ t('select') }}
       </Button>
     </div>
   </div>

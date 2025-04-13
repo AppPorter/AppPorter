@@ -19,7 +19,7 @@ async function selectZipFile() {
     directory: false,
     filters: [
       {
-        name: t('common.archives'),
+        name: t('archives'),
         extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab'],
       },
     ],
@@ -58,7 +58,7 @@ async function selectZipFile() {
             severity="secondary"
             class="h-9 px-4"
             icon="mir-folder_open"
-            :label="t('installation.browse')"
+            :label="t('browse')"
           />
         </div>
 
@@ -70,7 +70,7 @@ async function selectZipFile() {
             severity="primary"
             class="h-9 px-6"
             icon="mir-navigate_next"
-            :label="t('installation.next')"
+            :label="t('next')"
           />
         </div>
       </div>

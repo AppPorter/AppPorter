@@ -36,7 +36,7 @@ const fullInstallPath = computed(() => {
 
 // Helper functions to format and display installation information
 const getInstallMode = (isCurrentUser: boolean) =>
-  isCurrentUser ? t('common.installation.current_user') : t('common.installation.all_users')
+  isCurrentUser ? t('current_user') : t('all_users')
 
 const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
@@ -45,11 +45,11 @@ const getShortcutsList = (config: {
   add_to_path: boolean
 }) => {
   const shortcuts = []
-  if (config.create_desktop_shortcut) shortcuts.push(t('common.shortcuts.desktop'))
-  if (config.create_start_menu_shortcut) shortcuts.push(t('common.shortcuts.start_menu'))
-  if (config.create_registry_key) shortcuts.push(t('common.shortcuts.registry'))
-  if (config.add_to_path) shortcuts.push(t('common.shortcuts.path'))
-  return shortcuts.length ? shortcuts.join(', ') : t('common.shortcuts.none')
+  if (config.create_desktop_shortcut) shortcuts.push(t('shortcuts.desktop'))
+  if (config.create_start_menu_shortcut) shortcuts.push(t('shortcuts.start_menu'))
+  if (config.create_registry_key) shortcuts.push(t('shortcuts.registry_key'))
+  if (config.add_to_path) shortcuts.push(t('shortcuts.path'))
+  return shortcuts.length ? shortcuts.join(', ') : t('shortcuts.none')
 }
 
 // Copy information to clipboard with feedback
@@ -57,7 +57,7 @@ const handleCopy = async (text: string, type: string) => {
   await navigator.clipboard.writeText(text)
   toast.add({
     severity: 'info',
-    summary: t('system.edit.copy'),
+    summary: t('edit.copy'),
     detail: `${type} copied to clipboard`,
     life: 2000,
   })
@@ -198,7 +198,7 @@ defineOptions({
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
                 <span class="mir-terminal"></span>
-                <span class="text-sm font-medium">{{ t('installation.progress.full_path') }}</span>
+                <span class="text-sm font-medium">{{ t('full_path') }}</span>
               </div>
               <Button
                 severity="secondary"
@@ -206,7 +206,7 @@ defineOptions({
                 v-tooltip.top="t('installation.progress.copy_path')"
                 class="h-7 w-8"
                 icon="mir-content_copy"
-                @click="handleCopy(finalExecutablePath, t('installation.progress.executable_path'))"
+                @click="handleCopy(finalExecutablePath, t('executable_path'))"
               />
             </div>
             <p class="select-text break-all text-sm font-medium">
@@ -239,19 +239,19 @@ defineOptions({
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.install_mode') }}</span>
+                  <span class="text-sm">{{ t('installation.mode') }}</span>
                   <p class="text-sm font-medium">
                     {{ getInstallMode(installationConfig.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.shortcuts') }}</span>
+                  <span class="text-sm">{{ t('shortcuts') }}</span>
                   <p class="text-sm font-medium">
                     {{ getShortcutsList(installationConfig) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.config.install_path') }}</span>
+                  <span class="text-sm">{{ t('install_path') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ fullInstallPath }}
                   </p>
@@ -270,7 +270,7 @@ defineOptions({
                 <Button
                   severity="secondary"
                   outlined
-                  v-tooltip.top="t('installation.progress.copy_package_info')"
+                  v-tooltip.top="t('copy_package_info')"
                   class="h-7 w-8"
                   icon="mir-content_copy"
                   @click="
@@ -283,13 +283,13 @@ defineOptions({
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.progress.source_archive') }}</span>
+                  <span class="text-sm">{{ t('source_archive') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ installationConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.progress.selected_executable') }}</span>
+                  <span class="text-sm">{{ t('selected_executable') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ installationConfig.executable_path }}
                   </p>
@@ -305,9 +305,7 @@ defineOptions({
               :severity="isFinished ? 'success' : 'danger'"
               class="h-8 w-24"
               :icon="isFinished ? 'mir-home' : 'mir-close'"
-              :label="
-                isFinished ? t('installation.progress.finish') : t('installation.progress.close')
-              "
+              :label="isFinished ? t('finish') : t('close')"
             />
           </div>
         </div>

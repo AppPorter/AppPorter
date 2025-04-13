@@ -27,9 +27,9 @@ const route = useRoute()
 const sortKey = ref('name')
 const sortOrder = ref(1)
 const sortOptions = [
-  { label: t('app_list.sort.name'), value: 'name' },
-  { label: t('app_list.sort.publisher'), value: 'publisher' },
-  { label: t('app_list.sort.date'), value: 'timestamp' },
+  { label: t('sort.name'), value: 'name' },
+  { label: t('sort.publisher'), value: 'publisher' },
+  { label: t('sort.date'), value: 'timestamp' },
 ]
 
 const sortedApps = computed(() => {
@@ -93,22 +93,22 @@ function showMenu(event) {
 
 const menuItems = computed(() => [
   {
-    label: t('app_list.open'),
+    label: t('open'),
     icon: 'mir-terminal',
     command: () => openApp(),
   },
   {
-    label: t('app_list.open_install_folder'),
+    label: t('open_install_folder'),
     icon: 'mir-folder',
     command: () => openInstallFolder(),
   },
   {
-    label: t('app_list.open_registry'),
+    label: t('open_registry'),
     icon: 'mir-app_registration',
     command: () => openRegistry(),
   },
   {
-    label: t('app_list.uninstall'),
+    label: t('uninstall'),
     icon: 'mir-delete',
     command: () => confirmUninstall(),
   },
@@ -164,13 +164,13 @@ async function confirmUninstall() {
       header: t('app_list.confirm_uninstall_header'),
       icon: 'mir-warning',
       rejectProps: {
-        label: t('app_list.cancel'),
+        label: t('cancel'),
         severity: 'secondary',
         outlined: true,
         icon: 'mir-close',
       },
       acceptProps: {
-        label: t('app_list.uninstall'),
+        label: t('uninstall'),
         severity: 'danger',
         icon: 'mir-warning',
       },
@@ -195,19 +195,17 @@ function handleStatusClick(app) {
 
     if (!fileExists && !registryValid) {
       confirm.require({
-        message:
-          t('app_list.validation.issue', { name: app.details.name }) +
-          t('app_list.validation.missing_both'),
-        header: t('app_list.validation.title'),
+        message: t('validation.issue', { name: app.details.name }) + t('validation.missing_both'),
+        header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
-          label: t('app_list.validation.uninstall'),
+          label: t('uninstall'),
           icon: 'mir-delete',
           severity: 'danger',
           variant: 'outlined',
         },
         acceptProps: {
-          label: t('app_list.validation.reinstall'),
+          label: t('reinstall'),
           icon: 'mir-refresh',
         },
         accept: () => handleValidationAction('reinstall'),
@@ -215,19 +213,17 @@ function handleStatusClick(app) {
       })
     } else if (!fileExists) {
       confirm.require({
-        message:
-          t('app_list.validation.issue', { name: app.details.name }) +
-          t('app_list.validation.missing_file'),
-        header: t('app_list.validation.title'),
+        message: t('validation.issue', { name: app.details.name }) + t('validation.missing_file'),
+        header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
-          label: t('app_list.validation.uninstall'),
+          label: t('uninstall'),
           icon: 'mir-delete',
           severity: 'danger',
           variant: 'outlined',
         },
         acceptProps: {
-          label: t('app_list.validation.reinstall'),
+          label: t('reinstall'),
           icon: 'mir-refresh',
         },
         accept: () => handleValidationAction('reinstall'),
@@ -236,18 +232,17 @@ function handleStatusClick(app) {
     } else if (!registryValid) {
       confirm.require({
         message:
-          t('app_list.validation.issue', { name: app.details.name }) +
-          t('app_list.validation.missing_registry'),
-        header: t('app_list.validation.title'),
+          t('validation.issue', { name: app.details.name }) + t('validation.missing_registry'),
+        header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
-          label: t('app_list.validation.uninstall'),
+          label: t('uninstall'),
           icon: 'mir-delete',
           severity: 'danger',
           variant: 'outlined',
         },
         acceptProps: {
-          label: t('app_list.validation.repair'),
+          label: t('reinstall'),
           icon: 'mir-build',
         },
         accept: () => handleValidationAction('repair'),
@@ -263,20 +258,20 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
   if (action === 'uninstall') {
     await new Promise((resolve, reject) => {
       confirm.require({
-        message: t('app_list.confirm_uninstall_message', {
+        message: t('confirm_uninstall_message', {
           name: appToValidate.value.details.name,
         }),
         group: 'dialog',
-        header: t('app_list.confirm_uninstall_header'),
+        header: t('confirm_uninstall_header'),
         icon: 'mir-warning',
         rejectProps: {
-          label: t('app_list.cancel'),
+          label: t('cancel'),
           severity: 'secondary',
           outlined: true,
           icon: 'mir-close',
         },
         acceptProps: {
-          label: t('app_list.uninstall'),
+          label: t('uninstall'),
           severity: 'danger',
           icon: 'mir-warning',
         },
@@ -325,7 +320,7 @@ onMounted(() => {
             <span class="mir-apps text-xl"></span>
             <div class="min-w-32">
               <h2 class="text-lg font-medium">{{ t('app_list.all_apps') }}</h2>
-              <p class="mt-0.5 text-xs">{{ t('app_list.all_description') }}</p>
+              <p class="mt-0.5 text-xs">{{ t('app_list.description') }}</p>
             </div>
           </div>
 
@@ -356,7 +351,7 @@ onMounted(() => {
                 </InputIcon>
                 <InputText
                   v-model="filters.global.value"
-                  :placeholder="t('app_list.search')"
+                  :placeholder="t('search')"
                   class="h-8 text-sm"
                 />
               </IconField>
@@ -404,9 +399,9 @@ onMounted(() => {
                   <div class="mb-2 flex flex-col">
                     <span class="text-sm font-medium">{{ item.details.name || item.url }}</span>
                     <div class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <span>{{ item.details.version || t('app_list.unknown_version') }}</span>
+                      <span>{{ item.details.version || t('app.unknown_version') }}</span>
                       <span class="opacity-50">•</span>
-                      <span>{{ item.details.publisher || t('app_list.unknown_publisher') }}</span>
+                      <span>{{ item.details.publisher || t('app.unknown_publisher') }}</span>
                     </div>
                   </div>
 

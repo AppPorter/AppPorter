@@ -41,9 +41,9 @@ const languageOptions = [
 ]
 
 const themeOptions = [
-  { label: t('common.theme.system'), value: 'system' },
-  { label: t('common.theme.light'), value: 'light' },
-  { label: t('common.theme.dark'), value: 'dark' },
+  { label: t('theme.system'), value: 'system' },
+  { label: t('theme.light'), value: 'light' },
+  { label: t('theme.dark'), value: 'dark' },
 ]
 
 // Save settings and reload app when changes are detected
@@ -105,7 +105,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
           </template>
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <label>{{ t('settings.basic.language') }}</label>
+              <label>{{ t('language') }}</label>
               <Select
                 v-model="settings.language"
                 :options="languageOptions"
@@ -115,7 +115,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               />
             </div>
             <div class="flex items-center justify-between">
-              <label>{{ t('settings.basic.theme') }}</label>
+              <label>{{ t('theme') }}</label>
               <Select
                 v-model="settings.theme"
                 :options="themeOptions"
@@ -125,23 +125,23 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               />
             </div>
             <div class="flex items-center justify-between">
-              <label>{{ t('settings.basic.minimize_tray') }}</label>
+              <label>{{ t('minimize_tray') }}</label>
               <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
             </div>
             <div class="flex items-center justify-between">
-              <label>{{ t('settings.basic.context_menu') }}</label>
+              <label>{{ t('context_menu') }}</label>
               <div class="flex gap-2">
                 <Button
                   @click="handleRegisterContextMenu"
                   severity="secondary"
                   class="h-9 px-4"
-                  :label="t('settings.basic.register_context_menu')"
+                  :label="t('register_context_menu')"
                 />
                 <Button
                   @click="handleUnregisterContextMenu"
                   severity="secondary"
                   class="h-9 px-4"
-                  :label="t('settings.basic.unregister_context_menu')"
+                  :label="t('unregister_context_menu')"
                 />
               </div>
             </div>
@@ -158,7 +158,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
           </template>
           <div class="space-y-4">
             <div class="flex items-center justify-between">
-              <label>{{ t('settings.installation.current_user_only') }}</label>
+              <label>{{ t('current_user_only') }}</label>
               <ToggleSwitch v-model="settings.installation.current_user_only" />
             </div>
 
@@ -168,34 +168,34 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-person"></span>
-                    <span>{{ t('settings.installation.current_user.title') }}</span>
+                    <span>{{ t('current_user') }}</span>
                   </div>
                 </template>
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.desktop_shortcut') }}</label>
+                    <label>{{ t('shortcut.desktop') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_desktop_shortcut"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.registry_key') }}</label>
+                    <label>{{ t('shortcut.registry_key') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_registry_key"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.start_menu') }}</label>
+                    <label>{{ t('shortcut.start_menu') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_start_menu_shortcut"
                     />
                   </div>
                   <div class="space-y-2">
-                    <label>{{ t('settings.installation.install_path') }}</label>
+                    <label>{{ t('install_path') }}</label>
                     <div class="flex min-w-0 items-center gap-2">
                       <InputText
                         v-model="settings.installation.current_user.install_path"
-                        :placeholder="t('settings.installation.install_path')"
+                        :placeholder="t('install_path')"
                         class="h-9 min-w-0 flex-1 text-sm"
                       />
                       <Button
@@ -203,7 +203,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                         severity="secondary"
                         class="h-9 px-4"
                         icon="mir-folder_open"
-                        :label="t('installation.browse')"
+                        :label="t('browse')"
                       />
                     </div>
                   </div>
@@ -220,27 +220,27 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 </template>
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.desktop_shortcut') }}</label>
+                    <label>{{ t('shortcut.desktop') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.all_users.create_desktop_shortcut"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.registry_key') }}</label>
+                    <label>{{ t('shortcut.registry_key') }}</label>
                     <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('settings.installation.start_menu') }}</label>
+                    <label>{{ t('shortcut.start_menu') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.all_users.create_start_menu_shortcut"
                     />
                   </div>
                   <div class="space-y-2">
-                    <label>{{ t('settings.installation.install_path') }}</label>
+                    <label>{{ t('install_path') }}</label>
                     <div class="flex min-w-0 items-center gap-2">
                       <InputText
                         v-model="settings.installation.all_users.install_path"
-                        :placeholder="t('settings.installation.install_path')"
+                        :placeholder="t('install_path')"
                         class="h-9 min-w-0 flex-1 text-sm"
                       />
                       <Button
@@ -248,7 +248,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                         severity="secondary"
                         class="h-9 px-4"
                         icon="mir-folder_open"
-                        :label="t('installation.browse')"
+                        :label="t('browse')"
                       />
                     </div>
                   </div>
@@ -268,10 +268,10 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
       @click="reloadApp"
       class="h-8 w-28 text-sm transition-all duration-200"
       severity="primary"
-      :label="t('settings.reload')"
+      :label="t('reload')"
       icon="mir-refresh"
       :disabled="isReloadDisabled"
-      v-tooltip.top="isReloadDisabled ? t('settings.reload_disabled_during_install') : ''"
+      v-tooltip.top="isReloadDisabled ? t('reload_disabled') : ''"
     />
   </div>
 </template>
