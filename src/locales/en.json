@@ -1,221 +1,177 @@
 {
-  "select_file": "Select file",
-  "settings": {
-    "title": "Settings",
-    "description": "Manage your application preferences",
-    "basic": {
-      "title": "Basic Settings",
-      "language": "Language",
-      "theme": "Theme",
-      "minimize_tray": "Minimize to Tray on Close"
-    },
-    "theme": {
-      "system": "System",
-      "light": "Light",
-      "dark": "Dark"
-    },
-    "installation": {
-      "title": "Installation Settings",
-      "current_user_only": "Current User Only",
-      "desktop_shortcut": "Create Desktop Shortcut",
-      "registry_key": "Create Registry Key",
-      "start_menu": "Create Start Menu Shortcut",
-      "install_path": "Install Path",
-      "current_user": {
-        "title": "Current User Settings"
-      },
-      "all_users": {
-        "title": "All Users Settings"
-      }
-    },
-    "save_changes": "Save Changes",
-    "reload": "Reload",
-    "reload_disabled_during_install": "You must complete the installation and click finish before reloading"
+  "disclaimer": {
+    "title": "Disclaimer",
+    "message": "This software is provided as is, without warranty of any kind. Use at your own risk."
+  },
+  "dismiss": "Dismiss",
+  "admin": {
+    "warning": "AppPorter is running without administrator privileges, which may limit some functionality.",
+    "prompt": "Do you want to run AppPorter as administrator to use all features?"
   },
   "installation": {
-    "title": "Select Installation Package",
-    "description": "Select a package file to install",
-    "archives": "Archive Files",
-    "browse": "Browse",
-    "next": "Next",
-    "select_placeholder": "Choose a package file...",
-    "progress": {
-      "title": "Installation Progress",
-      "description": "Installing application to your system",
-      "preparing": "Preparing installation...",
-      "extracting": "Extracting files ({progress}%)...",
-      "preparing_extract": "Preparing to extract files...",
-      "completed": "Installation completed successfully!",
-      "failed": "Installation failed. Please try again.",
-      "installed_location": "Installed Location",
-      "copy_path": "Copy path",
-      "executable_path": "Executable path",
-      "install_settings": "Installation Settings",
-      "copy_settings": "Copy settings",
-      "package_info": "Package Information",
-      "copy_package_info": "Copy package info",
-      "source_archive": "Source Archive",
-      "selected_executable": "Selected Executable",
-      "finish": "Finish",
-      "close": "Close",
-      "full_path": "Full path"
+    "self": "Installation",
+    "title": "Application Installation",
+    "description": "Select a compressed file containing your application",
+    "select_placeholder": "Select compressed file",
+    "mode": "Installation Mode",
+    "app_details": {
+      "title": "Application Details",
+      "icon_extract_hint": "Icon will be automatically extracted from executable"
     },
     "config": {
       "installation_options": "Installation Options",
-      "selected_file": "Selected file",
-      "install_mode": "Install Mode",
-      "all_users": "All Users",
-      "current_user": "Current User",
-      "install_path": "Install Path",
-      "choose_dir": "Choose installation directory",
-      "browse": "Browse",
-      "shortcuts": "Shortcuts",
-      "desktop_shortcut": "Create Desktop Shortcut",
-      "start_menu_shortcut": "Create Start Menu Shortcut",
-      "registry_entry": "Create Registry Entry",
-      "add_to_path": "Add to System PATH",
-      "back": "Back",
-      "install": "Install",
-      "confirm_install": "Do you want to start the installation process now?",
+      "confirm_install": "Are you ready to install the application?",
       "start_installation": "Start Installation",
-      "cancel": "Cancel",
-      "directory_not_empty": "Installation directory is not empty. Do you want to continue?",
-      "warning": "Warning",
-      "force_install": "Force Install",
-      "executable_path": "Executable Path",
-      "select_executable": "Select Executable"
+      "directory_not_empty": "The installation directory is not empty. Continuing may overwrite existing files.",
+      "force_install": "Install anyway"
     },
-    "app_details": {
-      "title": "App Details",
-      "icon": "Icon",
-      "icon_optional": "(Optional)",
-      "icon_extract_hint": "Icon will be automatically extracted from the application",
-      "name": "Name",
-      "publisher": "Publisher",
-      "publisher_optional": "(Optional)",
-      "version": "Version",
-      "version_optional": "(Optional)",
-      "auto_fill": "Auto Fill",
-      "auto_filled": "Auto Filled",
-      "loading_details": "Loading App Details",
-      "loading": "Loading...",
-      "preparing": "Preparing",
-      "extracting": "Extracting",
-      "reading": "Reading",
-      "processing": "Processing",
-      "select_executable_path": "Select executable path"
-    },
-    "validation": {
-      "executable_missing": "Executable Missing",
-      "select_executable": "Please select an executable file from the archive",
-      "name_required": "Application name is required",
-      "enter_name": "Please enter an application name",
-      "path_required": "Installation path is required",
-      "select_path": "Please select an installation path",
-      "invalid_path": "Invalid Install Path",
-      "select_valid_path": "Please select a valid installation path"
-    },
-    "preview": {
-      "title": "Files in Archive",
-      "expand_all": "Expand All",
-      "collapse_all": "Collapse All",
-      "no_files": "No files found",
-      "reading_archive": "Reading Archive",
-      "completed": "Completed",
-      "loading": "Loading...",
-      "filter": {
-        "exe": ".exe Only",
-        "executable": "Executable Files",
-        "all": "All Files"
-      },
-      "selected": "Selected file",
-      "select_prompt": "Please select a file",
-      "no_selection": "No file selected"
-    }
-  },
-  "system": {
-    "disclaimer": {
-      "title": "Disclaimer",
-      "message": "Thank you for choosing AppPorter. Please note that this software is provided \"as is\" without any warranty. By using this application, you acknowledge that you are responsible for your own actions when packaging and distributing software. Please ensure you have appropriate permissions to package and distribute any third-party applications. The developers of AppPorter assume no responsibility for any misuse of this tool.",
-      "accept": "I understand and agree",
-      "exit": "Exit"
-    },
-    "error": {
-      "title": "Error",
-      "unknown": "Unknown error object"
-    },
-    "welcome": {
-      "title": "Welcome to AppPorter",
-      "message": "Thank you for confirming the disclaimer."
-    },
-    "admin": {
-      "warning": "Application is not running with administrator privileges. Some features may be unavailable.",
-      "prompt": "Would you like to restart the application with administrator privileges?",
-      "solve": "Solve",
-      "dismiss": "Dismiss for now",
-      "success": "Effective after restart",
-      "restart_message": "You need to restart the application to run it with administrator privileges."
-    },
-    "menu": {
-      "installation": "Installation",
-      "applist": "App List",
-      "settings": "Settings",
-      "open": "Open",
-      "quit": "Quit"
-    },
-    "edit": {
-      "cut": "Cut",
-      "copy": "Copy",
-      "paste": "Paste",
-      "select_all": "Select All"
+    "progress": {
+      "title": "Installing",
+      "description": "Installing your application, please wait...",
+      "preparing": "Preparing installation...",
+      "preparing_extract": "Preparing to extract files...",
+      "extracting": "Extracting files ({progress}%)...",
+      "completed": "Installation completed!",
+      "install_settings": "Installation Settings",
+      "package_info": "Package Information",
+      "copy_path": "Copy Path",
+      "copy_settings": "Copy Settings"
     }
   },
   "app_list": {
-    "installed_apps": "Installed Apps",
+    "self": "App List",
+    "all_apps": "All Applications",
     "description": "Manage your installed applications",
-    "search": "Search apps",
-    "name": "Name",
-    "publisher": "Publisher",
-    "location": "Installation Location",
-    "installed_date": "Install Date",
-    "open": "Open",
-    "uninstall": "Uninstall",
-    "opening_app": "Opening app",
-    "confirm_uninstall_header": "Confirm Uninstall",
-    "confirm_uninstall_message": "Are you sure you want to uninstall {name}?",
-    "uninstall_success": "Successfully uninstalled",
-    "cancel": "Cancel",
-    "no_apps_found": "No installed apps found",
-    "install_first": "Please install an application first",
-    "load_failed": "Failed to load app list",
-    "confirm_remove_header": "Remove Application",
-    "confirm_remove_message": "Are you sure you want to remove {name} from the list?",
-    "remove_success": "Application removed",
-    "open_install_folder": "Open Install Folder",
-    "open_registry": "Open Registry Entry",
-    "not_installed": "Not installed",
     "installed": "Installed",
-    "validation_error": "Validation error",
-    "remove": "Remove",
-    "validation": {
-      "title": "Application Issue Detected",
-      "issue": "There is an issue with {name}:",
-      "missing_both": " Both installation files and registry entries are missing.",
-      "missing_file": " Installation files are missing.",
-      "missing_registry": " Registry entries are missing.",
-      "reinstall": "Reinstall",
-      "repair": "Repair",
-      "uninstall": "Uninstall"
+    "not_installed": "Not Installed",
+    "validation_error": "Validation Error",
+    "no_apps_found": "No applications found",
+    "install_first": "Please install an application first",
+    "confirm_uninstall_header": "Uninstall Application",
+    "confirm_uninstall_message": "Do you want to uninstall {name}?"
+  },
+  "settings": {
+    "self": "Settings",
+    "title": "Settings",
+    "description": "Customize AppPorter settings",
+    "basic": {
+      "title": "Basic Settings"
     },
-    "status": "Status",
-    "sort": {
-      "name": "Sort by name",
-      "publisher": "Sort by publisher",
-      "date": "Sort by date"
+    "installation": {
+      "title": "Installation Settings",
+      "all_users": {
+        "title": "All Users"
+      }
     }
   },
-  "common": {
-    "select": "Select",
-    "loading": "Loading..."
-  }
+  "all_users": "All Users",
+  "validation": {
+    "title": "Validation Issues",
+    "issue": "There is an issue with {name}.",
+    "missing_both": "Application files and registry entries are missing.",
+    "missing_file": "Application files are missing.",
+    "missing_registry": "Registry entries are missing.",
+    "executable_missing": "Executable is required",
+    "select_executable": "Please select an executable",
+    "name_required": "Name is required",
+    "enter_name": "Please enter an application name",
+    "path_required": "Path is required",
+    "select_path": "Please select an installation path",
+    "invalid_archive": "Invalid archive",
+    "no_executable_file": "No executable file was found in the archive. Please select a valid application archive."
+  },
+  "shortcuts": {
+    "self": "Shortcuts",
+    "desktop": "Create Desktop Shortcut",
+    "start_menu": "Create Start Menu Shortcut",
+    "registry_key": "Create Registry Key",
+    "path": "Add to PATH",
+    "none": "No shortcuts"
+  },
+  "app": {
+    "name": "Name",
+    "publisher": "Publisher",
+    "version": "Version",
+    "unknown_version": "Unknown Version",
+    "unknown_publisher": "Unknown Publisher"
+  },
+  "theme": {
+    "self": "Theme",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "executable_selector": {
+    "selected": "Selected Executable",
+    "select_prompt": "Select an executable",
+    "no_selection": "No executable selected",
+    "filter": {
+      "exe": "Only .exe files",
+      "executable": "All executable files",
+      "all": "All files"
+    }
+  },
+  "zip_preview": {
+    "no_files": "No files found in archive"
+  },
+  "edit": {
+    "cut": "Cut",
+    "copy": "Copy",
+    "paste": "Paste",
+    "select_all": "Select All"
+  },
+  "sort": {
+    "name": "By Name",
+    "publisher": "By Publisher",
+    "date": "By Date"
+  },
+  "accept": "Accept",
+  "exit": "Exit",
+  "solve": "Solve",
+  "browse": "Browse",
+  "cancel": "Cancel",
+  "next": "Next",
+  "back": "Back",
+  "finish": "Finish",
+  "close": "Close",
+  "open": "Open",
+  "quit": "Quit",
+  "reload": "Reload",
+  "reload_disabled": "Reload disabled during installation",
+  "select": "Select",
+  "ok": "OK",
+  "language": "Language",
+  "minimize_tray": "Minimize to Tray",
+  "context_menu": "Context Menu",
+  "register_context_menu": "Register",
+  "unregister_context_menu": "Unregister",
+  "current_user_only": "Current User Only",
+  "install_path": "Installation Path",
+  "choose_dir": "Choose Directory",
+  "add_to_path": "Add to PATH",
+  "optional": "Optional",
+  "icon": "Icon",
+  "selected_file": "Selected File",
+  "executable_path": "Executable Path",
+  "select_executable_path": "Select Executable Path",
+  "full_path": "Full Path",
+  "source_archive": "Source Archive",
+  "selected_executable": "Selected Executable",
+  "copy_package_info": "Copy Package Info",
+  "warning": "Warning",
+  "install": "Install",
+  "uninstall": "Uninstall",
+  "search": "Search",
+  "open_install_folder": "Open Install Folder",
+  "open_registry": "Open Registry",
+  "reinstall": "Reinstall",
+  "repair": "Repair",
+  "current_user": "Current User",
+  "select_executable": "Select Executable",
+  "error": "Error",
+  "confirm_uninstall_header": "Confirm Uninstall",
+  "confirm_uninstall_message": "Do you want to uninstall {name}?",
+  "install_mode": "Installation Mode",
+  "loading": "Loading...",
+  "archives": "Archives"
 }

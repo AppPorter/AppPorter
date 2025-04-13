@@ -98,7 +98,7 @@ impl ConfigFile for Settings {
         "Settings.json"
     }
 
-    async fn create_default() -> Result<Self, Box<dyn Error>> {
+    async fn create_default() -> Result<Self, Box<dyn Error + Send + Sync>> {
         let system_drive = std::env::var("windir")?[..1].to_string();
         let username = std::env::var("USERNAME")?;
 
@@ -153,7 +153,7 @@ impl ConfigFile for Settings {
 }
 
 impl Settings {
-    pub async fn initialization(&mut self) -> Result<(), Box<dyn Error>> {
+    pub async fn initialization(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.debug = cfg!(debug_assertions);
         self.elevated = is_elevated()?;
         self.user_sid = self.get_user_sid().await?;
@@ -165,7 +165,7 @@ impl Settings {
         Ok(())
     }
 
-    async fn get_user_sid(&self) -> Result<String, Box<dyn Error>> {
+    async fn get_user_sid(&self) -> Result<String, Box<dyn Error + Send + Sync>> {
         let output = Command::new("powershell")
             .args([
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
@@ -182,7 +182,7 @@ impl Settings {
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
     }
 
-    fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error>> {
+    fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error + Send + Sync>> {
         let registry_path = format!(
             r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
             self.user_sid
@@ -195,14 +195,14 @@ impl Settings {
             .is_ok_and(|value| value.contains("RUNASADMIN")))
     }
 
-    fn update_system_info(&mut self) -> Result<(), Box<dyn Error>> {
+    fn update_system_info(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
         self.username = std::env::var("USERNAME")?;
         Ok(())
     }
 
     // Extract Windows accent color from registry
-    async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error>> {
+    async fn update_color_settings(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         let accent_color = windows_registry::CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
             .get_u32("AccentColorMenu")?;
@@ -233,13 +233,13 @@ impl Settings {
     }
 }
 
-pub async fn load_settings() -> Result<String, Box<dyn Error>> {
+pub async fn load_settings() -> Result<String, Box<dyn Error + Send + Sync>> {
     let mut settings = Settings::read().await?;
     settings.initialization().await?;
     Ok(serde_json::to_string(&settings)?)
 }
 
-pub async fn save_settings(settings: Settings) -> Result<String, Box<dyn Error>> {
+pub async fn save_settings(settings: Settings) -> Result<String, Box<dyn Error + Send + Sync>> {
     settings.save().await?;
     Ok("Settings saved successfully".to_owned())
 }

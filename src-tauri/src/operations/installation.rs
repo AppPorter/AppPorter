@@ -19,12 +19,13 @@ use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 pub struct InstallationConfig {
     zip_path: String,
     details: InstalledApp,
+    timestamp: i64,
 }
 
 pub async fn installation(
     config: InstallationConfig,
     app: AppHandle,
-) -> Result<String, Box<dyn Error>> {
+) -> Result<String, Box<dyn Error + Send + Sync>> {
     let zip_path = config.zip_path.clone();
     let app_path = format!(
         "{}\\{}",
@@ -104,8 +105,6 @@ pub async fn installation(
 
     // Create a mutable copy of the details
     let mut updated_details = config.details.clone();
-
-    // Add full_executable_path to the details
     updated_details.full_path = full_executable_path.clone();
     updated_details.validation_status = ValidationStatus {
         file_exists: true,
@@ -113,27 +112,40 @@ pub async fn installation(
     };
 
     let new_app = App {
-        timestamp,
+        timestamp: if config.timestamp != 0 {
+            config.timestamp
+        } else {
+            timestamp
+        },
         installed: true,
         details: updated_details,
         url: "".to_owned(),
     };
 
-    // Remove existing app that matches all fields except timestamp and version
-    app_list.links.retain(|existing_app| {
-        let mut app1 = existing_app.clone();
-        let mut app2 = new_app.clone();
+    if config.timestamp != 0 {
+        // Update existing app with matching timestamp
+        if let Some(existing_app) = app_list
+            .links
+            .iter_mut()
+            .find(|app| app.timestamp == config.timestamp)
+        {
+            existing_app.installed = true;
+            existing_app.details = new_app.details;
+        }
+    } else {
+        // Remove existing similar app and add new one
+        app_list.links.retain(|existing_app| {
+            let mut app1 = existing_app.clone();
+            let mut app2 = new_app.clone();
+            app1.timestamp = 0;
+            app2.timestamp = 0;
+            app1.details.version = String::new();
+            app2.details.version = String::new();
+            app1 != app2
+        });
+        app_list.links.push(new_app);
+    }
 
-        // Reset timestamp and version for comparison
-        app1.timestamp = 0;
-        app2.timestamp = 0;
-        app1.details.version = String::new();
-        app2.details.version = String::new();
-
-        app1 != app2
-    });
-
-    app_list.links.push(new_app);
     app_list.save().await?;
 
     Ok(full_executable_path)
@@ -143,7 +155,7 @@ async fn extract_files(
     zip_path: &str,
     app_path: &str,
     app: AppHandle,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let path_7z = get_7z_path()?;
 
     let output_list = tokio::process::Command::new(&path_7z)
@@ -252,7 +264,9 @@ fn parse_7z_list_output(output: &str) -> Vec<String> {
 }
 
 // Detect if extraction created a single root folder
-async fn find_single_root_folder(app_path: &str) -> Result<Option<String>, Box<dyn Error>> {
+async fn find_single_root_folder(
+    app_path: &str,
+) -> Result<Option<String>, Box<dyn Error + Send + Sync>> {
     let mut entries = tokio::fs::read_dir(app_path).await?;
     let mut items = Vec::new();
 
@@ -297,7 +311,7 @@ fn create_start_menu_shortcut(
     app_name: &str,
     executable_path: &str,
     current_user_only: bool,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let lnk_path = if current_user_only {
         format!(
             r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
@@ -313,7 +327,10 @@ fn create_start_menu_shortcut(
     Ok(())
 }
 
-fn create_desktop_shortcut(executable_path: &str, app_name: &str) -> Result<(), Box<dyn Error>> {
+fn create_desktop_shortcut(
+    executable_path: &str,
+    app_name: &str,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     ShellLink::new(executable_path)?.create_lnk(format!(
         r"{}\{}.lnk",
         dirs::desktop_dir()
@@ -329,7 +346,7 @@ fn create_registry_entries(
     executable_path: &str,
     app_path: &str,
     timestamp: i64,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let key = if config.details.current_user_only {
         CURRENT_USER.create(format!(
             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",

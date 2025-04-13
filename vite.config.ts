@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 import tailwind from 'tailwindcss'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
-import vueDevTools from 'vite-plugin-vue-devtools'
+import VueDevTools from 'vite-plugin-vue-devtools'
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -17,7 +17,9 @@ export default defineConfig(async () => ({
   },
   plugins: [
     vue(),
-    vueDevTools(),
+    VueDevTools({
+      launchEditor: 'code-insiders',
+    }),
     Components({
       resolvers: [PrimeVueResolver()],
     }),

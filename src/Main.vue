@@ -25,6 +25,7 @@ const { t } = useI18n()
 const errorHandler = ref()
 const appListStore = useAppListStore()
 const dismissWarning = ref(false)
+const InstallationConfig = useInstallationConfigStore()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
@@ -32,16 +33,16 @@ onMounted(async () => {
   if (settingsStore.first_run) {
     confirm.require({
       group: 'disclaimer',
-      header: t('system.disclaimer.title'),
-      message: t('system.disclaimer.message'),
+      header: t('disclaimer.title'),
+      message: t('disclaimer.message'),
       icon: 'mir-info',
       acceptProps: {
-        label: t('system.disclaimer.accept'),
+        label: t('accept'),
         icon: 'mir-check',
         severity: 'primary',
       },
       rejectProps: {
-        label: t('system.disclaimer.exit'),
+        label: t('exit'),
         icon: 'mir-close',
         severity: 'secondary',
         outlined: true,
@@ -57,7 +58,7 @@ onMounted(async () => {
 
   // Setup install listener
   await listen('install', (event) => {
-    useInstallationConfigStore().zip_path = event.payload as string
+    InstallationConfig.zip_path = event.payload as string
     goTo('/Installation/Config')
   })
 
@@ -69,20 +70,20 @@ onMounted(async () => {
     if (!app) return
     await new Promise((resolve, reject) => {
       confirm.require({
-        message: t('app_list.confirm_uninstall_message', {
+        message: t('confirm_uninstall_message', {
           name: app.details.name,
         }),
         group: 'dialog',
-        header: t('app_list.confirm_uninstall_header'),
+        header: t('confirm_uninstall_header'),
         icon: 'mir-warning',
         rejectProps: {
-          label: t('app_list.cancel'),
+          label: t('cancel'),
           severity: 'secondary',
           outlined: true,
           icon: 'mir-close',
         },
         acceptProps: {
-          label: t('app_list.uninstall'),
+          label: t('uninstall'),
           severity: 'danger',
           icon: 'mir-warning',
         },
@@ -93,6 +94,13 @@ onMounted(async () => {
         reject: () => reject(),
       })
     })
+  })
+
+  await listen('installWithTimestamp', (event) => {
+    const payload = event.payload as { zip_path: string; timestamp: number }
+    InstallationConfig.zip_path = payload[0]
+    InstallationConfig.timestamp = payload[1]
+    goTo('/Installation/Config')
   })
 
   // Execute initial command
@@ -108,7 +116,7 @@ function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     tauriWindow.hide()
   } else {
-    exit(0)
+    invoke('exit')
   }
 }
 
@@ -120,17 +128,17 @@ function handleMinimize() {
 const handleAdminPrompt = (event) => {
   confirm.require({
     target: event.currentTarget,
-    message: t('system.admin.prompt'),
+    message: t('admin.prompt'),
     group: 'admin_popup',
     icon: 'mir-warning',
     rejectProps: {
-      label: t('system.admin.dismiss'),
+      label: t('dismiss'),
       severity: 'secondary',
       outlined: true,
     },
     acceptProps: {
       severity: 'warn',
-      label: t('system.disclaimer.accept'),
+      label: t('accept'),
     },
     accept: () => {
       if (!settingsStore.debug) {
@@ -151,13 +159,13 @@ const handleAdminPrompt = (event) => {
 // Navigation menu configuration
 const leftMenuItems = [
   {
-    label: t('system.menu.installation'),
+    label: t('installation.self'),
     icon: 'mir-install_desktop',
     command: () => goTo('/'),
     paths: ['/Installation/Home', '/Installation/Config', '/Installation/Progress'],
   },
   {
-    label: t('system.menu.applist'),
+    label: t('app_list.self'),
     icon: 'mir-apps',
     command: () => goTo('/AppList'),
     paths: ['/AppList'],
@@ -166,7 +174,7 @@ const leftMenuItems = [
 
 const rightMenuItems = [
   {
-    label: t('system.menu.settings'),
+    label: t('settings.self'),
     icon: 'mir-settings',
     command: () => goTo('/Settings'),
     paths: ['/Settings'],
@@ -177,24 +185,24 @@ const rightMenuItems = [
 const contextMenu = ref()
 const editMenuItems = ref<MenuItem[]>([
   {
-    label: t('system.edit.cut'),
+    label: t('edit.cut'),
     icon: 'mir-content_cut',
     command: () => document.execCommand('cut'),
   },
   {
-    label: t('system.edit.copy'),
+    label: t('edit.copy'),
     icon: 'mir-content_copy',
     command: () => document.execCommand('copy'),
   },
   {
-    label: t('system.edit.paste'),
+    label: t('edit.paste'),
     icon: 'mir-content_paste',
     command: async () =>
       document.execCommand('insertText', false, await navigator.clipboard.readText()),
   },
   { separator: true },
   {
-    label: t('system.edit.select_all'),
+    label: t('edit.select_all'),
     icon: 'mir-select_all',
     command: () => document.execCommand('selectAll'),
   },
@@ -282,14 +290,14 @@ const activeIndicatorClass = computed(
             <div class="flex items-center gap-2">
               <span class="mir-warning text-amber-600 dark:text-amber-400" />
               <span class="text-sm text-amber-700 dark:text-amber-300">{{
-                t('system.admin.warning')
+                t('admin.warning')
               }}</span>
               <ConfirmPopup group="admin_popup" />
               <button
                 class="rounded-md bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-200 hover:text-amber-800 dark:bg-amber-800/30 dark:text-amber-400 dark:hover:bg-amber-700/50 dark:hover:text-amber-300"
                 @click="handleAdminPrompt($event)"
               >
-                {{ t('system.admin.solve') }}
+                {{ t('solve') }}
               </button>
             </div>
           </div>

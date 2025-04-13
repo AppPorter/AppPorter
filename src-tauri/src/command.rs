@@ -1,9 +1,6 @@
-use crate::{
-    configs::app_list::{load_app_list, save_app_list, AppList},
-    configs::settings::{load_settings, save_settings, Settings},
-    operations::*,
-};
+use crate::{configs::*, operations::*};
 use serde::Deserialize;
+use std::error::Error;
 use tauri::AppHandle;
 
 // Available frontend-to-backend commands
@@ -50,12 +47,14 @@ pub enum Command {
         path: String,
     },
     Cli,
+    RegisterContextMenu,
+    UnregisterContextMenu,
 }
 
 impl Command {
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
-    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn std::error::Error>> {
+    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
         match self {
             Self::LoadSettings => load_settings().await,
             Self::GetDetails { path } => get_details(path).await,
@@ -75,6 +74,8 @@ impl Command {
             } => open_registry(&app_name, current_user_only).await,
             Self::CheckPathEmpty { path } => check_path_empty(&path).await,
             Self::Cli => cli(app).await,
+            Self::RegisterContextMenu => register_context_menu(),
+            Self::UnregisterContextMenu => unregister_context_menu(),
         }
     }
 }

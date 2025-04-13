@@ -6,10 +6,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
+import { invoke } from '@tauri-apps/api/core'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { exit } from '@tauri-apps/plugin-process'
 import Color from 'color'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
@@ -29,7 +29,7 @@ const createTrayMenu = (t: (key: string) => string) => {
     items: [
       {
         id: 'open',
-        text: t('system.menu.open'),
+        text: t('open'),
         action: () => {
           window.show()
           window.unminimize()
@@ -38,8 +38,8 @@ const createTrayMenu = (t: (key: string) => string) => {
       },
       {
         id: 'quit',
-        text: t('system.menu.quit'),
-        action: () => exit(0),
+        text: t('quit'),
+        action: () => invoke('exit'),
       },
     ],
   })
@@ -68,17 +68,17 @@ setupRouterGuards(router)
 const UserColor = definePreset(Aura, {
   semantic: {
     primary: {
-      50: Color(settingsStore.color).lightness(95).hex(),
-      100: Color(settingsStore.color).lightness(90).hex(),
-      200: Color(settingsStore.color).lightness(80).hex(),
-      300: Color(settingsStore.color).lightness(70).hex(),
-      400: Color(settingsStore.color).lightness(60).hex(),
-      500: Color(settingsStore.color).lightness(50).hex(),
-      600: Color(settingsStore.color).lightness(40).hex(),
-      700: Color(settingsStore.color).lightness(30).hex(),
-      800: Color(settingsStore.color).lightness(20).hex(),
-      900: Color(settingsStore.color).lightness(10).hex(),
-      950: Color(settingsStore.color).lightness(5).hex(),
+      50: Color(settingsStore.color).lighten(0.5).hex(),
+      100: Color(settingsStore.color).lighten(0.4).hex(),
+      200: Color(settingsStore.color).lighten(0.3).hex(),
+      300: Color(settingsStore.color).lighten(0.2).hex(),
+      400: Color(settingsStore.color).lighten(0.1).hex(),
+      500: Color(settingsStore.color).hex(),
+      600: Color(settingsStore.color).darken(0.1).hex(),
+      700: Color(settingsStore.color).darken(0.2).hex(),
+      800: Color(settingsStore.color).darken(0.3).hex(),
+      900: Color(settingsStore.color).darken(0.4).hex(),
+      950: Color(settingsStore.color).darken(0.5).hex(),
     },
   },
 })

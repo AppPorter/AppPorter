@@ -7,7 +7,10 @@ use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
-pub async fn uninstallation(timestamp: i64, app: AppHandle) -> Result<String, Box<dyn Error>> {
+pub async fn uninstallation(
+    timestamp: i64,
+    app: AppHandle,
+) -> Result<String, Box<dyn Error + Send + Sync>> {
     app.emit("uninstallation", 0)?;
 
     // Get app configuration from app list

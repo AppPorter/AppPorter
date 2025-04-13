@@ -1,215 +1,177 @@
 {
-  "select_file": "ファイルを選択",
-  "settings": {
-    "title": "設定",
-    "description": "アプリケーションの設定を管理します",
-    "basic": {
-      "title": "基本設定",
-      "language": "言語",
-      "theme": "テーマ",
-      "minimize_tray": "閉じる時にシステムトレイに最小化"
-    },
-    "theme": {
-      "system": "システム設定に従う",
-      "light": "ライト",
-      "dark": "ダーク"
-    },
-    "installation": {
-      "title": "インストール設定",
-      "current_user_only": "現在のユーザーのみ",
-      "desktop_shortcut": "デスクトップショートカットを作成",
-      "registry_key": "レジストリキーを作成",
-      "start_menu": "スタートメニューショートカットを作成",
-      "install_path": "インストールパス",
-      "current_user": {
-        "title": "現在のユーザー設定"
-      },
-      "all_users": {
-        "title": "すべてのユーザー設定"
-      }
-    },
-    "save_changes": "変更を保存",
-    "reload": "再読み込み"
+  "disclaimer": {
+    "title": "免責事項",
+    "message": "このソフトウェアは現状のまま提供され、いかなる保証もありません。自己責任でご使用ください。"
+  },
+  "dismiss": "閉じる",
+  "admin": {
+    "warning": "AppPorterは管理者権限なしで実行されているため、一部の機能が制限される可能性があります。",
+    "prompt": "すべての機能を使用するために、AppPorterを管理者として実行しますか？"
   },
   "installation": {
-    "title": "インストールパッケージの選択",
-    "description": "インストールするパッケージを選択してください",
-    "archives": "アーカイブファイル",
-    "browse": "参照",
-    "next": "次へ",
-    "select_placeholder": "パッケージファイルを選択...",
-    "progress": {
-      "title": "インストールの進捗状況",
-      "description": "アプリケーションをインストールしています",
-      "preparing": "インストールの準備中...",
-      "extracting": "ファイルを展開中（{progress}%）...",
-      "preparing_extract": "ファイルの展開を準備中...",
-      "completed": "インストールが完了しました！",
-      "failed": "インストールに失敗しました。もう一度お試しください。",
-      "installed_location": "インストール場所",
-      "copy_path": "パスをコピー",
-      "executable_path": "実行ファイルのパス",
-      "install_settings": "インストール設定",
-      "copy_settings": "設定をコピー",
-      "package_info": "パッケージ情報",
-      "copy_package_info": "パッケージ情報をコピー",
-      "source_archive": "ソースアーカイブ",
-      "selected_executable": "選択された実行ファイル",
-      "finish": "完了",
-      "close": "閉じる",
-      "full_path": "完全なパス"
-    },
-    "preview": {
-      "title": "アーカイブ内のファイル",
-      "expand_all": "すべて展開",
-      "collapse_all": "すべて折りたたむ",
-      "no_files": "ファイルが見つかりません",
-      "reading_archive": "アーカイブを読み込み中",
-      "completed": "完了",
-      "loading": "読み込み中...",
-      "filter": {
-        "exe": ".exeのみ",
-        "executable": "実行可能ファイル",
-        "all": "すべてのファイル"
-      },
-      "selected": "選択されたファイル",
-      "select_prompt": "ファイルを選択してください",
-      "no_selection": "ファイルが選択されていません"
+    "self": "インストール",
+    "title": "アプリケーションのインストール",
+    "description": "アプリケーションを含む圧縮ファイルを選択してください",
+    "select_placeholder": "圧縮ファイルを選択",
+    "mode": "インストールモード",
+    "app_details": {
+      "title": "アプリケーション詳細",
+      "icon_extract_hint": "アイコンは実行ファイルから自動的に抽出されます"
     },
     "config": {
       "installation_options": "インストールオプション",
-      "selected_file": "選択されたファイル",
-      "install_mode": "インストールモード",
-      "all_users": "すべてのユーザー",
-      "current_user": "現在のユーザー",
-      "install_path": "インストールパス",
-      "choose_dir": "インストールディレクトリを選択",
-      "browse": "参照",
-      "shortcuts": "ショートカット",
-      "desktop_shortcut": "デスクトップショートカットを作成",
-      "start_menu_shortcut": "スタートメニューショートカットを作成",
-      "registry_entry": "レジストリエントリを作成",
-      "add_to_path": "システムPATHに追加",
-      "back": "戻る",
-      "install": "インストール",
-      "confirm_install": "インストールプロセスを開始しますか？",
+      "confirm_install": "アプリケーションをインストールする準備はできましたか？",
       "start_installation": "インストール開始",
-      "cancel": "キャンセル",
-      "directory_not_empty": "インストール先のディレクトリが空ではありません。続行しますか？",
-      "warning": "警告",
-      "force_install": "強制インストール",
-      "executable_path": "実行ファイルのパス",
-      "select_executable": "実行ファイルを選択"
+      "directory_not_empty": "インストールディレクトリが空ではありません。続行すると既存のファイルが上書きされる可能性があります。",
+      "force_install": "それでもインストール"
     },
-    "app_details": {
-      "title": "アプリケーションの詳細",
-      "icon": "アイコン",
-      "icon_optional": "（オプション）",
-      "icon_extract_hint": "アイコンはアプリケーションから自動的に抽出されます",
-      "name": "名前",
-      "publisher": "発行元",
-      "publisher_optional": "（オプション）",
-      "version": "バージョン",
-      "version_optional": "（オプション）",
-      "auto_fill": "自動入力",
-      "auto_filled": "自動入力済み",
-      "loading_details": "アプリケーションの詳細を読み込み中",
-      "loading": "読み込み中...",
-      "preparing": "準備中",
-      "extracting": "抽出中",
-      "reading": "読み取り中",
-      "processing": "処理中",
-      "select_executable_path": "実行可能ファイルのパスを選択"
-    },
-    "validation": {
-      "executable_missing": "実行可能ファイルが見つかりません",
-      "select_executable": "アーカイブから実行可能ファイルを選択してください",
-      "name_required": "アプリケーション名を入力してください",
-      "enter_name": "アプリケーション名を入力してください",
-      "path_required": "インストール先を指定してください",
-      "select_path": "インストール先を選択してください",
-      "invalid_path": "無効なインストール先です",
-      "select_valid_path": "有効なインストール先を選択してください"
-    }
-  },
-  "system": {
-    "disclaimer": {
-      "title": "免責事項",
-      "message": "AppPorterをご利用いただき、ありがとうございます。本ソフトウェアは「現状のまま」提供され、いかなる保証もありません。本アプリケーションを使用することで、ソフトウェアのパッケージング及び配布に関する全ての責任はユーザー様にあることをごご了承いただきます。サードパーティーアプリケーションのパッケージング及び配布について適切な権限を持っていることをご確認ください。AppPorterの開発者は、本ツールの誤用について一切の責任を負いかねます。",
-      "accept": "理解し、同意します",
-      "exit": "終了"
-    },
-    "error": {
-      "title": "エラー",
-      "unknown": "不明なエラーオブジェクト"
-    },
-    "welcome": {
-      "title": "AppPorterへようこそ",
-      "message": "免責事項の確認ありがとうございます。"
-    },
-    "admin": {
-      "warning": "管理者権限で実行されていないため、一部の機能が利用できない可能性があります",
-      "prompt": "管理者権限で再起動しますか？",
-      "solve": "解決する",
-      "dismiss": "後で対応",
-      "success": "再起動後に適用されます",
-      "restart_message": "管理者権限で実行するには再起動が必要です"
-    },
-    "menu": {
-      "installation": "インストール",
-      "applist": "アプリ一覧",
-      "settings": "設定",
-      "open": "開く",
-      "quit": "終了"
-    },
-    "edit": {
-      "cut": "切り取り",
-      "copy": "コピー",
-      "paste": "貼り付け",
-      "select_all": "すべて選択"
+    "progress": {
+      "title": "インストール中",
+      "description": "アプリケーションをインストールしています、お待ちください...",
+      "preparing": "インストールの準備中...",
+      "preparing_extract": "ファイル抽出の準備中...",
+      "extracting": "ファイルを抽出中({progress}%)...",
+      "completed": "インストールが完了しました！",
+      "install_settings": "インストール設定",
+      "package_info": "パッケージ情報",
+      "copy_path": "パスをコピー",
+      "copy_settings": "設定をコピー"
     }
   },
   "app_list": {
-    "installed_apps": "インストール済みアプリ",
-    "description": "インストールされているアプリケーションを管理",
-    "search": "アプリを検索",
+    "self": "アプリ一覧",
+    "all_apps": "すべてのアプリケーション",
+    "description": "インストールされたアプリケーションを管理",
+    "installed": "インストール済み",
+    "not_installed": "未インストール",
+    "validation_error": "検証エラー",
+    "no_apps_found": "アプリケーションが見つかりません",
+    "install_first": "最初にアプリケーションをインストールしてください",
+    "confirm_uninstall_header": "アプリケーションのアンインストール",
+    "confirm_uninstall_message": "{name}をアンインストールしますか？"
+  },
+  "settings": {
+    "self": "設定",
+    "title": "設定",
+    "description": "AppPorterの設定をカスタマイズ",
+    "basic": {
+      "title": "基本設定"
+    },
+    "installation": {
+      "title": "インストール設定",
+      "all_users": {
+        "title": "すべてのユーザー"
+      }
+    }
+  },
+  "all_users": "すべてのユーザー",
+  "validation": {
+    "title": "検証の問題",
+    "issue": "{name}に問題があります。",
+    "missing_both": "アプリケーションファイルとレジストリエントリが見つかりません。",
+    "missing_file": "アプリケーションファイルが見つかりません。",
+    "missing_registry": "レジストリエントリが見つかりません。",
+    "executable_missing": "実行ファイルが必要です",
+    "select_executable": "実行ファイルを選択してください",
+    "name_required": "名前が必要です",
+    "enter_name": "アプリケーション名を入力してください",
+    "path_required": "パスが必要です",
+    "select_path": "インストールパスを選択してください",
+    "invalid_archive": "無効なアーカイブ",
+    "no_executable_file": "アーカイブ内に実行ファイルが見つかりませんでした。有効なアプリケーションアーカイブを選択してください。"
+  },
+  "shortcuts": {
+    "self": "ショートカット",
+    "desktop": "デスクトップショートカットを作成",
+    "start_menu": "スタートメニューショートカットを作成",
+    "registry_key": "レジストリキーを作成",
+    "path": "PATHに追加",
+    "none": "ショートカットなし"
+  },
+  "app": {
     "name": "名前",
     "publisher": "発行元",
-    "location": "インストール場所",
-    "installed_date": "インストール日",
-    "open": "開く",
-    "uninstall": "アンインストール",
-    "opening_app": "アプリを開いています",
-    "confirm_uninstall_header": "アンインストールの確認",
-    "confirm_uninstall_message": "{name} をアンインストールしますか？",
-    "uninstall_success": "アンインストールが完了しました",
-    "cancel": "キャンセル",
-    "no_apps_found": "インストール済みのアプリが見つかりません",
-    "install_first": "アプリケーションをインストールしてください",
-    "load_failed": "アプリ一覧の読み込みに失敗しました",
-    "open_install_folder": "インストールフォルダを開く",
-    "open_registry": "レジストリエントリを開く",
-    "confirm_remove_header": "アプリケーションを削除",
-    "confirm_remove_message": "{name} をリストから削除しますか？",
-    "remove_success": "アプリケーションを削除しました",
-    "not_installed": "未インストール",
-    "installed": "インストール済み",
-    "validation_error": "検証エラー",
-    "remove": "削除",
-    "validation": {
-      "title": "アプリケーションの問題を検出",
-      "issue": "{name} に問題があります：",
-      "missing_both": " インストールファイルとレジストリエントリの両方が見つかりません。",
-      "missing_file": " インストールファイルが見つかりません。",
-      "missing_registry": " レジストリエントリが見つかりません。",
-      "reinstall": "再インストール",
-      "repair": "修復",
-      "uninstall": "アンインストール"
-    },
-    "status": "ステータス"
+    "version": "バージョン",
+    "unknown_version": "不明なバージョン",
+    "unknown_publisher": "不明な発行元"
   },
-  "common": {
-    "select": "選択",
-    "loading": "読み込み中..."
-  }
+  "theme": {
+    "self": "テーマ",
+    "system": "システム",
+    "light": "ライト",
+    "dark": "ダーク"
+  },
+  "executable_selector": {
+    "selected": "選択された実行ファイル",
+    "select_prompt": "実行ファイルを選択",
+    "no_selection": "実行ファイルが選択されていません",
+    "filter": {
+      "exe": ".exeファイルのみ",
+      "executable": "すべての実行可能ファイル",
+      "all": "すべてのファイル"
+    }
+  },
+  "zip_preview": {
+    "no_files": "アーカイブ内にファイルが見つかりません"
+  },
+  "edit": {
+    "cut": "切り取り",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "select_all": "すべて選択"
+  },
+  "sort": {
+    "name": "名前順",
+    "publisher": "発行元順",
+    "date": "日付順"
+  },
+  "accept": "承諾",
+  "exit": "終了",
+  "solve": "解決",
+  "browse": "参照",
+  "cancel": "キャンセル",
+  "next": "次へ",
+  "back": "戻る",
+  "finish": "完了",
+  "close": "閉じる",
+  "open": "開く",
+  "quit": "終了",
+  "reload": "再読み込み",
+  "reload_disabled": "インストール中は再読み込みが無効です",
+  "select": "選択",
+  "ok": "OK",
+  "language": "言語",
+  "minimize_tray": "トレイに最小化",
+  "context_menu": "コンテキストメニュー",
+  "register_context_menu": "登録",
+  "unregister_context_menu": "登録解除",
+  "current_user_only": "現在のユーザーのみ",
+  "install_path": "インストールパス",
+  "choose_dir": "ディレクトリを選択",
+  "add_to_path": "PATHに追加",
+  "optional": "オプション",
+  "icon": "アイコン",
+  "selected_file": "選択されたファイル",
+  "executable_path": "実行ファイルのパス",
+  "select_executable_path": "実行ファイルのパスを選択",
+  "full_path": "完全パス",
+  "source_archive": "ソースアーカイブ",
+  "selected_executable": "選択された実行ファイル",
+  "copy_package_info": "パッケージ情報をコピー",
+  "warning": "警告",
+  "install": "インストール",
+  "uninstall": "アンインストール",
+  "search": "検索",
+  "open_install_folder": "インストールフォルダを開く",
+  "open_registry": "レジストリを開く",
+  "reinstall": "再インストール",
+  "repair": "修復",
+  "current_user": "現在のユーザー",
+  "select_executable": "実行ファイルを選択",
+  "error": "エラー",
+  "confirm_uninstall_header": "アンインストールの確認",
+  "confirm_uninstall_message": "{name}をアンインストールしますか？",
+  "install_mode": "インストールモード",
+  "loading": "読み込み中...",
+  "archives": "アーカイブ"
 }

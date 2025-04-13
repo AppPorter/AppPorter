@@ -7,6 +7,7 @@ interface InstallationConfig extends InstalledApp {
   zip_path: string
   page: Pages
   archive_content: string[] | null
+  timestamp: number
 }
 
 export const useInstallationConfigStore = defineStore('installation_config', {
@@ -30,6 +31,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     },
     page: 'Home',
     archive_content: null,
+    timestamp: 0,
   }),
 
   actions: {

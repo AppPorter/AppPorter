@@ -1,25 +1,9 @@
 pub mod command;
 pub mod configs;
-pub mod menu;
 pub mod operations;
 pub mod websocket;
 
-use lazy_static::lazy_static;
 use std::{env, fs, io, path::PathBuf};
-use tokio::sync::broadcast;
-
-#[derive(Debug, Clone)]
-pub enum SubCommands {
-    Install(String),
-    Uninstall(i64),
-}
-
-lazy_static! {
-    pub static ref CHANNEL: (
-        broadcast::Sender<SubCommands>,
-        broadcast::Receiver<SubCommands>
-    ) = broadcast::channel(1);
-}
 
 pub const SUPPORTED_EXTENSIONS: [&str; 8] = ["zip", "7z", "rar", "tar", "gz", "bz2", "xz", "cab"];
 

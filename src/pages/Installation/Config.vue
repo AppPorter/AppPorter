@@ -4,8 +4,9 @@ import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
@@ -15,6 +16,40 @@ installationConfig.page = 'Config'
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
+const showErrorDialog = ref(false)
+
+// Load archive content when component is mounted
+onMounted(async () => {
+  if (!installationConfig.zip_path) {
+    goTo('/Installation/Home')
+    return
+  }
+
+  const result = await invoke('execute_command', {
+    command: {
+      name: 'GetArchiveContent',
+      path: installationConfig.zip_path,
+    },
+  })
+
+  const content = JSON.parse(result as string)
+  const executableExtensions = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+  const hasExecutable = content.some((path) =>
+    executableExtensions.some((ext) => path.toLowerCase().endsWith(ext))
+  )
+
+  if (!hasExecutable) {
+    showErrorDialog.value = true
+    return
+  }
+
+  installationConfig.archive_content = content
+})
+
+async function handleDialogClose() {
+  showErrorDialog.value = false
+  goTo('/Installation/Home')
+}
 
 // UI state management
 const detailsLoading = ref(false)
@@ -44,8 +79,8 @@ async function handleInstallClick() {
     executablePathError.value = true
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.executable_missing'),
-      detail: t('installation.validation.select_executable'),
+      summary: t('validation.executable_missing'),
+      detail: t('validation.select_executable'),
       life: 3000,
     })
     hasErrors = true
@@ -55,19 +90,19 @@ async function handleInstallClick() {
     nameError.value = true
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.name_required'),
-      detail: t('installation.validation.enter_name'),
+      summary: t('validation.name_required'),
+      detail: t('validation.enter_name'),
       life: 3000,
     })
     hasErrors = true
   }
 
   if (!installationConfig.install_path) {
-    pathError.value = t('installation.validation.path_required')
+    pathError.value = t('validation.select_path')
     toast.add({
       severity: 'error',
-      summary: t('installation.validation.path_required'),
-      detail: t('installation.validation.select_path'),
+      summary: t('validation.path_required'),
+      detail: t('validation.select_path'),
       life: 3000,
     })
     hasErrors = true
@@ -103,13 +138,13 @@ async function handleInstallClick() {
           icon: 'mir-install_desktop',
           header: t('installation.config.start_installation'),
           rejectProps: {
-            label: t('installation.config.cancel'),
+            label: t('cancel'),
             severity: 'secondary',
             outlined: true,
             icon: 'mir-close',
           },
           acceptProps: {
-            label: t('installation.config.install'),
+            label: t('install'),
             icon: 'mir-navigate_next',
           },
           accept: () => resolve(true),
@@ -123,9 +158,9 @@ async function handleInstallClick() {
             message: t('installation.config.directory_not_empty'),
             group: 'dialog',
             icon: 'mir-warning',
-            header: t('installation.config.warning'),
+            header: t('warning'),
             rejectProps: {
-              label: t('installation.config.cancel'),
+              label: t('cancel'),
               severity: 'secondary',
               outlined: true,
               icon: 'mir-close',
@@ -177,7 +212,7 @@ async function handleInstallClick() {
           class="h-8 w-28 text-sm transition-all duration-200"
           @click="handleBackClick"
           icon="mir-arrow_back"
-          :label="t('installation.config.back')"
+          :label="t('back')"
           outlined
         />
         <Button
@@ -185,9 +220,28 @@ async function handleInstallClick() {
           class="h-8 w-28 text-sm transition-all duration-200"
           @click="handleInstallClick"
           icon="mir-install_desktop"
-          :label="t('installation.config.install')"
+          :label="t('install')"
         />
       </div>
     </div>
+
+    <!-- Error Dialog -->
+    <Dialog
+      v-model:visible="showErrorDialog"
+      :modal="true"
+      :closable="false"
+      :header="t('validation.invalid_archive')"
+      class="w-[30rem]"
+    >
+      <div class="flex items-start gap-3">
+        <span class="mir-error text-xl text-red-500"></span>
+        <p class="text-sm">{{ t('validation.no_executable_file') }}</p>
+      </div>
+      <template #footer>
+        <div class="flex justify-end">
+          <Button @click="handleDialogClose" :label="t('ok')" icon="mir-close" />
+        </div>
+      </template>
+    </Dialog>
   </div>
 </template>
