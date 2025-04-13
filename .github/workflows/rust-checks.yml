@@ -1,6 +1,6 @@
 name: Rust Checks
 
-on: 
+on:
   push:
     branches:
       - main
@@ -23,16 +23,19 @@ jobs:
       - name: Install Rust nightly toolchain
         uses: dtolnay/rust-toolchain@nightly
 
-      - name: Install cargo-udeps
-        run: cargo install cargo-udeps --locked
-
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
           workspaces: src-tauri
+          cache-directories: ~/.cargo/bin
+          cache-on-failure: true
+          shared-key: 'windows-latest-stable-nightly'
+
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
 
       - name: Run Clippy
         run: cargo +stable clippy --all-targets --all-features
-        
+
       - name: Run Udeps
         run: cargo +nightly udeps --all-targets --all-features
