@@ -22,8 +22,8 @@ pub async fn uninstallation(
         .ok_or("App not found in app list")?;
 
     // Remove application directory
-    let app_path = Path::new(&app_config.details.install_path)
-        .join(&app_config.details.name.replace(" ", "-"));
+    let app_path =
+        Path::new(&app_config.details.install_path).join(app_config.details.name.replace(" ", "-"));
     if app_path.exists() {
         fs::remove_dir_all(&app_path).await?;
     }
@@ -108,7 +108,7 @@ pub async fn uninstallation(
                 r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
                 app_config.details.name
             );
-            if let Ok(_) = CURRENT_USER.open(&key) {
+            if CURRENT_USER.open(&key).is_ok() {
                 let _ = CURRENT_USER.remove_tree(&key);
             }
         } else {
@@ -116,7 +116,7 @@ pub async fn uninstallation(
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
                 app_config.details.name
             );
-            if let Ok(_) = LOCAL_MACHINE.open(&key) {
+            if LOCAL_MACHINE.open(&key).is_ok() {
                 let _ = LOCAL_MACHINE.remove_tree(&key);
             }
         }

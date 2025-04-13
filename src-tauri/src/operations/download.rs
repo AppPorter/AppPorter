@@ -10,7 +10,7 @@ pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send +
     std::fs::create_dir_all(&temp_dir)?;
 
     // Generate a filename from the URL
-    let url_path = url.split('/').last().unwrap_or("downloaded_file");
+    let url_path = url.split('/').next_back().unwrap_or("downloaded_file");
     let file_path = temp_dir.join(url_path);
     let file_path_str = file_path.to_string_lossy().to_string();
 

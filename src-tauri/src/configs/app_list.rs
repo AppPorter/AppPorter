@@ -189,13 +189,13 @@ impl AppList {
             // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
             search_registry(
                 &mut result,
-                &windows_registry::CURRENT_USER,
+                windows_registry::CURRENT_USER,
                 r"Software\Microsoft\Windows\CurrentVersion\Uninstall",
                 true,
             )?;
             search_registry(
                 &mut result,
-                &windows_registry::LOCAL_MACHINE,
+                windows_registry::LOCAL_MACHINE,
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall",
                 false,
             )?;
