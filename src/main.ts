@@ -6,10 +6,10 @@ import { useSettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
+import { invoke } from '@tauri-apps/api/core'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import { exit } from '@tauri-apps/plugin-process'
 import Color from 'color'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
@@ -39,7 +39,7 @@ const createTrayMenu = (t: (key: string) => string) => {
       {
         id: 'quit',
         text: t('quit'),
-        action: () => exit(0),
+        action: () => invoke('exit'),
       },
     ],
   })

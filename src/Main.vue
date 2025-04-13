@@ -116,7 +116,7 @@ function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     tauriWindow.hide()
   } else {
-    exit(0)
+    invoke('exit')
   }
 }
 

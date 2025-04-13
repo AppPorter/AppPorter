@@ -6,7 +6,7 @@ use std::io::Write;
 
 pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Get the same temp directory path as used for 7z
-    let temp_dir = std::env::temp_dir().join("AppPorter");
+    let temp_dir = std::env::temp_dir().join("AppPorter").join("downloads");
     std::fs::create_dir_all(&temp_dir)?;
 
     // Generate a filename from the URL
