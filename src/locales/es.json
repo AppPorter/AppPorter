@@ -1,17 +1,19 @@
 {
   "disclaimer": {
-    "title": "Aviso Legal",
-    "message": "Este software se proporciona tal cual, sin garantía alguna. Úselo bajo su propio riesgo."
+    "title": "Descargo de responsabilidad",
+    "message": "Este software se proporciona tal cual, sin garantía de ningún tipo. Úselo bajo su propio riesgo."
   },
+  "dismiss": "Descartar",
   "admin": {
     "warning": "AppPorter se está ejecutando sin privilegios de administrador, lo que puede limitar algunas funciones.",
-    "prompt": "Para usar todas las características, ¿desea ejecutar AppPorter con privilegios de administrador?"
+    "prompt": "¿Desea ejecutar AppPorter como administrador para utilizar todas las funciones?"
   },
   "installation": {
+    "self": "Instalación",
     "title": "Instalación de Aplicación",
     "description": "Seleccione un archivo comprimido que contenga su aplicación",
     "select_placeholder": "Seleccionar archivo comprimido",
-    "mode": "Modo de instalación",
+    "mode": "Modo de Instalación",
     "app_details": {
       "title": "Detalles de la Aplicación",
       "icon_extract_hint": "El icono se extraerá automáticamente del ejecutable"
@@ -20,34 +22,36 @@
       "installation_options": "Opciones de Instalación",
       "confirm_install": "¿Está listo para instalar la aplicación?",
       "start_installation": "Iniciar Instalación",
-      "directory_not_empty": "El directorio de instalación no está vacío. Continuar puede sobrescribir archivos existentes.",
+      "directory_not_empty": "El directorio de instalación no está vacío. Continuar podría sobrescribir archivos existentes.",
       "force_install": "Instalar de todos modos"
     },
     "progress": {
-      "title": "Instalación en Progreso",
+      "title": "Instalando",
       "description": "Instalando su aplicación, por favor espere...",
       "preparing": "Preparando la instalación...",
-      "preparing_extract": "Preparando el archivo para extracción...",
+      "preparing_extract": "Preparando para extraer archivos...",
       "extracting": "Extrayendo archivos ({progress}%)...",
       "completed": "¡Instalación completada!",
       "install_settings": "Configuración de Instalación",
       "package_info": "Información del Paquete",
-      "copy_path": "Copiar ruta",
-      "copy_settings": "Copiar configuración"
+      "copy_path": "Copiar Ruta",
+      "copy_settings": "Copiar Configuración"
     }
   },
   "app_list": {
+    "self": "Lista de Aplicaciones",
     "all_apps": "Todas las Aplicaciones",
-    "description": "Gestione sus aplicaciones instaladas",
-    "installed": "Instalado",
-    "not_installed": "No instalado",
+    "description": "Administre sus aplicaciones instaladas",
+    "installed": "Instaladas",
+    "not_installed": "No Instaladas",
     "validation_error": "Error de Validación",
     "no_apps_found": "No se encontraron aplicaciones",
-    "install_first": "Instale primero una aplicación",
+    "install_first": "Por favor instale una aplicación primero",
     "confirm_uninstall_header": "Desinstalar Aplicación",
     "confirm_uninstall_message": "¿Desea desinstalar {name}?"
   },
   "settings": {
+    "self": "Configuración",
     "title": "Configuración",
     "description": "Personalice la configuración de AppPorter",
     "basic": {
@@ -60,34 +64,29 @@
       }
     }
   },
+  "all_users": "Todos los Usuarios",
   "validation": {
-    "title": "Problema de Validación",
-    "issue": "Hay un problema con {name}. ",
-    "missing_both": "Faltan los archivos de la aplicación y las entradas del registro.",
-    "missing_file": "Faltan los archivos de la aplicación.",
-    "missing_registry": "Faltan las entradas del registro.",
-    "executable_missing": "Ejecutable Requerido",
-    "select_executable": "Por favor seleccione un archivo ejecutable",
-    "name_required": "Nombre Requerido",
-    "enter_name": "Por favor ingrese un nombre para la aplicación",
-    "path_required": "Ruta Requerida",
-    "select_path": "Por favor seleccione una ruta de instalación"
+    "title": "Problemas de Validación",
+    "issue": "Hay un problema con {name}.",
+    "missing_both": "Faltan archivos de aplicación y entradas de registro.",
+    "missing_file": "Faltan archivos de aplicación.",
+    "missing_registry": "Faltan entradas de registro.",
+    "executable_missing": "Se requiere un archivo ejecutable",
+    "select_executable": "Por favor seleccione un ejecutable",
+    "name_required": "Se requiere un nombre",
+    "enter_name": "Por favor ingrese un nombre de aplicación",
+    "path_required": "Se requiere una ruta",
+    "select_path": "Por favor seleccione una ruta de instalación",
+    "invalid_archive": "Archivo inválido",
+    "no_executable_file": "No se encontró ningún archivo ejecutable en el archivo. Por favor seleccione un archivo de aplicación válido."
   },
-  "validate": {
-    "invalid_archive": "Archivo Inválido",
-    "no_executable_file": "No se encontraron archivos ejecutables en el archivo. Por favor seleccione un archivo de aplicación válido."
-  },
-  "shortcut": {
-    "desktop": "Acceso directo en Escritorio",
-    "registry_key": "Entrada de Registro",
-    "start_menu": "Acceso directo en Menú Inicio"
-  },
-  "shortcut_types": {
-    "desktop": "Escritorio",
-    "start_menu": "Menú Inicio",
-    "registry_key": "Registro",
-    "path": "PATH",
-    "none": "Ninguno"
+  "shortcuts": {
+    "self": "Accesos Directos",
+    "desktop": "Crear Acceso Directo en Escritorio",
+    "start_menu": "Crear Acceso Directo en el Menú de Inicio",
+    "registry_key": "Crear Clave de Registro",
+    "path": "Añadir a PATH",
+    "none": "Sin accesos directos"
   },
   "app": {
     "name": "Nombre",
@@ -96,23 +95,24 @@
     "unknown_version": "Versión Desconocida",
     "unknown_publisher": "Editor Desconocido"
   },
-  "theme_options": {
+  "theme": {
+    "self": "Tema",
     "system": "Sistema",
     "light": "Claro",
     "dark": "Oscuro"
   },
   "executable_selector": {
-    "selected": "Ejecutable seleccionado",
+    "selected": "Ejecutable Seleccionado",
     "select_prompt": "Seleccione un ejecutable",
-    "no_selection": "Ningún ejecutable seleccionado",
+    "no_selection": "No se ha seleccionado un ejecutable",
     "filter": {
-      "exe": "Solo Archivos EXE",
-      "executable": "Todos los Archivos Ejecutables",
-      "all": "Todos los Archivos"
+      "exe": "Solo archivos .exe",
+      "executable": "Todos los archivos ejecutables",
+      "all": "Todos los archivos"
     }
   },
   "zip_preview": {
-    "no_files": "No se encontraron archivos en el archivo comprimido"
+    "no_files": "No se encontraron archivos en el archivo"
   },
   "edit": {
     "cut": "Cortar",
@@ -128,8 +128,7 @@
   "accept": "Aceptar",
   "exit": "Salir",
   "solve": "Resolver",
-  "applist": "Lista de Apps",
-  "browse": "Examinar",
+  "browse": "Explorar",
   "cancel": "Cancelar",
   "next": "Siguiente",
   "back": "Atrás",
@@ -138,29 +137,27 @@
   "open": "Abrir",
   "quit": "Salir",
   "reload": "Recargar",
-  "reload_disabled": "No se puede recargar durante la instalación",
+  "reload_disabled": "Recarga deshabilitada durante la instalación",
   "select": "Seleccionar",
-  "ok": "Aceptar",
+  "ok": "OK",
   "language": "Idioma",
-  "theme": "Tema",
   "minimize_tray": "Minimizar a la Bandeja",
   "context_menu": "Menú Contextual",
   "register_context_menu": "Registrar",
-  "unregister_context_menu": "Eliminar",
+  "unregister_context_menu": "Desregistrar",
   "current_user_only": "Solo Usuario Actual",
   "install_path": "Ruta de Instalación",
-  "choose_dir": "Elegir directorio",
-  "shortcuts": "Accesos directos",
-  "add_to_path": "Añadir al PATH",
+  "choose_dir": "Elegir Directorio",
+  "add_to_path": "Añadir a PATH",
   "optional": "Opcional",
   "icon": "Icono",
-  "selected_file": "Archivo seleccionado",
+  "selected_file": "Archivo Seleccionado",
   "executable_path": "Ruta del Ejecutable",
-  "select_executable_path": "Seleccionar ruta del ejecutable",
+  "select_executable_path": "Seleccionar Ruta del Ejecutable",
   "full_path": "Ruta Completa",
   "source_archive": "Archivo de Origen",
   "selected_executable": "Ejecutable Seleccionado",
-  "copy_package_info": "Copiar info del paquete",
+  "copy_package_info": "Copiar Información del Paquete",
   "warning": "Advertencia",
   "install": "Instalar",
   "uninstall": "Desinstalar",
@@ -173,5 +170,8 @@
   "select_executable": "Seleccionar Ejecutable",
   "error": "Error",
   "confirm_uninstall_header": "Confirmar Desinstalación",
-  "confirm_uninstall_message": "¿Desea desinstalar {name}?"
+  "confirm_uninstall_message": "¿Desea desinstalar {name}?",
+  "install_mode": "Modo de Instalación",
+  "loading": "Cargando...",
+  "archives": "Archivos"
 }

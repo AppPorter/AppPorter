@@ -3,15 +3,17 @@
     "title": "Avertissement",
     "message": "Ce logiciel est fourni tel quel, sans aucune garantie. Utilisez-le à vos propres risques."
   },
+  "dismiss": "Ignorer",
   "admin": {
-    "warning": "AppPorter fonctionne sans privilèges administrateur, ce qui peut limiter certaines fonctionnalités.",
-    "prompt": "Pour utiliser toutes les fonctionnalités, souhaitez-vous exécuter AppPorter avec des privilèges administrateur ?"
+    "warning": "AppPorter s'exécute sans privilèges administrateur, ce qui peut limiter certaines fonctionnalités.",
+    "prompt": "Voulez-vous exécuter AppPorter en tant qu'administrateur pour utiliser toutes les fonctionnalités ?"
   },
   "installation": {
-    "title": "Installation d'Application",
-    "description": "Sélectionnez un fichier d'archive contenant votre application",
-    "select_placeholder": "Sélectionner un fichier d'archive",
-    "mode": "Mode d'installation",
+    "self": "Installation",
+    "title": "Installation de l'Application",
+    "description": "Sélectionnez un fichier compressé contenant votre application",
+    "select_placeholder": "Sélectionner un fichier compressé",
+    "mode": "Mode d'Installation",
     "app_details": {
       "title": "Détails de l'Application",
       "icon_extract_hint": "L'icône sera automatiquement extraite de l'exécutable"
@@ -24,30 +26,32 @@
       "force_install": "Installer quand même"
     },
     "progress": {
-      "title": "Installation en Cours",
+      "title": "Installation en cours",
       "description": "Installation de votre application, veuillez patienter...",
       "preparing": "Préparation de l'installation...",
-      "preparing_extract": "Préparation de l'archive pour extraction...",
+      "preparing_extract": "Préparation de l'extraction des fichiers...",
       "extracting": "Extraction des fichiers ({progress}%)...",
       "completed": "Installation terminée !",
       "install_settings": "Paramètres d'Installation",
       "package_info": "Informations du Package",
-      "copy_path": "Copier le chemin",
-      "copy_settings": "Copier les paramètres"
+      "copy_path": "Copier le Chemin",
+      "copy_settings": "Copier les Paramètres"
     }
   },
   "app_list": {
+    "self": "Liste des Applications",
     "all_apps": "Toutes les Applications",
-    "description": "Gérez vos applications installées",
-    "installed": "Installé",
-    "not_installed": "Non installé",
+    "description": "Gérer vos applications installées",
+    "installed": "Installées",
+    "not_installed": "Non Installées",
     "validation_error": "Erreur de Validation",
     "no_apps_found": "Aucune application trouvée",
-    "install_first": "Installez d'abord une application",
+    "install_first": "Veuillez d'abord installer une application",
     "confirm_uninstall_header": "Désinstaller l'Application",
     "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?"
   },
   "settings": {
+    "self": "Paramètres",
     "title": "Paramètres",
     "description": "Personnaliser les paramètres d'AppPorter",
     "basic": {
@@ -60,34 +64,29 @@
       }
     }
   },
+  "all_users": "Tous les Utilisateurs",
   "validation": {
-    "title": "Problème de Validation",
-    "issue": "Il y a un problème avec {name}. ",
-    "missing_both": "Les fichiers de l'application et les entrées de registre sont manquants.",
-    "missing_file": "Les fichiers de l'application sont manquants.",
+    "title": "Problèmes de Validation",
+    "issue": "Il y a un problème avec {name}.",
+    "missing_both": "Les fichiers d'application et les entrées de registre sont manquants.",
+    "missing_file": "Les fichiers d'application sont manquants.",
     "missing_registry": "Les entrées de registre sont manquantes.",
-    "executable_missing": "Exécutable Requis",
-    "select_executable": "Veuillez sélectionner un fichier exécutable",
-    "name_required": "Nom Requis",
+    "executable_missing": "Un exécutable est requis",
+    "select_executable": "Veuillez sélectionner un exécutable",
+    "name_required": "Un nom est requis",
     "enter_name": "Veuillez entrer un nom d'application",
-    "path_required": "Chemin Requis",
-    "select_path": "Veuillez sélectionner un chemin d'installation"
+    "path_required": "Un chemin est requis",
+    "select_path": "Veuillez sélectionner un chemin d'installation",
+    "invalid_archive": "Archive invalide",
+    "no_executable_file": "Aucun fichier exécutable n'a été trouvé dans l'archive. Veuillez sélectionner une archive d'application valide."
   },
-  "validate": {
-    "invalid_archive": "Archive Invalide",
-    "no_executable_file": "Aucun fichier exécutable trouvé dans l'archive. Veuillez sélectionner une archive d'application valide."
-  },
-  "shortcut": {
-    "desktop": "Raccourci Bureau",
-    "registry_key": "Entrée Registre",
-    "start_menu": "Raccourci Menu Démarrer"
-  },
-  "shortcut_types": {
-    "desktop": "Bureau",
-    "start_menu": "Menu Démarrer",
-    "registry_key": "Registre",
-    "path": "PATH",
-    "none": "Aucun"
+  "shortcuts": {
+    "self": "Raccourcis",
+    "desktop": "Créer un Raccourci sur le Bureau",
+    "start_menu": "Créer un Raccourci dans le Menu Démarrer",
+    "registry_key": "Créer une Clé de Registre",
+    "path": "Ajouter au PATH",
+    "none": "Pas de raccourcis"
   },
   "app": {
     "name": "Nom",
@@ -96,19 +95,20 @@
     "unknown_version": "Version Inconnue",
     "unknown_publisher": "Éditeur Inconnu"
   },
-  "theme_options": {
+  "theme": {
+    "self": "Thème",
     "system": "Système",
     "light": "Clair",
     "dark": "Sombre"
   },
   "executable_selector": {
-    "selected": "Exécutable sélectionné",
+    "selected": "Exécutable Sélectionné",
     "select_prompt": "Sélectionner un exécutable",
     "no_selection": "Aucun exécutable sélectionné",
     "filter": {
-      "exe": "Fichiers EXE Uniquement",
-      "executable": "Tous les Fichiers Exécutables",
-      "all": "Tous les Fichiers"
+      "exe": "Uniquement les fichiers .exe",
+      "executable": "Tous les fichiers exécutables",
+      "all": "Tous les fichiers"
     }
   },
   "zip_preview": {
@@ -128,7 +128,6 @@
   "accept": "Accepter",
   "exit": "Quitter",
   "solve": "Résoudre",
-  "applist": "Liste des Apps",
   "browse": "Parcourir",
   "cancel": "Annuler",
   "next": "Suivant",
@@ -138,29 +137,27 @@
   "open": "Ouvrir",
   "quit": "Quitter",
   "reload": "Recharger",
-  "reload_disabled": "Impossible de recharger pendant l'installation",
+  "reload_disabled": "Rechargement désactivé pendant l'installation",
   "select": "Sélectionner",
   "ok": "OK",
   "language": "Langue",
-  "theme": "Thème",
-  "minimize_tray": "Réduire dans la Zone de Notification",
+  "minimize_tray": "Réduire dans la Barre des Tâches",
   "context_menu": "Menu Contextuel",
   "register_context_menu": "Enregistrer",
-  "unregister_context_menu": "Désinscrire",
+  "unregister_context_menu": "Désenregistrer",
   "current_user_only": "Utilisateur Actuel Uniquement",
   "install_path": "Chemin d'Installation",
-  "choose_dir": "Choisir un répertoire",
-  "shortcuts": "Raccourcis",
+  "choose_dir": "Choisir un Répertoire",
   "add_to_path": "Ajouter au PATH",
   "optional": "Optionnel",
   "icon": "Icône",
-  "selected_file": "Fichier sélectionné",
+  "selected_file": "Fichier Sélectionné",
   "executable_path": "Chemin de l'Exécutable",
-  "select_executable_path": "Sélectionner le chemin de l'exécutable",
+  "select_executable_path": "Sélectionner le Chemin de l'Exécutable",
   "full_path": "Chemin Complet",
   "source_archive": "Archive Source",
   "selected_executable": "Exécutable Sélectionné",
-  "copy_package_info": "Copier les infos du package",
+  "copy_package_info": "Copier les Infos du Package",
   "warning": "Avertissement",
   "install": "Installer",
   "uninstall": "Désinstaller",
@@ -170,8 +167,11 @@
   "reinstall": "Réinstaller",
   "repair": "Réparer",
   "current_user": "Utilisateur Actuel",
-  "select_executable": "Sélectionner l'Exécutable",
+  "select_executable": "Sélectionner un Exécutable",
   "error": "Erreur",
   "confirm_uninstall_header": "Confirmer la Désinstallation",
-  "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?"
+  "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?",
+  "install_mode": "Mode d'Installation",
+  "loading": "Chargement...",
+  "archives": "Archives"
 }

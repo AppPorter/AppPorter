@@ -87,7 +87,7 @@ watchEffect(() => {
     <div class="space-y-2 p-2">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('install.mode') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('install_mode') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
           <span class="text-sm">{{ t('all_users') }}</span>
           <ToggleSwitch
@@ -125,7 +125,7 @@ watchEffect(() => {
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <label class="mt-1 w-24 text-sm font-medium">{{ t('shortcuts') }}</label>
+        <label class="mt-1 w-24 text-sm font-medium">{{ t('shortcuts.self') }}</label>
         <div class="w-full">
           <div class="flex-1 space-y-1 rounded-lg p-1.5">
             <div class="flex items-center gap-2">
@@ -134,7 +134,7 @@ watchEffect(() => {
                 :binary="true"
                 inputId="desktop_shortcut"
               />
-              <label for="desktop_shortcut" class="text-sm">{{ t('shortcut.desktop') }}</label>
+              <label for="desktop_shortcut" class="text-sm">{{ t('shortcuts.desktop') }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox
@@ -143,12 +143,12 @@ watchEffect(() => {
                 inputId="start_menu_shortcut"
               />
               <label for="start_menu_shortcut" class="text-sm">{{
-                t('shortcut.start_menu')
+                t('shortcuts.start_menu')
               }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
-              <label for="registry_key" class="text-sm">{{ t('shortcut.registry_key') }}</label>
+              <label for="registry_key" class="text-sm">{{ t('shortcuts.registry_key') }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />

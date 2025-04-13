@@ -3,11 +3,13 @@
     "title": "免责声明",
     "message": "本软件按原样提供，不提供任何保证或担保。使用风险自负。"
   },
+  "dismiss": "忽略",
   "admin": {
     "warning": "AppPorter 正在以非管理员权限运行，这可能会限制某些功能。",
     "prompt": "要使用所有功能，您想以管理员权限运行 AppPorter 吗？"
   },
   "installation": {
+    "self": "安装",
     "title": "应用程序安装",
     "description": "选择包含您应用程序的压缩文件",
     "select_placeholder": "选择压缩文件",
@@ -37,6 +39,7 @@
     }
   },
   "app_list": {
+    "self": "应用程序列表",
     "all_apps": "所有应用程序",
     "description": "管理您已安装的应用程序",
     "installed": "已安装",
@@ -48,6 +51,7 @@
     "confirm_uninstall_message": "您想卸载 {name} 吗？"
   },
   "settings": {
+    "self": "设置",
     "title": "设置",
     "description": "自定义 AppPorter 设置",
     "basic": {
@@ -60,6 +64,7 @@
       }
     }
   },
+  "all_users": "所有用户",
   "validation": {
     "title": "验证问题",
     "issue": "{name} 存在问题。",
@@ -71,23 +76,17 @@
     "name_required": "需要名称",
     "enter_name": "请输入应用程序名称",
     "path_required": "需要路径",
-    "select_path": "请选择安装路径"
-  },
-  "validate": {
+    "select_path": "请选择安装路径",
     "invalid_archive": "无效的压缩文件",
     "no_executable_file": "压缩文件中未找到可执行文件。请选择有效的应用程序压缩文件。"
   },
-  "shortcut": {
-    "desktop": "桌面快捷方式",
-    "registry_key": "注册表项",
-    "start_menu": "开始菜单快捷方式"
-  },
-  "shortcut_types": {
-    "desktop": "桌面",
-    "start_menu": "开始菜单",
-    "registry_key": "注册表",
-    "path": "PATH",
-    "none": "无"
+  "shortcuts": {
+    "self": "快捷方式",
+    "desktop": "创建桌面快捷方式",
+    "start_menu": "创建开始菜单快捷方式",
+    "registry_key": "创建注册表项",
+    "path": "添加到PATH",
+    "none": "没有任何快捷方式"
   },
   "app": {
     "name": "名称",
@@ -96,7 +95,8 @@
     "unknown_version": "未知版本",
     "unknown_publisher": "未知发布者"
   },
-  "theme_options": {
+  "theme": {
+    "self": "主题",
     "system": "系统",
     "light": "浅色",
     "dark": "深色"
@@ -106,7 +106,7 @@
     "select_prompt": "选择一个可执行文件",
     "no_selection": "未选择可执行文件",
     "filter": {
-      "exe": "仅 EXE 文件",
+      "exe": "仅 .exe 文件",
       "executable": "所有可执行文件",
       "all": "所有文件"
     }
@@ -128,7 +128,6 @@
   "accept": "接受",
   "exit": "退出",
   "solve": "解决",
-  "applist": "应用列表",
   "browse": "浏览",
   "cancel": "取消",
   "next": "下一步",
@@ -142,7 +141,6 @@
   "select": "选择",
   "ok": "确定",
   "language": "语言",
-  "theme": "主题",
   "minimize_tray": "最小化到托盘",
   "context_menu": "上下文菜单",
   "register_context_menu": "注册",
@@ -150,7 +148,6 @@
   "current_user_only": "仅当前用户",
   "install_path": "安装路径",
   "choose_dir": "选择目录",
-  "shortcuts": "快捷方式",
   "add_to_path": "添加到 PATH",
   "optional": "可选",
   "icon": "图标",
@@ -173,5 +170,8 @@
   "select_executable": "选择可执行文件",
   "error": "错误",
   "confirm_uninstall_header": "确认卸载",
-  "confirm_uninstall_message": "您想卸载 {name} 吗？"
+  "confirm_uninstall_message": "您想卸载 {name} 吗？",
+  "install_mode": "安装模式",
+  "loading": "加载中...",
+  "archives": "压缩文件"
 }

@@ -115,7 +115,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
               />
             </div>
             <div class="flex items-center justify-between">
-              <label>{{ t('theme') }}</label>
+              <label>{{ t('theme.self') }}</label>
               <Select
                 v-model="settings.theme"
                 :options="themeOptions"
@@ -173,19 +173,19 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 </template>
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.desktop') }}</label>
+                    <label>{{ t('shortcuts.desktop') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_desktop_shortcut"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.registry_key') }}</label>
+                    <label>{{ t('shortcuts.registry_key') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_registry_key"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.start_menu') }}</label>
+                    <label>{{ t('shortcuts.start_menu') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.current_user.create_start_menu_shortcut"
                     />
@@ -220,17 +220,17 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 </template>
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.desktop') }}</label>
+                    <label>{{ t('shortcuts.desktop') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.all_users.create_desktop_shortcut"
                     />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.registry_key') }}</label>
+                    <label>{{ t('shortcuts.registry_key') }}</label>
                     <ToggleSwitch v-model="settings.installation.all_users.create_registry_key" />
                   </div>
                   <div class="flex items-center justify-between">
-                    <label>{{ t('shortcut.start_menu') }}</label>
+                    <label>{{ t('shortcuts.start_menu') }}</label>
                     <ToggleSwitch
                       v-model="settings.installation.all_users.create_start_menu_shortcut"
                     />

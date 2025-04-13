@@ -159,13 +159,13 @@ const handleAdminPrompt = (event) => {
 // Navigation menu configuration
 const leftMenuItems = [
   {
-    label: t('installation'),
+    label: t('installation.self'),
     icon: 'mir-install_desktop',
     command: () => goTo('/'),
     paths: ['/Installation/Home', '/Installation/Config', '/Installation/Progress'],
   },
   {
-    label: t('applist'),
+    label: t('app_list.self'),
     icon: 'mir-apps',
     command: () => goTo('/AppList'),
     paths: ['/AppList'],
@@ -174,7 +174,7 @@ const leftMenuItems = [
 
 const rightMenuItems = [
   {
-    label: t('settings'),
+    label: t('settings.self'),
     icon: 'mir-settings',
     command: () => goTo('/Settings'),
     paths: ['/Settings'],

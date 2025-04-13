@@ -1,25 +1,27 @@
 {
   "disclaimer": {
     "title": "免責事項",
-    "message": "このソフトウェアは現状有姿で提供され、いかなる保証もありません。自己責任でご利用ください。"
+    "message": "このソフトウェアは現状のまま提供され、いかなる保証もありません。自己責任でご使用ください。"
   },
+  "dismiss": "閉じる",
   "admin": {
     "warning": "AppPorterは管理者権限なしで実行されているため、一部の機能が制限される可能性があります。",
-    "prompt": "すべての機能を使用するために、AppPorterを管理者権限で実行しますか？"
+    "prompt": "すべての機能を使用するために、AppPorterを管理者として実行しますか？"
   },
   "installation": {
+    "self": "インストール",
     "title": "アプリケーションのインストール",
-    "description": "アプリケーションを含むアーカイブファイルを選択してください",
-    "select_placeholder": "アーカイブファイルを選択",
+    "description": "アプリケーションを含む圧縮ファイルを選択してください",
+    "select_placeholder": "圧縮ファイルを選択",
     "mode": "インストールモード",
     "app_details": {
-      "title": "アプリケーションの詳細",
+      "title": "アプリケーション詳細",
       "icon_extract_hint": "アイコンは実行ファイルから自動的に抽出されます"
     },
     "config": {
       "installation_options": "インストールオプション",
-      "confirm_install": "アプリケーションをインストールする準備はできていますか？",
-      "start_installation": "インストールを開始",
+      "confirm_install": "アプリケーションをインストールする準備はできましたか？",
+      "start_installation": "インストール開始",
       "directory_not_empty": "インストールディレクトリが空ではありません。続行すると既存のファイルが上書きされる可能性があります。",
       "force_install": "それでもインストール"
     },
@@ -27,8 +29,8 @@
       "title": "インストール中",
       "description": "アプリケーションをインストールしています、お待ちください...",
       "preparing": "インストールの準備中...",
-      "preparing_extract": "アーカイブの展開準備中...",
-      "extracting": "ファイルを展開中（{progress}%）...",
+      "preparing_extract": "ファイル抽出の準備中...",
+      "extracting": "ファイルを抽出中({progress}%)...",
       "completed": "インストールが完了しました！",
       "install_settings": "インストール設定",
       "package_info": "パッケージ情報",
@@ -37,6 +39,7 @@
     }
   },
   "app_list": {
+    "self": "アプリ一覧",
     "all_apps": "すべてのアプリケーション",
     "description": "インストールされたアプリケーションを管理",
     "installed": "インストール済み",
@@ -48,6 +51,7 @@
     "confirm_uninstall_message": "{name}をアンインストールしますか？"
   },
   "settings": {
+    "self": "設定",
     "title": "設定",
     "description": "AppPorterの設定をカスタマイズ",
     "basic": {
@@ -60,6 +64,7 @@
       }
     }
   },
+  "all_users": "すべてのユーザー",
   "validation": {
     "title": "検証の問題",
     "issue": "{name}に問題があります。",
@@ -71,23 +76,17 @@
     "name_required": "名前が必要です",
     "enter_name": "アプリケーション名を入力してください",
     "path_required": "パスが必要です",
-    "select_path": "インストールパスを選択してください"
-  },
-  "validate": {
+    "select_path": "インストールパスを選択してください",
     "invalid_archive": "無効なアーカイブ",
-    "no_executable_file": "アーカイブ内に実行ファイルが見つかりません。有効なアプリケーションアーカイブを選択してください。"
+    "no_executable_file": "アーカイブ内に実行ファイルが見つかりませんでした。有効なアプリケーションアーカイブを選択してください。"
   },
-  "shortcut": {
-    "desktop": "デスクトップショートカット",
-    "registry_key": "レジストリエントリ",
-    "start_menu": "スタートメニューショートカット"
-  },
-  "shortcut_types": {
-    "desktop": "デスクトップ",
-    "start_menu": "スタートメニュー",
-    "registry_key": "レジストリ",
-    "path": "PATH",
-    "none": "なし"
+  "shortcuts": {
+    "self": "ショートカット",
+    "desktop": "デスクトップショートカットを作成",
+    "start_menu": "スタートメニューショートカットを作成",
+    "registry_key": "レジストリキーを作成",
+    "path": "PATHに追加",
+    "none": "ショートカットなし"
   },
   "app": {
     "name": "名前",
@@ -96,7 +95,8 @@
     "unknown_version": "不明なバージョン",
     "unknown_publisher": "不明な発行元"
   },
-  "theme_options": {
+  "theme": {
+    "self": "テーマ",
     "system": "システム",
     "light": "ライト",
     "dark": "ダーク"
@@ -106,7 +106,7 @@
     "select_prompt": "実行ファイルを選択",
     "no_selection": "実行ファイルが選択されていません",
     "filter": {
-      "exe": "EXEファイルのみ",
+      "exe": ".exeファイルのみ",
       "executable": "すべての実行可能ファイル",
       "all": "すべてのファイル"
     }
@@ -125,10 +125,9 @@
     "publisher": "発行元順",
     "date": "日付順"
   },
-  "accept": "同意する",
+  "accept": "承諾",
   "exit": "終了",
   "solve": "解決",
-  "applist": "アプリ一覧",
   "browse": "参照",
   "cancel": "キャンセル",
   "next": "次へ",
@@ -138,11 +137,10 @@
   "open": "開く",
   "quit": "終了",
   "reload": "再読み込み",
-  "reload_disabled": "インストール中は再読み込みできません",
+  "reload_disabled": "インストール中は再読み込みが無効です",
   "select": "選択",
   "ok": "OK",
   "language": "言語",
-  "theme": "テーマ",
   "minimize_tray": "トレイに最小化",
   "context_menu": "コンテキストメニュー",
   "register_context_menu": "登録",
@@ -150,7 +148,6 @@
   "current_user_only": "現在のユーザーのみ",
   "install_path": "インストールパス",
   "choose_dir": "ディレクトリを選択",
-  "shortcuts": "ショートカット",
   "add_to_path": "PATHに追加",
   "optional": "オプション",
   "icon": "アイコン",
@@ -173,5 +170,8 @@
   "select_executable": "実行ファイルを選択",
   "error": "エラー",
   "confirm_uninstall_header": "アンインストールの確認",
-  "confirm_uninstall_message": "{name}をアンインストールしますか？"
+  "confirm_uninstall_message": "{name}をアンインストールしますか？",
+  "install_mode": "インストールモード",
+  "loading": "読み込み中...",
+  "archives": "アーカイブ"
 }
