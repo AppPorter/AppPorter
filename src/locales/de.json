@@ -1,1 +1,177 @@
-{}
+{
+  "disclaimer": {
+    "title": "Haftungsausschluss",
+    "message": "Diese Software wird ohne jegliche Garantie oder Gewährleistung zur Verfügung gestellt. Die Nutzung erfolgt auf eigenes Risiko."
+  },
+  "admin": {
+    "warning": "AppPorter läuft ohne Administratorrechte, was die Funktionalität einschränken kann.",
+    "prompt": "Um alle Funktionen zu nutzen, möchten Sie AppPorter mit Administratorrechten ausführen?"
+  },
+  "installation": {
+    "title": "Anwendungsinstallation",
+    "description": "Wählen Sie eine Archivdatei aus, die Ihre Anwendung enthält",
+    "select_placeholder": "Archivdatei auswählen",
+    "mode": "Installationsmodus",
+    "app_details": {
+      "title": "Anwendungsdetails",
+      "icon_extract_hint": "Das Symbol wird automatisch aus der ausführbaren Datei extrahiert"
+    },
+    "config": {
+      "installation_options": "Installationsoptionen",
+      "confirm_install": "Sind Sie bereit, die Anwendung zu installieren?",
+      "start_installation": "Installation starten",
+      "directory_not_empty": "Das Installationsverzeichnis ist nicht leer. Das Fortfahren könnte vorhandene Dateien überschreiben.",
+      "force_install": "Trotzdem installieren"
+    },
+    "progress": {
+      "title": "Installation läuft",
+      "description": "Die Anwendung wird installiert, bitte warten Sie...",
+      "preparing": "Installation wird vorbereitet...",
+      "preparing_extract": "Archiv wird zur Extraktion vorbereitet...",
+      "extracting": "Dateien werden extrahiert ({progress}%)...",
+      "completed": "Installation abgeschlossen!",
+      "install_settings": "Installationseinstellungen",
+      "package_info": "Paketinformationen",
+      "copy_path": "Pfad kopieren",
+      "copy_settings": "Einstellungen kopieren"
+    }
+  },
+  "app_list": {
+    "all_apps": "Alle Anwendungen",
+    "description": "Verwalten Sie Ihre installierten Anwendungen",
+    "installed": "Installiert",
+    "not_installed": "Nicht installiert",
+    "validation_error": "Validierungsfehler",
+    "no_apps_found": "Keine Anwendungen gefunden",
+    "install_first": "Installieren Sie zuerst eine Anwendung",
+    "confirm_uninstall_header": "Anwendung deinstallieren",
+    "confirm_uninstall_message": "Möchten Sie {name} wirklich deinstallieren?"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "description": "AppPorter-Einstellungen anpassen",
+    "basic": {
+      "title": "Grundeinstellungen"
+    },
+    "installation": {
+      "title": "Installationseinstellungen",
+      "all_users": {
+        "title": "Alle Benutzer"
+      }
+    }
+  },
+  "validation": {
+    "title": "Validierungsproblem",
+    "issue": "Ein Problem wurde mit {name} festgestellt. ",
+    "missing_both": "Die Anwendungsdateien und Registrierungseinträge fehlen.",
+    "missing_file": "Die Anwendungsdateien fehlen.",
+    "missing_registry": "Die Registrierungseinträge fehlen.",
+    "executable_missing": "Ausführbare Datei erforderlich",
+    "select_executable": "Bitte wählen Sie eine ausführbare Datei aus",
+    "name_required": "Name erforderlich",
+    "enter_name": "Bitte geben Sie einen Anwendungsnamen ein",
+    "path_required": "Pfad erforderlich",
+    "select_path": "Bitte wählen Sie einen Installationspfad"
+  },
+  "validate": {
+    "invalid_archive": "Ungültiges Archiv",
+    "no_executable_file": "Keine ausführbaren Dateien im Archiv gefunden. Bitte wählen Sie ein gültiges Anwendungsarchiv aus."
+  },
+  "shortcut": {
+    "desktop": "Desktop-Verknüpfung",
+    "registry_key": "Registrierungseintrag",
+    "start_menu": "Startmenü-Verknüpfung"
+  },
+  "shortcut_types": {
+    "desktop": "Desktop",
+    "start_menu": "Startmenü",
+    "registry_key": "Registry",
+    "path": "PATH",
+    "none": "Keine"
+  },
+  "app": {
+    "name": "Name",
+    "publisher": "Herausgeber",
+    "version": "Version",
+    "unknown_version": "Unbekannte Version",
+    "unknown_publisher": "Unbekannter Herausgeber"
+  },
+  "theme_options": {
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel"
+  },
+  "executable_selector": {
+    "selected": "Ausgewählte ausführbare Datei",
+    "select_prompt": "Wählen Sie eine ausführbare Datei",
+    "no_selection": "Keine ausführbare Datei ausgewählt",
+    "filter": {
+      "exe": "Nur EXE-Dateien",
+      "executable": "Alle ausführbaren Dateien",
+      "all": "Alle Dateien"
+    }
+  },
+  "zip_preview": {
+    "no_files": "Keine Dateien im Archiv gefunden"
+  },
+  "edit": {
+    "cut": "Ausschneiden",
+    "copy": "Kopieren",
+    "paste": "Einfügen",
+    "select_all": "Alles auswählen"
+  },
+  "sort": {
+    "name": "Nach Name",
+    "publisher": "Nach Herausgeber",
+    "date": "Nach Datum"
+  },
+  "accept": "Akzeptieren",
+  "exit": "Beenden",
+  "solve": "Beheben",
+  "applist": "Anwendungsliste",
+  "browse": "Durchsuchen",
+  "cancel": "Abbrechen",
+  "next": "Weiter",
+  "back": "Zurück",
+  "finish": "Fertigstellen",
+  "close": "Schließen",
+  "open": "Öffnen",
+  "quit": "Beenden",
+  "reload": "Neu laden",
+  "reload_disabled": "Neuladen während der Installation nicht möglich",
+  "select": "Auswählen",
+  "ok": "OK",
+  "language": "Sprache",
+  "theme": "Thema",
+  "minimize_tray": "In Taskleiste minimieren",
+  "context_menu": "Kontextmenü",
+  "register_context_menu": "Registrieren",
+  "unregister_context_menu": "Entfernen",
+  "current_user_only": "Nur aktueller Benutzer",
+  "install_path": "Installationspfad",
+  "choose_dir": "Verzeichnis wählen",
+  "shortcuts": "Verknüpfungen",
+  "add_to_path": "Zum PATH hinzufügen",
+  "optional": "Optional",
+  "icon": "Symbol",
+  "selected_file": "Ausgewählte Datei",
+  "executable_path": "Pfad zur ausführbaren Datei",
+  "select_executable_path": "Ausführbare Datei wählen",
+  "full_path": "Vollständiger Pfad",
+  "source_archive": "Quelldatei",
+  "selected_executable": "Ausgewählte ausführbare Datei",
+  "copy_package_info": "Paketinfo kopieren",
+  "warning": "Warnung",
+  "install": "Installieren",
+  "uninstall": "Deinstallieren",
+  "search": "Suchen",
+  "open_install_folder": "Installationsordner öffnen",
+  "open_registry": "Registry öffnen",
+  "reinstall": "Neu installieren",
+  "repair": "Reparieren",
+  "current_user": "Aktueller Benutzer",
+  "select_executable": "Ausführbare Datei auswählen",
+  "error": "Fehler",
+  "confirm_uninstall_header": "Deinstallation bestätigen",
+  "confirm_uninstall_message": "Möchten Sie {name} wirklich deinstallieren?"
+}

@@ -1,1 +1,177 @@
-{}
+{
+  "disclaimer": {
+    "title": "免責事項",
+    "message": "このソフトウェアは現状有姿で提供され、いかなる保証もありません。自己責任でご利用ください。"
+  },
+  "admin": {
+    "warning": "AppPorterは管理者権限なしで実行されているため、一部の機能が制限される可能性があります。",
+    "prompt": "すべての機能を使用するために、AppPorterを管理者権限で実行しますか？"
+  },
+  "installation": {
+    "title": "アプリケーションのインストール",
+    "description": "アプリケーションを含むアーカイブファイルを選択してください",
+    "select_placeholder": "アーカイブファイルを選択",
+    "mode": "インストールモード",
+    "app_details": {
+      "title": "アプリケーションの詳細",
+      "icon_extract_hint": "アイコンは実行ファイルから自動的に抽出されます"
+    },
+    "config": {
+      "installation_options": "インストールオプション",
+      "confirm_install": "アプリケーションをインストールする準備はできていますか？",
+      "start_installation": "インストールを開始",
+      "directory_not_empty": "インストールディレクトリが空ではありません。続行すると既存のファイルが上書きされる可能性があります。",
+      "force_install": "それでもインストール"
+    },
+    "progress": {
+      "title": "インストール中",
+      "description": "アプリケーションをインストールしています、お待ちください...",
+      "preparing": "インストールの準備中...",
+      "preparing_extract": "アーカイブの展開準備中...",
+      "extracting": "ファイルを展開中（{progress}%）...",
+      "completed": "インストールが完了しました！",
+      "install_settings": "インストール設定",
+      "package_info": "パッケージ情報",
+      "copy_path": "パスをコピー",
+      "copy_settings": "設定をコピー"
+    }
+  },
+  "app_list": {
+    "all_apps": "すべてのアプリケーション",
+    "description": "インストールされたアプリケーションを管理",
+    "installed": "インストール済み",
+    "not_installed": "未インストール",
+    "validation_error": "検証エラー",
+    "no_apps_found": "アプリケーションが見つかりません",
+    "install_first": "最初にアプリケーションをインストールしてください",
+    "confirm_uninstall_header": "アプリケーションのアンインストール",
+    "confirm_uninstall_message": "{name}をアンインストールしますか？"
+  },
+  "settings": {
+    "title": "設定",
+    "description": "AppPorterの設定をカスタマイズ",
+    "basic": {
+      "title": "基本設定"
+    },
+    "installation": {
+      "title": "インストール設定",
+      "all_users": {
+        "title": "すべてのユーザー"
+      }
+    }
+  },
+  "validation": {
+    "title": "検証の問題",
+    "issue": "{name}に問題があります。",
+    "missing_both": "アプリケーションファイルとレジストリエントリが見つかりません。",
+    "missing_file": "アプリケーションファイルが見つかりません。",
+    "missing_registry": "レジストリエントリが見つかりません。",
+    "executable_missing": "実行ファイルが必要です",
+    "select_executable": "実行ファイルを選択してください",
+    "name_required": "名前が必要です",
+    "enter_name": "アプリケーション名を入力してください",
+    "path_required": "パスが必要です",
+    "select_path": "インストールパスを選択してください"
+  },
+  "validate": {
+    "invalid_archive": "無効なアーカイブ",
+    "no_executable_file": "アーカイブ内に実行ファイルが見つかりません。有効なアプリケーションアーカイブを選択してください。"
+  },
+  "shortcut": {
+    "desktop": "デスクトップショートカット",
+    "registry_key": "レジストリエントリ",
+    "start_menu": "スタートメニューショートカット"
+  },
+  "shortcut_types": {
+    "desktop": "デスクトップ",
+    "start_menu": "スタートメニュー",
+    "registry_key": "レジストリ",
+    "path": "PATH",
+    "none": "なし"
+  },
+  "app": {
+    "name": "名前",
+    "publisher": "発行元",
+    "version": "バージョン",
+    "unknown_version": "不明なバージョン",
+    "unknown_publisher": "不明な発行元"
+  },
+  "theme_options": {
+    "system": "システム",
+    "light": "ライト",
+    "dark": "ダーク"
+  },
+  "executable_selector": {
+    "selected": "選択された実行ファイル",
+    "select_prompt": "実行ファイルを選択",
+    "no_selection": "実行ファイルが選択されていません",
+    "filter": {
+      "exe": "EXEファイルのみ",
+      "executable": "すべての実行可能ファイル",
+      "all": "すべてのファイル"
+    }
+  },
+  "zip_preview": {
+    "no_files": "アーカイブ内にファイルが見つかりません"
+  },
+  "edit": {
+    "cut": "切り取り",
+    "copy": "コピー",
+    "paste": "貼り付け",
+    "select_all": "すべて選択"
+  },
+  "sort": {
+    "name": "名前順",
+    "publisher": "発行元順",
+    "date": "日付順"
+  },
+  "accept": "同意する",
+  "exit": "終了",
+  "solve": "解決",
+  "applist": "アプリ一覧",
+  "browse": "参照",
+  "cancel": "キャンセル",
+  "next": "次へ",
+  "back": "戻る",
+  "finish": "完了",
+  "close": "閉じる",
+  "open": "開く",
+  "quit": "終了",
+  "reload": "再読み込み",
+  "reload_disabled": "インストール中は再読み込みできません",
+  "select": "選択",
+  "ok": "OK",
+  "language": "言語",
+  "theme": "テーマ",
+  "minimize_tray": "トレイに最小化",
+  "context_menu": "コンテキストメニュー",
+  "register_context_menu": "登録",
+  "unregister_context_menu": "登録解除",
+  "current_user_only": "現在のユーザーのみ",
+  "install_path": "インストールパス",
+  "choose_dir": "ディレクトリを選択",
+  "shortcuts": "ショートカット",
+  "add_to_path": "PATHに追加",
+  "optional": "オプション",
+  "icon": "アイコン",
+  "selected_file": "選択されたファイル",
+  "executable_path": "実行ファイルのパス",
+  "select_executable_path": "実行ファイルのパスを選択",
+  "full_path": "完全パス",
+  "source_archive": "ソースアーカイブ",
+  "selected_executable": "選択された実行ファイル",
+  "copy_package_info": "パッケージ情報をコピー",
+  "warning": "警告",
+  "install": "インストール",
+  "uninstall": "アンインストール",
+  "search": "検索",
+  "open_install_folder": "インストールフォルダを開く",
+  "open_registry": "レジストリを開く",
+  "reinstall": "再インストール",
+  "repair": "修復",
+  "current_user": "現在のユーザー",
+  "select_executable": "実行ファイルを選択",
+  "error": "エラー",
+  "confirm_uninstall_header": "アンインストールの確認",
+  "confirm_uninstall_message": "{name}をアンインストールしますか？"
+}

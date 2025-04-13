@@ -1,1 +1,177 @@
-{}
+{
+  "disclaimer": {
+    "title": "면책 조항",
+    "message": "이 소프트웨어는 어떠한 보증 없이 있는 그대로 제공됩니다. 사용 시 위험은 사용자가 부담합니다."
+  },
+  "admin": {
+    "warning": "AppPorter가 관리자 권한 없이 실행 중이므로 일부 기능이 제한될 수 있습니다.",
+    "prompt": "모든 기능을 사용하기 위해 AppPorter를 관리자 권한으로 실행하시겠습니까?"
+  },
+  "installation": {
+    "title": "애플리케이션 설치",
+    "description": "애플리케이션이 포함된 압축 파일을 선택하세요",
+    "select_placeholder": "압축 파일 선택",
+    "mode": "설치 모드",
+    "app_details": {
+      "title": "애플리케이션 정보",
+      "icon_extract_hint": "실행 파일에서 아이콘이 자동으로 추출됩니다"
+    },
+    "config": {
+      "installation_options": "설치 옵션",
+      "confirm_install": "애플리케이션을 설치할 준비가 되었습니까?",
+      "start_installation": "설치 시작",
+      "directory_not_empty": "설치 디렉터리가 비어 있지 않습니다. 계속하면 기존 파일을 덮어쓸 수 있습니다.",
+      "force_install": "그래도 설치"
+    },
+    "progress": {
+      "title": "설치 진행 중",
+      "description": "애플리케이션 설치 중, 잠시만 기다려주세요...",
+      "preparing": "설치 준비 중...",
+      "preparing_extract": "압축 파일 추출 준비 중...",
+      "extracting": "파일 추출 중 ({progress}%)...",
+      "completed": "설치가 완료되었습니다!",
+      "install_settings": "설치 설정",
+      "package_info": "패키지 정보",
+      "copy_path": "경로 복사",
+      "copy_settings": "설정 복사"
+    }
+  },
+  "app_list": {
+    "all_apps": "모든 애플리케이션",
+    "description": "설치된 애플리케이션 관리",
+    "installed": "설치됨",
+    "not_installed": "설치되지 않음",
+    "validation_error": "유효성 검사 오류",
+    "no_apps_found": "앱을 찾을 수 없습니다",
+    "install_first": "먼저 애플리케이션을 설치하세요",
+    "confirm_uninstall_header": "애플리케이션 제거",
+    "confirm_uninstall_message": "{name}을(를) 제거하시겠습니까?"
+  },
+  "settings": {
+    "title": "설정",
+    "description": "AppPorter 설정 사용자 정의",
+    "basic": {
+      "title": "기본 설정"
+    },
+    "installation": {
+      "title": "설치 설정",
+      "all_users": {
+        "title": "모든 사용자"
+      }
+    }
+  },
+  "validation": {
+    "title": "유효성 문제",
+    "issue": "{name}에 문제가 있습니다. ",
+    "missing_both": "애플리케이션 파일과 레지스트리 항목이 없습니다.",
+    "missing_file": "애플리케이션 파일이 없습니다.",
+    "missing_registry": "레지스트리 항목이 없습니다.",
+    "executable_missing": "실행 파일 필요",
+    "select_executable": "실행 파일을 선택하세요",
+    "name_required": "이름 필요",
+    "enter_name": "애플리케이션 이름을 입력하세요",
+    "path_required": "경로 필요",
+    "select_path": "설치 경로를 선택하세요"
+  },
+  "validate": {
+    "invalid_archive": "유효하지 않은 압축 파일",
+    "no_executable_file": "압축 파일에서 실행 파일을 찾을 수 없습니다. 유효한 애플리케이션 압축 파일을 선택하세요."
+  },
+  "shortcut": {
+    "desktop": "바탕화면 바로가기",
+    "registry_key": "레지스트리 항목",
+    "start_menu": "시작 메뉴 바로가기"
+  },
+  "shortcut_types": {
+    "desktop": "바탕화면",
+    "start_menu": "시작 메뉴",
+    "registry_key": "레지스트리",
+    "path": "PATH",
+    "none": "없음"
+  },
+  "app": {
+    "name": "이름",
+    "publisher": "발행자",
+    "version": "버전",
+    "unknown_version": "알 수 없는 버전",
+    "unknown_publisher": "알 수 없는 발행자"
+  },
+  "theme_options": {
+    "system": "시스템",
+    "light": "밝게",
+    "dark": "어둡게"
+  },
+  "executable_selector": {
+    "selected": "선택된 실행 파일",
+    "select_prompt": "실행 파일 선택",
+    "no_selection": "선택된 실행 파일 없음",
+    "filter": {
+      "exe": "EXE 파일만",
+      "executable": "모든 실행 파일",
+      "all": "모든 파일"
+    }
+  },
+  "zip_preview": {
+    "no_files": "압축 파일에서 파일을 찾을 수 없습니다"
+  },
+  "edit": {
+    "cut": "잘라내기",
+    "copy": "복사",
+    "paste": "붙여넣기",
+    "select_all": "모두 선택"
+  },
+  "sort": {
+    "name": "이름순",
+    "publisher": "발행자순",
+    "date": "날짜순"
+  },
+  "accept": "수락",
+  "exit": "종료",
+  "solve": "해결",
+  "applist": "앱 목록",
+  "browse": "찾아보기",
+  "cancel": "취소",
+  "next": "다음",
+  "back": "이전",
+  "finish": "완료",
+  "close": "닫기",
+  "open": "열기",
+  "quit": "종료",
+  "reload": "새로 고침",
+  "reload_disabled": "설치 중에는 새로 고침할 수 없습니다",
+  "select": "선택",
+  "ok": "확인",
+  "language": "언어",
+  "theme": "테마",
+  "minimize_tray": "트레이로 최소화",
+  "context_menu": "컨텍스트 메뉴",
+  "register_context_menu": "등록",
+  "unregister_context_menu": "등록 취소",
+  "current_user_only": "현재 사용자만",
+  "install_path": "설치 경로",
+  "choose_dir": "디렉터리 선택",
+  "shortcuts": "바로가기",
+  "add_to_path": "PATH에 추가",
+  "optional": "선택 사항",
+  "icon": "아이콘",
+  "selected_file": "선택된 파일",
+  "executable_path": "실행 파일 경로",
+  "select_executable_path": "실행 파일 경로 선택",
+  "full_path": "전체 경로",
+  "source_archive": "소스 압축 파일",
+  "selected_executable": "선택된 실행 파일",
+  "copy_package_info": "패키지 정보 복사",
+  "warning": "경고",
+  "install": "설치",
+  "uninstall": "제거",
+  "search": "검색",
+  "open_install_folder": "설치 폴더 열기",
+  "open_registry": "레지스트리 열기",
+  "reinstall": "재설치",
+  "repair": "복구",
+  "current_user": "현재 사용자",
+  "select_executable": "실행 파일 선택",
+  "error": "오류",
+  "confirm_uninstall_header": "제거 확인",
+  "confirm_uninstall_message": "{name}을(를) 제거하시겠습니까?"
+}

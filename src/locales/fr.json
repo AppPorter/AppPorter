@@ -1,1 +1,177 @@
-{}
+{
+  "disclaimer": {
+    "title": "Avertissement",
+    "message": "Ce logiciel est fourni tel quel, sans aucune garantie. Utilisez-le à vos propres risques."
+  },
+  "admin": {
+    "warning": "AppPorter fonctionne sans privilèges administrateur, ce qui peut limiter certaines fonctionnalités.",
+    "prompt": "Pour utiliser toutes les fonctionnalités, souhaitez-vous exécuter AppPorter avec des privilèges administrateur ?"
+  },
+  "installation": {
+    "title": "Installation d'Application",
+    "description": "Sélectionnez un fichier d'archive contenant votre application",
+    "select_placeholder": "Sélectionner un fichier d'archive",
+    "mode": "Mode d'installation",
+    "app_details": {
+      "title": "Détails de l'Application",
+      "icon_extract_hint": "L'icône sera automatiquement extraite de l'exécutable"
+    },
+    "config": {
+      "installation_options": "Options d'Installation",
+      "confirm_install": "Êtes-vous prêt à installer l'application ?",
+      "start_installation": "Démarrer l'Installation",
+      "directory_not_empty": "Le répertoire d'installation n'est pas vide. Continuer pourrait écraser des fichiers existants.",
+      "force_install": "Installer quand même"
+    },
+    "progress": {
+      "title": "Installation en Cours",
+      "description": "Installation de votre application, veuillez patienter...",
+      "preparing": "Préparation de l'installation...",
+      "preparing_extract": "Préparation de l'archive pour extraction...",
+      "extracting": "Extraction des fichiers ({progress}%)...",
+      "completed": "Installation terminée !",
+      "install_settings": "Paramètres d'Installation",
+      "package_info": "Informations du Package",
+      "copy_path": "Copier le chemin",
+      "copy_settings": "Copier les paramètres"
+    }
+  },
+  "app_list": {
+    "all_apps": "Toutes les Applications",
+    "description": "Gérez vos applications installées",
+    "installed": "Installé",
+    "not_installed": "Non installé",
+    "validation_error": "Erreur de Validation",
+    "no_apps_found": "Aucune application trouvée",
+    "install_first": "Installez d'abord une application",
+    "confirm_uninstall_header": "Désinstaller l'Application",
+    "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "description": "Personnaliser les paramètres d'AppPorter",
+    "basic": {
+      "title": "Paramètres de Base"
+    },
+    "installation": {
+      "title": "Paramètres d'Installation",
+      "all_users": {
+        "title": "Tous les Utilisateurs"
+      }
+    }
+  },
+  "validation": {
+    "title": "Problème de Validation",
+    "issue": "Il y a un problème avec {name}. ",
+    "missing_both": "Les fichiers de l'application et les entrées de registre sont manquants.",
+    "missing_file": "Les fichiers de l'application sont manquants.",
+    "missing_registry": "Les entrées de registre sont manquantes.",
+    "executable_missing": "Exécutable Requis",
+    "select_executable": "Veuillez sélectionner un fichier exécutable",
+    "name_required": "Nom Requis",
+    "enter_name": "Veuillez entrer un nom d'application",
+    "path_required": "Chemin Requis",
+    "select_path": "Veuillez sélectionner un chemin d'installation"
+  },
+  "validate": {
+    "invalid_archive": "Archive Invalide",
+    "no_executable_file": "Aucun fichier exécutable trouvé dans l'archive. Veuillez sélectionner une archive d'application valide."
+  },
+  "shortcut": {
+    "desktop": "Raccourci Bureau",
+    "registry_key": "Entrée Registre",
+    "start_menu": "Raccourci Menu Démarrer"
+  },
+  "shortcut_types": {
+    "desktop": "Bureau",
+    "start_menu": "Menu Démarrer",
+    "registry_key": "Registre",
+    "path": "PATH",
+    "none": "Aucun"
+  },
+  "app": {
+    "name": "Nom",
+    "publisher": "Éditeur",
+    "version": "Version",
+    "unknown_version": "Version Inconnue",
+    "unknown_publisher": "Éditeur Inconnu"
+  },
+  "theme_options": {
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "executable_selector": {
+    "selected": "Exécutable sélectionné",
+    "select_prompt": "Sélectionner un exécutable",
+    "no_selection": "Aucun exécutable sélectionné",
+    "filter": {
+      "exe": "Fichiers EXE Uniquement",
+      "executable": "Tous les Fichiers Exécutables",
+      "all": "Tous les Fichiers"
+    }
+  },
+  "zip_preview": {
+    "no_files": "Aucun fichier trouvé dans l'archive"
+  },
+  "edit": {
+    "cut": "Couper",
+    "copy": "Copier",
+    "paste": "Coller",
+    "select_all": "Tout Sélectionner"
+  },
+  "sort": {
+    "name": "Par Nom",
+    "publisher": "Par Éditeur",
+    "date": "Par Date"
+  },
+  "accept": "Accepter",
+  "exit": "Quitter",
+  "solve": "Résoudre",
+  "applist": "Liste des Apps",
+  "browse": "Parcourir",
+  "cancel": "Annuler",
+  "next": "Suivant",
+  "back": "Retour",
+  "finish": "Terminer",
+  "close": "Fermer",
+  "open": "Ouvrir",
+  "quit": "Quitter",
+  "reload": "Recharger",
+  "reload_disabled": "Impossible de recharger pendant l'installation",
+  "select": "Sélectionner",
+  "ok": "OK",
+  "language": "Langue",
+  "theme": "Thème",
+  "minimize_tray": "Réduire dans la Zone de Notification",
+  "context_menu": "Menu Contextuel",
+  "register_context_menu": "Enregistrer",
+  "unregister_context_menu": "Désinscrire",
+  "current_user_only": "Utilisateur Actuel Uniquement",
+  "install_path": "Chemin d'Installation",
+  "choose_dir": "Choisir un répertoire",
+  "shortcuts": "Raccourcis",
+  "add_to_path": "Ajouter au PATH",
+  "optional": "Optionnel",
+  "icon": "Icône",
+  "selected_file": "Fichier sélectionné",
+  "executable_path": "Chemin de l'Exécutable",
+  "select_executable_path": "Sélectionner le chemin de l'exécutable",
+  "full_path": "Chemin Complet",
+  "source_archive": "Archive Source",
+  "selected_executable": "Exécutable Sélectionné",
+  "copy_package_info": "Copier les infos du package",
+  "warning": "Avertissement",
+  "install": "Installer",
+  "uninstall": "Désinstaller",
+  "search": "Rechercher",
+  "open_install_folder": "Ouvrir le Dossier d'Installation",
+  "open_registry": "Ouvrir le Registre",
+  "reinstall": "Réinstaller",
+  "repair": "Réparer",
+  "current_user": "Utilisateur Actuel",
+  "select_executable": "Sélectionner l'Exécutable",
+  "error": "Erreur",
+  "confirm_uninstall_header": "Confirmer la Désinstallation",
+  "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?"
+}
