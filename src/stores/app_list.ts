@@ -76,5 +76,11 @@ export const useAppListStore = defineStore('app_list', {
       })
       await this.loadAppList()
     },
+    
+    async removeApp(timestamp: number) {
+      // Remove the app from the list (without uninstalling)
+      this.links = this.links.filter((app) => app.timestamp !== timestamp)
+      await this.saveAppList()
+    },
   },
 })

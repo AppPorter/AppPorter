@@ -48,7 +48,9 @@
     "no_apps_found": "未找到应用程序",
     "install_first": "请先安装一个应用程序",
     "confirm_uninstall_header": "卸载应用程序",
-    "confirm_uninstall_message": "您想卸载 {name} 吗？"
+    "confirm_uninstall_message": "您想卸载 {name} 吗？",
+    "confirm_remove_header": "移除应用程序",
+    "confirm_remove_message": "您想从列表中移除 {name} 吗？"
   },
   "settings": {
     "self": "设置",
@@ -161,6 +163,7 @@
   "warning": "警告",
   "install": "安装",
   "uninstall": "卸载",
+  "remove": "移除",
   "search": "搜索",
   "open_install_folder": "打开安装文件夹",
   "open_registry": "打开注册表",

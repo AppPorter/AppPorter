@@ -40,15 +40,17 @@
   },
   "app_list": {
     "self": "App List",
-    "all_apps": "All Applications",
+    "all_apps": "All Apps",
     "description": "Manage your installed applications",
     "installed": "Installed",
     "not_installed": "Not Installed",
     "validation_error": "Validation Error",
-    "no_apps_found": "No applications found",
-    "install_first": "Please install an application first",
-    "confirm_uninstall_header": "Uninstall Application",
-    "confirm_uninstall_message": "Do you want to uninstall {name}?"
+    "no_apps_found": "No apps found",
+    "install_first": "Please install an app first",
+    "confirm_uninstall_header": "Uninstall App",
+    "confirm_uninstall_message": "Do you want to uninstall {name}?",
+    "confirm_remove_header": "Remove App",
+    "confirm_remove_message": "Do you want to remove {name} from the list?"
   },
   "settings": {
     "self": "Settings",
@@ -166,6 +168,7 @@
   "open_registry": "Open Registry",
   "reinstall": "Reinstall",
   "repair": "Repair",
+  "remove": "Remove",
   "current_user": "Current User",
   "select_executable": "Select Executable",
   "error": "Error",

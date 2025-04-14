@@ -96,21 +96,24 @@ const menuItems = computed(() => [
     label: t('open'),
     icon: 'mir-terminal',
     command: () => openApp(),
+    visible: () => selectedApp.value?.installed,
   },
   {
     label: t('open_install_folder'),
     icon: 'mir-folder',
     command: () => openInstallFolder(),
+    visible: () => selectedApp.value?.installed,
   },
   {
     label: t('open_registry'),
     icon: 'mir-app_registration',
     command: () => openRegistry(),
+    visible: () => selectedApp.value?.installed,
   },
   {
-    label: t('uninstall'),
+    label: selectedApp.value?.installed ? t('uninstall') : t('remove'),
     icon: 'mir-delete',
-    command: () => confirmUninstall(),
+    command: () => (selectedApp.value?.installed ? confirmUninstall() : confirmRemove()),
   },
 ])
 
@@ -176,6 +179,37 @@ async function confirmUninstall() {
       },
       accept: async () => {
         await appListStore.executeUninstall(selectedApp.value.timestamp)
+        resolve(true)
+      },
+      reject: () => reject(),
+    })
+  })
+}
+
+async function confirmRemove() {
+  if (!selectedApp.value) return
+
+  await new Promise((resolve, reject) => {
+    confirm.require({
+      message: t('app_list.confirm_remove_message', {
+        name: selectedApp.value.details.name,
+      }),
+      group: 'dialog',
+      header: t('app_list.confirm_remove_header'),
+      icon: 'mir-warning',
+      rejectProps: {
+        label: t('cancel'),
+        severity: 'secondary',
+        outlined: true,
+        icon: 'mir-close',
+      },
+      acceptProps: {
+        label: t('remove'),
+        severity: 'danger',
+        icon: 'mir-delete',
+      },
+      accept: async () => {
+        await appListStore.removeApp(selectedApp.value.timestamp)
         resolve(true)
       },
       reject: () => reject(),
