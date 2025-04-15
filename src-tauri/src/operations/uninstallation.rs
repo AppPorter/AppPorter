@@ -124,9 +124,23 @@ pub async fn uninstallation(
 
     // Update app list
     let mut app_list = AppList::read().await?;
-    app_list
+
+    // Find the app to be uninstalled
+    let app_index = app_list
         .links
-        .retain(|existing_app| existing_app.timestamp != timestamp);
+        .iter()
+        .position(|existing_app| existing_app.timestamp == timestamp);
+
+    if let Some(index) = app_index {
+        // If the app has a URL, just mark it as not installed
+        // Otherwise, remove it completely from the list
+        if !app_list.links[index].url.is_empty() {
+            app_list.links[index].installed = false;
+        } else {
+            app_list.links.remove(index);
+        }
+    }
+
     app_list.save().await?;
 
     app.emit("uninstallation", 100)?;
