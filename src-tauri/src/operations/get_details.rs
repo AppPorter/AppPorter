@@ -17,7 +17,6 @@ pub struct ExePath {
 
 // Extracts metadata from an executable file within a zip archive
 pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error + Send + Sync>> {
-    println!("{}", input.zip_path);
     let temp_dir = tempdir()?;
 
     // Sanitize the executable path to prevent directory traversal

@@ -32,7 +32,6 @@ pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send +
         file.write_all(&chunk)?;
         let new = min(downloaded + (chunk.len() as u64), total_size);
         downloaded = new;
-        println!("{}%", (downloaded * 100) / total_size);
     }
 
     Ok(file_path_str)
