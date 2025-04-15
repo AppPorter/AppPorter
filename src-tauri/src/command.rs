@@ -49,6 +49,10 @@ pub enum Command {
     Cli,
     RegisterContextMenu,
     UnregisterContextMenu,
+    InstallWithLink {
+        url: String,
+        timestamp: i64,
+    },
 }
 
 impl Command {
@@ -76,6 +80,7 @@ impl Command {
             Self::Cli => cli(app).await,
             Self::RegisterContextMenu => register_context_menu(),
             Self::UnregisterContextMenu => unregister_context_menu(),
+            Self::InstallWithLink { url, timestamp } => install_with_link(url, timestamp).await,
         }
     }
 }

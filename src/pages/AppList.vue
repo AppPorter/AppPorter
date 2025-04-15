@@ -93,6 +93,12 @@ function showMenu(event) {
 
 const menuItems = computed(() => [
   {
+    label: t('install'),
+    icon: 'mir-install_desktop',
+    command: () => installApp(),
+    visible: () => selectedApp.value && !selectedApp.value.installed,
+  },
+  {
     label: t('open'),
     icon: 'mir-terminal',
     command: () => openApp(),
@@ -114,6 +120,7 @@ const menuItems = computed(() => [
     label: selectedApp.value?.installed ? t('uninstall') : t('remove'),
     icon: 'mir-delete',
     command: () => (selectedApp.value?.installed ? confirmUninstall() : confirmRemove()),
+    visible: () => selectedApp.value !== undefined,
   },
 ])
 
@@ -215,6 +222,19 @@ async function confirmRemove() {
       reject: () => reject(),
     })
   })
+}
+
+async function installApp() {
+  if (!selectedApp.value) return
+  loading.value = true
+  await invoke('execute_command', {
+    command: {
+      name: 'InstallWithLink',
+      url: selectedApp.value.url,
+      timestamp: selectedApp.value.timestamp,
+    },
+  })
+  loading.value = false
 }
 
 const appToValidate = ref()
