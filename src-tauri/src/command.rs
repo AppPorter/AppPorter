@@ -66,7 +66,7 @@ impl Command {
             Self::LoadAppList => load_app_list().await,
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
             Self::GetArchiveContent { path } => get_archive_content(path).await,
-            Self::Open { path } => open(&path).await,
+            Self::Open { path } => open_app(&path).await,
             Self::OpenFolder { path } => open_folder(&path).await,
             Self::OpenRegistry {
                 app_name,

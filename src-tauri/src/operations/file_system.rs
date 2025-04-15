@@ -1,5 +1,4 @@
 use std::error::Error;
-use tokio::process::Command;
 
 pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     fn is_valid_path_format(path: &str) -> bool {
@@ -45,28 +44,4 @@ pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error + Send
     }
 
     Ok("".to_string())
-}
-
-pub async fn open(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let output = Command::new(path)
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
-        .output()
-        .await?;
-    if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).into());
-    }
-    Ok("".to_owned())
-}
-
-pub async fn open_folder(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let output = Command::new("explorer")
-        .arg("/select,")
-        .arg(path)
-        .creation_flags(0x08000000)
-        .output()
-        .await?;
-    if !output.stderr.is_empty() {
-        return Err(String::from_utf8_lossy(&output.stderr).into());
-    }
-    Ok("".to_owned())
 }
