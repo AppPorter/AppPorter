@@ -20,7 +20,7 @@
 
 AppPorter is a desktop application designed to simplify the installation and management of portable software (ZIP-packaged applications).
 
-(todo) ~~With its browser extension integration, users can install apps directly from their web browser and subscribe to the links of them for later use.~~
+With its browser extension ([AppPorter Ext](https://github.com/AppPorter/AppPorter-Ext)) integration, users can install apps directly from their web browser and subscribe to the links of them for later use.
 
 The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 
@@ -31,7 +31,7 @@ The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 - [x] AppPorter-Ext
 - [x] AppList
 - [x] Uninstallation
-- [ ] Add to PATH
+- [x] Add to PATH
 - [ ] Copy only mode
 - [ ] Repair
 - [ ] Update
@@ -52,4 +52,3 @@ Additionally, this project uses parts of the 7-Zip program which is licensed und
 - [ ] Complete new features
 - [ ] Replace Powershell commands
 - [ ] Optimize UI for some languages
-- [ ] x-scrollbar of zip preview panel
