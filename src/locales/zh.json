@@ -145,8 +145,6 @@
   "language": "语言",
   "minimize_tray": "最小化到托盘",
   "context_menu": "上下文菜单",
-  "register_context_menu": "注册",
-  "unregister_context_menu": "取消注册",
   "current_user_only": "仅当前用户",
   "install_path": "安装路径",
   "choose_dir": "选择目录",

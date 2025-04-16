@@ -143,8 +143,6 @@
   "language": "Langue",
   "minimize_tray": "Réduire dans la Barre des Tâches",
   "context_menu": "Menu Contextuel",
-  "register_context_menu": "Enregistrer",
-  "unregister_context_menu": "Désenregistrer",
   "current_user_only": "Utilisateur Actuel Uniquement",
   "install_path": "Chemin d'Installation",
   "choose_dir": "Choisir un Répertoire",

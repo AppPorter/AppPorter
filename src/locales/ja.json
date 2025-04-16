@@ -143,8 +143,6 @@
   "language": "言語",
   "minimize_tray": "トレイに最小化",
   "context_menu": "コンテキストメニュー",
-  "register_context_menu": "登録",
-  "unregister_context_menu": "登録解除",
   "current_user_only": "現在のユーザーのみ",
   "install_path": "インストールパス",
   "choose_dir": "ディレクトリを選択",

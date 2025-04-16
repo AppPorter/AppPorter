@@ -143,8 +143,6 @@
   "language": "Sprache",
   "minimize_tray": "In Taskleiste minimieren",
   "context_menu": "Kontextmenü",
-  "register_context_menu": "Registrieren",
-  "unregister_context_menu": "Deregistrieren",
   "current_user_only": "Nur aktueller Benutzer",
   "install_path": "Installationspfad",
   "choose_dir": "Verzeichnis auswählen",

@@ -143,8 +143,6 @@
   "language": "Язык",
   "minimize_tray": "Свернуть в трей",
   "context_menu": "Контекстное меню",
-  "register_context_menu": "Зарегистрировать",
-  "unregister_context_menu": "Отменить регистрацию",
   "current_user_only": "Только текущий пользователь",
   "install_path": "Путь установки",
   "choose_dir": "Выбрать каталог",

@@ -145,8 +145,6 @@
   "language": "Language",
   "minimize_tray": "Minimize to Tray",
   "context_menu": "Context Menu",
-  "register_context_menu": "Register",
-  "unregister_context_menu": "Unregister",
   "current_user_only": "Current User Only",
   "install_path": "Installation Path",
   "choose_dir": "Choose Directory",

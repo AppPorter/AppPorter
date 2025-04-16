@@ -143,8 +143,6 @@
   "language": "언어",
   "minimize_tray": "트레이로 최소화",
   "context_menu": "컨텍스트 메뉴",
-  "register_context_menu": "등록",
-  "unregister_context_menu": "등록 취소",
   "current_user_only": "현재 사용자만",
   "install_path": "설치 경로",
   "choose_dir": "디렉토리 선택",

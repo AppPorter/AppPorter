@@ -143,8 +143,6 @@
   "language": "Idioma",
   "minimize_tray": "Minimizar a la Bandeja",
   "context_menu": "Menú Contextual",
-  "register_context_menu": "Registrar",
-  "unregister_context_menu": "Desregistrar",
   "current_user_only": "Solo Usuario Actual",
   "install_path": "Ruta de Instalación",
   "choose_dir": "Elegir Directorio",
