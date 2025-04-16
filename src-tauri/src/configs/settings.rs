@@ -46,6 +46,8 @@ pub struct Settings {
     #[serde(default)]
     pub minimize_to_tray_on_close: bool,
     #[serde(default)]
+    pub context_menu: bool,
+    #[serde(default)]
     pub first_run: bool,
     #[serde(default)]
     pub color: String,
@@ -105,6 +107,7 @@ impl ConfigFile for Settings {
         let default_settings = Self {
             language: LanguageType::En,
             theme: ThemeType::System,
+            context_menu: true,
             minimize_to_tray_on_close: false,
             first_run: true,
             color: String::new(),

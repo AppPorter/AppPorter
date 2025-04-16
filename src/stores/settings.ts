@@ -23,6 +23,7 @@ interface Settings {
   language: LanguageType
   theme: ThemeType
   minimize_to_tray_on_close: boolean
+  context_menu: boolean
   first_run: boolean
   isBasicSettingsChanged: boolean
 
@@ -43,6 +44,7 @@ export const useSettingsStore = defineStore('settings', {
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
+    context_menu: false,
     first_run: true,
     isBasicSettingsChanged: false,
 

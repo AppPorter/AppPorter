@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -10,18 +9,6 @@ import { useSettingsStore } from '../stores/settings'
 
 const settings = useSettingsStore()
 const installationConfig = useInstallationConfigStore()
-
-async function handleRegisterContextMenu() {
-  await invoke('execute_command', {
-    command: { name: 'RegisterContextMenu' },
-  })
-}
-
-async function handleUnregisterContextMenu() {
-  await invoke('execute_command', {
-    command: { name: 'UnregisterContextMenu' },
-  })
-}
 
 const isSettingsChanged = computed(() => {
   if (!settings.initialSettings) return false
@@ -112,6 +99,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 optionLabel="label"
                 optionValue="value"
                 class="w-48"
+                size="small"
               />
             </div>
             <div class="flex items-center justify-between">
@@ -122,6 +110,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
                 optionLabel="label"
                 optionValue="value"
                 class="w-48"
+                size="small"
               />
             </div>
             <div class="flex items-center justify-between">
@@ -130,20 +119,7 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
             </div>
             <div class="flex items-center justify-between">
               <label>{{ t('context_menu') }}</label>
-              <div class="flex gap-2">
-                <Button
-                  @click="handleRegisterContextMenu"
-                  severity="secondary"
-                  class="h-9 px-4"
-                  :label="t('register_context_menu')"
-                />
-                <Button
-                  @click="handleUnregisterContextMenu"
-                  severity="secondary"
-                  class="h-9 px-4"
-                  :label="t('unregister_context_menu')"
-                />
-              </div>
+              <ToggleSwitch v-model="settings.context_menu" />
             </div>
           </div>
         </Panel>
