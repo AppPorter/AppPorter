@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
+import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -62,6 +63,24 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
     }
   }
 }
+
+// Watch for context_menu changes and register/unregister accordingly
+watch(
+  () => settings.context_menu,
+  async (newValue, oldValue) => {
+    if (newValue === oldValue) return
+
+    if (newValue) {
+      await invoke('execute_command', {
+        command: { name: 'RegisterContextMenu' },
+      })
+    } else {
+      await invoke('execute_command', {
+        command: { name: 'UnregisterContextMenu' },
+      })
+    }
+  }
+)
 
 // Add computed property to check if reload button should be disabled
 const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
