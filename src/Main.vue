@@ -179,6 +179,12 @@ const rightMenuItems = [
     command: () => goTo('/Settings'),
     paths: ['/Settings'],
   },
+  {
+    label: t('about.self'),
+    icon: 'mir-info',
+    command: () => goTo('/About'),
+    paths: ['/About'],
+  },
 ]
 
 // Context menu setup
