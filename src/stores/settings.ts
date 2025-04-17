@@ -40,7 +40,7 @@ interface Settings {
 
 // Store definition
 export const useSettingsStore = defineStore('settings', {
-  state: (): Settings & { initialSettings: Settings | null } => ({
+  state: (): Settings & { initialSettings: Settings | null; isDarkMode: boolean } => ({
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
@@ -74,6 +74,7 @@ export const useSettingsStore = defineStore('settings', {
     },
 
     initialSettings: null,
+    isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   }),
 
   actions: {
@@ -115,6 +116,46 @@ export const useSettingsStore = defineStore('settings', {
         }
         this.isBasicSettingsChanged =
           JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
+      }
+    },
+
+    // Update theme mode and apply changes to DOM based on current theme setting
+    updateThemeMode() {
+      // Get dark mode status based on current theme setting
+      const isDarkMode =
+        this.theme === 'dark' ||
+        (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+
+      // Update DOM
+      if (isDarkMode) {
+        console.log('Dark mode enabled')
+        document.documentElement.classList.add('dark')
+      } else {
+        console.log('Light mode enabled')
+        document.documentElement.classList.remove('dark')
+      }
+
+      // Update store state
+      this.isDarkMode = isDarkMode
+
+      // Setup system theme change listener
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+
+      // Remove any existing listener first to prevent duplicates
+      mediaQuery.removeEventListener('change', this.handleSystemThemeChange)
+
+      // Only add listener when theme is set to 'system'
+      if (this.theme === 'system') {
+        mediaQuery.addEventListener('change', (event: MediaQueryListEvent) => {
+          // Update isDarkMode and DOM when system theme changes
+          this.isDarkMode = event.matches
+
+          if (event.matches) {
+            document.documentElement.classList.add('dark')
+          } else {
+            document.documentElement.classList.remove('dark')
+          }
+        })
       }
     },
   },

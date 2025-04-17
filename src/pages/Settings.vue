@@ -85,12 +85,9 @@ watch(
 // Add computed property to check if reload button should be disabled
 const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
-// Get GitHub icon based on current theme
+// Get GitHub icon based on current theme and isDarkMode from settings store
 const githubIcon = computed(() => {
-  return settings.theme === 'dark' ||
-    (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-    ? '/src/assets/github-white.svg'
-    : '/src/assets/github-black.svg'
+  return settings.isDarkMode ? '/src/assets/github-white.svg' : '/src/assets/github-black.svg'
 })
 </script>
 
