@@ -108,7 +108,7 @@ const githubIcon = computed(() => {
         </div>
       </template>
 
-      <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4 pb-16">
+      <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4">
         <!-- Basic Settings -->
         <Panel class="w-full">
           <template #header>
@@ -264,11 +264,12 @@ const githubIcon = computed(() => {
           <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
           <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>
           <p class="text-lg">v0.2.0</p>
-          <Chip label="GitHub" class="flex items-center">
-            <template #icon>
-              <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
-            </template>
-          </Chip>
+          <a href="https://github.com/AppPorter/AppPorter" target="_blank"
+            ><Chip label="GitHub" class="flex items-center">
+              <template #icon>
+                <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
+              </template> </Chip
+          ></a>
         </div>
       </div>
     </Panel>
