@@ -84,6 +84,14 @@ watch(
 
 // Add computed property to check if reload button should be disabled
 const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
+
+// Get GitHub icon based on current theme
+const githubIcon = computed(() => {
+  return settings.theme === 'dark' ||
+    (settings.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+    ? '/src/assets/github-white.svg'
+    : '/src/assets/github-black.svg'
+})
 </script>
 
 <template>
@@ -252,6 +260,16 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
             </div>
           </div>
         </Panel>
+        <div class="flex flex-col items-center justify-center space-y-1">
+          <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
+          <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>
+          <p class="text-lg">v0.2.0</p>
+          <Chip label="GitHub" class="flex items-center">
+            <template #icon>
+              <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
+            </template>
+          </Chip>
+        </div>
       </div>
     </Panel>
   </div>

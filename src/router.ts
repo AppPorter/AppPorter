@@ -1,4 +1,3 @@
-import About from '@/pages/About.vue'
 import AppList from '@/pages/AppList.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation from '@/pages/Installation/Index.vue'
@@ -48,13 +47,6 @@ const routes = [
     component: Settings,
     meta: {
       icon: 'mir-settings',
-    },
-  },
-  {
-    path: '/About',
-    component: About,
-    meta: {
-      icon: 'mir-info',
     },
   },
 ] as unknown as RouteRecordRaw[]

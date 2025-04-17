@@ -179,12 +179,6 @@ const rightMenuItems = [
     command: () => goTo('/Settings'),
     paths: ['/Settings'],
   },
-  {
-    label: t('about.self'),
-    icon: 'mir-info',
-    command: () => goTo('/About'),
-    paths: ['/About'],
-  },
 ]
 
 // Context menu setup
@@ -284,7 +278,7 @@ const activeIndicatorClass = computed(
       <div class="flex w-full items-center justify-between pr-24" style="-webkit-app-region: drag">
         <!-- Left Side with Logo -->
         <span class="flex items-center whitespace-nowrap px-6 py-3 text-lg font-semibold">
-          <img src="./assets/appporter.svg" class="mr-1" />AppPorter
+          <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
         </span>
 
         <!-- Admin Warning -->
