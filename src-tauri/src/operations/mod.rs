@@ -7,6 +7,7 @@ pub mod get_details;
 pub mod installation;
 pub mod installation_process;
 pub mod launcher;
+pub mod startup;
 pub mod uninstallation;
 pub mod utils;
 
@@ -19,5 +20,6 @@ pub use get_details::*;
 pub use installation::*;
 pub use installation_process::*;
 pub use launcher::*;
+pub use startup::*;
 pub use uninstallation::*;
 pub use utils::*;

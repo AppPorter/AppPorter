@@ -1,0 +1,14 @@
+use std::error::Error;
+use windows_registry::CURRENT_USER;
+
+pub fn set_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
+    shell_key.set_string("AppPorter", std::env::current_exe()?.to_str().unwrap_or(""))?;
+    Ok(())
+}
+
+pub fn remove_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
+    let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
+    shell_key.remove_value("AppPorter")?;
+    Ok(())
+}
