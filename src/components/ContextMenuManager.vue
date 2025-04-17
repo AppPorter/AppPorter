@@ -48,5 +48,5 @@ defineExpose({
 </script>
 
 <template>
-  <ContextMenu class="md:w-[30rem]" ref="contextMenu" :model="editMenuItems" />
+  <ContextMenu ref="contextMenu" :model="editMenuItems" />
 </template>
