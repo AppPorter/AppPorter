@@ -82,6 +82,24 @@ watch(
   }
 )
 
+// Watch for auto_startup changes and set/remove startup accordingly
+watch(
+  () => settings.auto_startup,
+  async (newValue, oldValue) => {
+    if (newValue === oldValue) return
+
+    if (newValue) {
+      await invoke('execute_command', {
+        command: { name: 'SetStartup' },
+      })
+    } else {
+      await invoke('execute_command', {
+        command: { name: 'RemoveStartup' },
+      })
+    }
+  }
+)
+
 // Add computed property to check if reload button should be disabled
 const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
@@ -144,6 +162,10 @@ const githubIcon = computed(() => {
             <div class="flex items-center justify-between">
               <label>{{ t('context_menu') }}</label>
               <ToggleSwitch v-model="settings.context_menu" />
+            </div>
+            <div class="flex items-center justify-between">
+              <label>{{ t('auto_startup') }}</label>
+              <ToggleSwitch v-model="settings.auto_startup" />
             </div>
           </div>
         </Panel>

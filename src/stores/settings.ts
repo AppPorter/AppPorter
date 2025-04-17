@@ -24,6 +24,7 @@ interface Settings {
   theme: ThemeType
   minimize_to_tray_on_close: boolean
   context_menu: boolean
+  auto_startup: boolean
   first_run: boolean
   isBasicSettingsChanged: boolean
 
@@ -45,6 +46,7 @@ export const useSettingsStore = defineStore('settings', {
     theme: 'system',
     minimize_to_tray_on_close: false,
     context_menu: false,
+    auto_startup: false,
     first_run: true,
     isBasicSettingsChanged: false,
 

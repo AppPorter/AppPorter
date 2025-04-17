@@ -48,6 +48,8 @@ pub struct Settings {
     #[serde(default)]
     pub context_menu: bool,
     #[serde(default)]
+    pub auto_startup: bool,
+    #[serde(default)]
     pub first_run: bool,
     #[serde(default)]
     pub color: String,
@@ -108,6 +110,7 @@ impl ConfigFile for Settings {
             language: LanguageType::En,
             theme: ThemeType::System,
             context_menu: true,
+            auto_startup: false,
             minimize_to_tray_on_close: false,
             first_run: true,
             color: String::new(),

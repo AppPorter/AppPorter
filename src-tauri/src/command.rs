@@ -53,6 +53,8 @@ pub enum Command {
         url: String,
         timestamp: i64,
     },
+    SetStartup,
+    RemoveStartup,
 }
 
 impl Command {
@@ -81,6 +83,8 @@ impl Command {
             Self::RegisterContextMenu => register_context_menu(),
             Self::UnregisterContextMenu => unregister_context_menu(),
             Self::InstallWithLink { url, timestamp } => install_with_link(url, timestamp).await,
+            Self::SetStartup => set_startup(),
+            Self::RemoveStartup => remove_startup(),
         }
     }
 }
