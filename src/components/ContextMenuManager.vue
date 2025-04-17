@@ -43,10 +43,10 @@ function handleContextMenu(event: MouseEvent) {
 }
 
 defineExpose({
-  handleContextMenu
+  handleContextMenu,
 })
 </script>
 
 <template>
-  <ContextMenu ref="contextMenu" :model="editMenuItems" />
+  <ContextMenu class="md:w-[30rem]" ref="contextMenu" :model="editMenuItems" />
 </template>
