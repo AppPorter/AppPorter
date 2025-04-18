@@ -105,7 +105,10 @@ const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
 
 // Get GitHub icon based on current theme and isDarkMode from settings store
 const githubIcon = computed(() => {
-  return settings.isDarkMode ? '/src/assets/github-white.svg' : '/src/assets/github-black.svg'
+  // Use import.meta.url to ensure proper path resolution
+  return settings.isDarkMode
+    ? new URL('../assets/github-white.svg', import.meta.url).href
+    : new URL('../assets/github-black.svg', import.meta.url).href
 })
 </script>
 
