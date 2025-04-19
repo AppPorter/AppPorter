@@ -1,4 +1,5 @@
 import AppList from '@/pages/AppList.vue'
+import CopyOnly from '@/pages/CopyOnly.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation from '@/pages/Installation/Index.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
@@ -33,6 +34,13 @@ const routes = [
     component: Installation_Progress,
     meta: {
       icon: 'mir-pending_actions',
+    },
+  },
+  {
+    path: '/CopyOnly',
+    component: CopyOnly,
+    meta: {
+      icon: 'mir-folder_copy',
     },
   },
   {

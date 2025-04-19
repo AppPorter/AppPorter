@@ -48,30 +48,18 @@ async function selectZipFile() {
       <div class="space-y-6">
         <!-- File Selection Input -->
         <div class="flex items-center gap-2">
-          <InputText
-            v-model="zip_path"
-            :placeholder="t('installation.select_placeholder')"
-            class="h-9 flex-1 text-sm"
-          />
-          <Button
-            @click="selectZipFile"
-            severity="secondary"
-            class="h-9 px-4"
-            icon="mir-folder_open"
-            :label="t('browse')"
-          />
+          <InputText v-model="zip_path" :placeholder="t('installation.select_placeholder')"
+            class="h-9 flex-1 text-sm" />
+          <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
+            :label="t('browse')" />
         </div>
 
         <!-- Navigation Button -->
-        <div class="flex justify-end">
-          <Button
-            @click="goTo('/Installation/Config')"
-            :disabled="!zip_path"
-            severity="primary"
-            class="h-9 px-6"
-            icon="mir-navigate_next"
-            :label="t('next')"
-          />
+        <div class="flex justify-end gap-x-2">
+          <Button @click="goTo('/CopyOnly')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
+            icon="mir-folder_copy" :label="t('copy_only')" />
+          <Button @click="goTo('/Installation/Config')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
+            icon="mir-install_desktop" :label="t('install')" />
         </div>
       </div>
     </Panel>

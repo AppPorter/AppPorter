@@ -44,6 +44,7 @@ const USED_ICONS = [
   'build',
   'swap_vert',
   'cloud_download',
+  'folder_copy',
 ] as const
 
 /**
