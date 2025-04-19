@@ -1,14 +1,16 @@
 <script setup lang="ts">
+import DirectorySelector from '@/components/DirectorySelector.vue'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { useSettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
+import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ToggleSwitch from 'primevue/toggleswitch'
-import { watchEffect, computed } from 'vue'
+import { watchEffect, computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -29,9 +31,18 @@ const {
   install_path,
   add_to_path,
   path_directory,
+  zip_path,
 } = storeToRefs(installationConfig)
 
 const { t } = useI18n()
+
+// Directory selector drawer state
+const directoryDrawerVisible = ref(false)
+const detailsLoading = ref(false)
+
+function handleDetailsLoading(loading: boolean) {
+  detailsLoading.value = loading
+}
 
 // Format app path based on install path and app name
 const formatted_app_path = computed(() => {
@@ -149,7 +160,8 @@ watchEffect(() => {
                 <div class="flex gap-2">
                   <InputText v-model="path_directory" :placeholder="t('select_path_directory')"
                     class="h-8 w-full text-sm" />
-                  <Button class="h-8 w-36" severity="secondary" icon="mir-folder_open" :label="t('browse')" />
+                  <Button class="h-8 w-36" severity="secondary" @click="directoryDrawerVisible = true"
+                    icon="mir-folder_open" :label="t('browse')" />
                 </div>
               </div>
             </div>
@@ -158,4 +170,13 @@ watchEffect(() => {
       </div>
     </div>
   </Panel>
+
+  <!-- Directory Selector Drawer -->
+  <Drawer v-model:visible="directoryDrawerVisible" :header="t('select_path_directory')" position="bottom"
+    :style="{ height: '95vh' }" class="rounded-lg">
+    <div class="h-full overflow-hidden">
+      <DirectorySelector :zip-path="zip_path" :details-loading="detailsLoading" @close="directoryDrawerVisible = false"
+        @loading="handleDetailsLoading" @directory-select="path_directory = $event" />
+    </div>
+  </Drawer>
 </template>
