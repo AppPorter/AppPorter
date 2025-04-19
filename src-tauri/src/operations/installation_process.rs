@@ -85,7 +85,7 @@ pub async fn installation(
         // Determine which path to add to PATH environment variable
         let path_to_add = if !config.details.path_directory.is_empty() {
             // User specified a custom directory to add to PATH
-            let custom_path = if config.details.path_directory.starts_with('/')
+            if config.details.path_directory.starts_with('/')
                 || config.details.path_directory.starts_with('\\')
             {
                 // If path starts with / or \, it's relative to the app root
@@ -95,7 +95,7 @@ pub async fn installation(
                     config
                         .details
                         .path_directory
-                        .trim_start_matches(|c| c == '/' || c == '\\')
+                        .trim_start_matches(['/', '\\'])
                         .replace("/", "\\")
                 )
             } else {
@@ -105,8 +105,7 @@ pub async fn installation(
                     app_path,
                     config.details.path_directory.replace("/", "\\")
                 )
-            };
-            custom_path
+            }
         } else {
             // Default: use executable's parent directory
             Path::new(&full_executable_path)
