@@ -378,24 +378,12 @@ onMounted(() => {
             </div>
           </div>
 
-          <div
-            class="flex flex-wrap items-center divide-x divide-surface-200 dark:divide-surface-700"
-          >
+          <div class="flex flex-wrap items-center divide-x divide-surface-200 dark:divide-surface-700">
             <div class="flex items-center gap-2 px-4">
-              <Dropdown
-                v-model="sortKey"
-                :options="sortOptions"
-                class="w-40 text-sm"
-                optionLabel="label"
-                optionValue="value"
-              />
-              <Button
-                icon="mir-swap_vert"
-                outlined
-                severity="secondary"
-                class="size-8 p-0 shadow-sm"
-                @click="sortOrder *= -1"
-              />
+              <Select v-model="sortKey" :options="sortOptions" class="w-40 text-sm" optionLabel="label"
+                optionValue="value" size="small" />
+              <Button icon="mir-swap_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
+                @click="sortOrder *= -1" />
             </div>
 
             <div class="pl-4">
@@ -403,48 +391,26 @@ onMounted(() => {
                 <InputIcon>
                   <i class="mir-search" />
                 </InputIcon>
-                <InputText
-                  v-model="filters.global.value"
-                  :placeholder="t('search')"
-                  class="h-8 text-sm"
-                />
+                <InputText v-model="filters.global.value" :placeholder="t('search')" class="h-8 text-sm" />
               </IconField>
             </div>
           </div>
         </div>
       </template>
 
-      <DataView
-        :value="sortedApps"
-        :loading="loading"
-        :paginator="showPaginator"
-        :rows="100"
-        :rows-per-page-options="[50, 100, 200, 500]"
-        filterBy="details.name,details.publisher,details.version"
-        :filter-value="filters.global.value"
-        dataKey="timestamp"
-      >
+      <DataView :value="sortedApps" :loading="loading" :paginator="showPaginator" :rows="100"
+        :rows-per-page-options="[50, 100, 200, 500]" filterBy="details.name,details.publisher,details.version"
+        :filter-value="filters.global.value" dataKey="timestamp">
         <template #list="{ items }">
           <div class="grid">
-            <div
-              v-for="item in items"
-              :key="item.timestamp"
-              class="w-full border-b border-surface-200 dark:border-surface-700"
-            >
-              <div
-                class="flex items-center p-4"
-                @contextmenu.prevent="showMenu({ originalEvent: $event, data: item })"
-              >
+            <div v-for="item in items" :key="item.timestamp"
+              class="w-full border-b border-surface-200 dark:border-surface-700">
+              <div class="flex items-center p-4" @contextmenu.prevent="showMenu({ originalEvent: $event, data: item })">
                 <div class="mr-4 flex items-center justify-center">
                   <div
-                    class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
-                  >
-                    <img
-                      v-if="item.details.icon"
-                      :src="item.details.icon"
-                      class="size-8 object-contain"
-                      alt="App Icon"
-                    />
+                    class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
+                    <img v-if="item.details.icon" :src="item.details.icon" class="size-8 object-contain"
+                      alt="App Icon" />
                     <span v-else class="mir-apps text-2xl"></span>
                   </div>
                 </div>
@@ -468,21 +434,12 @@ onMounted(() => {
                   </div>
                 </div>
 
-                <Tag
-                  :value="getAppStatus(item).value"
-                  :severity="getAppStatus(item).severity"
-                  :icon="getAppStatus(item).icon"
-                  class="mr-2 cursor-pointer text-center text-xs"
-                  @click="handleStatusClick(item)"
-                />
+                <Tag :value="getAppStatus(item).value" :severity="getAppStatus(item).severity"
+                  :icon="getAppStatus(item).icon" class="mr-2 cursor-pointer text-center text-xs"
+                  @click="handleStatusClick(item)" />
 
-                <Button
-                  icon="mir-more_vert"
-                  outlined
-                  severity="secondary"
-                  class="size-8 p-0 shadow-sm"
-                  @click="showMenu({ originalEvent: $event, data: item })"
-                />
+                <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
+                  @click="showMenu({ originalEvent: $event, data: item })" />
               </div>
             </div>
           </div>
