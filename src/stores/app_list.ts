@@ -14,6 +14,7 @@ export interface InstalledApp {
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
   add_to_path: boolean
+  path_directory: string
   validation_status: {
     file_exists: boolean
     registry_valid: boolean
@@ -76,7 +77,7 @@ export const useAppListStore = defineStore('app_list', {
       })
       await this.loadAppList()
     },
-    
+
     async removeApp(timestamp: number) {
       // Remove the app from the list (without uninstalling)
       this.links = this.links.filter((app) => app.timestamp !== timestamp)

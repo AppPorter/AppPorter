@@ -28,6 +28,7 @@ const {
   create_start_menu_shortcut,
   install_path,
   add_to_path,
+  path_directory,
 } = storeToRefs(installationConfig)
 
 const { t } = useI18n()
@@ -46,6 +47,7 @@ function updateConfig(isCurrentUser: boolean) {
   create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
   install_path.value = sourceConfig.install_path
   add_to_path.value = sourceConfig.add_to_path
+  path_directory.value = ''  // Reset path directory when switching modes
 }
 
 // Initialize with settings
@@ -137,9 +139,19 @@ watchEffect(() => {
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
               <label for="registry_key" class="text-sm">{{ t('shortcuts.registry_key') }}</label>
             </div>
-            <div class="flex items-center gap-2">
-              <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
-              <label for="add_to_path" class="text-sm">{{ t('add_to_path') }}</label>
+            <div class="flex flex-col gap-1">
+              <div class="flex items-center gap-2">
+                <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
+                <label for="add_to_path" class="text-sm">{{ t('add_to_path') }}</label>
+              </div>
+              <!-- PATH Directory Input - only shown when add_to_path is true -->
+              <div v-if="add_to_path" class="ml-6 mt-1">
+                <div class="flex gap-2">
+                  <InputText v-model="path_directory" :placeholder="t('select_path_directory')"
+                    class="h-8 w-full text-sm" />
+                  <Button class="h-8 w-36" severity="secondary" icon="mir-folder_open" :label="t('browse')" />
+                </div>
+              </div>
             </div>
           </div>
         </div>

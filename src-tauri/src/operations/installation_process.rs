@@ -82,17 +82,46 @@ pub async fn installation(
     }
 
     if config.details.add_to_path {
-        let exe_path = Path::new(&full_executable_path)
-            .parent()
-            .expect("Failed to get parent directory")
-            .to_string_lossy();
+        // Determine which path to add to PATH environment variable
+        let path_to_add = if !config.details.path_directory.is_empty() {
+            // User specified a custom directory to add to PATH
+            let custom_path = if config.details.path_directory.starts_with('/')
+                || config.details.path_directory.starts_with('\\')
+            {
+                // If path starts with / or \, it's relative to the app root
+                format!(
+                    "{}\\{}",
+                    app_path,
+                    config
+                        .details
+                        .path_directory
+                        .trim_start_matches(|c| c == '/' || c == '\\')
+                        .replace("/", "\\")
+                )
+            } else {
+                // Otherwise, it's an absolute path or just a directory name
+                format!(
+                    "{}\\{}",
+                    app_path,
+                    config.details.path_directory.replace("/", "\\")
+                )
+            };
+            custom_path
+        } else {
+            // Default: use executable's parent directory
+            Path::new(&full_executable_path)
+                .parent()
+                .expect("Failed to get parent directory")
+                .to_string_lossy()
+                .to_string()
+        };
 
         if config.details.current_user_only {
             let key = CURRENT_USER.create("Environment")?;
             let path = key.get_string("Path")?;
 
-            if !path.split(';').any(|p| p.trim() == exe_path.trim()) {
-                let new_path = format!("{};{}", path, exe_path);
+            if !path.split(';').any(|p| p.trim() == path_to_add.trim()) {
+                let new_path = format!("{};{}", path, path_to_add);
                 key.set_expand_string("Path", new_path)?;
             }
         } else {
@@ -100,8 +129,8 @@ pub async fn installation(
                 .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
             let path = key.get_string("path")?;
 
-            if !path.split(';').any(|p| p.trim() == exe_path.trim()) {
-                let new_path = format!("{};{}", path, exe_path);
+            if !path.split(';').any(|p| p.trim() == path_to_add.trim()) {
+                let new_path = format!("{};{}", path, path_to_add);
                 key.set_expand_string("path", new_path)?;
             }
         }

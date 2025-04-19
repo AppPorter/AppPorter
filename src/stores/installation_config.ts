@@ -9,6 +9,7 @@ interface InstallationConfig extends InstalledApp {
   archive_content: string[] | null
   timestamp: number
   archive_password: string
+  path_directory: string
 }
 
 export const useInstallationConfigStore = defineStore('installation_config', {
@@ -26,6 +27,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     create_start_menu_shortcut: true,
     create_registry_key: true,
     add_to_path: false,
+    path_directory: '',
     validation_status: {
       file_exists: false,
       registry_valid: false,

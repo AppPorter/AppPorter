@@ -52,6 +52,8 @@ pub struct InstalledApp {
     pub create_registry_key: bool,
     #[serde(default)]
     pub add_to_path: bool,
+    #[serde(default)]
+    pub path_directory: String,
 
     #[serde(default)]
     pub validation_status: ValidationStatus,
@@ -281,7 +283,7 @@ impl AppList {
                 name,
                 version,
                 publisher,
-                install_path,
+                install_path: install_path.clone(),
                 executable_path: String::new(),
                 full_path,
                 icon, // Will be filled later during validation
@@ -290,6 +292,7 @@ impl AppList {
                 create_start_menu_shortcut,
                 create_registry_key,
                 add_to_path,
+                path_directory: install_path,
                 validation_status: ValidationStatus {
                     file_exists: true,
                     registry_valid: true,

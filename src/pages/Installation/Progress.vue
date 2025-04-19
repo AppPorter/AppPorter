@@ -105,6 +105,7 @@ onMounted(() => {
           install_path: installationConfig.install_path,
           executable_path: installationConfig.executable_path,
           add_to_path: installationConfig.add_to_path,
+          path_directory: installationConfig.path_directory,
         },
         timestamp: installationConfig.timestamp,
       },
