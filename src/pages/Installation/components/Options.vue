@@ -8,7 +8,7 @@ import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ToggleSwitch from 'primevue/toggleswitch'
-import { watchEffect } from 'vue'
+import { watchEffect, computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -31,6 +31,11 @@ const {
 } = storeToRefs(installationConfig)
 
 const { t } = useI18n()
+
+// Format app path based on install path and app name
+const formatted_app_path = computed(() => {
+  return `${install_path.value}\\${installationConfig.name.replace(/ /g, '-')}`
+})
 
 // Sync settings between installation modes
 function updateConfig(isCurrentUser: boolean) {
@@ -90,11 +95,7 @@ watchEffect(() => {
         <label class="w-24 text-sm font-medium">{{ t('install_mode') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
           <span class="text-sm">{{ t('all_users') }}</span>
-          <ToggleSwitch
-            v-model="current_user_only"
-            @change="handleInstallModeChange"
-            class="mx-1"
-          />
+          <ToggleSwitch v-model="current_user_only" @change="handleInstallModeChange" class="mx-1" />
           <span class="text-sm">{{ t('current_user') }}</span>
         </div>
       </div>
@@ -104,21 +105,15 @@ watchEffect(() => {
         <label class="w-24 text-sm font-medium">{{ t('install_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
-            <InputText
-              v-model="install_path"
-              :placeholder="t('choose_dir')"
-              class="h-8 w-full text-sm"
-              :invalid="!!pathError"
-              @input="$emit('update:pathError', '')"
-              :title="pathError"
-            />
-            <Button
-              class="h-8 w-36"
-              severity="secondary"
-              @click="select_install_path"
-              icon="mir-folder_open"
-              :label="t('browse')"
-            />
+            <InputText v-model="install_path" :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
+              :invalid="!!pathError" @input="$emit('update:pathError', '')" :title="pathError" />
+            <Button class="h-8 w-36" severity="secondary" @click="select_install_path" icon="mir-folder_open"
+              :label="t('browse')" />
+          </div>
+
+          <!-- Formatted App Path -->
+          <div v-if="install_path && installationConfig.name" class="mt-1 text-xs text-gray-500">
+            {{ t('final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
       </div>
@@ -129,22 +124,14 @@ watchEffect(() => {
         <div class="w-full">
           <div class="flex-1 space-y-1 rounded-lg p-1.5">
             <div class="flex items-center gap-2">
-              <Checkbox
-                v-model="create_desktop_shortcut"
-                :binary="true"
-                inputId="desktop_shortcut"
-              />
+              <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
               <label for="desktop_shortcut" class="text-sm">{{ t('shortcuts.desktop') }}</label>
             </div>
             <div class="flex items-center gap-2">
-              <Checkbox
-                v-model="create_start_menu_shortcut"
-                :binary="true"
-                inputId="start_menu_shortcut"
-              />
+              <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-              }}</label>
+                }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
