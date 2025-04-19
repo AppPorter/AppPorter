@@ -32,6 +32,7 @@ pub enum Command {
     },
     GetArchiveContent {
         path: String,
+        password: Option<String>,
     },
     Open {
         path: String,
@@ -71,7 +72,7 @@ impl Command {
             Self::SaveSettings { settings } => save_settings(settings).await,
             Self::LoadAppList => load_app_list().await,
             Self::SaveAppList { app_list } => save_app_list(app_list).await,
-            Self::GetArchiveContent { path } => get_archive_content(path).await,
+            Self::GetArchiveContent { path, password } => get_archive_content(path, password).await,
             Self::Open { path } => open_app(&path).await,
             Self::OpenFolder { path } => open_folder(&path).await,
             Self::OpenRegistry {

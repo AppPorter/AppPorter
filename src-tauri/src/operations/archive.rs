@@ -21,22 +21,34 @@ pub fn sanitize_path(path: &str) -> String {
 }
 
 // Lists contents of archive file using 7z
-pub async fn get_archive_content(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn get_archive_content(
+    path: String,
+    password: Option<String>,
+) -> Result<String, Box<dyn Error + Send + Sync>> {
+    let password = password.unwrap_or_default();
     let output = Command::new(get_7z_path()?)
         .args([
             "l", // List contents command
-            &path, "-y", // Yes to all prompts
+            &path,
+            "-y", // Yes to all prompts
+            &format!("-p{}", password),
         ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
+
+    let output_str = String::from_utf8_lossy(&output.stdout).to_string();
+    let error_str = String::from_utf8_lossy(&output.stderr).to_string();
+
     if !output.status.success() {
+        if error_str.contains("Cannot open encrypted archive. Wrong password?") {
+            return Err("Wrong password".into());
+        }
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
 
     // Parse 7z output format and extract file paths
     let mut is_output_section = false;
-    let output_str = String::from_utf8_lossy(&output.stdout).to_string();
 
     let mut list: Vec<String> = Vec::new();
     for line in output_str.lines() {
