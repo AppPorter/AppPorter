@@ -106,6 +106,7 @@ async function handleSelect() {
         path: {
           zip_path: props.zipPath,
           executable_path: selectedPath.value,
+          password: store.archive_password,
         },
       },
     })
@@ -131,34 +132,20 @@ async function handleSelect() {
   <div class="flex h-full flex-col">
     <!-- Enhanced Filter UI -->
     <div
-      class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50"
-    >
+      class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
       <div class="flex flex-col gap-3">
         <!-- Filter options with horizontal layout -->
         <div class="flex gap-2">
-          <div
-            v-for="option in FILTER_MODES"
-            :key="option.value"
-            :class="[
-              'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
-              'hover:bg-white dark:border-zinc-700 dark:hover:bg-zinc-800',
-              filterMode === option.value
-                ? 'bg-white ring-2 ring-blue-500 dark:bg-zinc-800 dark:ring-blue-400'
-                : '',
-            ]"
-            @click="filterMode = option.value as any"
-          >
-            <RadioButton
-              v-model="filterMode"
-              :value="option.value"
-              :inputId="option.value"
-              class="mt-0.5"
-            />
+          <div v-for="option in FILTER_MODES" :key="option.value" :class="[
+            'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
+            'hover:bg-white dark:border-zinc-700 dark:hover:bg-zinc-800',
+            filterMode === option.value
+              ? 'bg-white ring-2 ring-blue-500 dark:bg-zinc-800 dark:ring-blue-400'
+              : '',
+          ]" @click="filterMode = option.value as any">
+            <RadioButton v-model="filterMode" :value="option.value" :inputId="option.value" class="mt-0.5" />
             <div class="flex-1">
-              <label
-                :for="option.value"
-                class="flex cursor-pointer items-center gap-1.5 text-sm font-medium"
-              >
+              <label :for="option.value" class="flex cursor-pointer items-center gap-1.5 text-sm font-medium">
                 <span :class="[option.icon, filterMode === option.value ? 'text-blue-500' : '']" />
                 {{ option.label }}
               </label>
@@ -170,53 +157,37 @@ async function handleSelect() {
 
     <!-- Main content area with fixed height and proper overflow handling -->
     <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-      <ZipPreview
-        ref="zipPreviewRef"
-        :zip-path="zipPath"
-        :filter-function="fileFilter"
-        :is-selectable-function="isSelectableFile"
-        :details-loading="detailsLoading"
-        @node-select="handleNodeSelect"
-      />
+      <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
+        :is-selectable-function="isSelectableFile" :details-loading="detailsLoading" @node-select="handleNodeSelect" />
     </div>
 
     <!-- Selected file and button container -->
     <div class="mt-3 flex items-center justify-between gap-4">
-      <div
-        :class="[
-          'flex flex-1 items-center gap-2 rounded-md p-2 text-sm transition-colors',
-          selectedPath ? 'bg-green-50 dark:bg-green-900/20' : 'bg-slate-50 dark:bg-zinc-800/50',
-        ]"
-      >
-        <span
-          :class="[
-            selectedPath
-              ? 'mir-check_circle text-green-500 dark:text-green-400'
-              : 'mir-info text-slate-500 dark:text-slate-400',
-          ]"
-        ></span>
-        <span
-          :class="[
-            'font-medium',
-            selectedPath
-              ? 'text-green-800 dark:text-green-300'
-              : 'text-slate-700 dark:text-slate-300',
-          ]"
-          >{{
-            selectedPath
-              ? t('executable_selector.selected')
-              : t('executable_selector.select_prompt')
-          }}:</span
-        >
-        <span
-          :class="[
-            'truncate',
-            selectedPath
-              ? 'text-green-700 dark:text-green-400'
-              : 'text-slate-600 dark:text-slate-400',
-          ]"
-          >{{ selectedPath || t('executable_selector.no_selection') }}</span
-        >
+      <div :class="[
+        'flex flex-1 items-center gap-2 rounded-md p-2 text-sm transition-colors',
+        selectedPath ? 'bg-green-50 dark:bg-green-900/20' : 'bg-slate-50 dark:bg-zinc-800/50',
+      ]">
+        <span :class="[
+          selectedPath
+            ? 'mir-check_circle text-green-500 dark:text-green-400'
+            : 'mir-info text-slate-500 dark:text-slate-400',
+        ]"></span>
+        <span :class="[
+          'font-medium',
+          selectedPath
+            ? 'text-green-800 dark:text-green-300'
+            : 'text-slate-700 dark:text-slate-300',
+        ]">{{
+          selectedPath
+            ? t('executable_selector.selected')
+            : t('executable_selector.select_prompt')
+        }}:</span>
+        <span :class="[
+          'truncate',
+          selectedPath
+            ? 'text-green-700 dark:text-green-400'
+            : 'text-slate-600 dark:text-slate-400',
+        ]">{{ selectedPath || t('executable_selector.no_selection') }}</span>
       </div>
       <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">

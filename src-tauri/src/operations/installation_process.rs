@@ -18,6 +18,7 @@ use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 #[derive(Deserialize, Debug, Clone)]
 pub struct InstallationConfig {
     zip_path: String,
+    password: Option<String>,
     details: InstalledApp,
     timestamp: i64,
 }
@@ -39,7 +40,13 @@ pub async fn installation(
     if !target_path.exists() {
         tokio::fs::create_dir_all(target_path).await?;
     }
-    extract_files(&zip_path, &app_path, app.clone()).await?;
+    extract_files(
+        &zip_path,
+        &app_path,
+        app.clone(),
+        config.password.as_deref(),
+    )
+    .await?;
 
     app.emit("installation", 101)?;
 
@@ -155,19 +162,34 @@ async fn extract_files(
     zip_path: &str,
     app_path: &str,
     app: AppHandle,
+    password: Option<&str>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let path_7z = get_7z_path()?;
 
+    // List command arguments
+    let mut list_args = vec![
+        "l", // List contents command
+        zip_path, "-y", // Yes to all prompts
+    ];
+
+    // Add password if provided for listing
+    let mut pw = String::new();
+    if let Some(pass) = password {
+        pw = format!("-p{}", pass)
+    }
+    list_args.push(&pw);
+
     let output_list = tokio::process::Command::new(&path_7z)
-        .args([
-            "l", // List contents command
-            zip_path, "-y", // Yes to all prompts
-        ])
+        .args(list_args)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
 
     if !output_list.status.success() {
+        let error_str = String::from_utf8_lossy(&output_list.stderr).to_string();
+        if error_str.contains("Cannot open encrypted archive. Wrong password?") {
+            return Err("Wrong password".into());
+        }
         return Err("Failed to list archive contents".into());
     }
 
@@ -194,17 +216,20 @@ async fn extract_files(
         }
     }
 
+    let dir = format!("-o{}", app_path);
+
     // If all paths are safe, proceed with extraction
+    let mut extract_args = vec![
+        "-bsp2", // set output stream
+        "x",     // Extract files with full paths
+        zip_path, &dir, "-y",   // Yes to all prompts
+        "-aoa", // Overwrite all existing files without prompt
+        "-snl", // Disable symbolic links
+    ];
+    extract_args.push(&pw);
+
     let mut child = std::process::Command::new(&path_7z)
-        .args([
-            "-bsp2", // set output stream
-            "x",     // Extract files with full paths
-            zip_path,
-            &format!("-o{}", app_path),
-            "-y",   // Yes to all prompts
-            "-aoa", // Overwrite all existing files without prompt
-            "-snl", // Disable symbolic links
-        ])
+        .args(extract_args)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .stderr(Stdio::piped())
         .spawn()?;

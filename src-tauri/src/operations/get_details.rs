@@ -13,6 +13,7 @@ use tokio::process::Command;
 pub struct ExePath {
     pub zip_path: String,
     pub executable_path: String,
+    pub password: Option<String>,
 }
 
 // Extracts metadata from an executable file within a zip archive
@@ -47,20 +48,35 @@ pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error + Send 
     }
 
     // Extract specific file using 7z.exe
+
+    let dir = format!("-o{}", temp_dir.path().to_str().unwrap_or_default());
+
+    let mut args = vec![
+        "e", // Extract without full paths
+        &input.zip_path,
+        &input.executable_path,
+        &dir,   // Output directory flag
+        "-y",   // Auto yes to all prompts
+        "-aoa", // Overwrite all existing files without prompt
+        "-snl", // Disable symbolic links
+    ]; // Add password if provided
+
+    let mut pw = String::new();
+    if let Some(password) = &input.password {
+        pw = format!("-p{}", password);
+    }
+    args.push(&pw);
+
     let output1 = Command::new(get_7z_path()?)
-        .args([
-            "e", // Extract without full paths
-            &input.zip_path,
-            &input.executable_path,
-            &format!("-o{}", temp_dir.path().to_str().unwrap_or(".")), // Output directory flag
-            "-y",                                                      // Auto yes to all prompts
-            "-aoa", // Overwrite all existing files without prompt
-            "-snl", // Disable symbolic links
-        ])
+        .args(args)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
     if !output1.status.success() {
+        let error_str = String::from_utf8_lossy(&output1.stderr).to_string();
+        if error_str.contains("Cannot open encrypted archive. Wrong password?") {
+            return Err("Wrong password".into());
+        }
         return Err(String::from_utf8_lossy(&output1.stderr).into());
     }
 
@@ -82,7 +98,8 @@ pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error + Send 
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
     // Build PowerShell command for file metadata extraction with path sanitization
-    let safe_path_for_ps = extracted_file.to_string_lossy().replace("'", "''");
+    let extracted_file_str = extracted_file.to_string_lossy();
+    let safe_path_for_ps = extracted_file_str.replace("'", "''");
     let ps_command = format!(
         r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
         $ErrorActionPreference = 'Stop';

@@ -92,6 +92,7 @@ onMounted(() => {
       name: 'Installation',
       config: {
         zip_path: installationConfig.zip_path,
+        password: installationConfig.archive_password,
         details: {
           name: installationConfig.name,
           icon: installationConfig.icon,
@@ -134,15 +135,12 @@ defineOptions({
             <!-- Progress Title -->
             <div class="flex min-w-0 shrink items-center gap-2">
               <div class="shrink-0 rounded-md p-1.5">
-                <span
-                  class="mir-text-xl"
-                  :class="[
-                    isFinished ? 'mir-task_alt' : 'mir-install_desktop',
-                    isFinished
-                      ? 'text-green-600 dark:text-green-400'
-                      : 'text-primary-600 dark:text-primary-400',
-                  ]"
-                ></span>
+                <span class="mir-text-xl" :class="[
+                  isFinished ? 'mir-task_alt' : 'mir-install_desktop',
+                  isFinished
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-primary-600 dark:text-primary-400',
+                ]"></span>
               </div>
               <div class="min-w-0 shrink">
                 <h2 class="text-lg font-medium">
@@ -168,14 +166,9 @@ defineOptions({
                 </p>
               </div>
               <div
-                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800"
-              >
-                <img
-                  v-if="installationConfig.icon"
-                  :src="installationConfig.icon"
-                  class="size-8 object-contain"
-                  alt="App Icon"
-                />
+                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
+                <img v-if="installationConfig.icon" :src="installationConfig.icon" class="size-8 object-contain"
+                  alt="App Icon" />
                 <span v-else class="mir-apps text-2xl"></span>
               </div>
             </div>
@@ -191,23 +184,14 @@ defineOptions({
             <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
           </div>
 
-          <div
-            v-if="isFinished"
-            class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600"
-          >
+          <div v-if="isFinished" class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600">
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
                 <span class="mir-terminal"></span>
                 <span class="text-sm font-medium">{{ t('full_path') }}</span>
               </div>
-              <Button
-                severity="secondary"
-                outlined
-                v-tooltip.top="t('installation.progress.copy_path')"
-                class="h-7 w-8"
-                icon="mir-content_copy"
-                @click="handleCopy(finalExecutablePath, t('executable_path'))"
-              />
+              <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_path')" class="h-7 w-8"
+                icon="mir-content_copy" @click="handleCopy(finalExecutablePath, t('executable_path'))" />
             </div>
             <p class="select-text break-all text-sm font-medium">
               {{ finalExecutablePath }}
@@ -221,21 +205,15 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.install_settings')
-                  }}</span>
+                    }}</span>
                 </div>
-                <Button
-                  severity="secondary"
-                  outlined
-                  v-tooltip.top="t('installation.progress.copy_settings')"
-                  class="h-7 w-8"
-                  icon="mir-content_copy"
-                  @click="
+                <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_settings')"
+                  class="h-7 w-8" icon="mir-content_copy" @click="
                     handleCopy(
                       `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
                       'Settings'
                     )
-                  "
-                />
+                    " />
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
@@ -265,21 +243,15 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.package_info')
-                  }}</span>
+                    }}</span>
                 </div>
-                <Button
-                  severity="secondary"
-                  outlined
-                  v-tooltip.top="t('copy_package_info')"
-                  class="h-7 w-8"
-                  icon="mir-content_copy"
-                  @click="
+                <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
+                  icon="mir-content_copy" @click="
                     handleCopy(
                       `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
                       'Package info'
                     )
-                  "
-                />
+                    " />
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
@@ -299,14 +271,8 @@ defineOptions({
           </div>
 
           <div class="flex justify-end">
-            <Button
-              v-if="canClose"
-              @click="handleClose"
-              :severity="isFinished ? 'success' : 'danger'"
-              class="h-8 w-24"
-              :icon="isFinished ? 'mir-home' : 'mir-close'"
-              :label="isFinished ? t('finish') : t('close')"
-            />
+            <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'success' : 'danger'" class="h-8 w-24"
+              :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('finish') : t('close')" />
           </div>
         </div>
       </Panel>
