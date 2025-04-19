@@ -240,8 +240,7 @@ impl Settings {
 }
 
 pub async fn load_settings() -> Result<String, Box<dyn Error + Send + Sync>> {
-    let mut settings = Settings::read().await?;
-    settings.initialization().await?;
+    let settings = Settings::read().await?;
     Ok(serde_json::to_string(&settings)?)
 }
 
