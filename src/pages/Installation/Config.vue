@@ -102,7 +102,7 @@ async function GetArchiveContent(password: string) {
 
   if (!hasExecutable) {
     showErrorDialog.value = true
-    throw new Error('No executable found')
+    return
   }
 
   installationConfig.archive_content = content
@@ -271,7 +271,7 @@ async function handleInstallClick() {
     <Dialog v-model:visible="showErrorDialog" :modal="true" :closable="false" :header="t('validation.invalid_archive')"
       class="w-[30rem]">
       <div class="flex items-start gap-3">
-        <span class="mir-error text-xl text-red-500"></span>
+        <span class="mir-error text-3xl text-red-500"></span>
         <p class="text-sm">{{ t('validation.no_executable_file') }}</p>
       </div>
       <template #footer>
