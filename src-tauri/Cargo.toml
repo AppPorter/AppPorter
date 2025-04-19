@@ -6,7 +6,7 @@
     edition = "2021"
     license = "MPL-2.0"
     name = "app-porter"
-    version = "0.1.0"
+    version = "0.2.0"
 
     # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -22,7 +22,7 @@
     name = "app_porter_lib"
 
 [build-dependencies]
-    tauri-build = { version = "2.1.0", features = [
+    tauri-build = { version = "2.2.0", features = [
     ] }
 
 [dependencies]
@@ -31,7 +31,7 @@
         "derive",
     ] }
     serde_json = "1.0.140"
-    tauri = { version = "2.4.0", features = [
+    tauri = { version = "2.5.0", features = [
         "tray-icon",
     ] }
     tauri-plugin-opener = "2.2.6"
@@ -48,11 +48,11 @@
         "stream",
     ] }
     systemicons = "0.9.13"
-    tauri-plugin-dialog = "2.2.0"
-    tauri-plugin-fs = "2.2.0"
-    tauri-plugin-process = "2.2.0"
+    tauri-plugin-dialog = "2.2.1"
+    tauri-plugin-fs = "2.2.1"
+    tauri-plugin-process = "2.2.1"
     tempfile = "3.19.1"
-    tokio = { version = "1.44.1", features = [
+    tokio = { version = "1.44.2", features = [
         "full",
     ] }
     tokio-tungstenite = "0.26.2"
@@ -60,4 +60,4 @@
     windows-registry = "0.5.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-    tauri-plugin-single-instance = "2.2.2"
+    tauri-plugin-single-instance = "2.2.3"
