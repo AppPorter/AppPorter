@@ -288,7 +288,7 @@ async function handleInstallClick() {
         <p class="text-sm">{{ t('archive.enter_password') }}</p>
         <div class="flex flex-col gap-1">
           <InputText v-model="archivePassword" type="password" :class="{ 'border-red-500': passwordError }"
-            @keydown.enter="handlePasswordSubmit" class="w-full" />
+            @keydown.enter="handlePasswordSubmit" class="w-full" :invalid="passwordError" />
           <small v-if="passwordError" class="text-red-500">{{ t('validation.password_required') }}</small>
         </div>
       </div>
