@@ -3,6 +3,7 @@ import DirectorySelector from '@/components/DirectorySelector.vue'
 import { goTo } from '@/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
+import { open } from '@tauri-apps/plugin-dialog'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
@@ -11,7 +12,7 @@ import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
-import { computed, onMounted, ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installationConfig = useInstallationConfigStore()
@@ -113,11 +114,6 @@ function handleBackClick() {
     goTo('/Home')
 }
 
-// Format app path based on install path and app name
-const formatted_app_path = computed(() => {
-    return `${installationConfig.install_path}\\${installationConfig.name.replace(/ /g, '-')}`
-})
-
 // Handle extraction process initiation
 async function handleExtractClick() {
     // Reset validation errors
@@ -211,12 +207,10 @@ async function handleExtractClick() {
 
 // Select extraction directory using file dialog
 async function select_extract_path() {
-    const selected = await invoke('execute_command', {
-        command: {
-            name: 'SelectDirectory',
-        },
+    const selected = await open({
+        directory: true,
+        multiple: false,
     })
-
     if (selected) {
         installationConfig.install_path = String(selected)
     }
@@ -230,7 +224,7 @@ async function select_extract_path() {
             <!-- Content wrapper -->
             <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
                 <div class="min-w-72 flex-1 space-y-2">
-                    <!-- File details panel -->
+                    <!-- Combined extraction panel -->
                     <Panel class="shadow-sm">
                         <template #header>
                             <div class="flex flex-col">
@@ -247,7 +241,7 @@ async function select_extract_path() {
                             </div>
                         </template>
 
-                        <div class="space-y-2 p-2">
+                        <div class="space-y-4 p-2">
                             <!-- Name input (optional for extraction) -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">
@@ -259,23 +253,7 @@ async function select_extract_path() {
                                         class="h-8 w-full text-sm" />
                                 </div>
                             </div>
-                        </div>
-                    </Panel>
 
-                    <!-- Extraction options panel -->
-                    <Panel class="shadow-sm">
-                        <template #header>
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-1.5">
-                                    <span class="mir-settings" />
-                                    <h2 class="text-base font-medium">
-                                        {{ t('copyonly.extraction_options') }}
-                                    </h2>
-                                </div>
-                            </div>
-                        </template>
-
-                        <div class="space-y-2 p-2">
                             <!-- Extract Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('extract_path') }}</label>
@@ -287,16 +265,11 @@ async function select_extract_path() {
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('browse')" />
                                     </div>
-
-                                    <!-- Formatted Extract Path -->
-                                    <div v-if="installationConfig.install_path" class="mt-1 text-xs text-gray-500">
-                                        {{ t('final_path') }}: {{ formatted_app_path }}
-                                    </div>
                                 </div>
                             </div>
 
                             <!-- Add to PATH option -->
-                            <div class="flex items-start gap-2">
+                            <div class="mt-2 flex items-start gap-2">
                                 <label class="mt-1 w-24 text-sm font-medium">{{ t('environment') }}</label>
                                 <div class="w-full">
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
@@ -304,7 +277,8 @@ async function select_extract_path() {
                                             <div class="flex items-center gap-2">
                                                 <Checkbox v-model="installationConfig.add_to_path" :binary="true"
                                                     inputId="add_to_path" />
-                                                <label for="add_to_path" class="text-sm">{{ t('add_to_path') }}</label>
+                                                <label for="add_to_path" class="text-sm">{{ t('add_to_path')
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installationConfig.add_to_path" class="ml-6 mt-1">
