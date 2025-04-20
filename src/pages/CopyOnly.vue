@@ -1,18 +1,18 @@
 <script setup lang="ts">
+import DirectorySelector from '@/components/DirectorySelector.vue'
 import { goTo } from '@/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
-import Dialog from 'primevue/dialog'
-import InputText from 'primevue/inputtext'
-import { useConfirm } from 'primevue/useconfirm'
-import { onMounted, ref, computed, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import DirectorySelector from '@/components/DirectorySelector.vue'
 import Checkbox from 'primevue/checkbox'
-import Panel from 'primevue/panel'
+import Dialog from 'primevue/dialog'
 import Drawer from 'primevue/drawer'
+import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
+import { useConfirm } from 'primevue/useconfirm'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const installationConfig = useInstallationConfigStore()
 installationConfig.page = 'Config' // Reuse Config page state
@@ -32,7 +32,7 @@ const detailsLoading = ref(false)
 // Load archive content when component is mounted
 onMounted(async () => {
     if (!installationConfig.zip_path) {
-        goTo('/Installation/Home')
+        goTo('/Home')
         return
     }
 
@@ -49,7 +49,7 @@ onMounted(async () => {
                 detail: String(error),
                 life: 0,
             })
-            goTo('/Installation/Home')
+            goTo('/Home')
         }
     }
 })
@@ -61,7 +61,7 @@ watch(archivePassword, () => {
 
 async function handleDialogClose() {
     showErrorDialog.value = false
-    goTo('/Installation/Home')
+    goTo('/Home')
 }
 
 async function handlePasswordSubmit() {
@@ -87,7 +87,7 @@ async function handlePasswordSubmit() {
                 life: 0,
             })
             showPasswordDialog.value = false
-            goTo('/Installation/Home')
+            goTo('/Home')
         }
     }
 }
@@ -110,7 +110,7 @@ function handleDetailsLoading(loading: boolean) {
 }
 
 function handleBackClick() {
-    goTo('/Installation/Home')
+    goTo('/Home')
 }
 
 // Format app path based on install path and app name
@@ -362,7 +362,7 @@ async function select_extract_path() {
             </div>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <Button @click="goTo('/Installation/Home')" :label="t('cancel')" severity="secondary" outlined
+                    <Button @click="goTo('/Home')" :label="t('cancel')" severity="secondary" outlined
                         icon="mir-close" />
                     <Button @click="handlePasswordSubmit" :label="t('submit')" icon="mir-check" />
                 </div>

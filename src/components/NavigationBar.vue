@@ -14,7 +14,7 @@ const leftMenuItems = [
     label: t('installation.self'),
     icon: 'mir-install_desktop',
     command: () => goTo('/'),
-    paths: ['/Installation/Home', '/Installation/Config', '/Installation/Progress'],
+    paths: ['/Home', '/Installation/Config', '/Installation/Progress'],
   },
   {
     label: t('app_list.self'),
@@ -72,42 +72,26 @@ const activeIndicatorClass = computed(
 
     <!-- Navigation Menu -->
     <div class="flex px-4">
-      <div
-        class="flex w-full items-center justify-between gap-1 border-b border-gray-200 dark:border-gray-700"
-      >
+      <div class="flex w-full items-center justify-between gap-1 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center gap-1">
-          <Button
-            v-for="item in leftMenuItems"
-            :key="item.label"
-            :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]"
-            text
-            plain
-            @click="item.command"
-          >
-            <span
-              :class="[
-                item.icon,
-                'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
-              ]"
-            />
+          <Button v-for="item in leftMenuItems" :key="item.label"
+            :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]" text plain
+            @click="item.command">
+            <span :class="[
+              item.icon,
+              'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
+            ]" />
             <span>{{ item.label }}</span>
           </Button>
         </div>
         <div class="flex items-center gap-1">
-          <Button
-            v-for="item in rightMenuItems"
-            :key="item.label"
-            :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]"
-            text
-            plain
-            @click="item.command"
-          >
-            <span
-              :class="[
-                item.icon,
-                'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
-              ]"
-            />
+          <Button v-for="item in rightMenuItems" :key="item.label"
+            :class="[...navButtonClass, activeIndicatorClass(item.paths?.includes(currentPath))]" text plain
+            @click="item.command">
+            <span :class="[
+              item.icon,
+              'text-[1.1rem] transition-transform duration-200 ease-in-out group-hover:scale-105',
+            ]" />
             <span>{{ item.label }}</span>
           </Button>
         </div>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useInstallationConfigStore } from '@/stores/installation_config'
-import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
@@ -27,7 +26,7 @@ const FILTER_MODES = {
 }
 
 // Props
-const props = defineProps<{
+defineProps<{
     zipPath: string
     detailsLoading?: boolean
 }>()
@@ -149,9 +148,9 @@ async function handleSelect() {
                         ? 'text-green-800 dark:text-green-300'
                         : 'text-slate-700 dark:text-slate-300',
                 ]">{{
-            selectedPath
-                ? t('directory_selector.selected')
-                : t('directory_selector.select_prompt')
+                    selectedPath
+                        ? t('directory_selector.selected')
+                        : t('directory_selector.select_prompt')
                     }}:</span>
                 <span :class="[
                     'truncate',

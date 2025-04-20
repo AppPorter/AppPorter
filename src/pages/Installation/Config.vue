@@ -25,7 +25,7 @@ const passwordError = ref(false)
 // Load archive content when component is mounted
 onMounted(async () => {
   if (!installationConfig.zip_path) {
-    goTo('/Installation/Home')
+    goTo('/Home')
     return
   }
 
@@ -42,7 +42,7 @@ onMounted(async () => {
         detail: String(error),
         life: 0,
       })
-      goTo('/Installation/Home')
+      goTo('/Home')
     }
   }
 })
@@ -54,7 +54,7 @@ watch(archivePassword, () => {
 
 async function handleDialogClose() {
   showErrorDialog.value = false
-  goTo('/Installation/Home')
+  goTo('/Home')
 }
 
 async function handlePasswordSubmit() {
@@ -80,7 +80,7 @@ async function handlePasswordSubmit() {
         life: 0,
       })
       showPasswordDialog.value = false
-      goTo('/Installation/Home')
+      goTo('/Home')
     }
   }
 }
@@ -119,7 +119,7 @@ const nameError = ref(false)
 const executablePathError = ref(false)
 
 function handleBackClick() {
-  goTo('/Installation/Home')
+  goTo('/Home')
 }
 
 // Handle installation process initiation
@@ -294,8 +294,7 @@ async function handleInstallClick() {
       </div>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button @click="goTo('/Installation/Home')" :label="t('cancel')" severity="secondary" outlined
-            icon="mir-close" />
+          <Button @click="goTo('/Home')" :label="t('cancel')" severity="secondary" outlined icon="mir-close" />
           <Button @click="handlePasswordSubmit" :label="t('submit')" icon="mir-check" />
         </div>
       </template>

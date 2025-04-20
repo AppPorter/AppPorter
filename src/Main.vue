@@ -114,7 +114,7 @@ onMounted(async () => {
 // Route caching control
 const route = useRoute()
 const cachedComponents = computed(() => {
-  return route.path !== '/Installation/Home'
+  return route.path !== '/Home'
 })
 
 onBeforeMount(() => {

@@ -1,7 +1,7 @@
 import AppList from '@/pages/AppList.vue'
 import CopyOnly from '@/pages/CopyOnly.vue'
+import Installation from '@/pages/Home.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
-import Installation from '@/pages/Installation/Index.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
 import { useInstallationConfigStore } from '@/stores/installation_config'
@@ -13,15 +13,15 @@ const Dummy = { render: () => null }
 
 // Route configuration with metadata
 const routes = [
-  { path: '/', redirect: '/Installation' },
-  { path: '/Installation', component: Dummy },
+  { path: '/', redirect: '/Home' },
   {
-    path: '/Installation/Home',
+    path: '/Home',
     component: Installation,
     meta: {
       icon: 'mir-install_desktop',
     },
   },
+  { path: '/Installation', component: Dummy },
   {
     path: '/Installation/Config',
     component: Installation_Config,
@@ -78,7 +78,7 @@ export function setupRouterGuards(router: Router) {
       let path = ''
       switch (installationConfig.page) {
         case 'Home':
-          path = '/Installation/Home'
+          path = '/Home'
           break
         case 'Config':
           path = '/Installation/Config'
@@ -91,7 +91,7 @@ export function setupRouterGuards(router: Router) {
     }
 
     // Reset installation state when returning to home page
-    if (to.path === '/Installation/Home') {
+    if (to.path === '/Home') {
       installationConfig.$reset()
     }
 
