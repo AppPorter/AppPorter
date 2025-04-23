@@ -1,5 +1,5 @@
 import AppList from '@/pages/AppList.vue'
-import CopyOnly from '@/pages/CopyOnly.vue'
+import CopyOnly from '@/pages/CopyOnly/Config.vue'
 import Installation from '@/pages/Home.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
