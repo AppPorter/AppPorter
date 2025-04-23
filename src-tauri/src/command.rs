@@ -56,6 +56,9 @@ pub enum Command {
     },
     SetStartup,
     RemoveStartup,
+    CopyOnly {
+        config: CopyOnlyConfig,
+    },
 }
 
 impl Command {
@@ -86,6 +89,7 @@ impl Command {
             Self::InstallWithLink { url, timestamp } => install_with_link(url, timestamp).await,
             Self::SetStartup => set_startup(),
             Self::RemoveStartup => remove_startup(),
+            Self::CopyOnly { config } => copy_only(config, app).await,
         }
     }
 }
