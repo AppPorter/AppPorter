@@ -306,12 +306,12 @@ impl AppList {
     }
 }
 
-pub async fn load_app_list() -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn load_app_list() -> Result<AppList, Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
     app_list.sync_from_registry().await?;
     app_list.validate_installations().await?;
     app_list.remove_duplicates();
     app_list.save().await?;
 
-    Ok(serde_json::to_string(&app_list)?)
+    Ok(app_list)
 }

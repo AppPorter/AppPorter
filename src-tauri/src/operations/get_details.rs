@@ -1,23 +1,31 @@
 use super::sanitize_path;
 use crate::get_7z_path;
 use base64::{engine::general_purpose::STANDARD, Engine};
-use serde::Deserialize;
-use serde_json::{json, Value};
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use std::error::Error;
 use std::path::Path;
 use systemicons::get_icon;
 use tempfile::tempdir;
 use tokio::process::Command;
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ExePath {
     pub zip_path: String,
     pub executable_path: String,
     pub password: Option<String>,
 }
 
+#[derive(Deserialize, Serialize, Debug, Clone)]
+pub struct ExeDetails {
+    pub product_name: String,
+    pub version: String,
+    pub copyright: String,
+    pub icon_data_url: String,
+}
+
 // Extracts metadata from an executable file within a zip archive
-pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn get_details(input: ExePath) -> Result<ExeDetails, Box<dyn Error + Send + Sync>> {
     let temp_dir = tempdir()?;
 
     // Sanitize the executable path to prevent directory traversal
@@ -161,7 +169,12 @@ pub async fn get_details(input: ExePath) -> Result<String, Box<dyn Error + Send 
 
     drop(temp_dir);
 
-    Ok(json!([product_name, version, copyright, icon_data_url]).to_string())
+    Ok(ExeDetails {
+        product_name: product_name.to_owned(),
+        version: version.to_owned(),
+        copyright: copyright.to_owned(),
+        icon_data_url,
+    })
 }
 
 fn get_valid_str(value: &Value) -> Option<&str> {

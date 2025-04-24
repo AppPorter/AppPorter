@@ -7,7 +7,7 @@ use crate::configs::{
 };
 use crate::get_7z_path;
 use mslnk::ShellLink;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::io::Read;
 use std::os::windows::process::CommandExt;
 use std::process::Stdio;
@@ -15,7 +15,7 @@ use std::{error::Error, path::Path};
 use tauri::{AppHandle, Emitter};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct InstallationConfig {
     zip_path: String,
     password: Option<String>,

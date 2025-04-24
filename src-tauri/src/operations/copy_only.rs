@@ -1,5 +1,5 @@
 use crate::get_7z_path;
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::io::Read;
 use std::os::windows::process::CommandExt;
@@ -7,7 +7,7 @@ use std::path::Path;
 use std::process::Stdio;
 use tauri::{AppHandle, Emitter};
 
-#[derive(Deserialize, Debug, Clone)]
+#[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CopyOnlyConfig {
     pub zip_path: String,
     pub password: Option<String>,
