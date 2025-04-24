@@ -34,7 +34,7 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send 
     }
 }
 
-pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn check_path_empty(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
     // Check if directory exists
     if let Ok(mut entries) = tokio::fs::read_dir(path).await {
         // Check if directory has any contents
@@ -43,5 +43,5 @@ pub async fn check_path_empty(path: &str) -> Result<String, Box<dyn Error + Send
         }
     }
 
-    Ok("".to_string())
+    Ok(())
 }

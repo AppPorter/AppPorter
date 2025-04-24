@@ -24,7 +24,7 @@ pub fn sanitize_path(path: &str) -> String {
 pub async fn get_archive_content(
     path: String,
     password: Option<String>,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
     let password = password.unwrap_or_default();
     let output = Command::new(get_7z_path()?)
         .args([
@@ -66,5 +66,5 @@ pub async fn get_archive_content(
             }
         }
     }
-    Ok(serde_json::to_string(&list)?)
+    Ok(list)
 }

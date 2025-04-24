@@ -238,13 +238,3 @@ impl Settings {
         }
     }
 }
-
-pub async fn load_settings() -> Result<String, Box<dyn Error + Send + Sync>> {
-    let settings = Settings::read().await?;
-    Ok(serde_json::to_string(&settings)?)
-}
-
-pub async fn save_settings(settings: Settings) -> Result<String, Box<dyn Error + Send + Sync>> {
-    settings.save().await?;
-    Ok("Settings saved successfully".to_owned())
-}

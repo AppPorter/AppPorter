@@ -70,7 +70,7 @@ impl Command {
         app: AppHandle,
     ) -> Result<Box<dyn ErasedSerialize + Send>, Box<dyn Error + Send + Sync>> {
         match self {
-            Self::LoadSettings => Ok(Box::new(load_settings().await?)),
+            Self::LoadSettings => Ok(Box::new(Settings::read().await?)),
             Self::GetDetails { path } => Ok(Box::new(get_details(path).await?)),
             Self::Installation { config } => Ok(Box::new(installation(config, app).await?)),
             Self::Uninstallation { timestamp } => {
@@ -78,9 +78,9 @@ impl Command {
             }
             Self::Elevate { revert } => Ok(Box::new(elevate(revert).await?)),
             Self::ValidatePath { path } => Ok(Box::new(validate_path(path).await?)),
-            Self::SaveSettings { settings } => Ok(Box::new(save_settings(settings).await?)),
+            Self::SaveSettings { settings } => Ok(Box::new(settings.save().await?)),
             Self::LoadAppList => Ok(Box::new(load_app_list().await?)),
-            Self::SaveAppList { app_list } => Ok(Box::new(save_app_list(app_list).await?)),
+            Self::SaveAppList { app_list } => Ok(Box::new(app_list.save().await?)),
             Self::GetArchiveContent { path, password } => {
                 Ok(Box::new(get_archive_content(path, password).await?))
             }
