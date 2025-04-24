@@ -1,4 +1,4 @@
-use crate::get_7z_path;
+use super::get_7z_path;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::io::Read;

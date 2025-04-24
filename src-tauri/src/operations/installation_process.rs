@@ -1,11 +1,10 @@
-use super::sanitize_path;
+use super::{get_7z_path, sanitize_path};
 use crate::configs::app_list::ValidationStatus;
 use crate::configs::ConfigFile;
 use crate::configs::{
     app_list::{App, AppList, InstalledApp},
     settings::Settings,
 };
-use crate::get_7z_path;
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::io::Read;

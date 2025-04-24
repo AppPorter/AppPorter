@@ -1,8 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app_porter_lib::{
-    command, configs::*, get_7z_path, operations::*, websocket::start_websocket_server,
-    SUPPORTED_EXTENSIONS,
+    command, configs::*, operations::*, websocket::start_websocket_server, SUPPORTED_EXTENSIONS,
 };
 use std::error::Error;
 use tauri::Manager;
