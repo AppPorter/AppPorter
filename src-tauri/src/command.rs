@@ -1,4 +1,5 @@
 use crate::{configs::*, operations::*};
+use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
 use tauri::AppHandle;
@@ -64,32 +65,41 @@ pub enum Command {
 impl Command {
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
-    async fn execute(self, app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
+    async fn execute(
+        self,
+        app: AppHandle,
+    ) -> Result<Box<dyn ErasedSerialize + Send>, Box<dyn Error + Send + Sync>> {
         match self {
-            Self::LoadSettings => load_settings().await,
-            Self::GetDetails { path } => get_details(path).await,
-            Self::Installation { config } => installation(config, app).await,
-            Self::Uninstallation { timestamp } => uninstallation(timestamp, app).await,
-            Self::Elevate { revert } => elevate(revert).await,
-            Self::ValidatePath { path } => validate_path(path).await,
-            Self::SaveSettings { settings } => save_settings(settings).await,
-            Self::LoadAppList => load_app_list().await,
-            Self::SaveAppList { app_list } => save_app_list(app_list).await,
-            Self::GetArchiveContent { path, password } => get_archive_content(path, password).await,
-            Self::Open { path } => open_app(&path).await,
-            Self::OpenFolder { path } => open_folder(&path).await,
+            Self::LoadSettings => Ok(Box::new(load_settings().await?)),
+            Self::GetDetails { path } => Ok(Box::new(get_details(path).await?)),
+            Self::Installation { config } => Ok(Box::new(installation(config, app).await?)),
+            Self::Uninstallation { timestamp } => {
+                Ok(Box::new(uninstallation(timestamp, app).await?))
+            }
+            Self::Elevate { revert } => Ok(Box::new(elevate(revert).await?)),
+            Self::ValidatePath { path } => Ok(Box::new(validate_path(path).await?)),
+            Self::SaveSettings { settings } => Ok(Box::new(save_settings(settings).await?)),
+            Self::LoadAppList => Ok(Box::new(load_app_list().await?)),
+            Self::SaveAppList { app_list } => Ok(Box::new(save_app_list(app_list).await?)),
+            Self::GetArchiveContent { path, password } => {
+                Ok(Box::new(get_archive_content(path, password).await?))
+            }
+            Self::Open { path } => Ok(Box::new(open_app(&path).await?)),
+            Self::OpenFolder { path } => Ok(Box::new(open_folder(&path).await?)),
             Self::OpenRegistry {
                 app_name,
                 current_user_only,
-            } => open_registry(&app_name, current_user_only).await,
-            Self::CheckPathEmpty { path } => check_path_empty(&path).await,
-            Self::Cli => cli(app).await,
-            Self::RegisterContextMenu => register_context_menu(),
-            Self::UnregisterContextMenu => unregister_context_menu(),
-            Self::InstallWithLink { url, timestamp } => install_with_link(url, timestamp).await,
-            Self::SetStartup => set_startup(),
-            Self::RemoveStartup => remove_startup(),
-            Self::CopyOnly { config } => copy_only(config, app).await,
+            } => Ok(Box::new(open_registry(&app_name, current_user_only).await?)),
+            Self::CheckPathEmpty { path } => Ok(Box::new(check_path_empty(&path).await?)),
+            Self::Cli => Ok(Box::new(cli(app).await?)),
+            Self::RegisterContextMenu => Ok(Box::new(register_context_menu()?)),
+            Self::UnregisterContextMenu => Ok(Box::new(unregister_context_menu()?)),
+            Self::InstallWithLink { url, timestamp } => {
+                Ok(Box::new(install_with_link(url, timestamp).await?))
+            }
+            Self::SetStartup => Ok(Box::new(set_startup()?)),
+            Self::RemoveStartup => Ok(Box::new(remove_startup()?)),
+            Self::CopyOnly { config } => Ok(Box::new(copy_only(config, app).await?)),
         }
     }
 }
@@ -97,5 +107,9 @@ impl Command {
 // Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
-    command.execute(app).await.map_err(|e| e.to_string())
+    command
+        .execute(app)
+        .await
+        .map(|res| serde_json::to_string(&res).unwrap())
+        .map_err(|e| e.to_string())
 }
