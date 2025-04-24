@@ -1,4 +1,4 @@
-use crate::operations::{download_file, SubCommands, CHANNEL};
+use crate::operations::*;
 use std::error::Error;
 
 pub async fn install_with_link(
