@@ -1,5 +1,6 @@
 pub mod command;
 pub mod configs;
+pub mod core;
 pub mod operations;
 pub mod websocket;
 
