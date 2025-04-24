@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DirectorySelector from '@/components/DirectorySelector.vue'
+import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { useInstallationConfigStore } from '@/stores/installation_config'
 import { useSettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
@@ -10,7 +10,7 @@ import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import ToggleSwitch from 'primevue/toggleswitch'
-import { watchEffect, computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -144,7 +144,7 @@ watchEffect(() => {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

@@ -151,7 +151,7 @@ async function handleSelect() {
                     selectedPath
                         ? t('directory_selector.selected')
                         : t('directory_selector.select_prompt')
-                    }}:</span>
+                }}:</span>
                 <span :class="[
                     'truncate',
                     selectedPath
