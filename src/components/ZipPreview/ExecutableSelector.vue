@@ -112,12 +112,10 @@ async function handleSelect() {
     })
 
     const details = JSON.parse(result as string)
-    const [name, version, publisher, icon] = details
-
-    store.name = name
-    store.version = version
-    store.publisher = publisher
-    store.icon = icon
+    store.name = details.product_name
+    store.version = details.version
+    store.publisher = details.copyright
+    store.icon = details.icon_data_url
     store.executable_path = selectedPath.value
 
     emit('close')
