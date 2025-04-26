@@ -152,6 +152,7 @@ pub async fn installation(
             timestamp
         },
         installed: true,
+        copy_only: false,
         details: updated_details,
         url: "".to_owned(),
     };

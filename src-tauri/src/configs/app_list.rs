@@ -19,6 +19,8 @@ pub struct App {
     #[serde(default)]
     pub installed: bool,
     #[serde(default)]
+    pub copy_only: bool,
+    #[serde(default)]
     pub url: String,
     #[serde(default)]
     pub details: InstalledApp,
@@ -179,6 +181,7 @@ impl AppList {
                 self.links.push(App {
                     timestamp: chrono::Utc::now().timestamp(),
                     installed: true,
+                    copy_only: false,
                     url: String::new(),
                     details: reg_app,
                 });
