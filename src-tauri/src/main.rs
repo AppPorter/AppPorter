@@ -78,7 +78,7 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_process::init())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![command::execute_command, exit])
+        .invoke_handler(tauri::generate_handler![command::execute_command])
         .run(tauri::generate_context!())?;
     Ok(())
 }
