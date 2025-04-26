@@ -63,47 +63,69 @@ pub enum Command {
     Exit,
 }
 
+pub enum CommandResult {
+    String(String),
+    Serializable(Box<dyn ErasedSerialize + Send>),
+}
+
+impl CommandResult {
+    pub fn as_string(&self) -> Option<&String> {
+        if let CommandResult::String(s) = self {
+            Some(s)
+        } else {
+            None
+        }
+    }
+}
+
 impl Command {
+    // Helper function to wrap serializable results
+    fn ser<T: ErasedSerialize + Send + 'static>(
+        v: T,
+    ) -> Result<CommandResult, Box<dyn Error + Send + Sync>> {
+        // If the value is String, return CommandResult::String directly
+        if let Some(s) = (&v as &dyn std::any::Any).downcast_ref::<String>() {
+            return Ok(CommandResult::String(s.clone()));
+        }
+        Ok(CommandResult::Serializable(Box::new(v)))
+    }
+
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
-    async fn execute(
-        self,
-        app: AppHandle,
-    ) -> Result<Box<dyn ErasedSerialize + Send>, Box<dyn Error + Send + Sync>> {
+    async fn execute(self, app: AppHandle) -> Result<CommandResult, Box<dyn Error + Send + Sync>> {
+        use Command::*;
         match self {
-            Self::LoadSettings => Ok(Box::new(Settings::read().await?)),
-            Self::GetDetails { path } => Ok(Box::new(get_details(path).await?)),
-            Self::Installation { config } => Ok(Box::new(installation(config, app).await?)),
-            Self::Uninstallation { timestamp } => {
-                Ok(Box::new(uninstallation(timestamp, app).await?))
+            LoadSettings => Self::ser(Settings::read().await?),
+            GetDetails { path } => Self::ser(get_details(path).await?),
+            Installation { config } => Self::ser(installation(config, app).await?),
+            Uninstallation { timestamp } => Self::ser(uninstallation(timestamp, app).await?),
+            Elevate { revert } => Self::ser(elevate(revert).await?),
+            ValidatePath { path } => Self::ser(validate_path(path).await?),
+            SaveSettings { settings } => Self::ser(settings.save().await?),
+            LoadAppList => Self::ser(load_app_list().await?),
+            SaveAppList { app_list } => Self::ser(app_list.save().await?),
+            GetArchiveContent { path, password } => {
+                Self::ser(get_archive_content(path, password).await?)
             }
-            Self::Elevate { revert } => Ok(Box::new(elevate(revert).await?)),
-            Self::ValidatePath { path } => Ok(Box::new(validate_path(path).await?)),
-            Self::SaveSettings { settings } => Ok(Box::new(settings.save().await?)),
-            Self::LoadAppList => Ok(Box::new(load_app_list().await?)),
-            Self::SaveAppList { app_list } => Ok(Box::new(app_list.save().await?)),
-            Self::GetArchiveContent { path, password } => {
-                Ok(Box::new(get_archive_content(path, password).await?))
-            }
-            Self::Open { path } => Ok(Box::new(open_app(&path).await?)),
-            Self::OpenFolder { path } => Ok(Box::new(open_folder(&path).await?)),
-            Self::OpenRegistry {
+            Open { path } => Self::ser(open_app(&path).await?),
+            OpenFolder { path } => Self::ser(open_folder(&path).await?),
+            OpenRegistry {
                 app_name,
                 current_user_only,
-            } => Ok(Box::new(open_registry(&app_name, current_user_only).await?)),
-            Self::CheckPathEmpty { path } => Ok(Box::new(check_path_empty(&path).await?)),
-            Self::Cli => Ok(Box::new(cli(app).await?)),
-            Self::RegisterContextMenu => Ok(Box::new(register_context_menu()?)),
-            Self::UnregisterContextMenu => Ok(Box::new(unregister_context_menu()?)),
-            Self::InstallWithLink { url, timestamp } => {
-                Ok(Box::new(install_with_link(url, timestamp).await?))
+            } => Self::ser(open_registry(&app_name, current_user_only).await?),
+            CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
+            Cli => Self::ser(cli(app).await?),
+            RegisterContextMenu => Self::ser(register_context_menu()?),
+            UnregisterContextMenu => Self::ser(unregister_context_menu()?),
+            InstallWithLink { url, timestamp } => {
+                Self::ser(install_with_link(url, timestamp).await?)
             }
-            Self::SetStartup => Ok(Box::new(set_startup()?)),
-            Self::RemoveStartup => Ok(Box::new(remove_startup()?)),
-            Self::CopyOnly { config } => Ok(Box::new(copy_only(config, app).await?)),
-            Self::Exit => {
+            SetStartup => Self::ser(set_startup()?),
+            RemoveStartup => Self::ser(remove_startup()?),
+            CopyOnly { config } => Self::ser(copy_only(config, app).await?),
+            Exit => {
                 exit().await;
-                Ok(Box::new(()))
+                Self::ser(())
             }
         }
     }
@@ -112,9 +134,16 @@ impl Command {
 // Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
-    command
-        .execute(app)
-        .await
-        .map(|res| serde_json::to_string(&res).unwrap())
-        .map_err(|e| e.to_string())
+    match command.execute(app).await {
+        Ok(res) => {
+            if let Some(s) = res.as_string() {
+                Ok(s.clone())
+            } else if let CommandResult::Serializable(val) = res {
+                serde_json::to_string(&val).map_err(|e| e.to_string())
+            } else {
+                Ok(String::new())
+            }
+        }
+        Err(e) => Err(e.to_string()),
+    }
 }
