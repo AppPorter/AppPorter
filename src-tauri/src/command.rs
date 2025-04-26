@@ -101,7 +101,10 @@ impl Command {
             Self::SetStartup => Ok(Box::new(set_startup()?)),
             Self::RemoveStartup => Ok(Box::new(remove_startup()?)),
             Self::CopyOnly { config } => Ok(Box::new(copy_only(config, app).await?)),
-            Self::Exit => Ok(Box::new(exit().await)),
+            Self::Exit => {
+                exit().await;
+                Ok(Box::new(()))
+            }
         }
     }
 }
