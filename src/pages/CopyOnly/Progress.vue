@@ -99,11 +99,6 @@ function handleCopyPath() {
                             </div>
                         </div>
                         <div class="ml-4 flex shrink-0 select-text items-center gap-3">
-                            <div class="text-right">
-                                <h3 class="text-base font-medium leading-none">{{ installationConfig.name }}</h3>
-                                <p class="mt-1 text-xs">{{ installationConfig.version || 'Version N/A' }}</p>
-                                <p class="mt-0.5 text-xs">{{ installationConfig.publisher || 'Publisher N/A' }}</p>
-                            </div>
                             <div
                                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
                                 <img v-if="installationConfig.icon" :src="installationConfig.icon"
