@@ -56,7 +56,7 @@ async function selectZipFile() {
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="goTo('/CopyOnly')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
+          <Button @click="goTo('/CopyOnly/Config')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
             icon="mir-folder_copy" :label="t('copy_only')" />
           <Button @click="goTo('/Installation/Config')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
             icon="mir-install_desktop" :label="t('install')" />

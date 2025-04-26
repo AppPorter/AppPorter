@@ -110,10 +110,6 @@ function handleDetailsLoading(loading: boolean) {
     detailsLoading.value = loading
 }
 
-function handleBackClick() {
-    goTo('/Home')
-}
-
 // Handle extraction process initiation
 async function handleExtractClick() {
     // Reset validation errors
@@ -278,7 +274,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installationConfig.add_to_path" :binary="true"
                                                     inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installationConfig.add_to_path" class="ml-6 mt-1">
@@ -302,8 +298,8 @@ async function select_extract_path() {
 
             <!-- Button container -->
             <div class="mt-4 flex justify-between px-1 pb-2">
-                <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200"
-                    @click="handleBackClick" icon="mir-arrow_back" :label="t('back')" outlined />
+                <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
+                    icon="mir-arrow_back" :label="t('back')" outlined />
                 <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200"
                     @click="handleExtractClick" icon="mir-folder_copy" :label="t('extract')" />
             </div>
