@@ -13,8 +13,8 @@ const leftMenuItems = [
   {
     label: t('installation.self'),
     icon: 'mir-install_desktop',
-    command: () => goTo('/'),
-    paths: ['/Home', '/Installation/Config', '/Installation/Progress'],
+    command: () => goTo('/Installation'),
+    paths: ['/Home', '/Installation/Config', '/Installation/Progress', '/CopyOnly/Config', '/CopyOnly/Progress'],
   },
   {
     label: t('app_list.self'),

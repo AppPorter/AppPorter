@@ -18,7 +18,7 @@ const canClose = ref(false)
 const finalExtractPath = ref('')
 
 const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'Progress'
+installationConfig.page = 'CopyOnlyProgress'
 const { t } = useI18n()
 
 const fullExtractPath = computed(() => {

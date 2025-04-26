@@ -20,7 +20,7 @@ const canClose = ref(false)
 const finalExecutablePath = ref('')
 
 const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'Progress'
+installationConfig.page = 'InstallationProgress'
 const toast = useToast()
 const { t } = useI18n()
 
@@ -206,7 +206,7 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.install_settings')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -244,7 +244,7 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.package_info')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="

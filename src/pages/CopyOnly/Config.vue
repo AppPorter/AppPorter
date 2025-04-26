@@ -16,7 +16,7 @@ import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'Config' // Reuse Config page state
+installationConfig.page = 'CopyOnlyConfig' // Reuse Config page state
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -278,7 +278,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installationConfig.add_to_path" :binary="true"
                                                     inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installationConfig.add_to_path" class="ml-6 mt-1">

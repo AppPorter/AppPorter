@@ -13,7 +13,7 @@ import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 
 const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'Config'
+installationConfig.page = 'InstallationConfig'
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()

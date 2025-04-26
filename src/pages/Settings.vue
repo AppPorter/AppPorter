@@ -101,7 +101,7 @@ watch(
 )
 
 // Add computed property to check if reload button should be disabled
-const isReloadDisabled = computed(() => installationConfig.page === 'Progress')
+const isReloadDisabled = computed(() => installationConfig.page === 'InstallationProgress' || installationConfig.page === 'CopyOnlyProgress')
 
 // Get GitHub icon based on current theme and isDarkMode from settings store
 const githubIcon = computed(() => {
@@ -138,25 +138,13 @@ const githubIcon = computed(() => {
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <label>{{ t('language') }}</label>
-              <Select
-                v-model="settings.language"
-                :options="languageOptions"
-                optionLabel="label"
-                optionValue="value"
-                class="w-48"
-                size="small"
-              />
+              <Select v-model="settings.language" :options="languageOptions" optionLabel="label" optionValue="value"
+                class="w-48" size="small" />
             </div>
             <div class="flex items-center justify-between">
               <label>{{ t('theme.self') }}</label>
-              <Select
-                v-model="settings.theme"
-                :options="themeOptions"
-                optionLabel="label"
-                optionValue="value"
-                class="w-48"
-                size="small"
-              />
+              <Select v-model="settings.theme" :options="themeOptions" optionLabel="label" optionValue="value"
+                class="w-48" size="small" />
             </div>
             <div class="flex items-center justify-between">
               <label>{{ t('minimize_tray') }}</label>
@@ -199,37 +187,23 @@ const githubIcon = computed(() => {
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.desktop') }}</label>
-                    <ToggleSwitch
-                      v-model="settings.installation.current_user.create_desktop_shortcut"
-                    />
+                    <ToggleSwitch v-model="settings.installation.current_user.create_desktop_shortcut" />
                   </div>
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.registry_key') }}</label>
-                    <ToggleSwitch
-                      v-model="settings.installation.current_user.create_registry_key"
-                    />
+                    <ToggleSwitch v-model="settings.installation.current_user.create_registry_key" />
                   </div>
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.start_menu') }}</label>
-                    <ToggleSwitch
-                      v-model="settings.installation.current_user.create_start_menu_shortcut"
-                    />
+                    <ToggleSwitch v-model="settings.installation.current_user.create_start_menu_shortcut" />
                   </div>
                   <div class="space-y-2">
                     <label>{{ t('install_path') }}</label>
                     <div class="flex min-w-0 items-center gap-2">
-                      <InputText
-                        v-model="settings.installation.current_user.install_path"
-                        :placeholder="t('install_path')"
-                        class="h-9 min-w-0 flex-1 text-sm"
-                      />
-                      <Button
-                        @click="selectInstallPath('current_user')"
-                        severity="secondary"
-                        class="h-9 px-4"
-                        icon="mir-folder_open"
-                        :label="t('browse')"
-                      />
+                      <InputText v-model="settings.installation.current_user.install_path"
+                        :placeholder="t('install_path')" class="h-9 min-w-0 flex-1 text-sm" />
+                      <Button @click="selectInstallPath('current_user')" severity="secondary" class="h-9 px-4"
+                        icon="mir-folder_open" :label="t('browse')" />
                     </div>
                   </div>
                 </div>
@@ -246,9 +220,7 @@ const githubIcon = computed(() => {
                 <div class="space-y-4">
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.desktop') }}</label>
-                    <ToggleSwitch
-                      v-model="settings.installation.all_users.create_desktop_shortcut"
-                    />
+                    <ToggleSwitch v-model="settings.installation.all_users.create_desktop_shortcut" />
                   </div>
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.registry_key') }}</label>
@@ -256,25 +228,15 @@ const githubIcon = computed(() => {
                   </div>
                   <div class="flex items-center justify-between">
                     <label>{{ t('shortcuts.start_menu') }}</label>
-                    <ToggleSwitch
-                      v-model="settings.installation.all_users.create_start_menu_shortcut"
-                    />
+                    <ToggleSwitch v-model="settings.installation.all_users.create_start_menu_shortcut" />
                   </div>
                   <div class="space-y-2">
                     <label>{{ t('install_path') }}</label>
                     <div class="flex min-w-0 items-center gap-2">
-                      <InputText
-                        v-model="settings.installation.all_users.install_path"
-                        :placeholder="t('install_path')"
-                        class="h-9 min-w-0 flex-1 text-sm"
-                      />
-                      <Button
-                        @click="selectInstallPath('all_users')"
-                        severity="secondary"
-                        class="h-9 px-4"
-                        icon="mir-folder_open"
-                        :label="t('browse')"
-                      />
+                      <InputText v-model="settings.installation.all_users.install_path" :placeholder="t('install_path')"
+                        class="h-9 min-w-0 flex-1 text-sm" />
+                      <Button @click="selectInstallPath('all_users')" severity="secondary" class="h-9 px-4"
+                        icon="mir-folder_open" :label="t('browse')" />
                     </div>
                   </div>
                 </div>
@@ -286,12 +248,13 @@ const githubIcon = computed(() => {
           <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
           <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>
           <p class="text-lg">v0.2.0</p>
-          <a href="https://github.com/AppPorter/AppPorter" target="_blank"
-            ><Chip label="GitHub" class="flex items-center">
+          <a href="https://github.com/AppPorter/AppPorter" target="_blank">
+            <Chip label="GitHub" class="flex items-center">
               <template #icon>
                 <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
-              </template> </Chip
-          ></a>
+              </template>
+            </Chip>
+          </a>
         </div>
       </div>
     </Panel>
@@ -299,15 +262,8 @@ const githubIcon = computed(() => {
 
   <!-- Fixed position reload button -->
   <div class="fixed bottom-4 right-10 z-40">
-    <Button
-      v-if="settings.isBasicSettingsChanged"
-      @click="reloadApp"
-      class="h-8 w-28 text-sm transition-all duration-200"
-      severity="primary"
-      :label="t('reload')"
-      icon="mir-refresh"
-      :disabled="isReloadDisabled"
-      v-tooltip.top="isReloadDisabled ? t('reload_disabled') : ''"
-    />
+    <Button v-if="settings.isBasicSettingsChanged" @click="reloadApp"
+      class="h-8 w-28 text-sm transition-all duration-200" severity="primary" :label="t('reload')" icon="mir-refresh"
+      :disabled="isReloadDisabled" v-tooltip.top="isReloadDisabled ? t('reload_disabled') : ''" />
   </div>
 </template>

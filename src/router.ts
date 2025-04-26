@@ -1,7 +1,7 @@
 import AppList from '@/pages/AppList.vue'
 import CopyOnly from '@/pages/CopyOnly/Config.vue'
 import CopyOnlyProgress from '@/pages/CopyOnly/Progress.vue'
-import Installation from '@/pages/Home.vue'
+import Home from '@/pages/Home.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
@@ -14,15 +14,15 @@ const Dummy = { render: () => null }
 
 // Route configuration with metadata
 const routes = [
-  { path: '/', redirect: '/Home' },
+  { path: '/', redirect: '/Installation' },
+  { path: '/Installation', component: Dummy },
   {
     path: '/Home',
-    component: Installation,
+    component: Home,
     meta: {
       icon: 'mir-install_desktop',
     },
   },
-  { path: '/Installation', component: Dummy },
   {
     path: '/Installation/Config',
     component: Installation_Config,
@@ -38,7 +38,7 @@ const routes = [
     },
   },
   {
-    path: '/CopyOnly',
+    path: '/CopyOnly/Config',
     component: CopyOnly,
     meta: {
       icon: 'mir-folder_copy',
@@ -88,11 +88,17 @@ export function setupRouterGuards(router: Router) {
         case 'Home':
           path = '/Home'
           break
-        case 'Config':
+        case 'InstallationConfig':
           path = '/Installation/Config'
           break
-        case 'Progress':
+        case 'InstallationProgress':
           path = '/Installation/Progress'
+          break
+        case 'CopyOnlyConfig':
+          path = '/CopyOnly/Config'
+          break
+        case 'CopyOnlyProgress':
+          path = '/CopyOnly/Progress'
           break
       }
       return { path }
