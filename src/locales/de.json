@@ -48,7 +48,24 @@
     "no_apps_found": "Keine Anwendungen gefunden",
     "install_first": "Bitte installieren Sie zuerst eine Anwendung",
     "confirm_uninstall_header": "Anwendung deinstallieren",
-    "confirm_uninstall_message": "Möchten Sie {name} deinstallieren?"
+    "confirm_uninstall_message": "Möchten Sie {name} deinstallieren?",
+    "confirm_remove_header": "Anwendung entfernen",
+    "confirm_remove_message": "Möchten Sie {name} aus der Liste entfernen?"
+  },
+  "copyonly": {
+    "confirm_extract": "Sind Sie sicher, dass Sie diese Dateien extrahieren möchten?",
+    "start_extraction": "Extraktion starten",
+    "force_extract": "Trotzdem extrahieren",
+    "file_details": "Dateidetails",
+    "progress": {
+      "title": "Extrahieren",
+      "description": "Ihre Dateien werden extrahiert, bitte warten...",
+      "preparing": "Extraktion wird vorbereitet...",
+      "preparing_extract": "Vorbereitung zum Extrahieren von Dateien...",
+      "extracting": "Dateien werden extrahiert ({progress}%)...",
+      "completed": "Extraktion abgeschlossen!",
+      "copy_path": "Pfad kopieren"
+    }
   },
   "settings": {
     "self": "Einstellungen",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "Alle Benutzer"
       }
+    },
+    "copy_only": {
+      "title": "Nur-Kopieren Einstellungen"
     }
   },
   "all_users": "Alle Benutzer",
@@ -78,7 +98,9 @@
     "path_required": "Pfad erforderlich",
     "select_path": "Bitte wählen Sie einen Installationspfad",
     "invalid_archive": "Ungültiges Archiv",
-    "no_executable_file": "Im Archiv wurde keine ausführbare Datei gefunden. Bitte wählen Sie ein gültiges Anwendungsarchiv."
+    "no_executable_file": "Im Archiv wurde keine ausführbare Datei gefunden. Bitte wählen Sie ein gültiges Anwendungsarchiv.",
+    "archive_error": "Fehler beim Parsen des Archivs, bitte wählen Sie eine gültige komprimierte Datei.",
+    "password_required": "Passwort erforderlich"
   },
   "shortcuts": {
     "self": "Verknüpfungen",
@@ -164,6 +186,7 @@
   "open_registry": "Registrierung öffnen",
   "reinstall": "Neu installieren",
   "repair": "Reparieren",
+  "remove": "Entfernen",
   "current_user": "Aktueller Benutzer",
   "select_executable": "Ausführbare Datei auswählen",
   "error": "Fehler",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "Möchten Sie {name} deinstallieren?",
   "install_mode": "Installationsmodus",
   "loading": "Wird geladen...",
-  "archives": "Archive"
+  "archives": "Archive",
+  "auto_startup": "Automatischer Start",
+  "extract": "Extrahieren",
+  "extract_path": "Extraktionspfad",
+  "environment": "Umgebung",
+  "select_path_directory": "PATH-Verzeichnis auswählen",
+  "final_path": "Endgültiger Pfad",
+  "submit": "Absenden",
+  "copy_only": "Nur kopieren",
+  "archive": {
+    "password_required": "Passwort erforderlich",
+    "enter_password": "Bitte geben Sie das Archiv-Passwort ein"
+  }
 }

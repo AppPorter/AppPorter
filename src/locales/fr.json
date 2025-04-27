@@ -48,7 +48,24 @@
     "no_apps_found": "Aucune application trouvée",
     "install_first": "Veuillez d'abord installer une application",
     "confirm_uninstall_header": "Désinstaller l'Application",
-    "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?"
+    "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?",
+    "confirm_remove_header": "Supprimer l'Application",
+    "confirm_remove_message": "Voulez-vous supprimer {name} de la liste ?"
+  },
+  "copyonly": {
+    "confirm_extract": "Êtes-vous sûr de vouloir extraire ces fichiers ?",
+    "start_extraction": "Démarrer l'Extraction",
+    "force_extract": "Forcer l'Extraction",
+    "file_details": "Détails du Fichier",
+    "progress": {
+      "title": "Extraction en cours",
+      "description": "Extraction de vos fichiers, veuillez patienter...",
+      "preparing": "Préparation de l'extraction...",
+      "preparing_extract": "Préparation de l'extraction des fichiers...",
+      "extracting": "Extraction des fichiers ({progress}%)...",
+      "completed": "Extraction terminée !",
+      "copy_path": "Copier le Chemin"
+    }
   },
   "settings": {
     "self": "Paramètres",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "Tous les Utilisateurs"
       }
+    },
+    "copy_only": {
+      "title": "Paramètres de Copie Uniquement"
     }
   },
   "all_users": "Tous les Utilisateurs",
@@ -78,7 +98,9 @@
     "path_required": "Un chemin est requis",
     "select_path": "Veuillez sélectionner un chemin d'installation",
     "invalid_archive": "Archive invalide",
-    "no_executable_file": "Aucun fichier exécutable n'a été trouvé dans l'archive. Veuillez sélectionner une archive d'application valide."
+    "no_executable_file": "Aucun fichier exécutable n'a été trouvé dans l'archive. Veuillez sélectionner une archive d'application valide.",
+    "archive_error": "Erreur lors de l'analyse de l'archive, veuillez sélectionner un fichier compressé valide.",
+    "password_required": "Mot de passe requis"
   },
   "shortcuts": {
     "self": "Raccourcis",
@@ -164,6 +186,7 @@
   "open_registry": "Ouvrir le Registre",
   "reinstall": "Réinstaller",
   "repair": "Réparer",
+  "remove": "Supprimer",
   "current_user": "Utilisateur Actuel",
   "select_executable": "Sélectionner un Exécutable",
   "error": "Erreur",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "Voulez-vous désinstaller {name} ?",
   "install_mode": "Mode d'Installation",
   "loading": "Chargement...",
-  "archives": "Archives"
+  "archives": "Archives",
+  "auto_startup": "Démarrage Automatique",
+  "extract": "Extraire",
+  "extract_path": "Chemin d'Extraction",
+  "environment": "Environnement",
+  "select_path_directory": "Sélectionner un Répertoire pour le PATH",
+  "final_path": "Chemin Final",
+  "submit": "Soumettre",
+  "copy_only": "Copier Uniquement",
+  "archive": {
+    "password_required": "Mot de Passe Requis",
+    "enter_password": "Veuillez entrer le mot de passe de l'archive"
+  }
 }

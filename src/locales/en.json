@@ -52,6 +52,21 @@
     "confirm_remove_header": "Remove App",
     "confirm_remove_message": "Do you want to remove {name} from the list?"
   },
+  "copyonly": {
+    "confirm_extract": "Are you sure you want to extract these files?",
+    "start_extraction": "Start Extraction",
+    "force_extract": "Force Extract",
+    "file_details": "File Details",
+    "progress": {
+      "title": "Extracting",
+      "description": "Extracting your files, please wait...",
+      "preparing": "Preparing extraction...",
+      "preparing_extract": "Preparing to extract files...",
+      "extracting": "Extracting files ({progress}%)...",
+      "completed": "Extraction completed!",
+      "copy_path": "Copy Path"
+    }
+  },
   "settings": {
     "self": "Settings",
     "title": "Settings",
@@ -64,6 +79,9 @@
       "all_users": {
         "title": "All Users"
       }
+    },
+    "copy_only": {
+      "title": "Copy Only Settings"
     }
   },
   "all_users": "All Users",
@@ -80,7 +98,9 @@
     "path_required": "Path is required",
     "select_path": "Please select an installation path",
     "invalid_archive": "Invalid archive",
-    "no_executable_file": "No executable file was found in the archive. Please select a valid application archive."
+    "no_executable_file": "No executable file was found in the archive. Please select a valid application archive.",
+    "archive_error": "Error parsing archive, please select a valid compressed file.",
+    "password_required": "Password required"
   },
   "shortcuts": {
     "self": "Shortcuts",
@@ -174,5 +194,17 @@
   "confirm_uninstall_message": "Do you want to uninstall {name}?",
   "install_mode": "Installation Mode",
   "loading": "Loading...",
-  "archives": "Archives"
+  "archives": "Archives",
+  "auto_startup": "Auto Startup",
+  "extract": "Extract",
+  "extract_path": "Extract Path",
+  "environment": "Environment",
+  "select_path_directory": "Select Path Directory",
+  "final_path": "Final Path",
+  "submit": "Submit",
+  "copy_only": "Copy Only",
+  "archive": {
+    "password_required": "Password Required",
+    "enter_password": "Please enter the archive password"
+  }
 }

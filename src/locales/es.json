@@ -48,7 +48,24 @@
     "no_apps_found": "No se encontraron aplicaciones",
     "install_first": "Por favor instale una aplicación primero",
     "confirm_uninstall_header": "Desinstalar Aplicación",
-    "confirm_uninstall_message": "¿Desea desinstalar {name}?"
+    "confirm_uninstall_message": "¿Desea desinstalar {name}?",
+    "confirm_remove_header": "Eliminar Aplicación",
+    "confirm_remove_message": "¿Desea eliminar {name} de la lista?"
+  },
+  "copyonly": {
+    "confirm_extract": "¿Está seguro de que desea extraer estos archivos?",
+    "start_extraction": "Iniciar Extracción",
+    "force_extract": "Forzar Extracción",
+    "file_details": "Detalles del Archivo",
+    "progress": {
+      "title": "Extrayendo",
+      "description": "Extrayendo sus archivos, por favor espere...",
+      "preparing": "Preparando la extracción...",
+      "preparing_extract": "Preparando para extraer archivos...",
+      "extracting": "Extrayendo archivos ({progress}%)...",
+      "completed": "¡Extracción completada!",
+      "copy_path": "Copiar Ruta"
+    }
   },
   "settings": {
     "self": "Configuración",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "Todos los Usuarios"
       }
+    },
+    "copy_only": {
+      "title": "Configuración de Solo Copia"
     }
   },
   "all_users": "Todos los Usuarios",
@@ -78,7 +98,9 @@
     "path_required": "Se requiere una ruta",
     "select_path": "Por favor seleccione una ruta de instalación",
     "invalid_archive": "Archivo inválido",
-    "no_executable_file": "No se encontró ningún archivo ejecutable en el archivo. Por favor seleccione un archivo de aplicación válido."
+    "no_executable_file": "No se encontró ningún archivo ejecutable en el archivo. Por favor seleccione un archivo de aplicación válido.",
+    "archive_error": "Error al analizar el archivo, por favor seleccione un archivo comprimido válido.",
+    "password_required": "Se requiere contraseña"
   },
   "shortcuts": {
     "self": "Accesos Directos",
@@ -164,6 +186,7 @@
   "open_registry": "Abrir Registro",
   "reinstall": "Reinstalar",
   "repair": "Reparar",
+  "remove": "Eliminar",
   "current_user": "Usuario Actual",
   "select_executable": "Seleccionar Ejecutable",
   "error": "Error",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "¿Desea desinstalar {name}?",
   "install_mode": "Modo de Instalación",
   "loading": "Cargando...",
-  "archives": "Archivos"
+  "archives": "Archivos",
+  "auto_startup": "Inicio Automático",
+  "extract": "Extraer",
+  "extract_path": "Ruta de Extracción",
+  "environment": "Entorno",
+  "select_path_directory": "Seleccionar Directorio de PATH",
+  "final_path": "Ruta Final",
+  "submit": "Enviar",
+  "copy_only": "Solo Copiar",
+  "archive": {
+    "password_required": "Contraseña Requerida",
+    "enter_password": "Por favor ingrese la contraseña del archivo"
+  }
 }

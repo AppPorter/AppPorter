@@ -48,7 +48,24 @@
     "no_apps_found": "Приложения не найдены",
     "install_first": "Пожалуйста, сначала установите приложение",
     "confirm_uninstall_header": "Удаление приложения",
-    "confirm_uninstall_message": "Вы хотите удалить {name}?"
+    "confirm_uninstall_message": "Вы хотите удалить {name}?",
+    "confirm_remove_header": "Удалить приложение",
+    "confirm_remove_message": "Вы хотите удалить {name} из списка?"
+  },
+  "copyonly": {
+    "confirm_extract": "Вы уверены, что хотите извлечь эти файлы?",
+    "start_extraction": "Начать извлечение",
+    "force_extract": "Принудительно извлечь",
+    "file_details": "Сведения о файле",
+    "progress": {
+      "title": "Извлечение",
+      "description": "Извлечение ваших файлов, пожалуйста, подождите...",
+      "preparing": "Подготовка к извлечению...",
+      "preparing_extract": "Подготовка к извлечению файлов...",
+      "extracting": "Извлечение файлов ({progress}%)...",
+      "completed": "Извлечение завершено!",
+      "copy_path": "Копировать путь"
+    }
   },
   "settings": {
     "self": "Настройки",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "Все пользователи"
       }
+    },
+    "copy_only": {
+      "title": "Настройки только копирования"
     }
   },
   "all_users": "Все пользователи",
@@ -78,7 +98,9 @@
     "path_required": "Требуется путь",
     "select_path": "Пожалуйста, выберите путь установки",
     "invalid_archive": "Недействительный архив",
-    "no_executable_file": "В архиве не найден исполняемый файл. Пожалуйста, выберите действительный архив приложения."
+    "no_executable_file": "В архиве не найден исполняемый файл. Пожалуйста, выберите действительный архив приложения.",
+    "archive_error": "Ошибка при анализе архива, пожалуйста, выберите действительный сжатый файл.",
+    "password_required": "Требуется пароль"
   },
   "shortcuts": {
     "self": "Ярлыки",
@@ -164,6 +186,7 @@
   "open_registry": "Открыть реестр",
   "reinstall": "Переустановить",
   "repair": "Восстановить",
+  "remove": "Удалить",
   "current_user": "Текущий пользователь",
   "select_executable": "Выбрать исполняемый файл",
   "error": "Ошибка",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "Вы хотите удалить {name}?",
   "install_mode": "Режим установки",
   "loading": "Загрузка...",
-  "archives": "Архивы"
+  "archives": "Архивы",
+  "auto_startup": "Автозапуск",
+  "extract": "Извлечь",
+  "extract_path": "Путь извлечения",
+  "environment": "Окружение",
+  "select_path_directory": "Выбрать директорию для PATH",
+  "final_path": "Финальный путь",
+  "submit": "Отправить",
+  "copy_only": "Только копировать",
+  "archive": {
+    "password_required": "Требуется пароль",
+    "enter_password": "Пожалуйста, введите пароль архива"
+  }
 }

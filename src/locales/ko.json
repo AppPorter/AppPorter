@@ -48,7 +48,24 @@
     "no_apps_found": "애플리케이션을 찾을 수 없습니다",
     "install_first": "먼저 애플리케이션을 설치하세요",
     "confirm_uninstall_header": "애플리케이션 제거",
-    "confirm_uninstall_message": "{name}을(를) 제거하시겠습니까?"
+    "confirm_uninstall_message": "{name}을(를) 제거하시겠습니까?",
+    "confirm_remove_header": "앱 제거",
+    "confirm_remove_message": "{name}을(를) 목록에서 제거하시겠습니까?"
+  },
+  "copyonly": {
+    "confirm_extract": "이 파일들을 추출하시겠습니까?",
+    "start_extraction": "추출 시작",
+    "force_extract": "강제 추출",
+    "file_details": "파일 세부정보",
+    "progress": {
+      "title": "추출 중",
+      "description": "파일을 추출하는 중입니다. 잠시만 기다려주세요...",
+      "preparing": "추출 준비 중...",
+      "preparing_extract": "파일 추출 준비 중...",
+      "extracting": "파일 추출 중({progress}%)...",
+      "completed": "추출 완료!",
+      "copy_path": "경로 복사"
+    }
   },
   "settings": {
     "self": "설정",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "모든 사용자"
       }
+    },
+    "copy_only": {
+      "title": "복사만 하기 설정"
     }
   },
   "all_users": "모든 사용자",
@@ -78,7 +98,9 @@
     "path_required": "경로가 필요합니다",
     "select_path": "설치 경로를 선택하세요",
     "invalid_archive": "유효하지 않은 아카이브",
-    "no_executable_file": "아카이브에서 실행 파일을 찾을 수 없습니다. 유효한 애플리케이션 아카이브를 선택하세요."
+    "no_executable_file": "아카이브에서 실행 파일을 찾을 수 없습니다. 유효한 애플리케이션 아카이브를 선택하세요.",
+    "archive_error": "아카이브 분석 오류, 유효한 압축 파일을 선택하세요.",
+    "password_required": "비밀번호가 필요합니다"
   },
   "shortcuts": {
     "self": "바로가기",
@@ -164,6 +186,7 @@
   "open_registry": "레지스트리 열기",
   "reinstall": "재설치",
   "repair": "복구",
+  "remove": "제거",
   "current_user": "현재 사용자",
   "select_executable": "실행 파일 선택",
   "error": "오류",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "{name}을(를) 제거하시겠습니까?",
   "install_mode": "설치 모드",
   "loading": "로딩 중...",
-  "archives": "아카이브"
+  "archives": "아카이브",
+  "auto_startup": "자동 시작",
+  "extract": "추출",
+  "extract_path": "추출 경로",
+  "environment": "환경",
+  "select_path_directory": "PATH 디렉토리 선택",
+  "final_path": "최종 경로",
+  "submit": "제출",
+  "copy_only": "복사만 하기",
+  "archive": {
+    "password_required": "비밀번호 필요",
+    "enter_password": "아카이브 비밀번호를 입력하세요"
+  }
 }

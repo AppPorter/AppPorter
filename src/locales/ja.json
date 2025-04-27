@@ -48,7 +48,24 @@
     "no_apps_found": "アプリケーションが見つかりません",
     "install_first": "最初にアプリケーションをインストールしてください",
     "confirm_uninstall_header": "アプリケーションのアンインストール",
-    "confirm_uninstall_message": "{name}をアンインストールしますか？"
+    "confirm_uninstall_message": "{name}をアンインストールしますか？",
+    "confirm_remove_header": "アプリケーションの削除",
+    "confirm_remove_message": "{name}をリストから削除しますか？"
+  },
+  "copyonly": {
+    "confirm_extract": "これらのファイルを抽出してもよろしいですか？",
+    "start_extraction": "抽出開始",
+    "force_extract": "強制抽出",
+    "file_details": "ファイル詳細",
+    "progress": {
+      "title": "抽出中",
+      "description": "ファイルを抽出しています、お待ちください...",
+      "preparing": "抽出の準備中...",
+      "preparing_extract": "ファイル抽出の準備中...",
+      "extracting": "ファイルを抽出中({progress}%)...",
+      "completed": "抽出が完了しました！",
+      "copy_path": "パスをコピー"
+    }
   },
   "settings": {
     "self": "設定",
@@ -62,6 +79,9 @@
       "all_users": {
         "title": "すべてのユーザー"
       }
+    },
+    "copy_only": {
+      "title": "コピーのみ設定"
     }
   },
   "all_users": "すべてのユーザー",
@@ -78,7 +98,9 @@
     "path_required": "パスが必要です",
     "select_path": "インストールパスを選択してください",
     "invalid_archive": "無効なアーカイブ",
-    "no_executable_file": "アーカイブ内に実行ファイルが見つかりませんでした。有効なアプリケーションアーカイブを選択してください。"
+    "no_executable_file": "アーカイブ内に実行ファイルが見つかりませんでした。有効なアプリケーションアーカイブを選択してください。",
+    "archive_error": "アーカイブの解析エラー、有効な圧縮ファイルを選択してください。",
+    "password_required": "パスワードが必要です"
   },
   "shortcuts": {
     "self": "ショートカット",
@@ -164,6 +186,7 @@
   "open_registry": "レジストリを開く",
   "reinstall": "再インストール",
   "repair": "修復",
+  "remove": "削除",
   "current_user": "現在のユーザー",
   "select_executable": "実行ファイルを選択",
   "error": "エラー",
@@ -171,5 +194,17 @@
   "confirm_uninstall_message": "{name}をアンインストールしますか？",
   "install_mode": "インストールモード",
   "loading": "読み込み中...",
-  "archives": "アーカイブ"
+  "archives": "アーカイブ",
+  "auto_startup": "自動起動",
+  "extract": "抽出",
+  "extract_path": "抽出パス",
+  "environment": "環境",
+  "select_path_directory": "PATHディレクトリを選択",
+  "final_path": "最終パス",
+  "submit": "送信",
+  "copy_only": "コピーのみ",
+  "archive": {
+    "password_required": "パスワードが必要です",
+    "enter_password": "アーカイブのパスワードを入力してください"
+  }
 }

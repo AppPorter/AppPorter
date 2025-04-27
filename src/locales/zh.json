@@ -52,6 +52,21 @@
     "confirm_remove_header": "移除应用程序",
     "confirm_remove_message": "您想从列表中移除 {name} 吗？"
   },
+  "copyonly": {
+    "confirm_extract": "您确定要提取这些文件吗？",
+    "start_extraction": "开始提取",
+    "force_extract": "强制提取",
+    "file_details": "文件详情",
+    "progress": {
+      "title": "正在提取",
+      "description": "正在提取您的文件，请稍候...",
+      "preparing": "正在准备提取...",
+      "preparing_extract": "正在准备提取文件...",
+      "extracting": "正在提取文件 ({progress}%)...",
+      "completed": "提取完成！",
+      "copy_path": "复制路径"
+    }
+  },
   "settings": {
     "self": "设置",
     "title": "设置",
@@ -64,6 +79,9 @@
       "all_users": {
         "title": "所有用户"
       }
+    },
+    "copy_only": {
+      "title": "仅复制设置"
     }
   },
   "all_users": "所有用户",
@@ -80,7 +98,9 @@
     "path_required": "需要路径",
     "select_path": "请选择安装路径",
     "invalid_archive": "无效的压缩文件",
-    "no_executable_file": "压缩文件中未找到可执行文件。请选择有效的应用程序压缩文件。"
+    "no_executable_file": "压缩文件中未找到可执行文件。请选择有效的应用程序压缩文件。",
+    "archive_error": "压缩文件解析出错，请选择有效的压缩文件。",
+    "password_required": "需要密码"
   },
   "shortcuts": {
     "self": "快捷方式",
@@ -174,5 +194,17 @@
   "confirm_uninstall_message": "您想卸载 {name} 吗？",
   "install_mode": "安装模式",
   "loading": "加载中...",
-  "archives": "压缩文件"
+  "archives": "压缩文件",
+  "auto_startup": "开机自启动",
+  "extract": "提取",
+  "extract_path": "提取路径",
+  "environment": "环境",
+  "select_path_directory": "选择路径目录",
+  "final_path": "最终路径",
+  "submit": "提交",
+  "copy_only": "仅复制",
+  "archive": {
+    "password_required": "需要密码",
+    "enter_password": "请输入解压密码"
+  }
 }
