@@ -2,6 +2,7 @@
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { goTo } from '@/router'
 import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import { useToast } from 'primevue'
@@ -24,6 +25,8 @@ const showErrorDialog = ref(false)
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
 const passwordError = ref(false)
+const settingsStore = useSettingsStore()
+const { copy_only } = settingsStore
 
 // UI state management
 const pathError = ref('')
@@ -35,6 +38,19 @@ onMounted(async () => {
     if (!installationConfig.zip_path) {
         goTo('/Home')
         return
+    }
+
+    // Initialize config from settings
+    installationConfig.install_path = copy_only.install_path
+    installationConfig.add_to_path = copy_only.add_to_path
+    installationConfig.path_directory = ''  // Reset path directory when loading
+
+    // Extract filename from path and remove extension for default name
+    if (installationConfig.zip_path) {
+        const pathParts = installationConfig.zip_path.split('\\')
+        const filename = pathParts[pathParts.length - 1]
+        // Remove file extension
+        installationConfig.name = filename.replace(/\.[^/.]+$/, '')
     }
 
     try {
