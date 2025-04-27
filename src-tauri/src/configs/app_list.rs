@@ -6,66 +6,45 @@ use systemicons::get_icon;
 
 use super::settings::Settings;
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct AppList {
-    #[serde(default)]
     pub links: Vec<App>,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct App {
-    #[serde(default)]
     pub timestamp: i64,
-    #[serde(default)]
     pub installed: bool,
-    #[serde(default)]
     pub copy_only: bool,
-    #[serde(default)]
     pub url: String,
-    #[serde(default)]
     pub details: InstalledApp,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct InstalledApp {
-    #[serde(default)]
     pub name: String,
-    #[serde(default)]
     pub icon: String,
-    #[serde(default)]
     pub publisher: String,
-    #[serde(default)]
     pub version: String,
-
-    #[serde(default)]
     pub install_path: String,
-    #[serde(default)]
     pub executable_path: String,
-    #[serde(default)]
     pub full_path: String,
-
-    #[serde(default)]
     pub current_user_only: bool,
-    #[serde(default)]
     pub create_desktop_shortcut: bool,
-    #[serde(default)]
     pub create_start_menu_shortcut: bool,
-    #[serde(default)]
     pub create_registry_key: bool,
-    #[serde(default)]
     pub add_to_path: bool,
-    #[serde(default)]
     pub path_directory: String,
-
-    #[serde(default)]
     pub validation_status: ValidationStatus,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 pub struct ValidationStatus {
-    #[serde(default)]
     pub file_exists: bool,
-    #[serde(default)]
     pub registry_valid: bool,
 }
 

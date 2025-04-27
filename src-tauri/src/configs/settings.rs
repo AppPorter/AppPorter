@@ -37,72 +37,48 @@ impl Default for ThemeType {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct Settings {
-    #[serde(default)]
     pub language: LanguageType,
-    #[serde(default)]
     pub theme: ThemeType,
-    #[serde(default)]
     pub minimize_to_tray_on_close: bool,
-    #[serde(default)]
     pub context_menu: bool,
-    #[serde(default)]
     pub auto_startup: bool,
-    #[serde(default)]
     pub first_run: bool,
-    #[serde(default)]
     pub color: String,
-
-    #[serde(default)]
     pub debug: bool,
-    #[serde(default)]
     pub elevated: bool,
-    #[serde(default)]
     pub run_as_admin: bool,
-    #[serde(default)]
     pub system_drive_letter: String,
-    #[serde(default)]
     pub user_sid: String,
-    #[serde(default)]
     pub username: String,
-
-    #[serde(default)]
     pub installation: Installation,
-    #[serde(default)]
     pub copy_only: CopyOnly,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct Installation {
-    #[serde(default)]
     pub current_user_only: bool,
-
-    #[serde(default)]
     pub all_users: InstallSettings,
-    #[serde(default)]
     pub current_user: InstallSettings,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct InstallSettings {
-    #[serde(default)]
     pub create_desktop_shortcut: bool,
-    #[serde(default)]
     pub create_registry_key: bool,
-    #[serde(default)]
     pub create_start_menu_shortcut: bool,
-    #[serde(default)]
     pub install_path: String,
-    #[serde(default)]
     pub add_to_path: bool,
 }
 
+#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 pub struct CopyOnly {
-    #[serde(default)]
     pub install_path: String,
-    #[serde(default)]
     pub add_to_path: bool,
 }
 
@@ -111,12 +87,15 @@ impl ConfigFile for Settings {
     fn get_filename() -> &'static str {
         "Settings.json"
     }
+}
 
-    async fn create_default() -> Result<Self, Box<dyn Error + Send + Sync>> {
-        let system_drive = std::env::var("windir")?[..1].to_string();
-        let username = std::env::var("USERNAME")?;
-
-        let default_settings = Self {
+impl Default for Settings {
+    fn default() -> Self {
+        let system_drive = std::env::var("windir")
+            .map(|s| s[..1].to_string())
+            .unwrap_or_else(|_| "C".to_string());
+        let username = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
+        Self {
             language: LanguageType::En,
             theme: ThemeType::System,
             context_menu: true,
@@ -125,12 +104,11 @@ impl ConfigFile for Settings {
             first_run: true,
             color: String::new(),
             debug: cfg!(debug_assertions),
-            elevated: is_elevated()?,
+            elevated: is_elevated().unwrap_or(false),
             run_as_admin: false,
             system_drive_letter: system_drive.clone(),
             user_sid: String::new(),
             username: username.clone(),
-
             installation: Installation {
                 current_user_only: false,
                 all_users: InstallSettings {
@@ -153,25 +131,11 @@ impl ConfigFile for Settings {
             },
             copy_only: CopyOnly {
                 install_path: dirs::home_dir()
-                    .ok_or("Failed to get home directory")?
-                    .to_string_lossy()
-                    .to_string(),
+                    .map(|p| p.to_string_lossy().to_string())
+                    .unwrap_or_else(|| String::from("C:\\")),
                 add_to_path: true,
             },
-        };
-
-        let config_path = Self::get_file_path().await?;
-
-        if let Some(parent) = config_path.parent() {
-            tokio::fs::create_dir_all(parent).await?;
         }
-
-        tokio::fs::write(
-            &config_path,
-            serde_json::to_string_pretty(&default_settings)?,
-        )
-        .await?;
-        Ok(default_settings)
     }
 }
 
