@@ -68,6 +68,15 @@ function getAppStatus(data) {
     }
   }
 
+  // Handle copy_only mode
+  if (data.copy_only) {
+    return {
+      icon: 'mir-folder_copy',
+      severity: 'info',
+      value: t('app_list.copy_only'),
+    }
+  }
+
   const validation = data.details.validation_status
   const isValid = validation.file_exists && validation.registry_valid
 
@@ -101,24 +110,30 @@ const menuItems = computed(() => [
     label: t('open'),
     icon: 'mir-terminal',
     command: () => openApp(),
-    visible: () => selectedApp.value?.installed,
+    visible: () => selectedApp.value?.installed && !selectedApp.value?.copy_only,
+  },
+  {
+    label: t('open_folder'),
+    icon: 'mir-folder',
+    command: () => openInstallFolder(),
+    visible: () => selectedApp.value?.installed && selectedApp.value?.copy_only,
   },
   {
     label: t('open_install_folder'),
     icon: 'mir-folder',
     command: () => openInstallFolder(),
-    visible: () => selectedApp.value?.installed,
+    visible: () => selectedApp.value?.installed && !selectedApp.value?.copy_only,
   },
   {
     label: t('open_registry'),
     icon: 'mir-app_registration',
     command: () => openRegistry(),
-    visible: () => selectedApp.value?.installed,
+    visible: () => selectedApp.value?.installed && !selectedApp.value?.copy_only,
   },
   {
-    label: selectedApp.value?.installed ? t('uninstall') : t('remove'),
+    label: selectedApp.value?.copy_only ? t('delete') : (selectedApp.value?.installed ? t('uninstall') : t('remove')),
     icon: 'mir-delete',
-    command: () => (selectedApp.value?.installed ? confirmUninstall() : confirmRemove()),
+    command: () => (selectedApp.value?.installed ? (selectedApp.value?.copy_only ? confirmDelete() : confirmUninstall()) : confirmRemove()),
     visible: () => selectedApp.value !== undefined,
   },
 ])
@@ -192,6 +207,42 @@ async function confirmUninstall() {
   })
 }
 
+async function confirmDelete() {
+  if (!selectedApp.value) return
+
+  const app = appListStore.getAppByTimestamp(selectedApp.value.timestamp)
+  if (!app) return
+
+  await new Promise((resolve, reject) => {
+    confirm.require({
+      message: t('app_list.confirm_delete_message', {
+        name: app.details.name,
+      }),
+      group: 'dialog',
+      header: t('app_list.confirm_delete_header'),
+      icon: 'mir-warning',
+      rejectProps: {
+        label: t('cancel'),
+        severity: 'secondary',
+        outlined: true,
+        icon: 'mir-close',
+      },
+      acceptProps: {
+        label: t('delete'),
+        severity: 'danger',
+        icon: 'mir-delete',
+      },
+      accept: async () => {
+        // Since we don't have a specific method for copy_only apps yet,
+        // we'll use the general removeApp method
+        await appListStore.removeApp(selectedApp.value.timestamp)
+        resolve(true)
+      },
+      reject: () => reject(),
+    })
+  })
+}
+
 async function confirmRemove() {
   if (!selectedApp.value) return
 
@@ -241,6 +292,11 @@ const appToValidate = ref()
 function handleStatusClick(app) {
   if (app.installed) {
     appToValidate.value = app
+
+    // Skip validation for copy_only apps as they don't need validation
+    if (app.copy_only) {
+      return;
+    }
 
     const validation = app.details.validation_status
     const fileExists = validation.file_exists
@@ -417,7 +473,8 @@ onMounted(() => {
                 <div class="flex-1">
                   <div class="mb-2 flex flex-col">
                     <span class="text-sm font-medium">{{ item.details.name || item.url }}</span>
-                    <div class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                    <div v-if="!item.copy_only"
+                      class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                       <span>{{ item.details.version || t('app.unknown_version') }}</span>
                       <span class="opacity-50">•</span>
                       <span>{{ item.details.publisher || t('app.unknown_publisher') }}</span>
