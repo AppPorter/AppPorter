@@ -56,6 +56,8 @@ onMounted(() => {
                 zip_path: installationConfig.zip_path,
                 password: installationConfig.archive_password,
                 extract_path: installationConfig.install_path,
+                name: installationConfig.name,
+                timestamp: installationConfig.timestamp,
             },
         },
     }).then((result) => {

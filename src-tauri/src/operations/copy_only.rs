@@ -1,4 +1,8 @@
 use super::get_7z_path;
+use crate::configs::{
+    app_list::{App, AppList, InstalledApp, ValidationStatus},
+    ConfigFile,
+};
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::io::Read;
@@ -9,9 +13,11 @@ use tauri::{AppHandle, Emitter};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CopyOnlyConfig {
-    pub zip_path: String,
-    pub password: Option<String>,
-    pub extract_path: String,
+    zip_path: String,
+    password: Option<String>,
+    extract_path: String,
+    name: String,
+    timestamp: i64,
 }
 
 pub async fn copy_only(
@@ -86,6 +92,64 @@ pub async fn copy_only(
 
     // Notify frontend completed
     app.emit("copyonly", 101)?;
+
+    // Add to app list
+    let mut app_list = AppList::read().await?;
+    let timestamp = if config.timestamp != 0 {
+        config.timestamp
+    } else {
+        chrono::Utc::now().timestamp()
+    };
+    let details = InstalledApp {
+        install_path: extract_path.clone(),
+        name: config.name,
+        version: String::new(),
+        publisher: String::new(),
+        executable_path: String::new(),
+        full_path: String::new(),
+        icon: String::new(),
+        create_start_menu_shortcut: false,
+        create_desktop_shortcut: false,
+        create_registry_key: false,
+        add_to_path: false,
+        path_directory: String::new(),
+        current_user_only: true,
+        validation_status: ValidationStatus {
+            file_exists: true,
+            registry_valid: false,
+        },
+    };
+    let app_item = App {
+        timestamp,
+        installed: true,
+        copy_only: true,
+        details,
+        url: String::new(),
+    };
+    if config.timestamp != 0 {
+        // Update existing app with matching timestamp
+        if let Some(existing_app) = app_list
+            .links
+            .iter_mut()
+            .find(|app| app.timestamp == config.timestamp)
+        {
+            existing_app.installed = true;
+            existing_app.details = app_item.details;
+        }
+    } else {
+        // Remove existing similar app and add new one
+        app_list.links.retain(|existing_app| {
+            let mut app1 = existing_app.clone();
+            let mut app2 = app_item.clone();
+            app1.timestamp = 0;
+            app2.timestamp = 0;
+            app1.details.version = String::new();
+            app2.details.version = String::new();
+            app1 != app2
+        });
+        app_list.links.push(app_item);
+    }
+    app_list.save().await?;
 
     Ok(extract_path)
 }
