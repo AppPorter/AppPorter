@@ -17,12 +17,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Rust stable toolchain
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Install Rust nightly toolchain
-        uses: dtolnay/rust-toolchain@nightly
-
       - name: Rust Cache
         uses: Swatinem/rust-cache@v2
         with:
@@ -30,6 +24,12 @@ jobs:
           cache-directories: ~/.cargo/bin
           cache-on-failure: true
           shared-key: 'windows-latest-stable-nightly'
+
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
 
       - name: Install cargo-udeps
         run: cargo install cargo-udeps --locked
