@@ -131,6 +131,16 @@ async function handleExtractClick() {
     // Reset validation errors
     pathError.value = ''
 
+    if (!installationConfig.name) {
+        toast.add({
+            severity: 'error',
+            summary: t('validation.name_required'),
+            detail: t('validation.enter_name'),
+            life: 3000,
+        })
+        return
+    }
+
     if (!installationConfig.install_path) {
         pathError.value = t('validation.select_path')
         toast.add({
@@ -254,15 +264,14 @@ async function select_extract_path() {
                         </template>
 
                         <div class="space-y-4 p-2">
-                            <!-- Name input (optional for extraction) -->
+                            <!-- Name input (required) -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">
                                     {{ t('app.name') }}
-                                    <p class="text-xs font-normal">{{ t('optional') }}</p>
                                 </label>
                                 <div class="w-full">
                                     <InputText v-model="installationConfig.name" :placeholder="t('app.name')"
-                                        class="h-8 w-full text-sm" />
+                                        class="h-8 w-full text-sm" :invalid="!installationConfig.name" />
                                 </div>
                             </div>
 
