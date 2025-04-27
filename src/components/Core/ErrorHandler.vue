@@ -41,17 +41,15 @@ onMounted(() => {
   <Toast position="bottom-left" class="z-40">
     <template #message="slotProps">
       <div class="flex w-full max-w-[600px] items-center">
-        <i
-          :class="[
-            'mir-mr-2 text-lg',
-            {
-              info: slotProps.message.severity === 'info',
-              warning: slotProps.message.severity === 'warn',
-              error: slotProps.message.severity === 'error',
-              check_circle: slotProps.message.severity === 'success',
-            },
-          ]"
-        />
+        <i :class="[
+          'mir-mr-2 text-lg',
+          {
+            info: slotProps.message.severity === 'info',
+            warning: slotProps.message.severity === 'warn',
+            error: slotProps.message.severity === 'error',
+            check_circle: slotProps.message.severity === 'success',
+          },
+        ]" />
         <div class="flex min-w-0 grow flex-col">
           <div class="font-bold">
             {{ slotProps.message.summary }}
