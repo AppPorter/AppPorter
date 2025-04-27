@@ -15,6 +15,11 @@ interface Installation {
   current_user: InstallSettings
 }
 
+interface CopyOnly {
+  install_path: string
+  add_to_path: boolean
+}
+
 export type ThemeType = 'system' | 'light' | 'dark'
 export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
 
@@ -37,6 +42,7 @@ interface Settings {
   username: string
 
   installation: Installation
+  copy_only: CopyOnly
 }
 
 // Store definition
@@ -74,7 +80,10 @@ export const useSettingsStore = defineStore('settings', {
         add_to_path: false,
       },
     },
-
+    copy_only: {
+      install_path: '',
+      add_to_path: false,
+    },
     initialSettings: null,
     isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   }),

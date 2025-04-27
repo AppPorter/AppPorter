@@ -64,6 +64,15 @@ async function selectInstallPath(userType: 'current_user' | 'all_users') {
   }
 }
 
+async function selectCopyOnlyInstallPath() {
+  const selected = await open({
+    directory: true,
+  })
+  if (selected) {
+    settings.copy_only.install_path = selected as string
+  }
+}
+
 // Watch for context_menu changes and register/unregister accordingly
 watch(
   () => settings.context_menu,
@@ -244,6 +253,32 @@ const githubIcon = computed(() => {
             </div>
           </div>
         </Panel>
+
+        <!-- Copy Only Settings -->
+        <Panel class="w-full">
+          <template #header>
+            <div class="flex items-center gap-2">
+              <span class="mir-folder_copy"></span>
+              <span>{{ t('settings.copy_only.title') }}</span>
+            </div>
+          </template>
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <label>{{ t('install_path') }}</label>
+              <div class="flex min-w-0 items-center gap-2">
+                <InputText v-model="settings.copy_only.install_path" :placeholder="t('install_path')"
+                  class="h-9 min-w-0 flex-1 text-sm" />
+                <Button @click="selectCopyOnlyInstallPath" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
+                  :label="t('browse')" />
+              </div>
+            </div>
+            <div class="flex items-center justify-between">
+              <label>{{ t('add_to_path') }}</label>
+              <ToggleSwitch v-model="settings.copy_only.add_to_path" />
+            </div>
+          </div>
+        </Panel>
+
         <div class="flex flex-col items-center justify-center space-y-1">
           <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
           <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>

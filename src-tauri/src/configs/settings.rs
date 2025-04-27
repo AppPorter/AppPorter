@@ -69,6 +69,8 @@ pub struct Settings {
 
     #[serde(default)]
     pub installation: Installation,
+    #[serde(default)]
+    pub copy_only: CopyOnly,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
@@ -90,6 +92,14 @@ pub struct InstallSettings {
     pub create_registry_key: bool,
     #[serde(default)]
     pub create_start_menu_shortcut: bool,
+    #[serde(default)]
+    pub install_path: String,
+    #[serde(default)]
+    pub add_to_path: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+pub struct CopyOnly {
     #[serde(default)]
     pub install_path: String,
     #[serde(default)]
@@ -140,6 +150,13 @@ impl ConfigFile for Settings {
                     ),
                     add_to_path: false,
                 },
+            },
+            copy_only: CopyOnly {
+                install_path: dirs::home_dir()
+                    .ok_or("Failed to get home directory")?
+                    .to_string_lossy()
+                    .to_string(),
+                add_to_path: true,
             },
         };
 
