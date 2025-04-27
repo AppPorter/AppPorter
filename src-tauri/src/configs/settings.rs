@@ -37,8 +37,8 @@ impl Default for ThemeType {
     }
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(default)]
 pub struct Settings {
     pub language: LanguageType,
     pub theme: ThemeType,
@@ -57,16 +57,16 @@ pub struct Settings {
     pub copy_only: CopyOnly,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
 pub struct Installation {
     pub current_user_only: bool,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
 pub struct InstallSettings {
     pub create_desktop_shortcut: bool,
     pub create_registry_key: bool,
@@ -75,8 +75,8 @@ pub struct InstallSettings {
     pub add_to_path: bool,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
 pub struct CopyOnly {
     pub install_path: String,
     pub add_to_path: bool,

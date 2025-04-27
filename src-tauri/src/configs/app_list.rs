@@ -6,14 +6,14 @@ use systemicons::get_icon;
 
 use super::settings::Settings;
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[serde(default)]
 pub struct AppList {
     pub links: Vec<App>,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
 pub struct App {
     pub timestamp: i64,
     pub installed: bool,
@@ -22,8 +22,8 @@ pub struct App {
     pub details: InstalledApp,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
 pub struct InstalledApp {
     pub name: String,
     pub icon: String,
@@ -41,8 +41,8 @@ pub struct InstalledApp {
     pub validation_status: ValidationStatus,
 }
 
-#[serde(default)]
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
 pub struct ValidationStatus {
     pub file_exists: bool,
     pub registry_valid: bool,
