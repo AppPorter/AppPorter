@@ -35,9 +35,17 @@ pub async fn copy_only(
         tokio::fs::create_dir_all(&extract_path).await?;
     }
 
+    // Create full path by combining extract_path and app name
+    let app_path = format!("{}\\{}", extract_path, config.name.replace(" ", "-"));
+
+    let target_path = Path::new(&app_path);
+    if !target_path.exists() {
+        tokio::fs::create_dir_all(target_path).await?;
+    }
+
     // Prepare 7z extraction args
     let path_7z = get_7z_path()?;
-    let arg = format!("-o{}", extract_path);
+    let arg = format!("-o{}", app_path);
     let mut args = vec![
         "-bsp2", // output stream for progress
         "x",     // extract with full paths
@@ -106,7 +114,7 @@ pub async fn copy_only(
         version: String::new(),
         publisher: String::new(),
         executable_path: String::new(),
-        full_path: String::new(),
+        full_path: app_path,
         icon: String::new(),
         create_start_menu_shortcut: false,
         create_desktop_shortcut: false,
