@@ -24,6 +24,7 @@ export interface InstalledApp {
 interface App {
   timestamp: number
   installed: boolean
+  copy_only: boolean
   details: InstalledApp
   url: string
 }
