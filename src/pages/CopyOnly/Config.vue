@@ -90,7 +90,6 @@ async function handlePasswordSubmit() {
     try {
         await GetArchiveContent(archivePassword.value)
         // Store password in the installation config for later use
-        installationConfig.archive_password = archivePassword.value
         installationConfig.details.config.archive_password = archivePassword.value
         showPasswordDialog.value = false
         archivePassword.value = ''
@@ -301,7 +300,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installationConfig.details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installationConfig.details.config.add_to_path" class="ml-6 mt-1">

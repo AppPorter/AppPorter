@@ -14,7 +14,6 @@ interface InstallationConfig {
   page: Pages
   archive_content: string[] | null
   timestamp: number
-  archive_password: string
 }
 
 export const useInstallationConfigStore = defineStore('installation_config', {
@@ -50,7 +49,6 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     page: 'Home',
     archive_content: null,
     timestamp: 0,
-    archive_password: '',
   }),
 
   getters: {

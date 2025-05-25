@@ -66,7 +66,6 @@ async function handlePasswordSubmit() {
   try {
     await GetArchiveContent(archivePassword.value)
     // Store password in the installation config for later use
-    installationConfig.archive_password = archivePassword.value
     installationConfig.details.config.archive_password = archivePassword.value
     showPasswordDialog.value = false
     archivePassword.value = ''
