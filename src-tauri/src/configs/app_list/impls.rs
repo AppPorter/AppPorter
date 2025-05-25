@@ -24,7 +24,7 @@ impl AppList {
                 .any(|link| link.url == url && link.installed)
     }
 
-    pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn validate_installs(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
         for app in &mut self.apps {
             if !app.installed {
                 continue;
@@ -262,9 +262,9 @@ impl AppList {
             let settings = Settings::read().await?;
 
             let config = if current_user_only {
-                &settings.app_installation.current_user
+                &settings.app_install.current_user
             } else {
-                &settings.app_installation.all_users
+                &settings.app_install.all_users
             };
 
             let create_desktop_shortcut = config.create_desktop_shortcut;
@@ -312,7 +312,7 @@ impl AppList {
 pub async fn load_app_list() -> Result<AppList, Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
     app_list.sync_from_registry().await?;
-    app_list.validate_installations().await?;
+    app_list.validate_installs().await?;
     app_list.remove_duplicates();
     app_list.save().await?;
 

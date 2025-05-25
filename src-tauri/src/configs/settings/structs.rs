@@ -31,13 +31,13 @@ pub struct Settings {
     pub auto_startup: bool,
     pub color: String,
     pub run_as_admin: bool,
-    pub app_installation: AppInstallation,
-    pub lib_installation: LibInstallation,
+    pub app_install: AppInstall,
+    pub lib_install: LibInstall,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct AppInstallation {
+pub struct AppInstall {
     pub current_user_only: bool,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
@@ -55,7 +55,7 @@ pub struct InstallSettings {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct LibInstallation {
+pub struct LibInstall {
     pub install_path: String,
     pub add_to_path: bool,
 }

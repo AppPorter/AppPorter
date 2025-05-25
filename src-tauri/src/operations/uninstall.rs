@@ -1,4 +1,3 @@
-use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
 use crate::configs::{app_list::AppList, env::Env};
 use std::error::Error;
@@ -7,11 +6,8 @@ use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
-pub async fn uninstallation(
-    timestamp: i64,
-    app: AppHandle,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    app.emit("uninstallation", 0)?;
+pub async fn uninstall(timestamp: i64, app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+    app.emit("uninstall", 0)?;
 
     // Get app configuration from app list
     let app_list = AppList::read().await?;
@@ -28,7 +24,7 @@ pub async fn uninstallation(
         fs::remove_dir_all(&app_path).await?;
     }
 
-    app.emit("uninstallation", 25)?;
+    app.emit("uninstall", 25)?;
 
     let env = Env::read().await?;
 
@@ -51,7 +47,7 @@ pub async fn uninstallation(
         }
     }
 
-    app.emit("uninstallation", 50)?;
+    app.emit("uninstall", 50)?;
 
     if app_config.details.config.create_desktop_shortcut {
         if let Some(desktop_dir) = dirs::desktop_dir() {
@@ -63,7 +59,7 @@ pub async fn uninstallation(
         }
     }
 
-    app.emit("uninstallation", 75)?;
+    app.emit("uninstall", 75)?;
 
     // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
@@ -144,7 +140,7 @@ pub async fn uninstallation(
 
     app_list.save().await?;
 
-    app.emit("uninstallation", 100)?;
+    app.emit("uninstall", 100)?;
 
     Ok(())
 }

@@ -1,4 +1,4 @@
-use super::{AppInstallation, InstallSettings, LanguageType, LibInstallation, Settings, ThemeType};
+use super::{AppInstall, InstallSettings, LanguageType, LibInstall, Settings, ThemeType};
 use crate::configs::{env::Env, ConfigFile};
 use std::error::Error;
 
@@ -35,7 +35,7 @@ impl Default for Settings {
             color: String::new(),
             minimize_to_tray_on_close: false,
             run_as_admin: false,
-            app_installation: AppInstallation {
+            app_install: AppInstall {
                 current_user_only: false,
                 all_users: InstallSettings {
                     create_desktop_shortcut: false,
@@ -55,7 +55,7 @@ impl Default for Settings {
                     add_to_path: false,
                 },
             },
-            lib_installation: LibInstallation {
+            lib_install: LibInstall {
                 install_path: dirs::home_dir()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| String::from("C:\\")),
@@ -105,13 +105,13 @@ impl Settings {
     }
 
     fn update_install_paths(&mut self, system_drive_letter: String, username: String) {
-        if self.app_installation.all_users.install_path.is_empty() {
-            self.app_installation.all_users.install_path =
+        if self.app_install.all_users.install_path.is_empty() {
+            self.app_install.all_users.install_path =
                 format!(r"{}:\Program Files", system_drive_letter);
         }
 
-        if self.app_installation.current_user.install_path.is_empty() {
-            self.app_installation.current_user.install_path = format!(
+        if self.app_install.current_user.install_path.is_empty() {
+            self.app_install.current_user.install_path = format!(
                 r"{}:\Users\{}\AppData\Local\Programs",
                 system_drive_letter, username
             );

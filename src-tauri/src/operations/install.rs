@@ -16,15 +16,15 @@ use tauri::{AppHandle, Emitter};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct InstallationConfig {
+pub struct InstallConfig {
     zip_path: String,
     password: Option<String>,
     details: AppDetails,
     timestamp: i64,
 }
 
-pub async fn installation(
-    config: InstallationConfig,
+pub async fn install(
+    config: InstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let zip_path = config.zip_path.clone();
@@ -34,7 +34,7 @@ pub async fn installation(
         config.details.info.name.replace(" ", "-")
     );
 
-    app.emit("installation", 0)?;
+    app.emit("install", 0)?;
 
     let target_path = Path::new(&app_path);
     if !target_path.exists() {
@@ -48,7 +48,7 @@ pub async fn installation(
     )
     .await?;
 
-    app.emit("installation", 101)?;
+    app.emit("install", 101)?;
 
     let single_root = find_single_root_folder(&app_path).await?;
 
@@ -58,7 +58,6 @@ pub async fn installation(
         single_root.as_deref(),
     );
 
-    let settings = Settings::read().await?;
     let env = Env::read().await?;
 
     // Create shortcuts
@@ -279,7 +278,7 @@ async fn extract_files(
                 if output.contains("%") {
                     let parts: Vec<&str> = output.split('%').collect();
                     if let Ok(percent) = parts[0].trim().parse::<u32>() {
-                        let _ = app_clone.emit("installation_extract", percent);
+                        let _ = app_clone.emit("install_extract", percent);
                     }
                 }
             }
@@ -292,7 +291,7 @@ async fn extract_files(
     }
     handle.join().unwrap();
 
-    app.emit("installation_extract", 100)?;
+    app.emit("install_extract", 100)?;
 
     Ok(())
 }
@@ -398,7 +397,7 @@ fn create_desktop_shortcut(
 }
 
 fn create_registry_entries(
-    config: &InstallationConfig,
+    config: &InstallConfig,
     executable_path: &str,
     app_path: &str,
     timestamp: i64,

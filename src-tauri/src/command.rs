@@ -19,10 +19,10 @@ pub enum Command {
     GetDetails {
         path: ExePath,
     },
-    Installation {
-        config: InstallationConfig,
+    Install {
+        config: InstallConfig,
     },
-    Uninstallation {
+    Uninstall {
         timestamp: i64,
     },
     Elevate {
@@ -104,8 +104,8 @@ impl Command {
         match self {
             LoadSettings => Self::ser(Settings::read().await?),
             GetDetails { path } => Self::ser(get_details(path).await?),
-            Installation { config } => Self::ser(installation(config, app).await?),
-            Uninstallation { timestamp } => Self::ser(uninstallation(timestamp, app).await?),
+            Install { config } => Self::ser(install(config, app).await?),
+            Uninstall { timestamp } => Self::ser(uninstall(timestamp, app).await?),
             Elevate { revert } => Self::ser(elevate(revert).await?),
             ValidatePath { path } => Self::ser(validate_path(path).await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
