@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { window as tauriWindow } from '@/main'
-import { useSettingsStore } from '@/stores/settings'
+import { SettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 
-const settingsStore = useSettingsStore()
+const settingsStore = SettingsStore()
 
 // Window control handlers
 function handleClose() {

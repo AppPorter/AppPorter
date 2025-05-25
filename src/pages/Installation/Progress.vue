@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallConfigStore } from '@/stores/install_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
@@ -19,7 +19,7 @@ const currentStatus = ref(null)
 const canClose = ref(false)
 const finalExecutablePath = ref('')
 
-const installConfig = useInstallConfigStore()
+const installConfig = InstallConfigStore()
 installConfig.page = 'Install_App_Progress'
 const toast = useToast()
 const { t } = useI18n()
@@ -192,7 +192,7 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.install_settings')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -230,7 +230,7 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.package_info')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="

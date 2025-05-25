@@ -80,7 +80,7 @@ export interface LibValidationStatus {
   path_exists: boolean
 }
 
-export const useAppListStore = defineStore('app_list', {
+export const AppListStore = defineStore('app_list', {
   state: (): AppList => ({
     apps: [],
     libs: [],

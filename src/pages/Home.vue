@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallConfigStore } from '@/stores/install_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
@@ -8,9 +8,9 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useI18n } from 'vue-i18n'
 
-const installationConfig = useInstallConfigStore()
-installationConfig.page = 'Home'
-const { zip_path } = storeToRefs(installationConfig)
+const installConfig = InstallConfigStore()
+installConfig.page = 'Home'
+const { zip_path } = storeToRefs(installConfig)
 const { t } = useI18n()
 
 async function selectZipFile() {

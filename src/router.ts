@@ -7,9 +7,9 @@ import Install_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { useInstallConfigStore } from './stores/install_config'
+import { InstallConfigStore } from './stores/install_config'
 
-const installConfig = useInstallConfigStore()
+const installConfig = InstallConfigStore()
 
 // Empty component for route redirection
 const Dummy = { render: () => null }

@@ -11,10 +11,10 @@ const route = useRoute()
 // Navigation menu configuration
 const leftMenuItems = [
   {
-    label: t('installation.self'),
+    label: t('install.self'),
     icon: 'mir-install_desktop',
-    command: () => goTo('/Installation'),
-    paths: ['/Home', '/Installation/Config', '/Installation/Progress', '/CopyOnly/Config', '/CopyOnly/Progress'],
+    command: () => goTo('/Install'),
+    paths: ['/Home', '/Install/Config', '/Install/Progress', '/CopyOnly/Config', '/CopyOnly/Progress'],
   },
   {
     label: t('app_list.self'),

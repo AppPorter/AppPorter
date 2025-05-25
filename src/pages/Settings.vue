@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useEnvStore } from '@/stores/env'
-import { useInstallConfigStore } from '@/stores/install_config'
-import { useSettingsStore } from '@/stores/settings'
+import { EnvStore } from '@/stores/env'
+import { InstallConfigStore } from '@/stores/install_config'
+import { SettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
@@ -9,9 +9,9 @@ import InputText from 'primevue/inputtext'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const settings = useSettingsStore()
-const env = useEnvStore()
-const installConfig = useInstallConfigStore()
+const settings = SettingsStore()
+const env = EnvStore()
+const installConfig = InstallConfigStore()
 
 const isSettingsChanged = computed(() => {
   if (!env.initialSettings) return false

@@ -14,17 +14,17 @@ import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { useAppListStore } from './stores/app_list'
-import { useEnvStore } from './stores/env'
-import { useInstallConfigStore } from './stores/install_config'
+import { AppListStore } from './stores/app_list'
+import { EnvStore } from './stores/env'
+import { InstallConfigStore } from './stores/install_config'
 
 const confirm = useConfirm()
 const { t } = useI18n()
 const errorHandler = ref()
-const appListStore = useAppListStore()
+const appListStore = AppListStore()
 const dismissWarning = ref(false)
-const InstallConfig = useInstallConfigStore()
-const env = useEnvStore()
+const installConfig = InstallConfigStore()
+const env = EnvStore()
 const contextMenuManager = ref()
 
 // Setup event listeners after component is mounted
@@ -58,22 +58,22 @@ onMounted(async () => {
 
   await listen('install', (event) => {
     const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallConfig.zip_path = payload[0]
-    InstallConfig.timestamp = payload[1]
+    installConfig.zip_path = payload[0]
+    installConfig.timestamp = payload[1]
     goTo('/Installation/App/Config')
   })
 
   await listen('install_app', (event) => {
     const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallConfig.zip_path = payload[0]
-    InstallConfig.timestamp = payload[1]
+    installConfig.zip_path = payload[0]
+    installConfig.timestamp = payload[1]
     goTo('/Installation/App/Config')
   })
 
   await listen('install_lib', (event) => {
     const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallConfig.zip_path = payload[0]
-    InstallConfig.timestamp = payload[1]
+    installConfig.zip_path = payload[0]
+    installConfig.timestamp = payload[1]
     goTo('/Installation/Lib/Config')
   })
 

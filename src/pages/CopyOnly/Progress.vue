@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/install_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
@@ -17,13 +17,13 @@ const currentStatus = ref('')
 const canClose = ref(false)
 const finalExtractPath = ref('')
 
-const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'CopyOnlyProgress'
+const installConfig = InstallConfigStore()
+installConfig.page = 'Install_Lib_Progress'
 const { t } = useI18n()
 
 const fullExtractPath = computed(() => {
-    const base = installationConfig.install_path
-    const name = installationConfig.name || 'Extracted-Files'
+    const base = installConfig.install_path
+    const name = installConfig.name || 'Extracted-Files'
     return base && name ? `${base.replace(/\\$/, '')}\\${name}\\` : base
 })
 
@@ -53,11 +53,11 @@ onMounted(() => {
         command: {
             name: 'CopyOnly',
             config: {
-                zip_path: installationConfig.zip_path,
-                password: installationConfig.archive_password,
-                extract_path: installationConfig.install_path,
-                name: installationConfig.name,
-                timestamp: installationConfig.timestamp,
+                zip_path: installConfig.zip_path,
+                password: installConfig.archive_password,
+                extract_path: installConfig.install_path,
+                name: installConfig.name,
+                timestamp: installConfig.timestamp,
             },
         },
     }).then((result) => {
@@ -103,8 +103,8 @@ function handleCopyPath() {
                         <div class="ml-4 flex shrink-0 select-text items-center gap-3">
                             <div
                                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                                <img v-if="installationConfig.icon" :src="installationConfig.icon"
-                                    class="size-8 object-contain" alt="App Icon" />
+                                <img v-if="installConfig.icon" :src="installConfig.icon" class="size-8 object-contain"
+                                    alt="App Icon" />
                                 <span v-else class="mir-folder_zip text-2xl"></span>
                             </div>
                         </div>

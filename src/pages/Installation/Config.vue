@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallConfigStore } from '@/stores/install_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
@@ -12,7 +12,7 @@ import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 
-const installConfig = useInstallConfigStore()
+const installConfig = InstallConfigStore()
 installConfig.page = 'Install_App_Config'
 const toast = useToast()
 const confirm = useConfirm()

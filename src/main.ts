@@ -2,7 +2,7 @@ import '@/assets/styles/main.css'
 import { setupI18n } from '@/locales/i18n'
 import Main from '@/Main.vue'
 import router, { setupRouterGuards } from '@/router'
-import { useSettingsStore } from '@/stores/settings'
+import { SettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
@@ -56,7 +56,7 @@ const app = createApp(Main)
 app.use(pinia)
 
 // Initialize settings first
-const settingsStore = useSettingsStore()
+const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
 
 // Then initialize i18n with the loaded language

@@ -1,8 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
-import { Settings, useSettingsStore } from './settings'
+import { Settings, SettingsStore } from './settings'
 
-const settingsStore = useSettingsStore()
+const settingsStore = SettingsStore()
 
 interface Env {
   first_run: boolean
@@ -16,7 +16,7 @@ interface Env {
   isDarkMode: boolean
 }
 
-export const useEnvStore = defineStore('env', {
+export const EnvStore = defineStore('env', {
   state: (): Env => ({
     first_run: true,
     debug: false,

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { useInstallConfigStore } from '@/stores/install_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
@@ -18,7 +18,7 @@ defineProps<{
   executablePathError?: boolean
 }>()
 
-const installConfig = useInstallConfigStore()
+const installConfig = InstallConfigStore()
 const { zip_path } = installConfig
 const { name, icon, publisher, version, executable_path } = storeToRefs(installConfig)
 const { t } = useI18n()

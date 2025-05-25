@@ -1,8 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
-import { useEnvStore } from './env'
+import { EnvStore } from './env'
 
-const env = useEnvStore()
+const env = EnvStore()
 
 export interface Settings {
   language: LanguageType
@@ -39,7 +39,7 @@ interface LibInstall {
 }
 
 // Store definition
-export const useSettingsStore = defineStore('settings', {
+export const SettingsStore = defineStore('settings', {
   state: (): Settings => ({
     language: 'en',
     theme: 'system',

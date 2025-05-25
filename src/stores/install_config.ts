@@ -16,7 +16,7 @@ interface InstallConfig {
   timestamp: number
 }
 
-export const useInstallConfigStore = defineStore('install_config', {
+export const InstallConfigStore = defineStore('install_config', {
   state: (): InstallConfig => ({
     zip_path: '',
     details: {

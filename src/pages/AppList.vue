@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppListStore } from '@/stores/app_list'
+import { AppListStore } from '@/stores/app_list'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import DataView from 'primevue/dataview'
@@ -14,7 +14,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
-const appListStore = useAppListStore()
+const appListStore = AppListStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 const contextMenu = ref()
