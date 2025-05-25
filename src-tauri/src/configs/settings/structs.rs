@@ -29,21 +29,15 @@ pub struct Settings {
     pub minimize_to_tray_on_close: bool,
     pub context_menu: bool,
     pub auto_startup: bool,
-    pub first_run: bool,
     pub color: String,
-    pub debug: bool,
-    pub elevated: bool,
     pub run_as_admin: bool,
-    pub system_drive_letter: String,
-    pub user_sid: String,
-    pub username: String,
-    pub installation: Installation,
-    pub copy_only: CopyOnly,
+    pub app_installation: AppInstallation,
+    pub lib_installation: LibInstallation,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct Installation {
+pub struct AppInstallation {
     pub current_user_only: bool,
     pub all_users: InstallSettings,
     pub current_user: InstallSettings,
@@ -61,7 +55,7 @@ pub struct InstallSettings {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct CopyOnly {
+pub struct LibInstallation {
     pub install_path: String,
     pub add_to_path: bool,
 }

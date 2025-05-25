@@ -16,7 +16,10 @@ async fn main() {
 }
 
 async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
-    Settings::read().await?.initialization().await?;
+    Settings::read()
+        .await?
+        .initialization(Env::read().await?.initialization().await?)
+        .await?;
 
     tokio::spawn(async {
         if let Err(e) = start_websocket_server().await {

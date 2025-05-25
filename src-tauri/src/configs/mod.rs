@@ -3,6 +3,7 @@ pub use settings::*;
 use std::{error::Error, path::PathBuf};
 
 pub mod app_list;
+pub mod env;
 pub mod settings;
 
 #[async_trait::async_trait]

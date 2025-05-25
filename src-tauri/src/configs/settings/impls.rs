@@ -1,8 +1,6 @@
-use super::{CopyOnly, InstallSettings, Installation, LanguageType, Settings, ThemeType};
-use crate::configs::ConfigFile;
-use check_elevation::is_elevated;
+use super::{AppInstallation, InstallSettings, LanguageType, LibInstallation, Settings, ThemeType};
+use crate::configs::{env::Env, ConfigFile};
 use std::error::Error;
-use tokio::process::Command;
 
 impl Default for LanguageType {
     fn default() -> Self {
@@ -34,16 +32,10 @@ impl Default for Settings {
             theme: ThemeType::System,
             context_menu: true,
             auto_startup: false,
-            minimize_to_tray_on_close: false,
-            first_run: true,
             color: String::new(),
-            debug: cfg!(debug_assertions),
-            elevated: is_elevated().unwrap_or(false),
+            minimize_to_tray_on_close: false,
             run_as_admin: false,
-            system_drive_letter: system_drive.clone(),
-            user_sid: String::new(),
-            username: username.clone(),
-            installation: Installation {
+            app_installation: AppInstallation {
                 current_user_only: false,
                 all_users: InstallSettings {
                     create_desktop_shortcut: false,
@@ -63,7 +55,7 @@ impl Default for Settings {
                     add_to_path: false,
                 },
             },
-            copy_only: CopyOnly {
+            lib_installation: LibInstallation {
                 install_path: dirs::home_dir()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| String::from("C:\\")),
@@ -74,39 +66,18 @@ impl Default for Settings {
 }
 
 impl Settings {
-    pub async fn initialization(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        self.debug = cfg!(debug_assertions);
-        self.elevated = is_elevated()?;
-        self.user_sid = self.get_user_sid().await?;
-        self.run_as_admin = self.check_run_as_admin()?;
-        self.update_system_info()?;
+    pub async fn initialization(&mut self, env: Env) -> Result<(), Box<dyn Error + Send + Sync>> {
+        self.run_as_admin = self.check_run_as_admin(env.user_sid)?;
         self.update_color_settings().await?;
-        self.update_install_paths();
+        self.update_install_paths(env.system_drive_letter, env.username);
         self.save().await?;
         Ok(())
     }
 
-    async fn get_user_sid(&self) -> Result<String, Box<dyn Error + Send + Sync>> {
-        let output = Command::new("powershell")
-            .args([
-                "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
-                "-Command",
-                r#"Get-WmiObject Win32_UserAccount -Filter "Name='$env:USERNAME'" | Select-Object -ExpandProperty SID"#,
-            ])
-            .creation_flags(0x08000000) // CREATE_NO_WINDOW flag
-            .output()
-            .await?;
-
-        if !output.status.success() {
-            return Err(String::from_utf8_lossy(&output.stderr).into());
-        }
-        Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
-    }
-
-    fn check_run_as_admin(&self) -> Result<bool, Box<dyn Error + Send + Sync>> {
+    fn check_run_as_admin(&self, user_sid: String) -> Result<bool, Box<dyn Error + Send + Sync>> {
         let registry_path = format!(
             r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
-            self.user_sid
+            user_sid
         );
         let exe_path = std::env::current_exe()?.to_string_lossy().to_string();
 
@@ -114,12 +85,6 @@ impl Settings {
             .open(registry_path)?
             .get_string(exe_path)
             .is_ok_and(|value| value.contains("RUNASADMIN")))
-    }
-
-    fn update_system_info(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        self.system_drive_letter = std::env::var("windir")?[..1].to_string();
-        self.username = std::env::var("USERNAME")?;
-        Ok(())
     }
 
     // Extract Windows accent color from registry
@@ -139,16 +104,16 @@ impl Settings {
         Ok(())
     }
 
-    fn update_install_paths(&mut self) {
-        if self.installation.all_users.install_path.is_empty() {
-            self.installation.all_users.install_path =
-                format!(r"{}:\Program Files", self.system_drive_letter);
+    fn update_install_paths(&mut self, system_drive_letter: String, username: String) {
+        if self.app_installation.all_users.install_path.is_empty() {
+            self.app_installation.all_users.install_path =
+                format!(r"{}:\Program Files", system_drive_letter);
         }
 
-        if self.installation.current_user.install_path.is_empty() {
-            self.installation.current_user.install_path = format!(
+        if self.app_installation.current_user.install_path.is_empty() {
+            self.app_installation.current_user.install_path = format!(
                 r"{}:\Users\{}\AppData\Local\Programs",
-                self.system_drive_letter, self.username
+                system_drive_letter, username
             );
         }
     }

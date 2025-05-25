@@ -1,5 +1,5 @@
-pub use implement::*;
-pub use structure::*;
+pub use impls::*;
+pub use structs::*;
 
-pub mod implement;
-pub mod structure;
+pub mod impls;
+pub mod structs;

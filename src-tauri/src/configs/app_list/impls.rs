@@ -170,7 +170,7 @@ impl AppList {
 
             // If not in our list, add it
             if !app_exists {
-                self.apps.push(super::structure::App {
+                self.apps.push(super::structs::App {
                     timestamp: chrono::Utc::now().timestamp(),
                     installed: true,
                     url: String::new(),
@@ -262,9 +262,9 @@ impl AppList {
             let settings = Settings::read().await?;
 
             let config = if current_user_only {
-                &settings.installation.current_user
+                &settings.app_installation.current_user
             } else {
-                &settings.installation.all_users
+                &settings.app_installation.all_users
             };
 
             let create_desktop_shortcut = config.create_desktop_shortcut;
