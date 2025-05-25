@@ -22,8 +22,8 @@ pub async fn uninstallation(
         .ok_or("App not found in app list")?;
 
     // Remove application directory
-    let app_path =
-        Path::new(&app_config.details.install_path).join(app_config.details.name.replace(" ", "-"));
+    let app_path = Path::new(&app_config.details.paths.install_path)
+        .join(app_config.details.info.name.replace(" ", "-"));
     if app_path.exists() {
         fs::remove_dir_all(&app_path).await?;
     }
@@ -33,16 +33,16 @@ pub async fn uninstallation(
     let settings = Settings::read().await?;
 
     // Remove shortcuts
-    if app_config.details.create_start_menu_shortcut {
-        let start_menu_path = if app_config.details.current_user_only {
+    if app_config.details.config.create_start_menu_shortcut {
+        let start_menu_path = if app_config.details.config.current_user_only {
             format!(
                 r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-                settings.system_drive_letter, settings.username, app_config.details.name
+                settings.system_drive_letter, settings.username, app_config.details.info.name
             )
         } else {
             format!(
                 r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-                settings.system_drive_letter, app_config.details.name
+                settings.system_drive_letter, app_config.details.info.name
             )
         };
         let start_menu_shortcut = Path::new(&start_menu_path);
@@ -53,9 +53,10 @@ pub async fn uninstallation(
 
     app.emit("uninstallation", 50)?;
 
-    if app_config.details.create_desktop_shortcut {
+    if app_config.details.config.create_desktop_shortcut {
         if let Some(desktop_dir) = dirs::desktop_dir() {
-            let desktop_shortcut = desktop_dir.join(format!("{}.lnk", app_config.details.name));
+            let desktop_shortcut =
+                desktop_dir.join(format!("{}.lnk", app_config.details.info.name));
             if desktop_shortcut.exists() {
                 fs::remove_file(desktop_shortcut).await?;
             }
@@ -65,13 +66,13 @@ pub async fn uninstallation(
     app.emit("uninstallation", 75)?;
 
     // Remove from PATH if it was added
-    if app_config.details.add_to_path {
-        let exe_path = Path::new(&app_config.details.full_path)
+    if app_config.details.config.add_to_path {
+        let exe_path = Path::new(&app_config.details.paths.full_path)
             .parent()
             .expect("Failed to get parent directory")
             .to_string_lossy();
 
-        if app_config.details.current_user_only {
+        if app_config.details.config.current_user_only {
             let key = CURRENT_USER.create("Environment")?;
             let current_path = key.get_string("Path")?;
 
@@ -100,13 +101,13 @@ pub async fn uninstallation(
     }
 
     // Remove registry entries
-    if app_config.details.create_registry_key {
+    if app_config.details.config.create_registry_key {
         let key: String;
 
-        if app_config.details.current_user_only {
+        if app_config.details.config.current_user_only {
             key = format!(
                 r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                app_config.details.name
+                app_config.details.info.name
             );
             if CURRENT_USER.open(&key).is_ok() {
                 let _ = CURRENT_USER.remove_tree(&key);
@@ -114,7 +115,7 @@ pub async fn uninstallation(
         } else {
             key = format!(
                 r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                app_config.details.name
+                app_config.details.info.name
             );
             if LOCAL_MACHINE.open(&key).is_ok() {
                 let _ = LOCAL_MACHINE.remove_tree(&key);

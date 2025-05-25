@@ -1,6 +1,8 @@
 use super::get_7z_path;
 use crate::configs::{
-    app_list::{App, AppList, InstalledApp, ValidationStatus},
+    app_list::{
+        App, AppBasicInformation, AppConfig, AppDetails, AppList, AppPaths, AppValidationStatus,
+    },
     ConfigFile,
 };
 use serde::{Deserialize, Serialize};
@@ -108,21 +110,28 @@ pub async fn copy_only(
     } else {
         chrono::Utc::now().timestamp()
     };
-    let details = InstalledApp {
-        install_path: extract_path.clone(),
-        name: config.name,
-        version: String::new(),
-        publisher: String::new(),
-        executable_path: String::new(),
-        full_path: app_path,
-        icon: String::new(),
-        create_start_menu_shortcut: false,
-        create_desktop_shortcut: false,
-        create_registry_key: false,
-        add_to_path: false,
-        path_directory: String::new(),
-        current_user_only: true,
-        validation_status: ValidationStatus {
+    let details = AppDetails {
+        info: AppBasicInformation {
+            name: config.name,
+            icon: String::new(),
+            publisher: String::new(),
+            version: String::new(),
+        },
+        config: AppConfig {
+            archive_exe_path: String::new(),
+            current_user_only: true,
+            create_desktop_shortcut: false,
+            create_start_menu_shortcut: false,
+            create_registry_key: false,
+            add_to_path: false,
+            path_directory: String::new(),
+        },
+        paths: AppPaths {
+            parent_install_path: extract_path.clone(),
+            install_path: extract_path.clone(),
+            full_path: app_path,
+        },
+        validation_status: AppValidationStatus {
             file_exists: true,
             registry_valid: false,
         },
@@ -151,8 +160,8 @@ pub async fn copy_only(
             let mut app2 = app_item.clone();
             app1.timestamp = 0;
             app2.timestamp = 0;
-            app1.details.version = String::new();
-            app2.details.version = String::new();
+            app1.details.info.version = String::new();
+            app2.details.info.version = String::new();
             app1 != app2
         });
         app_list.links.push(app_item);
