@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/install_config'
+import { useInstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
@@ -12,8 +12,8 @@ import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 
-const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'InstallationConfig'
+const installConfig = useInstallConfigStore()
+installConfig.page = 'Install_App_Config'
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -24,7 +24,7 @@ const passwordError = ref(false)
 
 // Load archive content when component is mounted
 onMounted(async () => {
-  if (!installationConfig.zip_path) {
+  if (!installConfig.zip_path) {
     goTo('/Home')
     return
   }
@@ -65,8 +65,8 @@ async function handlePasswordSubmit() {
 
   try {
     await GetArchiveContent(archivePassword.value)
-    // Store password in the installation config for later use
-    installationConfig.details.config.archive_password = archivePassword.value
+    // Store password in the install config for later use
+    installConfig.details.config.archive_password = archivePassword.value
     showPasswordDialog.value = false
     archivePassword.value = ''
   } catch (error) {
@@ -89,7 +89,7 @@ async function GetArchiveContent(password: string) {
   const result = await invoke('execute_command', {
     command: {
       name: 'GetArchiveContent',
-      path: installationConfig.zip_path,
+      path: installConfig.zip_path,
       password: password,
     },
   })
@@ -105,7 +105,7 @@ async function GetArchiveContent(password: string) {
     return
   }
 
-  installationConfig.archive_content = content
+  installConfig.archive_content = content
 }
 
 // UI state management
@@ -122,7 +122,7 @@ function handleBackClick() {
   goTo('/Home')
 }
 
-// Handle installation process initiation
+// Handle install process initiation
 async function handleInstallClick() {
   // Reset validation errors
   nameError.value = false
@@ -132,7 +132,7 @@ async function handleInstallClick() {
   let hasErrors = false
 
   // Validate required fields
-  if (!installationConfig.executable_path) {
+  if (!installConfig.executable_path) {
     executablePathError.value = true
     toast.add({
       severity: 'error',
@@ -143,7 +143,7 @@ async function handleInstallClick() {
     hasErrors = true
   }
 
-  if (!installationConfig.name) {
+  if (!installConfig.name) {
     nameError.value = true
     toast.add({
       severity: 'error',
@@ -154,7 +154,7 @@ async function handleInstallClick() {
     hasErrors = true
   }
 
-  if (!installationConfig.install_path) {
+  if (!installConfig.install_path) {
     pathError.value = t('validation.select_path')
     toast.add({
       severity: 'error',
@@ -173,12 +173,12 @@ async function handleInstallClick() {
     const validatedPath = (await invoke('execute_command', {
       command: {
         name: 'ValidatePath',
-        path: installationConfig.install_path,
+        path: installConfig.install_path,
       },
     })) as string
 
-    installationConfig.details.paths.parent_install_path = validatedPath
-    const fullPath = `${validatedPath}\\${installationConfig.name}`
+    installConfig.details.paths.parent_install_path = validatedPath
+    const fullPath = `${validatedPath}\\${installConfig.name}`
 
     try {
       await invoke('execute_command', {
@@ -190,10 +190,10 @@ async function handleInstallClick() {
 
       await new Promise((resolve, reject) => {
         confirm.require({
-          message: t('installation.config.confirm_install'),
+          message: t('install.config.confirm_install'),
           group: 'dialog',
           icon: 'mir-install_desktop',
-          header: t('installation.config.start_installation'),
+          header: t('install.config.start_install'),
           rejectProps: {
             label: t('cancel'),
             severity: 'secondary',
@@ -209,10 +209,10 @@ async function handleInstallClick() {
         })
       })
     } catch (error) {
-      if (error === 'Installation directory is not empty') {
+      if (error === 'Install directory is not empty') {
         await new Promise((resolve, reject) => {
           confirm.require({
-            message: t('installation.config.directory_not_empty'),
+            message: t('install.config.directory_not_empty'),
             group: 'dialog',
             icon: 'mir-warning',
             header: t('warning'),
@@ -223,7 +223,7 @@ async function handleInstallClick() {
               icon: 'mir-close',
             },
             acceptProps: {
-              label: t('installation.config.force_install'),
+              label: t('install.config.force_install'),
               severity: 'danger',
               icon: 'mir-warning',
             },
@@ -237,7 +237,7 @@ async function handleInstallClick() {
       }
     }
 
-    goTo('/Installation/Progress')
+    goTo('/Install/Progress')
   } catch (error) {
     pathError.value = error as string
   }

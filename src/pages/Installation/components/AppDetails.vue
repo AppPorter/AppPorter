@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { useInstallationConfigStore } from '@/stores/install_config'
+import { useInstallConfigStore } from '@/stores/install_config'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
@@ -18,15 +18,15 @@ defineProps<{
   executablePathError?: boolean
 }>()
 
-const installationConfig = useInstallationConfigStore()
-const { zip_path } = installationConfig
-const { name, icon, publisher, version, executable_path } = storeToRefs(installationConfig)
+const installConfig = useInstallConfigStore()
+const { zip_path } = installConfig
+const { name, icon, publisher, version, executable_path } = storeToRefs(installConfig)
 const { t } = useI18n()
 
 const detailsLoading = ref(false)
 
 function clearIcon() {
-  installationConfig.details.info.icon = ''
+  installConfig.details.info.icon = ''
 }
 
 const drawerVisible = ref(false)
@@ -43,7 +43,7 @@ function handleDetailsLoading(loading: boolean) {
         <div class="flex items-center gap-1.5">
           <span class="mir-apps text-lg" />
           <h2 class="text-base font-medium">
-            {{ t('installation.app_details.title') }}
+            {{ t('install.app_details.title') }}
           </h2>
         </div>
         <p class="ml-6 mt-0.5 text-xs">
@@ -87,7 +87,7 @@ function handleDetailsLoading(loading: boolean) {
               </Button>
             </div>
             <span v-if="!icon" class="text-xs">
-              {{ t('installation.app_details.icon_extract_hint') }}
+              {{ t('install.app_details.icon_extract_hint') }}
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/install_config'
+import { useInstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
@@ -11,7 +11,7 @@ import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-// Installation state
+// Install state
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
 const isFinished = ref(false)
@@ -19,22 +19,22 @@ const currentStatus = ref(null)
 const canClose = ref(false)
 const finalExecutablePath = ref('')
 
-const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'InstallationProgress'
+const installConfig = useInstallConfigStore()
+installConfig.page = 'Install_App_Progress'
 const toast = useToast()
 const { t } = useI18n()
 
-// Compute full installation path including app folder
+// Compute full install path including app folder
 const fullInstallPath = computed(() => {
-  const basePath = installationConfig.install_path
-  const appName = installationConfig.name
+  const basePath = installConfig.install_path
+  const appName = installConfig.name
   if (basePath && appName) {
     return `${basePath.replace(/\\$/, '')}\\${appName}\\`
   }
   return basePath
 })
 
-// Helper functions to format and display installation information
+// Helper functions to format and display install information
 const getInstallMode = (isCurrentUser: boolean) =>
   isCurrentUser ? t('current_user') : t('all_users')
 
@@ -64,37 +64,37 @@ const handleCopy = async (text: string, type: string) => {
 }
 
 onMounted(() => {
-  // Initial installation setup
-  currentStatus.value = t('installation.progress.preparing')
+  // Initial install setup
+  currentStatus.value = t('install.progress.preparing')
 
-  // Setup event listeners for installation progress
-  listen('installation', (event) => {
+  // Setup event listeners for install progress
+  listen('install', (event) => {
     if (event.payload === 0) {
       progressMode.value = 'indeterminate'
-      currentStatus.value = t('installation.progress.preparing_extract')
+      currentStatus.value = t('install.progress.preparing_extract')
     }
     if (event.payload === 101) {
-      currentStatus.value = t('installation.progress.completed')
+      currentStatus.value = t('install.progress.completed')
       isFinished.value = true
       canClose.value = true
     }
   })
 
-  listen('installation_extract', (event) => {
+  listen('install_extract', (event) => {
     progressMode.value = 'determinate'
     extractProgress.value = event.payload as number
-    currentStatus.value = t('installation.progress.extracting', { progress: extractProgress.value })
+    currentStatus.value = t('install.progress.extracting', { progress: extractProgress.value })
   })
 
-  // Start installation process
+  // Start install process
   invoke('execute_command', {
     command: {
-      name: 'Installation',
+      name: 'Install',
       config: {
-        zip_path: installationConfig.zip_path,
-        password: installationConfig.archive_password,
-        details: installationConfig.toAppDetails,
-        timestamp: installationConfig.timestamp,
+        zip_path: installConfig.zip_path,
+        password: installConfig.archive_password,
+        details: installConfig.toAppDetails,
+        timestamp: installConfig.timestamp,
       },
     },
   }).then((result) => {
@@ -132,10 +132,10 @@ defineOptions({
               </div>
               <div class="min-w-0 shrink">
                 <h2 class="text-lg font-medium">
-                  {{ t('installation.progress.title') }}
+                  {{ t('install.progress.title') }}
                 </h2>
                 <p class="text-xs">
-                  {{ t('installation.progress.description') }}
+                  {{ t('install.progress.description') }}
                 </p>
               </div>
             </div>
@@ -144,19 +144,18 @@ defineOptions({
             <div class="ml-4 flex shrink-0 select-text items-center gap-3">
               <div class="text-right">
                 <h3 class="text-base font-medium leading-none">
-                  {{ installationConfig.name }}
+                  {{ installConfig.name }}
                 </h3>
                 <p class="mt-1 text-xs">
-                  {{ installationConfig.version || 'Version N/A' }}
+                  {{ installConfig.version || 'Version N/A' }}
                 </p>
                 <p class="mt-0.5 text-xs">
-                  {{ installationConfig.publisher || 'Publisher N/A' }}
+                  {{ installConfig.publisher || 'Publisher N/A' }}
                 </p>
               </div>
               <div
                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                <img v-if="installationConfig.icon" :src="installationConfig.icon" class="size-8 object-contain"
-                  alt="App Icon" />
+                <img v-if="installConfig.icon" :src="installConfig.icon" class="size-8 object-contain" alt="App Icon" />
                 <span v-else class="mir-apps text-2xl"></span>
               </div>
             </div>
@@ -178,7 +177,7 @@ defineOptions({
                 <span class="mir-terminal"></span>
                 <span class="text-sm font-medium">{{ t('full_path') }}</span>
               </div>
-              <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_path')" class="h-7 w-8"
+              <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_path')" class="h-7 w-8"
                 icon="mir-content_copy" @click="handleCopy(finalExecutablePath, t('executable_path'))" />
             </div>
             <p class="select-text break-all text-sm font-medium">
@@ -192,28 +191,28 @@ defineOptions({
                 <div class="flex items-center gap-2">
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
-                    t('installation.progress.install_settings')
-                  }}</span>
+                    t('install.progress.install_settings')
+                    }}</span>
                 </div>
-                <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_settings')"
+                <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
                     handleCopy(
-                      `Install Mode: ${getInstallMode(installationConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installationConfig)}\nInstall Path: ${fullInstallPath}`,
+                      `Install Mode: ${getInstallMode(installConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installConfig)}\nInstall Path: ${fullInstallPath}`,
                       'Settings'
                     )
                     " />
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('installation.mode') }}</span>
+                  <span class="text-sm">{{ t('install.mode') }}</span>
                   <p class="text-sm font-medium">
-                    {{ getInstallMode(installationConfig.current_user_only) }}
+                    {{ getInstallMode(installConfig.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('shortcuts') }}</span>
                   <p class="text-sm font-medium">
-                    {{ getShortcutsList(installationConfig) }}
+                    {{ getShortcutsList(installConfig) }}
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -230,13 +229,13 @@ defineOptions({
                 <div class="flex items-center gap-2">
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
-                    t('installation.progress.package_info')
-                  }}</span>
+                    t('install.progress.package_info')
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="
                     handleCopy(
-                      `Source Archive: ${installationConfig.zip_path}\nSelected Executable: ${installationConfig.executable_path}`,
+                      `Source Archive: ${installConfig.zip_path}\nSelected Executable: ${installConfig.executable_path}`,
                       'Package info'
                     )
                     " />
@@ -245,13 +244,13 @@ defineOptions({
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('source_archive') }}</span>
                   <p class="break-all text-sm font-medium">
-                    {{ installationConfig.zip_path }}
+                    {{ installConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('selected_executable') }}</span>
                   <p class="break-all text-sm font-medium">
-                    {{ installationConfig.executable_path }}
+                    {{ installConfig.executable_path }}
                   </p>
                 </div>
               </div>
