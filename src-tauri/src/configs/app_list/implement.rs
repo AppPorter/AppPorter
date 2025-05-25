@@ -1,4 +1,4 @@
-use super::AppList;
+use super::{AppList, AppValidationStatus, LibValidationStatus};
 use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
 use base64::{engine::general_purpose::STANDARD, Engine};
@@ -14,13 +14,17 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
-        self.links
+        self.apps
             .iter()
             .any(|link| link.url == url && link.installed)
+            || self
+                .libs
+                .iter()
+                .any(|link| link.url == url && link.installed)
     }
 
     pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        for app in &mut self.links {
+        for app in &mut self.apps {
             if !app.installed {
                 continue;
             }
@@ -60,6 +64,23 @@ impl AppList {
             app.details.validation_status = AppValidationStatus {
                 file_exists,
                 registry_valid,
+                path_exists: true,
+            };
+        }
+
+        for lib in &mut self.libs {
+            if !lib.installed {
+                continue;
+            }
+
+            // Check if executable exists
+            let file_exists = tokio::fs::try_exists(&lib.details.paths.install_path)
+                .await
+                .unwrap_or(false);
+
+            lib.details.validation_status = LibValidationStatus {
+                file_exists,
+                path_exists: true,
             };
         }
         Ok(())
