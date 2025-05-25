@@ -8,7 +8,8 @@ use systemicons::get_icon;
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
 pub struct AppList {
-    pub links: Vec<App>,
+    pub apps: Vec<App>,
+    pub libs: Vec<Lib>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
@@ -16,7 +17,6 @@ pub struct AppList {
 pub struct App {
     pub timestamp: i64,
     pub installed: bool,
-    pub copy_only: bool,
     pub url: String,
     pub details: AppDetails,
 }
@@ -65,6 +65,47 @@ pub struct AppPaths {
 pub struct AppValidationStatus {
     pub file_exists: bool,
     pub registry_valid: bool,
+    pub path_exists: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct Lib {
+    pub timestamp: i64,
+    pub installed: bool,
+    pub url: String,
+    pub details: LibDetails,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct LibDetails {
+    pub name: String,
+    pub config: LibConfig,
+    pub paths: LibPaths,
+    pub validation_status: LibValidationStatus,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct LibConfig {
+    pub archive_password: String,
+    pub add_to_path: bool,
+    pub path_directory: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct LibPaths {
+    pub parent_install_path: String,
+    pub install_path: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct LibValidationStatus {
+    pub file_exists: bool,
+    pub path_exists: bool,
 }
 
 #[async_trait::async_trait]
