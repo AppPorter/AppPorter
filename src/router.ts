@@ -5,9 +5,11 @@ import Home from '@/pages/Home.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
-import { useInstallationConfigStore } from '@/stores/install_config'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { useInstallConfigStore } from './stores/install_config'
+
+const installConfig = useInstallConfigStore()
 
 // Empty component for route redirection
 const Dummy = { render: () => null }
@@ -24,28 +26,28 @@ const routes = [
     },
   },
   {
-    path: '/Installation/Config',
+    path: '/Installation/App/Config',
     component: Installation_Config,
     meta: {
       icon: 'mir-settings_applications',
     },
   },
   {
-    path: '/Installation/Progress',
+    path: '/Installation/App/Progress',
     component: Installation_Progress,
     meta: {
       icon: 'mir-pending_actions',
     },
   },
   {
-    path: '/CopyOnly/Config',
+    path: '/Installation/Lib/Config',
     component: CopyOnly,
     meta: {
       icon: 'mir-folder_copy',
     },
   },
   {
-    path: '/CopyOnly/Progress',
+    path: '/Installation/Lib/Progress',
     component: CopyOnlyProgress,
     meta: {
       icon: 'mir-pending_actions',
@@ -79,26 +81,24 @@ export function setupRouterGuards(router: Router) {
       return true
     }
 
-    const installationConfig = useInstallationConfigStore()
-
     // Handle installation wizard navigation based on current page state
     if (to.path === '/Installation') {
       let path = ''
-      switch (installationConfig.page) {
+      switch (installConfig.page) {
         case 'Home':
           path = '/Home'
           break
-        case 'InstallationConfig':
-          path = '/Installation/Config'
+        case 'Install_App_Config':
+          path = '/Installation/App/Config'
           break
-        case 'InstallationProgress':
-          path = '/Installation/Progress'
+        case 'Install_App_Progress':
+          path = '/Installation/App/Progress'
           break
-        case 'CopyOnlyConfig':
-          path = '/CopyOnly/Config'
+        case 'Install_Lib_Config':
+          path = '/Installation/Lib/Config'
           break
-        case 'CopyOnlyProgress':
-          path = '/CopyOnly/Progress'
+        case 'Install_Lib_Progress':
+          path = '/Installation/Lib/Progress'
           break
       }
       return { path }
@@ -106,7 +106,7 @@ export function setupRouterGuards(router: Router) {
 
     // Reset installation state when returning to home page
     if (to.path === '/Home') {
-      installationConfig.$reset()
+      installConfig.$reset()
     }
 
     return true

@@ -1,7 +1,12 @@
 import { defineStore } from 'pinia'
 import type { AppDetails } from './app_list'
 
-type Pages = 'Home' | 'InstallConfig' | 'InstallProgress' | 'CopyOnlyConfig' | 'CopyOnlyProgress'
+type Pages =
+  | 'Home'
+  | 'Install_App_Config'
+  | 'Install_App_Progress'
+  | 'Install_Lib_Config'
+  | 'Install_Lib_Progress'
 
 interface InstallConfig {
   zip_path: string

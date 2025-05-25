@@ -6,7 +6,6 @@ import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import { goTo } from '@/router'
-import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import { exit } from '@tauri-apps/plugin-process'
@@ -16,21 +15,22 @@ import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAppListStore } from './stores/app_list'
-import { useInstallationConfigStore } from './stores/install_config'
+import { useEnvStore } from './stores/env'
+import { useInstallConfigStore } from './stores/install_config'
 
-const settingsStore = useSettingsStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 const errorHandler = ref()
 const appListStore = useAppListStore()
 const dismissWarning = ref(false)
-const InstallationConfig = useInstallationConfigStore()
+const InstallConfig = useInstallConfigStore()
+const env = useEnvStore()
 const contextMenuManager = ref()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
   // First run check
-  if (settingsStore.first_run) {
+  if (env.first_run) {
     confirm.require({
       group: 'disclaimer',
       header: t('disclaimer.title'),
@@ -48,7 +48,7 @@ onMounted(async () => {
         outlined: true,
       },
       accept: async () => {
-        await settingsStore.acknowledgeFirstRun()
+        await env.acknowledgeFirstRun()
       },
       reject: () => {
         exit(0)
@@ -58,7 +58,7 @@ onMounted(async () => {
 
   // Setup install listener
   await listen('install', (event) => {
-    InstallationConfig.zip_path = event.payload as string
+    InstallConfig.zip_path = event.payload as string
     goTo('/Installation/Config')
   })
 
@@ -98,8 +98,8 @@ onMounted(async () => {
 
   await listen('installWithTimestamp', (event) => {
     const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallationConfig.zip_path = payload[0]
-    InstallationConfig.timestamp = payload[1]
+    InstallConfig.zip_path = payload[0]
+    InstallConfig.timestamp = payload[1]
     goTo('/Installation/Config')
   })
 
