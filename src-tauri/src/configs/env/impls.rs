@@ -1,7 +1,15 @@
 use super::Env;
+use crate::configs::ConfigFile;
 use check_elevation::is_elevated;
 use std::error::Error;
 use tokio::process::Command;
+
+#[async_trait::async_trait]
+impl ConfigFile for Env {
+    fn get_filename() -> &'static str {
+        "Env.json"
+    }
+}
 
 impl Default for Env {
     fn default() -> Self {

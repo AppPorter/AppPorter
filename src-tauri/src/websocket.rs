@@ -47,7 +47,7 @@ async fn handle_extension_message(msg: Message) -> Result<Message, Box<dyn Error
             url: text.to_string(),
             ..Default::default()
         };
-        app_list.links.push(new_app);
+        app_list.apps.push(new_app);
         let result = app_list.save().await;
 
         install_with_link(text.to_string(), timestamp).await?;

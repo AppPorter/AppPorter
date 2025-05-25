@@ -11,7 +11,7 @@ use tauri::Manager;
 async fn main() {
     if let Err(e) = run().await {
         eprintln!("Application error: {}", e);
-        std::process::exit(1);
+        tokio::process::exit(1);
     }
 }
 
