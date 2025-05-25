@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/install_config'
+import { useInstallConfigStore } from '@/stores/install_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
@@ -8,7 +8,7 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useI18n } from 'vue-i18n'
 
-const installationConfig = useInstallationConfigStore()
+const installationConfig = useInstallConfigStore()
 installationConfig.page = 'Home'
 const { zip_path } = storeToRefs(installationConfig)
 const { t } = useI18n()
@@ -56,10 +56,10 @@ async function selectZipFile() {
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="goTo('/CopyOnly/Config')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
-            icon="mir-folder_copy" :label="t('copy_only')" />
-          <Button @click="goTo('/Installation/Config')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
-            icon="mir-install_desktop" :label="t('install')" />
+          <Button @click="goTo('/Installation/Lib/Config')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
+            icon="mir-folder_copy" :label="t('install_lib')" />
+          <Button @click="goTo('/Installation/App/Config')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
+            icon="mir-install_desktop" :label="t('install_app')" />
         </div>
       </div>
     </Panel>

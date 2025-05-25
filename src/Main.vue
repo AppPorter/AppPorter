@@ -84,11 +84,11 @@ onMounted(async () => {
     if (!app) return
     await new Promise((resolve, reject) => {
       confirm.require({
-        message: t('confirm_uninstall_message', {
+        message: t('uninstall.confirm.message', {
           name: app.details.info.name,
         }),
         group: 'dialog',
-        header: t('confirm_uninstall_header'),
+        header: t('uninstall.confirm.header'),
         icon: 'mir-warning',
         rejectProps: {
           label: t('cancel'),

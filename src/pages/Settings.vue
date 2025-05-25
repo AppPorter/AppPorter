@@ -225,7 +225,7 @@ const githubIcon = computed(() => {
                 <template #header>
                   <div class="flex items-center gap-2">
                     <span class="mir-group"></span>
-                    <span>{{ t('settings.install.all_users.title') }}</span>
+                    <span>{{ t('all_users') }}</span>
                   </div>
                 </template>
                 <div class="space-y-4">
