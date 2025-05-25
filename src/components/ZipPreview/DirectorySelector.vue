@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'

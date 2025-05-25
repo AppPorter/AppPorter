@@ -9,13 +9,13 @@ interface InstallSettings {
   add_to_path: boolean
 }
 
-interface Installation {
+interface AppInstall {
   current_user_only: boolean
   all_users: InstallSettings
   current_user: InstallSettings
 }
 
-interface CopyOnly {
+interface LibInstall {
   install_path: string
   add_to_path: boolean
 }
@@ -30,19 +30,10 @@ interface Settings {
   minimize_to_tray_on_close: boolean
   context_menu: boolean
   auto_startup: boolean
-  first_run: boolean
-  isBasicSettingsChanged: boolean
-
-  // System info
   color: string
-  debug: boolean
-  elevated: boolean
   run_as_admin: boolean
-  system_drive_letter: string
-  username: string
-
-  installation: Installation
-  copy_only: CopyOnly
+  app_install: AppInstall
+  lib_install: LibInstall
 }
 
 // Store definition
@@ -53,17 +44,10 @@ export const useSettingsStore = defineStore('settings', {
     minimize_to_tray_on_close: false,
     context_menu: false,
     auto_startup: false,
-    first_run: true,
-    isBasicSettingsChanged: false,
-
     color: '',
-    debug: false,
-    elevated: false,
     run_as_admin: false,
-    system_drive_letter: '',
-    username: '',
 
-    installation: {
+    app_install: {
       current_user_only: false,
       all_users: {
         create_desktop_shortcut: false,
@@ -80,7 +64,7 @@ export const useSettingsStore = defineStore('settings', {
         add_to_path: false,
       },
     },
-    copy_only: {
+    lib_install: {
       install_path: '',
       add_to_path: false,
     },
@@ -107,11 +91,6 @@ export const useSettingsStore = defineStore('settings', {
       })
     },
 
-    async acknowledgeFirstRun() {
-      this.first_run = false
-      await this.saveSettings()
-    },
-
     updateBasicSettingsChanged() {
       const currentBasicSettings = {
         language: this.language,
@@ -125,9 +104,9 @@ export const useSettingsStore = defineStore('settings', {
           theme: this.initialSettings.theme,
           minimize_to_tray_on_close: this.initialSettings.minimize_to_tray_on_close,
         }
-        this.isBasicSettingsChanged =
-          JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
+        return JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
       }
+      return false
     },
 
     // Update theme mode and apply changes to DOM based on current theme setting

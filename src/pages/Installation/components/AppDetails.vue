@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'

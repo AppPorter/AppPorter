@@ -1,14 +1,9 @@
 import { defineStore } from 'pinia'
 import type { AppDetails } from './app_list'
 
-type Pages =
-  | 'Home'
-  | 'InstallationConfig'
-  | 'InstallationProgress'
-  | 'CopyOnlyConfig'
-  | 'CopyOnlyProgress'
+type Pages = 'Home' | 'InstallConfig' | 'InstallProgress' | 'CopyOnlyConfig' | 'CopyOnlyProgress'
 
-interface InstallationConfig {
+interface InstallConfig {
   zip_path: string
   details: AppDetails
   page: Pages
@@ -16,8 +11,8 @@ interface InstallationConfig {
   timestamp: number
 }
 
-export const useInstallationConfigStore = defineStore('installation_config', {
-  state: (): InstallationConfig => ({
+export const useInstallConfigStore = defineStore('install_config', {
+  state: (): InstallConfig => ({
     zip_path: '',
     details: {
       info: {
@@ -44,6 +39,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
       validation_status: {
         file_exists: false,
         registry_valid: false,
+        path_exists: false,
       },
     },
     page: 'Home',

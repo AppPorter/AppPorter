@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'

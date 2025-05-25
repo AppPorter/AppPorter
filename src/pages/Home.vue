@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'

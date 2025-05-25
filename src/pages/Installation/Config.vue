@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'

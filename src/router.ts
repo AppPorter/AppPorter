@@ -5,7 +5,7 @@ import Home from '@/pages/Home.vue'
 import Installation_Config from '@/pages/Installation/Config.vue'
 import Installation_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
 

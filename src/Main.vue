@@ -16,7 +16,7 @@ import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { useAppListStore } from './stores/app_list'
-import { useInstallationConfigStore } from './stores/installation_config'
+import { useInstallationConfigStore } from './stores/install_config'
 
 const settingsStore = useSettingsStore()
 const confirm = useConfirm()

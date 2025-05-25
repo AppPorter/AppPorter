@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { useInstallationConfigStore } from '@/stores/install_config'
 import { useSettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
@@ -300,7 +300,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installationConfig.details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installationConfig.details.config.add_to_path" class="ml-6 mt-1">
