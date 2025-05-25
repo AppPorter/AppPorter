@@ -1,6 +1,25 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
+interface AppList {
+  apps: App[]
+  libs: Lib[]
+}
+
+export interface App {
+  timestamp: number
+  installed: boolean
+  url: string
+  details: AppDetails
+}
+
+export interface AppDetails {
+  info: AppBasicInformation
+  config: AppConfig
+  paths: AppPaths
+  validation_status: AppValidationStatus
+}
+
 export interface AppBasicInformation {
   name: string
   icon: string
@@ -31,18 +50,18 @@ export interface AppValidationStatus {
   path_exists: boolean
 }
 
-export interface AppDetails {
-  info: AppBasicInformation
-  config: AppConfig
-  paths: AppPaths
-  validation_status: AppValidationStatus
-}
-
-export interface App {
+export interface Lib {
   timestamp: number
   installed: boolean
   url: string
-  details: AppDetails
+  details: LibDetails
+}
+
+export interface LibDetails {
+  name: string
+  config: LibConfig
+  paths: LibPaths
+  validation_status: LibValidationStatus
 }
 
 export interface LibConfig {
@@ -59,25 +78,6 @@ export interface LibPaths {
 export interface LibValidationStatus {
   file_exists: boolean
   path_exists: boolean
-}
-
-export interface LibDetails {
-  name: string
-  config: LibConfig
-  paths: LibPaths
-  validation_status: LibValidationStatus
-}
-
-export interface Lib {
-  timestamp: number
-  installed: boolean
-  url: string
-  details: LibDetails
-}
-
-interface AppList {
-  apps: App[]
-  libs: Lib[]
 }
 
 export const useAppListStore = defineStore('app_list', {

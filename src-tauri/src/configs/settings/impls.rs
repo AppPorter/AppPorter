@@ -2,18 +2,6 @@ use super::{AppInstall, InstallSettings, LanguageType, LibInstall, Settings, The
 use crate::configs::{env::Env, ConfigFile};
 use std::error::Error;
 
-impl Default for LanguageType {
-    fn default() -> Self {
-        Self::En
-    }
-}
-
-impl Default for ThemeType {
-    fn default() -> Self {
-        Self::System
-    }
-}
-
 #[async_trait::async_trait]
 impl ConfigFile for Settings {
     fn get_filename() -> &'static str {

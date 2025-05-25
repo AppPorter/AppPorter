@@ -1,6 +1,20 @@
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(default)]
+pub struct Settings {
+    pub language: LanguageType,
+    pub theme: ThemeType,
+    pub minimize_to_tray_on_close: bool,
+    pub context_menu: bool,
+    pub auto_startup: bool,
+    pub color: String,
+    pub run_as_admin: bool,
+    pub app_install: AppInstall,
+    pub lib_install: LibInstall,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum LanguageType {
     En,
@@ -13,6 +27,12 @@ pub enum LanguageType {
     Ru,
 }
 
+impl Default for LanguageType {
+    fn default() -> Self {
+        Self::En
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "lowercase")]
 pub enum ThemeType {
@@ -21,18 +41,10 @@ pub enum ThemeType {
     Dark,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(default)]
-pub struct Settings {
-    pub language: LanguageType,
-    pub theme: ThemeType,
-    pub minimize_to_tray_on_close: bool,
-    pub context_menu: bool,
-    pub auto_startup: bool,
-    pub color: String,
-    pub run_as_admin: bool,
-    pub app_install: AppInstall,
-    pub lib_install: LibInstall,
+impl Default for ThemeType {
+    fn default() -> Self {
+        Self::System
+    }
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
