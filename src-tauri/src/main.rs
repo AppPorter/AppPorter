@@ -42,35 +42,9 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
             Ok(())
         })
         .plugin(tauri_plugin_single_instance::init(move |app, args, _| {
-            if args.len() == 3 {
-                match args[1].as_str() {
-                    "install" => {
-                        let value = args[2].clone();
-                        if let Some(extension) = std::path::Path::new(&value)
-                            .extension()
-                            .and_then(|ext| ext.to_str())
-                        {
-                            if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                                let value_clone = value.to_string();
-                                let sender = CHANNEL.0.clone();
-                                tokio::spawn(async move {
-                                    sender.send(SubCommands::Install(value_clone)).unwrap();
-                                });
-                            }
-                        }
-                    }
-                    "uninstall" => {
-                        let value = args[2].clone();
-                        if let Ok(timestamp) = value.parse::<i64>() {
-                            let sender = CHANNEL.0.clone();
-                            tokio::spawn(async move {
-                                sender.send(SubCommands::Uninstall(timestamp)).unwrap();
-                            });
-                        }
-                    }
-                    _ => {}
-                }
-            }
+            tokio::spawn(async move {
+                CHANNEL.0.send(args).unwrap();
+            });
 
             let window = app.get_webview_window("main").expect("no main window");
             window.show().expect("window failed to show");
