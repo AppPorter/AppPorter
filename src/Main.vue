@@ -56,14 +56,28 @@ onMounted(async () => {
     })
   }
 
-  // Setup install listener
   await listen('install', (event) => {
-    InstallConfig.zip_path = event.payload as string
-    goTo('/Installation/Config')
+    const payload = event.payload as { zip_path: string; timestamp: number }
+    InstallConfig.zip_path = payload[0]
+    InstallConfig.timestamp = payload[1]
+    goTo('/Installation/App/Config')
   })
 
-  // Setup uninstall listener
-  await listen('uninstall', async (event) => {
+  await listen('install_app', (event) => {
+    const payload = event.payload as { zip_path: string; timestamp: number }
+    InstallConfig.zip_path = payload[0]
+    InstallConfig.timestamp = payload[1]
+    goTo('/Installation/App/Config')
+  })
+
+  await listen('install_lib', (event) => {
+    const payload = event.payload as { zip_path: string; timestamp: number }
+    InstallConfig.zip_path = payload[0]
+    InstallConfig.timestamp = payload[1]
+    goTo('/Installation/Lib/Config')
+  })
+
+  await listen('uninstall_app', async (event) => {
     goTo('/AppList')
     await appListStore.loadAppList()
     const app = appListStore.getAppByTimestamp(event.payload as number)
@@ -94,13 +108,6 @@ onMounted(async () => {
         reject: () => reject(),
       })
     })
-  })
-
-  await listen('installWithTimestamp', (event) => {
-    const payload = event.payload as { zip_path: string; timestamp: number }
-    InstallConfig.zip_path = payload[0]
-    InstallConfig.timestamp = payload[1]
-    goTo('/Installation/Config')
   })
 
   // Execute initial command
