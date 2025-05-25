@@ -23,6 +23,43 @@ const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
 
+// Combine apps and libs into a unified list
+const links = computed(() => {
+  const apps = appListStore.apps.map(app => ({ ...app, type: 'app' }))
+  const libs = appListStore.libs.map(lib => ({
+    ...lib,
+    type: 'lib',
+    copy_only: true, // libs are equivalent to copy_only apps
+    details: {
+      info: {
+        name: lib.details.name,
+        icon: '',
+        publisher: '',
+        version: ''
+      },
+      config: {
+        ...lib.details.config,
+        current_user_only: false,
+        create_desktop_shortcut: false,
+        create_start_menu_shortcut: false,
+        create_registry_key: false,
+        archive_exe_path: '',
+      },
+      paths: {
+        parent_install_path: lib.details.paths.parent_install_path,
+        install_path: lib.details.paths.install_path,
+        full_path: lib.details.paths.install_path,
+      },
+      validation_status: {
+        file_exists: lib.details.validation_status.file_exists,
+        registry_valid: false,
+        path_exists: lib.details.validation_status.path_exists,
+      }
+    }
+  }))
+  return [...apps, ...libs]
+})
+
 const sortKey = ref('name')
 const sortOrder = ref(1)
 const sortOptions = [
@@ -32,8 +69,8 @@ const sortOptions = [
 ]
 
 const sortedApps = computed(() => {
-  const apps = [...appListStore.links]
-  return apps.sort((a, b) => {
+  const allLinks = [...links.value]
+  return allLinks.sort((a, b) => {
     let valueA, valueB
     if (sortKey.value === 'name') {
       valueA = a.details.info.name.toLowerCase()
@@ -50,7 +87,7 @@ const sortedApps = computed(() => {
 })
 
 const showPaginator = computed(() => {
-  return appListStore.links.length > 100
+  return links.value.length > 100
 })
 
 async function loadAppList() {
@@ -210,13 +247,15 @@ async function confirmUninstall() {
 async function confirmDelete() {
   if (!selectedApp.value) return
 
-  const app = appListStore.getAppByTimestamp(selectedApp.value.timestamp)
-  if (!app) return
+  const item = selectedApp.value.type === 'app'
+    ? appListStore.getAppByTimestamp(selectedApp.value.timestamp)
+    : appListStore.getLibByTimestamp(selectedApp.value.timestamp)
+  if (!item) return
 
   await new Promise((resolve, reject) => {
     confirm.require({
       message: t('app_list.confirm_delete_message', {
-        name: app.details.info.name,
+        name: selectedApp.value.details.info.name,
       }),
       group: 'dialog',
       header: t('app_list.confirm_delete_header'),
@@ -233,9 +272,11 @@ async function confirmDelete() {
         icon: 'mir-delete',
       },
       accept: async () => {
-        // Since we don't have a specific method for copy_only apps yet,
-        // we'll use the general removeApp method
-        await appListStore.removeApp(selectedApp.value.timestamp)
+        if (selectedApp.value.type === 'lib') {
+          await appListStore.removeLib(selectedApp.value.timestamp)
+        } else {
+          await appListStore.removeApp(selectedApp.value.timestamp)
+        }
         resolve(true)
       },
       reject: () => reject(),
