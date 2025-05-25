@@ -1,21 +1,24 @@
-use crate::core::{SubCommands, CHANNEL};
 use futures_util::StreamExt;
 use std::cmp::min;
 use std::error::Error;
 use std::io::Write;
+use tauri::{AppHandle, Emitter};
 
 pub async fn install_with_link(
+    app: AppHandle,
     url: String,
     timestamp: i64,
+    is_lib: bool,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let downloaded = download_file(url).await.unwrap_or_default();
 
-    let sender = CHANNEL.0.clone();
-    tokio::spawn(async move {
-        sender
-            .send(SubCommands::InstallWithTimestamp(downloaded, timestamp))
-            .unwrap();
-    });
+    if is_lib {
+        app.emit("install_lib", (downloaded, timestamp))?;
+    } else {
+        // Default to app installation if not a library
+        app.emit("install_app", (downloaded, timestamp))?;
+    }
+
     Ok(())
 }
 

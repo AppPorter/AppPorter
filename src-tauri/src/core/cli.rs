@@ -4,13 +4,6 @@ use std::error::Error;
 use tauri::{AppHandle, Emitter};
 use tokio::sync::broadcast;
 
-#[derive(Debug, Clone)]
-pub enum SubCommands {
-    Install(String),
-    InstallWithTimestamp(String, i64),
-    Uninstall(i64),
-}
-
 lazy_static! {
     pub static ref CHANNEL: (
         broadcast::Sender<Vec<String>>,
