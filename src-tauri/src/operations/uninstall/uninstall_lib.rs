@@ -4,7 +4,7 @@ use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
-use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
+use windows_registry::CURRENT_USER;
 
 pub async fn uninstall_lib(
     timestamp: i64,
