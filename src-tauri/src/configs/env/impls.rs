@@ -35,6 +35,7 @@ impl Env {
         self.user_sid = self.get_user_sid().await?;
         self.system_drive_letter = std::env::var("windir")?[..1].to_string();
         self.username = std::env::var("USERNAME")?;
+        self.save().await?;
         Ok(())
     }
 

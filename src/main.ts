@@ -16,6 +16,7 @@ import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
 import { createApp } from 'vue'
+import { EnvStore } from './stores/env'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -56,6 +57,9 @@ const app = createApp(Main)
 app.use(pinia)
 
 // Initialize settings first
+const envStore = EnvStore()
+await envStore.loadEnv()
+
 const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
 
@@ -84,7 +88,7 @@ const UserColor = definePreset(Aura, {
 })
 
 // Initial theme setup - using the settings store's functionality
-settingsStore.updateThemeMode()
+await settingsStore.updateThemeMode()
 
 app.use(PrimeVue, {
   theme: {

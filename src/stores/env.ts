@@ -1,8 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
-import { Settings, SettingsStore } from './settings'
-
-const settingsStore = SettingsStore()
+import type { Settings } from './settings'
 
 interface Env {
   first_run: boolean
@@ -35,9 +33,21 @@ export const EnvStore = defineStore('env', {
         command: { name: 'LoadEnv' },
       })
       const env = JSON.parse(result)
-      env.initialSettings = settingsStore
 
       this.$patch(env)
+    },
+
+    async saveEnv() {
+      await invoke('execute_command', {
+        command: {
+          name: 'SaveEnv',
+          env: this.$state,
+        },
+      })
+    },
+
+    setInitialSettings(settings: Settings) {
+      this.initialSettings = settings
     },
 
     async acknowledgeFirstRun() {

@@ -1,8 +1,5 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
-import { EnvStore } from './env'
-
-const env = EnvStore()
 
 export interface Settings {
   language: LanguageType
@@ -79,7 +76,6 @@ export const SettingsStore = defineStore('settings', {
       })
       const settings = JSON.parse(result)
       this.$patch(settings)
-      this.initialSettings = JSON.parse(JSON.stringify(settings))
     },
 
     async saveSettings() {
@@ -91,7 +87,10 @@ export const SettingsStore = defineStore('settings', {
       })
     },
 
-    updateBasicSettingsChanged() {
+    async updateBasicSettingsChanged() {
+      const { EnvStore } = await import('./env')
+      const env = EnvStore()
+
       const currentBasicSettings = {
         language: this.language,
         theme: this.theme,
@@ -110,7 +109,10 @@ export const SettingsStore = defineStore('settings', {
     },
 
     // Update theme mode and apply changes to DOM based on current theme setting
-    updateThemeMode() {
+    async updateThemeMode() {
+      const { EnvStore } = await import('./env')
+      const env = EnvStore()
+
       // Get dark mode status based on current theme setting
       const isDarkMode =
         this.theme === 'dark' ||
