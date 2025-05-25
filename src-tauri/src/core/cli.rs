@@ -35,6 +35,27 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>>
 
     async fn cases(app: AppHandle, args: Vec<String>) -> Result<(), Box<dyn Error + Send + Sync>> {
         match args[1].as_str() {
+            "install" => {
+                let value = args[2].clone();
+                if let Some(extension) = std::path::Path::new(&value)
+                    .extension()
+                    .and_then(|ext| ext.to_str())
+                {
+                    if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
+                        if args.len() == 4 {
+                            if let Ok(timestamp) = args[3].parse::<i64>() {
+                                if timestamp > 0 {
+                                    app.emit("install", (value, timestamp))?;
+                                } else {
+                                    app.emit("install", (value, chrono::Utc::now().timestamp()))?;
+                                }
+                            }
+                        } else {
+                            app.emit("install", (value, chrono::Utc::now().timestamp()))?;
+                        }
+                    }
+                }
+            }
             "install_app" => {
                 let value = args[2].clone();
                 if let Some(extension) = std::path::Path::new(&value)

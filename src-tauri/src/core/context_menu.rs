@@ -17,7 +17,7 @@ pub fn register_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
 
         CURRENT_USER
             .create(format!("{}\\command", base_path))?
-            .set_string("", format!("\"{}\" install \"%1\"", app_path))?;
+            .set_string("", format!(r#""{}" install "%1""#, app_path))?;
     }
 
     Ok("".to_owned())
