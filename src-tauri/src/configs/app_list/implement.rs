@@ -1,6 +1,7 @@
 use super::{AppList, AppValidationStatus, LibValidationStatus};
-use crate::configs::settings::Settings;
+use crate::configs::app_list::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
+use crate::configs::{app_list::AppDetails, settings::Settings};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
@@ -87,14 +88,15 @@ impl AppList {
     }
 
     pub fn remove_duplicates(&mut self) {
+        // Remove duplicates from apps
         let mut i = 0;
-        while i < self.links.len() {
+        while i < self.apps.len() {
             let mut j = i + 1;
-            while j < self.links.len() {
-                if self.links[i].details.paths.full_path == self.links[j].details.paths.full_path {
+            while j < self.apps.len() {
+                if self.apps[i].details.paths.full_path == self.apps[j].details.paths.full_path {
                     // Check if all other fields except timestamp and version are identical
-                    let mut app1 = self.links[i].clone();
-                    let mut app2 = self.links[j].clone();
+                    let mut app1 = self.apps[i].clone();
+                    let mut app2 = self.apps[j].clone();
 
                     // Reset timestamp and version for comparison
                     app1.timestamp = 0;
@@ -104,12 +106,45 @@ impl AppList {
 
                     if app1 == app2 {
                         // Remove the entry with earlier timestamp
-                        if self.links[i].timestamp < self.links[j].timestamp {
-                            self.links.remove(i);
+                        if self.apps[i].timestamp < self.apps[j].timestamp {
+                            self.apps.remove(i);
                             j = i + 1;
                             continue;
                         } else {
-                            self.links.remove(j);
+                            self.apps.remove(j);
+                            continue;
+                        }
+                    }
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+
+        // Remove duplicates from libs
+        let mut i = 0;
+        while i < self.libs.len() {
+            let mut j = i + 1;
+            while j < self.libs.len() {
+                if self.libs[i].details.paths.install_path
+                    == self.libs[j].details.paths.install_path
+                {
+                    // Check if all other fields except timestamp and version are identical
+                    let mut lib1 = self.libs[i].clone();
+                    let mut lib2 = self.libs[j].clone();
+
+                    // Reset timestamp and version for comparison
+                    lib1.timestamp = 0;
+                    lib2.timestamp = 0;
+
+                    if lib1 == lib2 {
+                        // Remove the entry with earlier timestamp
+                        if self.libs[i].timestamp < self.libs[j].timestamp {
+                            self.libs.remove(i);
+                            j = i + 1;
+                            continue;
+                        } else {
+                            self.libs.remove(j);
                             continue;
                         }
                     }
@@ -127,7 +162,7 @@ impl AppList {
         // For each app found in registry
         for reg_app in registry_apps {
             // Check if it's already in our list
-            let app_exists = self.links.iter().any(|app| {
+            let app_exists = self.apps.iter().any(|app| {
                 app.installed
                     && app.details.info.name == reg_app.info.name
                     && app.details.paths.full_path == reg_app.paths.full_path
@@ -135,10 +170,9 @@ impl AppList {
 
             // If not in our list, add it
             if !app_exists {
-                self.links.push(App {
+                self.apps.push(super::structure::App {
                     timestamp: chrono::Utc::now().timestamp(),
                     installed: true,
-                    copy_only: false,
                     url: String::new(),
                     details: reg_app,
                 });
@@ -264,6 +298,7 @@ impl AppList {
                 validation_status: AppValidationStatus {
                     file_exists: true,
                     registry_valid: true,
+                    path_exists: true,
                 },
             };
 
