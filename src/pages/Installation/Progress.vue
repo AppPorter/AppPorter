@@ -93,20 +93,7 @@ onMounted(() => {
       config: {
         zip_path: installationConfig.zip_path,
         password: installationConfig.archive_password,
-        details: {
-          name: installationConfig.name,
-          icon: installationConfig.icon,
-          publisher: installationConfig.publisher,
-          version: installationConfig.version,
-          current_user_only: installationConfig.current_user_only,
-          create_desktop_shortcut: installationConfig.create_desktop_shortcut,
-          create_registry_key: installationConfig.create_registry_key,
-          create_start_menu_shortcut: installationConfig.create_start_menu_shortcut,
-          install_path: installationConfig.install_path,
-          executable_path: installationConfig.executable_path,
-          add_to_path: installationConfig.add_to_path,
-          path_directory: installationConfig.path_directory,
-        },
+        details: installationConfig.toAppDetails,
         timestamp: installationConfig.timestamp,
       },
     },
@@ -206,7 +193,7 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.install_settings')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('installation.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -244,7 +231,7 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('installation.progress.package_info')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="

@@ -71,7 +71,7 @@ onMounted(async () => {
     await new Promise((resolve, reject) => {
       confirm.require({
         message: t('confirm_uninstall_message', {
-          name: app.details.name,
+          name: app.details.info.name,
         }),
         group: 'dialog',
         header: t('confirm_uninstall_header'),

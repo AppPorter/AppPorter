@@ -1,32 +1,47 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
-export interface InstalledApp {
+export interface AppBasicInformation {
   name: string
   icon: string
   publisher: string
   version: string
-  install_path: string
-  executable_path: string
-  full_path: string
+}
+
+export interface AppConfig {
+  archive_exe_path: string
   current_user_only: boolean
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
   add_to_path: boolean
   path_directory: string
-  validation_status: {
-    file_exists: boolean
-    registry_valid: boolean
-  }
 }
 
-interface App {
+export interface AppPaths {
+  parent_install_path: string
+  install_path: string
+  full_path: string
+}
+
+export interface AppValidationStatus {
+  file_exists: boolean
+  registry_valid: boolean
+}
+
+export interface AppDetails {
+  info: AppBasicInformation
+  config: AppConfig
+  paths: AppPaths
+  validation_status: AppValidationStatus
+}
+
+export interface App {
   timestamp: number
   installed: boolean
   copy_only: boolean
-  details: InstalledApp
   url: string
+  details: AppDetails
 }
 
 interface AppList {
