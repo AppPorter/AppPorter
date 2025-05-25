@@ -1,9 +1,9 @@
 import AppList from '@/pages/AppList.vue'
-import CopyOnly from '@/pages/CopyOnly/Config.vue'
-import CopyOnlyProgress from '@/pages/CopyOnly/Progress.vue'
+import Install_Lib_Config from '@/pages/CopyOnly/Config.vue'
+import Install_Lib_Progress from '@/pages/CopyOnly/Progress.vue'
 import Home from '@/pages/Home.vue'
-import Installation_Config from '@/pages/Installation/Config.vue'
-import Installation_Progress from '@/pages/Installation/Progress.vue'
+import Install_Config from '@/pages/Installation/Config.vue'
+import Install_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -16,8 +16,8 @@ const Dummy = { render: () => null }
 
 // Route configuration with metadata
 const routes = [
-  { path: '/', redirect: '/Installation' },
-  { path: '/Installation', component: Dummy },
+  { path: '/', redirect: '/Install' },
+  { path: '/Install', component: Dummy },
   {
     path: '/Home',
     component: Home,
@@ -26,29 +26,29 @@ const routes = [
     },
   },
   {
-    path: '/Installation/App/Config',
-    component: Installation_Config,
+    path: '/Install/App/Config',
+    component: Install_Config,
     meta: {
       icon: 'mir-settings_applications',
     },
   },
   {
-    path: '/Installation/App/Progress',
-    component: Installation_Progress,
+    path: '/Install/App/Progress',
+    component: Install_Progress,
     meta: {
       icon: 'mir-pending_actions',
     },
   },
   {
-    path: '/Installation/Lib/Config',
-    component: CopyOnly,
+    path: '/Install/Lib/Config',
+    component: Install_Lib_Config,
     meta: {
       icon: 'mir-folder_copy',
     },
   },
   {
-    path: '/Installation/Lib/Progress',
-    component: CopyOnlyProgress,
+    path: '/Install/Lib/Progress',
+    component: Install_Lib_Progress,
     meta: {
       icon: 'mir-pending_actions',
     },
@@ -82,23 +82,23 @@ export function setupRouterGuards(router: Router) {
     }
 
     // Handle installation wizard navigation based on current page state
-    if (to.path === '/Installation') {
+    if (to.path === '/Install') {
       let path = ''
       switch (installConfig.page) {
         case 'Home':
           path = '/Home'
           break
         case 'Install_App_Config':
-          path = '/Installation/App/Config'
+          path = '/Install/App/Config'
           break
         case 'Install_App_Progress':
-          path = '/Installation/App/Progress'
+          path = '/Install/App/Progress'
           break
         case 'Install_Lib_Config':
-          path = '/Installation/Lib/Config'
+          path = '/Install/Lib/Config'
           break
         case 'Install_Lib_Progress':
-          path = '/Installation/Lib/Progress'
+          path = '/Install/Lib/Progress'
           break
       }
       return { path }
