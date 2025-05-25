@@ -19,10 +19,16 @@ pub enum Command {
     GetDetails {
         path: ExePath,
     },
-    Install {
-        config: InstallConfig,
+    InstallApp {
+        config: AppInstallConfig,
     },
-    Uninstall {
+    InstallLib {
+        config: LibInstallConfig,
+    },
+    UninstallApp {
+        timestamp: i64,
+    },
+    UninstallLib {
         timestamp: i64,
     },
     Elevate {
@@ -61,12 +67,10 @@ pub enum Command {
     InstallWithLink {
         url: String,
         timestamp: i64,
+        is_lib: bool,
     },
     SetStartup,
     RemoveStartup,
-    CopyOnly {
-        config: CopyOnlyConfig,
-    },
     Exit,
 }
 
@@ -104,8 +108,10 @@ impl Command {
         match self {
             LoadSettings => Self::ser(Settings::read().await?),
             GetDetails { path } => Self::ser(get_details(path).await?),
-            Install { config } => Self::ser(install(config, app).await?),
-            Uninstall { timestamp } => Self::ser(uninstall(timestamp, app).await?),
+            InstallApp { config } => Self::ser(install_app(config, app).await?),
+            InstallLib { config } => Self::ser(install_lib(config, app).await?),
+            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
+            UninstallLib { timestamp } => Self::ser(uninstall_lib(timestamp, app).await?),
             Elevate { revert } => Self::ser(elevate(revert).await?),
             ValidatePath { path } => Self::ser(validate_path(path).await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
@@ -124,12 +130,13 @@ impl Command {
             Cli => Self::ser(cli(app).await?),
             RegisterContextMenu => Self::ser(register_context_menu()?),
             UnregisterContextMenu => Self::ser(unregister_context_menu()?),
-            InstallWithLink { url, timestamp } => {
-                Self::ser(install_with_link(url, timestamp).await?)
-            }
+            InstallWithLink {
+                url,
+                timestamp,
+                is_lib,
+            } => Self::ser(install_with_link(app, url, timestamp, is_lib).await?),
             SetStartup => Self::ser(set_startup()?),
             RemoveStartup => Self::ser(remove_startup()?),
-            CopyOnly { config } => Self::ser(copy_only(config, app).await?),
             Exit => {
                 exit().await;
                 Self::ser(())
