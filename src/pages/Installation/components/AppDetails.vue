@@ -26,7 +26,7 @@ const { t } = useI18n()
 const detailsLoading = ref(false)
 
 function clearIcon() {
-  icon.value = ''
+  installationConfig.details.info.icon = ''
 }
 
 const drawerVisible = ref(false)

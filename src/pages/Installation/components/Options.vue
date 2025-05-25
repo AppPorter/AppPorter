@@ -53,16 +53,16 @@ const formatted_app_path = computed(() => {
 function updateConfig(isCurrentUser: boolean) {
   const sourceConfig = isCurrentUser ? current_user : all_users
 
-  create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
-  create_registry_key.value = sourceConfig.create_registry_key
-  create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
-  install_path.value = sourceConfig.install_path
-  add_to_path.value = sourceConfig.add_to_path
-  path_directory.value = ''  // Reset path directory when switching modes
+  installationConfig.details.config.create_desktop_shortcut = sourceConfig.create_desktop_shortcut
+  installationConfig.details.config.create_registry_key = sourceConfig.create_registry_key
+  installationConfig.details.config.create_start_menu_shortcut = sourceConfig.create_start_menu_shortcut
+  installationConfig.details.paths.parent_install_path = sourceConfig.install_path
+  installationConfig.details.config.add_to_path = sourceConfig.add_to_path
+  installationConfig.details.config.path_directory = ''  // Reset path directory when switching modes
 }
 
 // Initialize with settings
-current_user_only.value = settings_current_user_only
+installationConfig.details.config.current_user_only = settings_current_user_only
 updateConfig(current_user_only.value)
 
 // Select installation directory using file dialog
@@ -72,14 +72,14 @@ async function select_install_path() {
     multiple: false,
   })
   if (selected) {
-    install_path.value = String(selected)
+    installationConfig.details.paths.parent_install_path = String(selected)
   }
 }
 
 // Update configuration when installation mode changes
 function handleInstallModeChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
-  current_user_only.value = checked
+  installationConfig.details.config.current_user_only = checked
   updateConfig(checked)
 }
 
@@ -144,7 +144,7 @@ watchEffect(() => {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
