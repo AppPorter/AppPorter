@@ -15,13 +15,8 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
-        self.apps
-            .iter()
-            .any(|link| link.url == url && link.installed)
-            || self
-                .libs
-                .iter()
-                .any(|link| link.url == url && link.installed)
+        self.apps.iter().any(|app| app.url == url && app.installed)
+            || self.libs.iter().any(|lib| lib.url == url && lib.installed)
     }
 
     pub async fn validate_installs(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {

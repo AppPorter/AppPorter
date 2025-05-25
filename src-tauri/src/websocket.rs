@@ -1,8 +1,10 @@
 use crate::configs::app_list::AppList;
 use crate::configs::ConfigFile;
+use crate::operations::InstallType;
 use crate::{configs::app_list::App, operations::install_with_link};
 use futures_util::{SinkExt, StreamExt};
 use std::error::Error;
+use tauri::AppHandle;
 use tokio::net::{TcpListener, TcpStream};
 use tokio_tungstenite::{
     accept_async,
@@ -10,7 +12,10 @@ use tokio_tungstenite::{
 };
 
 // Handles WebSocket connection and processes incoming messages in a loop
-async fn handle_connection(stream: TcpStream) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn handle_connection(
+    app: AppHandle,
+    stream: TcpStream,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let ws_stream = accept_async(stream).await?;
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
 
@@ -21,7 +26,7 @@ async fn handle_connection(stream: TcpStream) -> Result<(), Box<dyn Error + Send
         }
 
         if msg.is_text() || msg.is_binary() {
-            let response = handle_extension_message(msg).await?;
+            let response = handle_extension_message(app.clone(), msg).await?;
             ws_sender.send(response).await?;
         }
     }
@@ -29,7 +34,10 @@ async fn handle_connection(stream: TcpStream) -> Result<(), Box<dyn Error + Send
 }
 
 // Processes incoming browser extension messages and manages app list updates
-async fn handle_extension_message(msg: Message) -> Result<Message, Box<dyn Error + Send + Sync>> {
+async fn handle_extension_message(
+    app: AppHandle,
+    msg: Message,
+) -> Result<Message, Box<dyn Error + Send + Sync>> {
     if let Message::Text(text) = &msg {
         let mut app_list = match AppList::read().await {
             Ok(list) => list,
@@ -50,7 +58,7 @@ async fn handle_extension_message(msg: Message) -> Result<Message, Box<dyn Error
         app_list.apps.push(new_app);
         let result = app_list.save().await;
 
-        install_with_link(text.to_string(), timestamp).await?;
+        install_with_link(app, text.to_string(), timestamp, InstallType::Pending).await?;
 
         match result {
             Ok(_) => Ok(Message::Text("Link added successfully".into())),
@@ -62,13 +70,14 @@ async fn handle_extension_message(msg: Message) -> Result<Message, Box<dyn Error
 }
 
 // Starts WebSocket server on port 7535 for browser extension communication
-pub async fn start_websocket_server() -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
     let addr = "127.0.0.1:7535";
     let listener = TcpListener::bind(&addr).await?;
 
     while let Ok((stream, _)) = listener.accept().await {
+        let app = app.clone();
         tokio::spawn(async move {
-            if let Err(e) = handle_connection(stream).await {
+            if let Err(e) = handle_connection(app, stream).await {
                 // Only log unexpected errors
                 if !matches!(
                     e.downcast_ref::<WsError>(),

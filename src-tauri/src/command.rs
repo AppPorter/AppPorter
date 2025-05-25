@@ -67,7 +67,7 @@ pub enum Command {
     InstallWithLink {
         url: String,
         timestamp: i64,
-        is_lib: bool,
+        is_lib: InstallType,
     },
     SetStartup,
     RemoveStartup,

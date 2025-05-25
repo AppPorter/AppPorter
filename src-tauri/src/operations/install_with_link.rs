@@ -1,22 +1,30 @@
 use futures_util::StreamExt;
+use serde::{Deserialize, Serialize};
 use std::cmp::min;
 use std::error::Error;
 use std::io::Write;
 use tauri::{AppHandle, Emitter};
 
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "lowercase")]
+pub enum InstallType {
+    App,
+    Lib,
+    Pending,
+}
+
 pub async fn install_with_link(
     app: AppHandle,
     url: String,
     timestamp: i64,
-    is_lib: bool,
+    install_type: InstallType,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let downloaded = download_file(url).await.unwrap_or_default();
 
-    if is_lib {
-        app.emit("install_lib", (downloaded, timestamp))?;
-    } else {
-        // Default to app installation if not a library
-        app.emit("install_app", (downloaded, timestamp))?;
+    match install_type {
+        InstallType::App => app.emit("install_app", (downloaded, timestamp))?,
+        InstallType::Lib => app.emit("install_lib", (downloaded, timestamp))?,
+        InstallType::Pending => app.emit("install", (downloaded, timestamp))?,
     }
 
     Ok(())

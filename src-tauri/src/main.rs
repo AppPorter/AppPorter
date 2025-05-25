@@ -1,8 +1,11 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use app_porter_lib::{
-    command, configs::*, core::*, operations::*, websocket::start_websocket_server,
-    SUPPORTED_EXTENSIONS,
+    command,
+    configs::{env::Env, *},
+    core::*,
+    operations::*,
+    websocket::start_websocket_server,
 };
 use std::error::Error;
 use tauri::Manager;
@@ -11,21 +14,17 @@ use tauri::Manager;
 async fn main() {
     if let Err(e) = run().await {
         eprintln!("Application error: {}", e);
-        tokio::process::exit(1);
+        std::process::exit(1);
     }
 }
 
 async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
+    Env::read().await?.initialization().await?;
+
     Settings::read()
         .await?
-        .initialization(Env::read().await?.initialization().await?)
+        .initialization(Env::read().await?)
         .await?;
-
-    tokio::spawn(async {
-        if let Err(e) = start_websocket_server().await {
-            eprintln!("WebSocket server error: {}", e);
-        }
-    });
 
     if let Err(e) = get_7z_path() {
         eprintln!("Failed to extract 7z.exe: {}", e);
@@ -39,6 +38,14 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
             if args.contains(&"--silent".to_owned()) {
                 window.hide()?;
             }
+
+            let handle = app.handle().clone();
+            tokio::spawn(async move {
+                if let Err(e) = start_websocket_server(handle).await {
+                    eprintln!("WebSocket server error: {}", e);
+                }
+            });
+
             Ok(())
         })
         .plugin(tauri_plugin_single_instance::init(move |app, args, _| {
