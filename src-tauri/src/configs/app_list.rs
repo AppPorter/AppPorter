@@ -1,10 +1,9 @@
+use super::settings::Settings;
 use crate::configs::ConfigFile;
 use base64::{engine::general_purpose::STANDARD, Engine};
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
-
-use super::settings::Settings;
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
@@ -19,31 +18,50 @@ pub struct App {
     pub installed: bool,
     pub copy_only: bool,
     pub url: String,
-    pub details: InstalledApp,
+    pub details: AppDetails,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct InstalledApp {
+pub struct AppDetails {
+    pub info: AppBasicInformation,
+    pub config: AppConfig,
+    pub paths: AppPaths,
+    pub validation_status: AppValidationStatus,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct AppBasicInformation {
     pub name: String,
     pub icon: String,
     pub publisher: String,
     pub version: String,
-    pub install_path: String,
-    pub executable_path: String,
-    pub full_path: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct AppConfig {
+    pub archive_exe_path: String,
     pub current_user_only: bool,
     pub create_desktop_shortcut: bool,
     pub create_start_menu_shortcut: bool,
     pub create_registry_key: bool,
     pub add_to_path: bool,
     pub path_directory: String,
-    pub validation_status: ValidationStatus,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct ValidationStatus {
+pub struct AppPaths {
+    pub parent_install_path: String,
+    pub install_path: String,
+    pub full_path: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct AppValidationStatus {
     pub file_exists: bool,
     pub registry_valid: bool,
 }
@@ -69,25 +87,25 @@ impl AppList {
             }
 
             // Check if executable exists
-            let file_exists = tokio::fs::try_exists(&app.details.full_path)
+            let file_exists = tokio::fs::try_exists(&app.details.paths.full_path)
                 .await
                 .unwrap_or(false);
 
             // Check registry Comments value
-            let registry_valid = if app.details.create_registry_key {
-                let registry_path = if app.details.current_user_only {
+            let registry_valid = if app.details.config.create_registry_key {
+                let registry_path = if app.details.config.current_user_only {
                     format!(
                         r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                        app.details.name
+                        app.details.info.name
                     )
                 } else {
                     format!(
                         r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                        app.details.name
+                        app.details.info.name
                     )
                 };
 
-                let reg_key = if app.details.current_user_only {
+                let reg_key = if app.details.config.current_user_only {
                     windows_registry::CURRENT_USER.open(&registry_path)
                 } else {
                     windows_registry::LOCAL_MACHINE.open(&registry_path)
@@ -100,7 +118,7 @@ impl AppList {
                 true
             };
 
-            app.details.validation_status = ValidationStatus {
+            app.details.validation_status = AppValidationStatus {
                 file_exists,
                 registry_valid,
             };
@@ -113,7 +131,7 @@ impl AppList {
         while i < self.links.len() {
             let mut j = i + 1;
             while j < self.links.len() {
-                if self.links[i].details.full_path == self.links[j].details.full_path {
+                if self.links[i].details.paths.full_path == self.links[j].details.paths.full_path {
                     // Check if all other fields except timestamp and version are identical
                     let mut app1 = self.links[i].clone();
                     let mut app2 = self.links[j].clone();
@@ -121,8 +139,8 @@ impl AppList {
                     // Reset timestamp and version for comparison
                     app1.timestamp = 0;
                     app2.timestamp = 0;
-                    app1.details.version = String::new();
-                    app2.details.version = String::new();
+                    app1.details.info.version = String::new();
+                    app2.details.info.version = String::new();
 
                     if app1 == app2 {
                         // Remove the entry with earlier timestamp
@@ -151,8 +169,8 @@ impl AppList {
             // Check if it's already in our list
             let app_exists = self.links.iter().any(|app| {
                 app.installed
-                    && app.details.name == reg_app.name
-                    && app.details.full_path == reg_app.full_path
+                    && app.details.info.name == reg_app.info.name
+                    && app.details.paths.full_path == reg_app.paths.full_path
             });
 
             // If not in our list, add it
@@ -167,7 +185,7 @@ impl AppList {
             }
         }
 
-        fn find_registry_apps() -> Result<Vec<InstalledApp>, Box<dyn Error + Send + Sync>> {
+        fn find_registry_apps() -> Result<Vec<AppDetails>, Box<dyn Error + Send + Sync>> {
             let mut result = Vec::new();
 
             // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
@@ -188,7 +206,7 @@ impl AppList {
         }
 
         fn search_registry(
-            result: &mut Vec<InstalledApp>,
+            result: &mut Vec<AppDetails>,
             hkey: &windows_registry::Key,
             path: &str,
             current_user_only: bool,
@@ -218,7 +236,7 @@ impl AppList {
         async fn extract_app_info(
             app_key: &windows_registry::Key,
             current_user_only: bool,
-        ) -> Result<Option<InstalledApp>, Box<dyn Error + Send + Sync>> {
+        ) -> Result<Option<AppDetails>, Box<dyn Error + Send + Sync>> {
             // Extract required values
             let name = match app_key.get_string("DisplayName") {
                 Ok(name) => name,
@@ -260,22 +278,29 @@ impl AppList {
             let create_registry_key = config.create_registry_key;
             let add_to_path = config.add_to_path;
 
-            // Create a new InstalledApp
-            let app = InstalledApp {
-                name,
-                version,
-                publisher,
-                install_path: install_path.clone(),
-                executable_path: String::new(),
-                full_path,
-                icon, // Will be filled later during validation
-                current_user_only,
-                create_desktop_shortcut,
-                create_start_menu_shortcut,
-                create_registry_key,
-                add_to_path,
-                path_directory: install_path,
-                validation_status: ValidationStatus {
+            // Create a new AppDetails
+            let app = AppDetails {
+                info: AppBasicInformation {
+                    name,
+                    icon,
+                    publisher,
+                    version,
+                },
+                config: AppConfig {
+                    archive_exe_path: String::new(),
+                    current_user_only,
+                    create_desktop_shortcut,
+                    create_start_menu_shortcut,
+                    create_registry_key,
+                    add_to_path,
+                    path_directory: install_path.clone(),
+                },
+                paths: AppPaths {
+                    parent_install_path: install_path.clone(),
+                    install_path: install_path.clone(),
+                    full_path,
+                },
+                validation_status: AppValidationStatus {
                     file_exists: true,
                     registry_valid: true,
                 },
