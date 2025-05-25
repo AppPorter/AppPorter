@@ -6,7 +6,10 @@ use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
-pub async fn uninstall(timestamp: i64, app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn uninstall_app(
+    timestamp: i64,
+    app: AppHandle,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     app.emit("uninstall", 0)?;
 
     // Get app configuration from app list
@@ -63,10 +66,44 @@ pub async fn uninstall(timestamp: i64, app: AppHandle) -> Result<(), Box<dyn Err
 
     // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
-        let exe_path = Path::new(&app_config.details.paths.full_path)
-            .parent()
-            .expect("Failed to get parent directory")
-            .to_string_lossy();
+        // Determine which path was added to PATH environment variable
+        let path_to_remove = if !app_config.details.config.path_directory.is_empty() {
+            // User specified a custom directory that was added to PATH
+            let app_path_str = Path::new(&app_config.details.paths.install_path)
+                .join(app_config.details.info.name.replace(" ", "-"))
+                .to_string_lossy()
+                .to_string();
+
+            if app_config.details.config.path_directory.starts_with('/')
+                || app_config.details.config.path_directory.starts_with('\\')
+            {
+                // If path starts with / or \, it's relative to the app root
+                format!(
+                    "{}\\{}",
+                    app_path_str,
+                    app_config
+                        .details
+                        .config
+                        .path_directory
+                        .trim_start_matches(['/', '\\'])
+                        .replace("/", "\\")
+                )
+            } else {
+                // Otherwise, it's an absolute path or just a directory name
+                format!(
+                    "{}\\{}",
+                    app_path_str,
+                    app_config.details.config.path_directory.replace("/", "\\")
+                )
+            }
+        } else {
+            // Default: use executable's parent directory
+            Path::new(&app_config.details.paths.full_path)
+                .parent()
+                .expect("Failed to get parent directory")
+                .to_string_lossy()
+                .to_string()
+        };
 
         if app_config.details.config.current_user_only {
             let key = CURRENT_USER.create("Environment")?;
@@ -75,7 +112,7 @@ pub async fn uninstall(timestamp: i64, app: AppHandle) -> Result<(), Box<dyn Err
             // Split the path by semicolons and filter out the path we want to remove
             let new_path: String = current_path
                 .split(';')
-                .filter(|p| p.trim() != exe_path.trim())
+                .filter(|p| p.trim() != path_to_remove.trim())
                 .collect::<Vec<&str>>()
                 .join(";");
 
@@ -88,7 +125,7 @@ pub async fn uninstall(timestamp: i64, app: AppHandle) -> Result<(), Box<dyn Err
             // Split the path by semicolons and filter out the path we want to remove
             let new_path: String = current_path
                 .split(';')
-                .filter(|p| p.trim() != exe_path.trim())
+                .filter(|p| p.trim() != path_to_remove.trim())
                 .collect::<Vec<&str>>()
                 .join(";");
 
