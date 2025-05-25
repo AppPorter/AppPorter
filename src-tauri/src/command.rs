@@ -11,9 +11,6 @@ use Command::*;
 pub enum Command {
     // Configs
     LoadEnv,
-    SaveEnv {
-        env: Env,
-    },
     LoadSettings,
     SaveSettings {
         settings: Settings,
@@ -102,7 +99,6 @@ impl Command {
         match self {
             // Configs
             LoadEnv => Self::ser(Env::read().await?),
-            SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
             LoadAppList => Self::ser(load_app_list().await?),

@@ -1,30 +1,10 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
+import { useEnvStore } from './env'
 
-interface InstallSettings {
-  create_desktop_shortcut: boolean
-  create_registry_key: boolean
-  create_start_menu_shortcut: boolean
-  install_path: string
-  add_to_path: boolean
-}
+const env = useEnvStore()
 
-interface AppInstall {
-  current_user_only: boolean
-  all_users: InstallSettings
-  current_user: InstallSettings
-}
-
-interface LibInstall {
-  install_path: string
-  add_to_path: boolean
-}
-
-export type ThemeType = 'system' | 'light' | 'dark'
-export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
-
-interface Settings {
-  // App preferences
+export interface Settings {
   language: LanguageType
   theme: ThemeType
   minimize_to_tray_on_close: boolean
@@ -36,9 +16,31 @@ interface Settings {
   lib_install: LibInstall
 }
 
+export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
+export type ThemeType = 'system' | 'light' | 'dark'
+
+interface AppInstall {
+  current_user_only: boolean
+  all_users: InstallSettings
+  current_user: InstallSettings
+}
+
+interface InstallSettings {
+  create_desktop_shortcut: boolean
+  create_registry_key: boolean
+  create_start_menu_shortcut: boolean
+  install_path: string
+  add_to_path: boolean
+}
+
+interface LibInstall {
+  install_path: string
+  add_to_path: boolean
+}
+
 // Store definition
 export const useSettingsStore = defineStore('settings', {
-  state: (): Settings & { initialSettings: Settings | null; isDarkMode: boolean } => ({
+  state: (): Settings => ({
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
@@ -68,8 +70,6 @@ export const useSettingsStore = defineStore('settings', {
       install_path: '',
       add_to_path: false,
     },
-    initialSettings: null,
-    isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   }),
 
   actions: {
@@ -98,15 +98,15 @@ export const useSettingsStore = defineStore('settings', {
         minimize_to_tray_on_close: this.minimize_to_tray_on_close,
       }
 
-      if (this.initialSettings) {
+      if (env.initialSettings) {
         const initialBasicSettings = {
-          language: this.initialSettings.language,
-          theme: this.initialSettings.theme,
-          minimize_to_tray_on_close: this.initialSettings.minimize_to_tray_on_close,
+          language: env.initialSettings.language,
+          theme: env.initialSettings.theme,
+          minimize_to_tray_on_close: env.initialSettings.minimize_to_tray_on_close,
         }
-        return JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
+        env.isBasicSettingsChanged =
+          JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
       }
-      return false
     },
 
     // Update theme mode and apply changes to DOM based on current theme setting
@@ -125,8 +125,7 @@ export const useSettingsStore = defineStore('settings', {
         document.documentElement.classList.remove('dark')
       }
 
-      // Update store state
-      this.isDarkMode = isDarkMode
+      env.isDarkMode = isDarkMode
 
       // Setup system theme change listener
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -138,7 +137,7 @@ export const useSettingsStore = defineStore('settings', {
       if (this.theme === 'system') {
         mediaQuery.addEventListener('change', (event: MediaQueryListEvent) => {
           // Update isDarkMode and DOM when system theme changes
-          this.isDarkMode = event.matches
+          env.isDarkMode = event.matches
 
           if (event.matches) {
             document.documentElement.classList.add('dark')

@@ -1,5 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
+import { Settings, useSettingsStore } from './settings'
+
+const settingsStore = useSettingsStore()
 
 interface Env {
   first_run: boolean
@@ -8,6 +11,9 @@ interface Env {
   system_drive_letter: string
   user_sid: string
   username: string
+  initialSettings: Settings | null
+  isBasicSettingsChanged: boolean
+  isDarkMode: boolean
 }
 
 export const useEnvStore = defineStore('env', {
@@ -18,6 +24,9 @@ export const useEnvStore = defineStore('env', {
     system_drive_letter: '',
     user_sid: '',
     username: '',
+    initialSettings: null,
+    isBasicSettingsChanged: false,
+    isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
   }),
 
   actions: {
@@ -26,16 +35,9 @@ export const useEnvStore = defineStore('env', {
         command: { name: 'LoadEnv' },
       })
       const env = JSON.parse(result)
-      this.$patch(env)
-    },
+      env.initialSettings = settingsStore
 
-    async saveEnv() {
-      await invoke('execute_command', {
-        command: {
-          name: 'SaveEnv',
-          env: this.$state,
-        },
-      })
+      this.$patch(env)
     },
 
     async acknowledgeFirstRun() {
