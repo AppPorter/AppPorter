@@ -1,7 +1,8 @@
+use crate::configs::app_list::App;
 use crate::configs::app_list::AppList;
 use crate::configs::ConfigFile;
+use crate::operations::install_with_link;
 use crate::operations::InstallType;
-use crate::{configs::app_list::App, operations::install_with_link};
 use futures_util::{SinkExt, StreamExt};
 use std::error::Error;
 use tauri::AppHandle;

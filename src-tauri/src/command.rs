@@ -1,11 +1,4 @@
-use crate::{
-    configs::{
-        app_list::{load_app_list, AppList},
-        *,
-    },
-    core::*,
-    operations::*,
-};
+use crate::{configs::*, core::*, operations::*};
 use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
@@ -15,7 +8,32 @@ use tauri::AppHandle;
 #[derive(Deserialize, Clone)]
 #[serde(tag = "name")]
 pub enum Command {
+    // Configs
+    LoadEnv,
+    SaveEnv {
+        env: Env,
+    },
     LoadSettings,
+    SaveSettings {
+        settings: Settings,
+    },
+    LoadAppList,
+    SaveAppList {
+        app_list: AppList,
+    },
+
+    // Core
+    Cli,
+    RegisterContextMenu,
+    UnregisterContextMenu,
+    Elevate {
+        revert: bool,
+    },
+    Exit,
+    SetStartup,
+    RemoveStartup,
+
+    // Operations
     GetDetails {
         path: ExePath,
     },
@@ -31,19 +49,11 @@ pub enum Command {
     UninstallLib {
         timestamp: i64,
     },
-    Elevate {
-        revert: bool,
-    },
+
     ValidatePath {
         path: String,
     },
-    SaveSettings {
-        settings: Settings,
-    },
-    LoadAppList,
-    SaveAppList {
-        app_list: AppList,
-    },
+
     GetArchiveContent {
         path: String,
         password: Option<String>,
@@ -61,17 +71,12 @@ pub enum Command {
     CheckPathEmpty {
         path: String,
     },
-    Cli,
-    RegisterContextMenu,
-    UnregisterContextMenu,
+
     InstallWithLink {
         url: String,
         timestamp: i64,
         is_lib: InstallType,
     },
-    SetStartup,
-    RemoveStartup,
-    Exit,
 }
 
 pub enum CommandResult {
