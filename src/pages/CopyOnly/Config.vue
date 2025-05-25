@@ -41,16 +41,16 @@ onMounted(async () => {
     }
 
     // Initialize config from settings
-    installationConfig.install_path = copy_only.install_path
-    installationConfig.add_to_path = copy_only.add_to_path
-    installationConfig.path_directory = ''  // Reset path directory when loading
+    installationConfig.details.paths.parent_install_path = copy_only.install_path
+    installationConfig.details.config.add_to_path = copy_only.add_to_path
+    installationConfig.details.config.path_directory = ''  // Reset path directory when loading
 
     // Extract filename from path and remove extension for default name
     if (installationConfig.zip_path) {
         const pathParts = installationConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
         // Remove file extension
-        installationConfig.name = filename.replace(/\.[^/.]+$/, '')
+        installationConfig.details.info.name = filename.replace(/\.[^/.]+$/, '')
     }
 
     try {
@@ -91,6 +91,7 @@ async function handlePasswordSubmit() {
         await GetArchiveContent(archivePassword.value)
         // Store password in the installation config for later use
         installationConfig.archive_password = archivePassword.value
+        installationConfig.details.config.archive_password = archivePassword.value
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {
@@ -160,7 +161,7 @@ async function handleExtractClick() {
             },
         })) as string
 
-        installationConfig.install_path = validatedPath
+        installationConfig.details.paths.parent_install_path = validatedPath
         const fullPath = `${validatedPath}\\${installationConfig.name || 'Extracted-Files'}`
 
         try {
@@ -234,7 +235,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installationConfig.install_path = String(selected)
+        installationConfig.details.paths.parent_install_path = String(selected)
     }
 }
 </script>
@@ -270,8 +271,9 @@ async function select_extract_path() {
                                     {{ t('app.name') }}
                                 </label>
                                 <div class="w-full">
-                                    <InputText v-model="installationConfig.name" :placeholder="t('app.name')"
-                                        class="h-8 w-full text-sm" :invalid="!installationConfig.name" />
+                                    <InputText v-model="installationConfig.details.info.name"
+                                        :placeholder="t('app.name')" class="h-8 w-full text-sm"
+                                        :invalid="!installationConfig.name" />
                                 </div>
                             </div>
 
@@ -280,7 +282,7 @@ async function select_extract_path() {
                                 <label class="w-24 text-sm font-medium">{{ t('extract_path') }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
-                                        <InputText v-model="installationConfig.install_path"
+                                        <InputText v-model="installationConfig.details.paths.parent_install_path"
                                             :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
                                             :invalid="!!pathError" @input="pathError = ''" :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -296,15 +298,16 @@ async function select_extract_path() {
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
-                                                <Checkbox v-model="installationConfig.add_to_path" :binary="true"
-                                                    inputId="add_to_path" />
+                                                <Checkbox v-model="installationConfig.details.config.add_to_path"
+                                                    :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
-                                            <div v-if="installationConfig.add_to_path" class="ml-6 mt-1">
+                                            <div v-if="installationConfig.details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
-                                                    <InputText v-model="installationConfig.path_directory"
+                                                    <InputText
+                                                        v-model="installationConfig.details.config.path_directory"
                                                         :placeholder="t('select_path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
@@ -370,7 +373,7 @@ async function select_extract_path() {
             <div class="h-full overflow-hidden">
                 <DirectorySelector :zip-path="installationConfig.zip_path" :details-loading="detailsLoading"
                     @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"
-                    @directory-select="installationConfig.path_directory = $event" />
+                    @directory-select="installationConfig.details.config.path_directory = $event" />
             </div>
         </Drawer>
     </div>

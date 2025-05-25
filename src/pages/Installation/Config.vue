@@ -67,6 +67,7 @@ async function handlePasswordSubmit() {
     await GetArchiveContent(archivePassword.value)
     // Store password in the installation config for later use
     installationConfig.archive_password = archivePassword.value
+    installationConfig.details.config.archive_password = archivePassword.value
     showPasswordDialog.value = false
     archivePassword.value = ''
   } catch (error) {
@@ -177,7 +178,7 @@ async function handleInstallClick() {
       },
     })) as string
 
-    installationConfig.install_path = validatedPath
+    installationConfig.details.paths.parent_install_path = validatedPath
     const fullPath = `${validatedPath}\\${installationConfig.name}`
 
     try {

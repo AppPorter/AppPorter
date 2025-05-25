@@ -29,6 +29,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
       },
       config: {
         archive_exe_path: '',
+        archive_password: '',
         current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: true,
@@ -59,6 +60,7 @@ export const useInstallationConfigStore = defineStore('installation_config', {
     publisher: (state) => state.details.info.publisher,
     version: (state) => state.details.info.version,
     executable_path: (state) => state.details.config.archive_exe_path,
+    archive_password: (state) => state.details.config.archive_password,
     current_user_only: (state) => state.details.config.current_user_only,
     create_desktop_shortcut: (state) => state.details.config.create_desktop_shortcut,
     create_start_menu_shortcut: (state) => state.details.config.create_start_menu_shortcut,

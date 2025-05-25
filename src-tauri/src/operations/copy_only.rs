@@ -119,6 +119,7 @@ pub async fn copy_only(
         },
         config: AppConfig {
             archive_exe_path: String::new(),
+            archive_password: config.password.unwrap_or_default(),
             current_user_only: true,
             create_desktop_shortcut: false,
             create_start_menu_shortcut: false,

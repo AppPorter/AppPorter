@@ -43,6 +43,7 @@ pub struct AppBasicInformation {
 #[serde(default)]
 pub struct AppConfig {
     pub archive_exe_path: String,
+    pub archive_password: String,
     pub current_user_only: bool,
     pub create_desktop_shortcut: bool,
     pub create_start_menu_shortcut: bool,
@@ -288,6 +289,7 @@ impl AppList {
                 },
                 config: AppConfig {
                     archive_exe_path: String::new(),
+                    archive_password: String::new(),
                     current_user_only,
                     create_desktop_shortcut,
                     create_start_menu_shortcut,

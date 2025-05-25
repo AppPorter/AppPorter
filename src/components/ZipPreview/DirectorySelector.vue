@@ -81,7 +81,7 @@ async function handleSelect() {
         emit('loading', true)
 
         // Set the path_directory value in the store
-        store.path_directory = selectedPath.value
+        store.details.config.path_directory = selectedPath.value
 
         // Emit selected directory
         emit('directory-select', selectedPath.value)

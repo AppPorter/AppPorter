@@ -10,6 +10,7 @@ export interface AppBasicInformation {
 
 export interface AppConfig {
   archive_exe_path: string
+  archive_password: string
   current_user_only: boolean
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
