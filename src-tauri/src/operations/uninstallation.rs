@@ -1,6 +1,6 @@
-use crate::configs::app_list::AppList;
 use crate::configs::settings::Settings;
 use crate::configs::ConfigFile;
+use crate::configs::{app_list::AppList, env::Env};
 use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
@@ -16,7 +16,7 @@ pub async fn uninstallation(
     // Get app configuration from app list
     let app_list = AppList::read().await?;
     let app_config = app_list
-        .links
+        .apps
         .iter()
         .find(|app| app.timestamp == timestamp)
         .ok_or("App not found in app list")?;
@@ -30,19 +30,19 @@ pub async fn uninstallation(
 
     app.emit("uninstallation", 25)?;
 
-    let settings = Settings::read().await?;
+    let env = Env::read().await?;
 
     // Remove shortcuts
     if app_config.details.config.create_start_menu_shortcut {
         let start_menu_path = if app_config.details.config.current_user_only {
             format!(
                 r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-                settings.system_drive_letter, settings.username, app_config.details.info.name
+                env.system_drive_letter, env.username, app_config.details.info.name
             )
         } else {
             format!(
                 r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-                settings.system_drive_letter, app_config.details.info.name
+                env.system_drive_letter, app_config.details.info.name
             )
         };
         let start_menu_shortcut = Path::new(&start_menu_path);
@@ -128,17 +128,17 @@ pub async fn uninstallation(
 
     // Find the app to be uninstalled
     let app_index = app_list
-        .links
+        .apps
         .iter()
         .position(|existing_app| existing_app.timestamp == timestamp);
 
     if let Some(index) = app_index {
         // If the app has a URL, just mark it as not installed
         // Otherwise, remove it completely from the list
-        if !app_list.links[index].url.is_empty() {
-            app_list.links[index].installed = false;
+        if !app_list.apps[index].url.is_empty() {
+            app_list.apps[index].installed = false;
         } else {
-            app_list.links.remove(index);
+            app_list.apps.remove(index);
         }
     }
 

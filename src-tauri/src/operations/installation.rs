@@ -1,5 +1,6 @@
 use super::{get_7z_path, sanitize_path};
 use crate::configs::app_list::AppValidationStatus;
+use crate::configs::env::Env;
 use crate::configs::ConfigFile;
 use crate::configs::{
     app_list::{App, AppDetails, AppList},
@@ -58,12 +59,13 @@ pub async fn installation(
     );
 
     let settings = Settings::read().await?;
+    let env = Env::read().await?;
 
     // Create shortcuts
     if config.details.config.create_start_menu_shortcut {
         create_start_menu_shortcut(
-            &settings.system_drive_letter,
-            &settings.username,
+            &env.system_drive_letter,
+            &env.username,
             &config.details.info.name,
             &full_executable_path,
             config.details.config.current_user_only,
@@ -144,6 +146,7 @@ pub async fn installation(
     updated_details.validation_status = AppValidationStatus {
         file_exists: true,
         registry_valid: true,
+        path_exists: true,
     };
 
     let new_app = App {
@@ -153,7 +156,6 @@ pub async fn installation(
             timestamp
         },
         installed: true,
-        copy_only: false,
         details: updated_details,
         url: "".to_owned(),
     };
@@ -161,7 +163,7 @@ pub async fn installation(
     if config.timestamp != 0 {
         // Update existing app with matching timestamp
         if let Some(existing_app) = app_list
-            .links
+            .apps
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
@@ -170,7 +172,7 @@ pub async fn installation(
         }
     } else {
         // Remove existing similar app and add new one
-        app_list.links.retain(|existing_app| {
+        app_list.apps.retain(|existing_app| {
             let mut app1 = existing_app.clone();
             let mut app2 = new_app.clone();
             app1.timestamp = 0;
@@ -179,7 +181,7 @@ pub async fn installation(
             app2.details.info.version = String::new();
             app1 != app2
         });
-        app_list.links.push(new_app);
+        app_list.apps.push(new_app);
     }
 
     app_list.save().await?;

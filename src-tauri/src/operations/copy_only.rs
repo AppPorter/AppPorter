@@ -1,8 +1,6 @@
 use super::get_7z_path;
 use crate::configs::{
-    app_list::{
-        App, AppBasicInformation, AppConfig, AppDetails, AppList, AppPaths, AppValidationStatus,
-    },
+    app_list::{AppBasicInformation, AppConfig, AppDetails, AppList, AppPaths},
     ConfigFile,
 };
 use serde::{Deserialize, Serialize};
@@ -132,22 +130,21 @@ pub async fn copy_only(
             install_path: extract_path.clone(),
             full_path: app_path,
         },
-        validation_status: AppValidationStatus {
+        validation_status: LibValidationStatus {
             file_exists: true,
-            registry_valid: false,
+            path_exists: true,
         },
     };
-    let app_item = App {
+    let app_item = Lib {
         timestamp,
         installed: true,
-        copy_only: true,
         details,
         url: String::new(),
     };
     if config.timestamp != 0 {
         // Update existing app with matching timestamp
         if let Some(existing_app) = app_list
-            .links
+            .libs
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
@@ -156,7 +153,7 @@ pub async fn copy_only(
         }
     } else {
         // Remove existing similar app and add new one
-        app_list.links.retain(|existing_app| {
+        app_list.libs.retain(|existing_app| {
             let mut app1 = existing_app.clone();
             let mut app2 = app_item.clone();
             app1.timestamp = 0;
@@ -165,7 +162,7 @@ pub async fn copy_only(
             app2.details.info.version = String::new();
             app1 != app2
         });
-        app_list.links.push(app_item);
+        app_list.libs.push(app_item);
     }
     app_list.save().await?;
 

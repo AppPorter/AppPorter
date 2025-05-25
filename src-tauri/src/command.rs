@@ -1,4 +1,11 @@
-use crate::{configs::*, core::*, operations::*};
+use crate::{
+    configs::{
+        app_list::{load_app_list, AppList},
+        *,
+    },
+    core::*,
+    operations::*,
+};
 use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
