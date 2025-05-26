@@ -56,7 +56,7 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>>
                     .and_then(|ext| ext.to_str())
                 {
                     if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                        if let Some(timestamp) = args[3].parse::<i64>().ok() {
+                        if let Ok(timestamp) = args[3].parse::<i64>() {
                             if timestamp > 0 {
                                 app.emit("install_app", (value, timestamp))?;
                             } else {
@@ -73,7 +73,7 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>>
                     .and_then(|ext| ext.to_str())
                 {
                     if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                        if let Some(timestamp) = args[3].parse::<i64>().ok() {
+                        if let Ok(timestamp) = args[3].parse::<i64>() {
                             if timestamp > 0 {
                                 app.emit("install_lib", (value, timestamp))?;
                             } else {
