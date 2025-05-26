@@ -1,9 +1,7 @@
 use futures_util::StreamExt;
-use serde::{Deserialize, Serialize};
 use std::cmp::min;
 use std::error::Error;
 use std::io::Write;
-use tauri::{AppHandle, Emitter};
 
 pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Get the same temp directory path as used for 7z
