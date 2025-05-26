@@ -2,9 +2,12 @@ pub mod app_list;
 pub mod env;
 pub mod settings;
 
+#[allow(ambiguous_glob_reexports)]
 pub use app_list::*;
+#[allow(ambiguous_glob_reexports)]
 pub use env::*;
 use serde::{de::DeserializeOwned, Serialize};
+#[allow(ambiguous_glob_reexports)]
 pub use settings::*;
 use std::{error::Error, path::PathBuf};
 
