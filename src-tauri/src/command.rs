@@ -3,27 +3,18 @@ use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
 use tauri::AppHandle;
+use Command::*;
 
 // Available frontend-to-backend commands
 #[derive(Deserialize, Clone)]
 #[serde(tag = "name")]
 pub enum Command {
+    // Configs
+    LoadEnv,
+    SaveEnv {
+        env: Env,
+    },
     LoadSettings,
-    GetDetails {
-        path: ExePath,
-    },
-    Installation {
-        config: InstallationConfig,
-    },
-    Uninstallation {
-        timestamp: i64,
-    },
-    Elevate {
-        revert: bool,
-    },
-    ValidatePath {
-        path: String,
-    },
     SaveSettings {
         settings: Settings,
     },
@@ -31,11 +22,39 @@ pub enum Command {
     SaveAppList {
         app_list: AppList,
     },
-    GetArchiveContent {
-        path: String,
-        password: Option<String>,
+
+    // Core
+    Cli,
+    RegisterContextMenu,
+    UnregisterContextMenu,
+    Elevate {
+        revert: bool,
     },
-    Open {
+    Exit,
+    SetStartup,
+    RemoveStartup,
+
+    // Operations - Install/Uninstall
+    InstallWithLink {
+        url: String,
+        timestamp: i64,
+        is_lib: InstallType,
+    },
+    InstallApp {
+        config: AppInstallConfig,
+    },
+    InstallLib {
+        config: LibInstallConfig,
+    },
+    UninstallApp {
+        timestamp: i64,
+    },
+    UninstallLib {
+        timestamp: i64,
+    },
+
+    // Operations - Launcher
+    OpenApp {
         path: String,
     },
     OpenFolder {
@@ -45,37 +64,24 @@ pub enum Command {
         app_name: String,
         current_user_only: bool,
     },
+
+    // Operations - Misc
+    GetDetails {
+        path: ExePath,
+    },
+
+    ValidatePath {
+        path: String,
+    },
+
+    GetArchiveContent {
+        path: String,
+        password: Option<String>,
+    },
+
     CheckPathEmpty {
         path: String,
     },
-    Cli,
-    RegisterContextMenu,
-    UnregisterContextMenu,
-    InstallWithLink {
-        url: String,
-        timestamp: i64,
-    },
-    SetStartup,
-    RemoveStartup,
-    CopyOnly {
-        config: CopyOnlyConfig,
-    },
-    Exit,
-}
-
-pub enum CommandResult {
-    String(String),
-    Serializable(Box<dyn ErasedSerialize + Send>),
-}
-
-impl CommandResult {
-    pub fn as_string(&self) -> Option<&String> {
-        if let CommandResult::String(s) = self {
-            Some(s)
-        } else {
-            None
-        }
-    }
 }
 
 impl Command {
@@ -93,40 +99,68 @@ impl Command {
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
     async fn execute(self, app: AppHandle) -> Result<CommandResult, Box<dyn Error + Send + Sync>> {
-        use Command::*;
         match self {
+            // Configs
+            LoadEnv => Self::ser(Env::read().await?),
+            SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
-            GetDetails { path } => Self::ser(get_details(path).await?),
-            Installation { config } => Self::ser(installation(config, app).await?),
-            Uninstallation { timestamp } => Self::ser(uninstallation(timestamp, app).await?),
-            Elevate { revert } => Self::ser(elevate(revert).await?),
-            ValidatePath { path } => Self::ser(validate_path(path).await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
             LoadAppList => Self::ser(load_app_list().await?),
             SaveAppList { app_list } => Self::ser(app_list.save().await?),
-            GetArchiveContent { path, password } => {
-                Self::ser(get_archive_content(path, password).await?)
+
+            // Core
+            Cli => Self::ser(cli(app).await?),
+            RegisterContextMenu => Self::ser(register_context_menu()?),
+            UnregisterContextMenu => Self::ser(unregister_context_menu()?),
+            Elevate { revert } => Self::ser(elevate(revert).await?),
+            Exit => {
+                exit().await;
+                Self::ser(())
             }
-            Open { path } => Self::ser(open_app(&path).await?),
+            SetStartup => Self::ser(set_startup()?),
+            RemoveStartup => Self::ser(remove_startup()?),
+
+            // Operations - Install/Uninstall
+            InstallWithLink {
+                url,
+                timestamp,
+                is_lib,
+            } => Self::ser(install_with_link(app, url, timestamp, is_lib).await?),
+            InstallApp { config } => Self::ser(install_app(config, app).await?),
+            InstallLib { config } => Self::ser(install_lib(config, app).await?),
+            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
+            UninstallLib { timestamp } => Self::ser(uninstall_lib(timestamp, app).await?),
+
+            // Operations - Launcher
+            OpenApp { path } => Self::ser(open_app(&path).await?),
             OpenFolder { path } => Self::ser(open_folder(&path).await?),
             OpenRegistry {
                 app_name,
                 current_user_only,
             } => Self::ser(open_registry(&app_name, current_user_only).await?),
+
+            // Operations - Misc
+            GetDetails { path } => Self::ser(get_details(path).await?),
+            ValidatePath { path } => Self::ser(validate_path(path).await?),
+            GetArchiveContent { path, password } => {
+                Self::ser(get_archive_content(path, password).await?)
+            }
             CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
-            Cli => Self::ser(cli(app).await?),
-            RegisterContextMenu => Self::ser(register_context_menu()?),
-            UnregisterContextMenu => Self::ser(unregister_context_menu()?),
-            InstallWithLink { url, timestamp } => {
-                Self::ser(install_with_link(url, timestamp).await?)
-            }
-            SetStartup => Self::ser(set_startup()?),
-            RemoveStartup => Self::ser(remove_startup()?),
-            CopyOnly { config } => Self::ser(copy_only(config, app).await?),
-            Exit => {
-                exit().await;
-                Self::ser(())
-            }
+        }
+    }
+}
+
+pub enum CommandResult {
+    String(String),
+    Serializable(Box<dyn ErasedSerialize + Send>),
+}
+
+impl CommandResult {
+    pub fn as_string(&self) -> Option<&String> {
+        if let CommandResult::String(s) = self {
+            Some(s)
+        } else {
+            None
         }
     }
 }

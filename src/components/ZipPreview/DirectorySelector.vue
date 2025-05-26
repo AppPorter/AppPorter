@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
@@ -7,7 +7,7 @@ import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
 
-const store = useInstallationConfigStore()
+const store = InstallConfigStore()
 
 const { t } = useI18n()
 
@@ -81,7 +81,7 @@ async function handleSelect() {
         emit('loading', true)
 
         // Set the path_directory value in the store
-        store.path_directory = selectedPath.value
+        store.details.config.path_directory = selectedPath.value
 
         // Emit selected directory
         emit('directory-select', selectedPath.value)

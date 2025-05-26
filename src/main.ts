@@ -2,7 +2,7 @@ import '@/assets/styles/main.css'
 import { setupI18n } from '@/locales/i18n'
 import Main from '@/Main.vue'
 import router, { setupRouterGuards } from '@/router'
-import { useSettingsStore } from '@/stores/settings'
+import { SettingsStore } from '@/stores/settings'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
@@ -16,6 +16,7 @@ import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
 import { createApp } from 'vue'
+import { EnvStore } from './stores/env'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -56,7 +57,10 @@ const app = createApp(Main)
 app.use(pinia)
 
 // Initialize settings first
-const settingsStore = useSettingsStore()
+const envStore = EnvStore()
+await envStore.loadEnv()
+
+const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
 
 // Then initialize i18n with the loaded language
@@ -84,7 +88,7 @@ const UserColor = definePreset(Aura, {
 })
 
 // Initial theme setup - using the settings store's functionality
-settingsStore.updateThemeMode()
+await settingsStore.updateThemeMode()
 
 app.use(PrimeVue, {
   theme: {

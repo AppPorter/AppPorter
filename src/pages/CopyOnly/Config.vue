@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { goTo } from '@/router'
-import { useInstallationConfigStore } from '@/stores/installation_config'
-import { useSettingsStore } from '@/stores/settings'
+import { InstallConfigStore } from '@/stores/install_config'
+import { SettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import { useToast } from 'primevue'
@@ -16,8 +16,8 @@ import { useConfirm } from 'primevue/useconfirm'
 import { onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const installationConfig = useInstallationConfigStore()
-installationConfig.page = 'CopyOnlyConfig' // Reuse Config page state
+const installConfig = InstallConfigStore()
+installConfig.page = 'Install_Lib_Config' // Reuse Config page state
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -25,8 +25,8 @@ const showErrorDialog = ref(false)
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
 const passwordError = ref(false)
-const settingsStore = useSettingsStore()
-const { copy_only } = settingsStore
+const settingsStore = SettingsStore()
+const { lib_install } = settingsStore
 
 // UI state management
 const pathError = ref('')
@@ -35,22 +35,22 @@ const detailsLoading = ref(false)
 
 // Load archive content when component is mounted
 onMounted(async () => {
-    if (!installationConfig.zip_path) {
+    if (!installConfig.zip_path) {
         goTo('/Home')
         return
     }
 
     // Initialize config from settings
-    installationConfig.install_path = copy_only.install_path
-    installationConfig.add_to_path = copy_only.add_to_path
-    installationConfig.path_directory = ''  // Reset path directory when loading
+    installConfig.details.paths.parent_install_path = lib_install.install_path
+    installConfig.details.config.add_to_path = lib_install.add_to_path
+    installConfig.details.config.path_directory = ''  // Reset path directory when loading
 
     // Extract filename from path and remove extension for default name
-    if (installationConfig.zip_path) {
-        const pathParts = installationConfig.zip_path.split('\\')
+    if (installConfig.zip_path) {
+        const pathParts = installConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
         // Remove file extension
-        installationConfig.name = filename.replace(/\.[^/.]+$/, '')
+        installConfig.details.info.name = filename.replace(/\.[^/.]+$/, '')
     }
 
     try {
@@ -89,8 +89,8 @@ async function handlePasswordSubmit() {
 
     try {
         await GetArchiveContent(archivePassword.value)
-        // Store password in the installation config for later use
-        installationConfig.archive_password = archivePassword.value
+        // Store password in the install config for later use
+        installConfig.details.config.archive_password = archivePassword.value
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {
@@ -113,13 +113,13 @@ async function GetArchiveContent(password: string) {
     const result = await invoke('execute_command', {
         command: {
             name: 'GetArchiveContent',
-            path: installationConfig.zip_path,
+            path: installConfig.zip_path,
             password: password,
         },
     })
 
     const content = JSON.parse(result as string)
-    installationConfig.archive_content = content
+    installConfig.archive_content = content
 }
 
 function handleDetailsLoading(loading: boolean) {
@@ -131,7 +131,7 @@ async function handleExtractClick() {
     // Reset validation errors
     pathError.value = ''
 
-    if (!installationConfig.name) {
+    if (!installConfig.name) {
         toast.add({
             severity: 'error',
             summary: t('validation.name_required'),
@@ -141,7 +141,7 @@ async function handleExtractClick() {
         return
     }
 
-    if (!installationConfig.install_path) {
+    if (!installConfig.install_path) {
         pathError.value = t('validation.select_path')
         toast.add({
             severity: 'error',
@@ -156,12 +156,12 @@ async function handleExtractClick() {
         const validatedPath = (await invoke('execute_command', {
             command: {
                 name: 'ValidatePath',
-                path: installationConfig.install_path,
+                path: installConfig.install_path,
             },
         })) as string
 
-        installationConfig.install_path = validatedPath
-        const fullPath = `${validatedPath}\\${installationConfig.name || 'Extracted-Files'}`
+        installConfig.details.paths.parent_install_path = validatedPath
+        const fullPath = `${validatedPath}\\${installConfig.name || 'Extracted-Files'}`
 
         try {
             await invoke('execute_command', {
@@ -192,10 +192,10 @@ async function handleExtractClick() {
                 })
             })
         } catch (error) {
-            if (error === 'Installation directory is not empty') {
+            if (error === 'Install directory is not empty') {
                 await new Promise((resolve, reject) => {
                     confirm.require({
-                        message: t('installation.config.directory_not_empty'),
+                        message: t('install.config.directory_not_empty'),
                         group: 'dialog',
                         icon: 'mir-warning',
                         header: t('warning'),
@@ -234,7 +234,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installationConfig.install_path = String(selected)
+        installConfig.details.paths.parent_install_path = String(selected)
     }
 }
 </script>
@@ -258,7 +258,7 @@ async function select_extract_path() {
                                 </div>
                                 <p class="ml-6 mt-0.5 text-xs">
                                     {{ t('selected_file') }}:
-                                    <span class="break-all font-medium">{{ installationConfig.zip_path }}</span>
+                                    <span class="break-all font-medium">{{ installConfig.zip_path }}</span>
                                 </p>
                             </div>
                         </template>
@@ -270,8 +270,8 @@ async function select_extract_path() {
                                     {{ t('app.name') }}
                                 </label>
                                 <div class="w-full">
-                                    <InputText v-model="installationConfig.name" :placeholder="t('app.name')"
-                                        class="h-8 w-full text-sm" :invalid="!installationConfig.name" />
+                                    <InputText v-model="installConfig.details.info.name" :placeholder="t('app.name')"
+                                        class="h-8 w-full text-sm" :invalid="!installConfig.name" />
                                 </div>
                             </div>
 
@@ -280,7 +280,7 @@ async function select_extract_path() {
                                 <label class="w-24 text-sm font-medium">{{ t('extract_path') }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
-                                        <InputText v-model="installationConfig.install_path"
+                                        <InputText v-model="installConfig.details.paths.parent_install_path"
                                             :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
                                             :invalid="!!pathError" @input="pathError = ''" :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -296,15 +296,15 @@ async function select_extract_path() {
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
-                                                <Checkbox v-model="installationConfig.add_to_path" :binary="true"
-                                                    inputId="add_to_path" />
+                                                <Checkbox v-model="installConfig.details.config.add_to_path"
+                                                    :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
                                                 }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
-                                            <div v-if="installationConfig.add_to_path" class="ml-6 mt-1">
+                                            <div v-if="installConfig.details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
-                                                    <InputText v-model="installationConfig.path_directory"
+                                                    <InputText v-model="installConfig.details.config.path_directory"
                                                         :placeholder="t('select_path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
@@ -368,9 +368,9 @@ async function select_extract_path() {
         <Drawer v-model:visible="directoryDrawerVisible" :header="t('select_path_directory')" position="bottom"
             :style="{ height: '95vh' }" class="rounded-lg">
             <div class="h-full overflow-hidden">
-                <DirectorySelector :zip-path="installationConfig.zip_path" :details-loading="detailsLoading"
+                <DirectorySelector :zip-path="installConfig.zip_path" :details-loading="detailsLoading"
                     @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"
-                    @directory-select="installationConfig.path_directory = $event" />
+                    @directory-select="installConfig.details.config.path_directory = $event" />
             </div>
         </Drawer>
     </div>

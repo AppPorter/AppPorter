@@ -1,23 +1,7 @@
-use crate::core::{SubCommands, CHANNEL};
 use futures_util::StreamExt;
 use std::cmp::min;
 use std::error::Error;
 use std::io::Write;
-
-pub async fn install_with_link(
-    url: String,
-    timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let downloaded = download_file(url).await.unwrap_or_default();
-
-    let sender = CHANNEL.0.clone();
-    tokio::spawn(async move {
-        sender
-            .send(SubCommands::InstallWithTimestamp(downloaded, timestamp))
-            .unwrap();
-    });
-    Ok(())
-}
 
 pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Get the same temp directory path as used for 7z

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useInstallationConfigStore } from '@/stores/installation_config'
+import { InstallConfigStore } from '@/stores/install_config'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -34,8 +34,8 @@ const emits = defineEmits<{
 
 const { t } = useI18n()
 
-const installationConfig = useInstallationConfigStore()
-const { archive_content } = storeToRefs(installationConfig)
+const installConfig = InstallConfigStore()
+const { archive_content } = storeToRefs(installConfig)
 
 // State
 const status = ref<FileStatus>('ready')

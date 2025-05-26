@@ -1,52 +1,10 @@
+use super::{AppList, AppValidationStatus, LibValidationStatus};
+use crate::configs::app_list::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
+use crate::configs::{app_list::AppDetails, settings::Settings};
 use base64::{engine::general_purpose::STANDARD, Engine};
-use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
-
-use super::settings::Settings;
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
-#[serde(default)]
-pub struct AppList {
-    pub links: Vec<App>,
-}
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
-#[serde(default)]
-pub struct App {
-    pub timestamp: i64,
-    pub installed: bool,
-    pub copy_only: bool,
-    pub url: String,
-    pub details: InstalledApp,
-}
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
-#[serde(default)]
-pub struct InstalledApp {
-    pub name: String,
-    pub icon: String,
-    pub publisher: String,
-    pub version: String,
-    pub install_path: String,
-    pub executable_path: String,
-    pub full_path: String,
-    pub current_user_only: bool,
-    pub create_desktop_shortcut: bool,
-    pub create_start_menu_shortcut: bool,
-    pub create_registry_key: bool,
-    pub add_to_path: bool,
-    pub path_directory: String,
-    pub validation_status: ValidationStatus,
-}
-
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
-#[serde(default)]
-pub struct ValidationStatus {
-    pub file_exists: bool,
-    pub registry_valid: bool,
-}
 
 #[async_trait::async_trait]
 impl ConfigFile for AppList {
@@ -57,37 +15,36 @@ impl ConfigFile for AppList {
 
 impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
-        self.links
-            .iter()
-            .any(|link| link.url == url && link.installed)
+        self.apps.iter().any(|app| app.url == url && app.installed)
+            || self.libs.iter().any(|lib| lib.url == url && lib.installed)
     }
 
-    pub async fn validate_installations(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        for app in &mut self.links {
+    pub async fn validate_installs(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+        for app in &mut self.apps {
             if !app.installed {
                 continue;
             }
 
             // Check if executable exists
-            let file_exists = tokio::fs::try_exists(&app.details.full_path)
+            let file_exists = tokio::fs::try_exists(&app.details.paths.full_path)
                 .await
                 .unwrap_or(false);
 
             // Check registry Comments value
-            let registry_valid = if app.details.create_registry_key {
-                let registry_path = if app.details.current_user_only {
+            let registry_valid = if app.details.config.create_registry_key {
+                let registry_path = if app.details.config.current_user_only {
                     format!(
                         r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                        app.details.name
+                        app.details.info.name
                     )
                 } else {
                     format!(
                         r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-                        app.details.name
+                        app.details.info.name
                     )
                 };
 
-                let reg_key = if app.details.current_user_only {
+                let reg_key = if app.details.config.current_user_only {
                     windows_registry::CURRENT_USER.open(&registry_path)
                 } else {
                     windows_registry::LOCAL_MACHINE.open(&registry_path)
@@ -100,38 +57,89 @@ impl AppList {
                 true
             };
 
-            app.details.validation_status = ValidationStatus {
+            app.details.validation_status = AppValidationStatus {
                 file_exists,
                 registry_valid,
+                path_exists: true,
+            };
+        }
+
+        for lib in &mut self.libs {
+            if !lib.installed {
+                continue;
+            }
+
+            // Check if executable exists
+            let file_exists = tokio::fs::try_exists(&lib.details.paths.install_path)
+                .await
+                .unwrap_or(false);
+
+            lib.details.validation_status = LibValidationStatus {
+                file_exists,
+                path_exists: true,
             };
         }
         Ok(())
     }
 
     pub fn remove_duplicates(&mut self) {
+        // Remove duplicates from apps
         let mut i = 0;
-        while i < self.links.len() {
+        while i < self.apps.len() {
             let mut j = i + 1;
-            while j < self.links.len() {
-                if self.links[i].details.full_path == self.links[j].details.full_path {
+            while j < self.apps.len() {
+                if self.apps[i].details.paths.full_path == self.apps[j].details.paths.full_path {
                     // Check if all other fields except timestamp and version are identical
-                    let mut app1 = self.links[i].clone();
-                    let mut app2 = self.links[j].clone();
+                    let mut app1 = self.apps[i].clone();
+                    let mut app2 = self.apps[j].clone();
 
                     // Reset timestamp and version for comparison
                     app1.timestamp = 0;
                     app2.timestamp = 0;
-                    app1.details.version = String::new();
-                    app2.details.version = String::new();
+                    app1.details.info.version = String::new();
+                    app2.details.info.version = String::new();
 
                     if app1 == app2 {
                         // Remove the entry with earlier timestamp
-                        if self.links[i].timestamp < self.links[j].timestamp {
-                            self.links.remove(i);
+                        if self.apps[i].timestamp < self.apps[j].timestamp {
+                            self.apps.remove(i);
                             j = i + 1;
                             continue;
                         } else {
-                            self.links.remove(j);
+                            self.apps.remove(j);
+                            continue;
+                        }
+                    }
+                }
+                j += 1;
+            }
+            i += 1;
+        }
+
+        // Remove duplicates from libs
+        let mut i = 0;
+        while i < self.libs.len() {
+            let mut j = i + 1;
+            while j < self.libs.len() {
+                if self.libs[i].details.paths.install_path
+                    == self.libs[j].details.paths.install_path
+                {
+                    // Check if all other fields except timestamp and version are identical
+                    let mut lib1 = self.libs[i].clone();
+                    let mut lib2 = self.libs[j].clone();
+
+                    // Reset timestamp and version for comparison
+                    lib1.timestamp = 0;
+                    lib2.timestamp = 0;
+
+                    if lib1 == lib2 {
+                        // Remove the entry with earlier timestamp
+                        if self.libs[i].timestamp < self.libs[j].timestamp {
+                            self.libs.remove(i);
+                            j = i + 1;
+                            continue;
+                        } else {
+                            self.libs.remove(j);
                             continue;
                         }
                     }
@@ -149,25 +157,24 @@ impl AppList {
         // For each app found in registry
         for reg_app in registry_apps {
             // Check if it's already in our list
-            let app_exists = self.links.iter().any(|app| {
+            let app_exists = self.apps.iter().any(|app| {
                 app.installed
-                    && app.details.name == reg_app.name
-                    && app.details.full_path == reg_app.full_path
+                    && app.details.info.name == reg_app.info.name
+                    && app.details.paths.full_path == reg_app.paths.full_path
             });
 
             // If not in our list, add it
             if !app_exists {
-                self.links.push(App {
+                self.apps.push(super::structs::App {
                     timestamp: chrono::Utc::now().timestamp(),
                     installed: true,
-                    copy_only: false,
                     url: String::new(),
                     details: reg_app,
                 });
             }
         }
 
-        fn find_registry_apps() -> Result<Vec<InstalledApp>, Box<dyn Error + Send + Sync>> {
+        fn find_registry_apps() -> Result<Vec<AppDetails>, Box<dyn Error + Send + Sync>> {
             let mut result = Vec::new();
 
             // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
@@ -188,7 +195,7 @@ impl AppList {
         }
 
         fn search_registry(
-            result: &mut Vec<InstalledApp>,
+            result: &mut Vec<AppDetails>,
             hkey: &windows_registry::Key,
             path: &str,
             current_user_only: bool,
@@ -218,7 +225,7 @@ impl AppList {
         async fn extract_app_info(
             app_key: &windows_registry::Key,
             current_user_only: bool,
-        ) -> Result<Option<InstalledApp>, Box<dyn Error + Send + Sync>> {
+        ) -> Result<Option<AppDetails>, Box<dyn Error + Send + Sync>> {
             // Extract required values
             let name = match app_key.get_string("DisplayName") {
                 Ok(name) => name,
@@ -250,9 +257,9 @@ impl AppList {
             let settings = Settings::read().await?;
 
             let config = if current_user_only {
-                &settings.installation.current_user
+                &settings.app_install.current_user
             } else {
-                &settings.installation.all_users
+                &settings.app_install.all_users
             };
 
             let create_desktop_shortcut = config.create_desktop_shortcut;
@@ -260,24 +267,33 @@ impl AppList {
             let create_registry_key = config.create_registry_key;
             let add_to_path = config.add_to_path;
 
-            // Create a new InstalledApp
-            let app = InstalledApp {
-                name,
-                version,
-                publisher,
-                install_path: install_path.clone(),
-                executable_path: String::new(),
-                full_path,
-                icon, // Will be filled later during validation
-                current_user_only,
-                create_desktop_shortcut,
-                create_start_menu_shortcut,
-                create_registry_key,
-                add_to_path,
-                path_directory: install_path,
-                validation_status: ValidationStatus {
+            // Create a new AppDetails
+            let app = AppDetails {
+                info: AppBasicInformation {
+                    name,
+                    icon,
+                    publisher,
+                    version,
+                },
+                config: AppConfig {
+                    archive_exe_path: String::new(),
+                    archive_password: String::new(),
+                    current_user_only,
+                    create_desktop_shortcut,
+                    create_start_menu_shortcut,
+                    create_registry_key,
+                    add_to_path,
+                    path_directory: install_path.clone(),
+                },
+                paths: AppPaths {
+                    parent_install_path: install_path.clone(),
+                    install_path: install_path.clone(),
+                    full_path,
+                },
+                validation_status: AppValidationStatus {
                     file_exists: true,
                     registry_valid: true,
+                    path_exists: true,
                 },
             };
 
@@ -291,7 +307,7 @@ impl AppList {
 pub async fn load_app_list() -> Result<AppList, Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
     app_list.sync_from_registry().await?;
-    app_list.validate_installations().await?;
+    app_list.validate_installs().await?;
     app_list.remove_duplicates();
     app_list.save().await?;
 

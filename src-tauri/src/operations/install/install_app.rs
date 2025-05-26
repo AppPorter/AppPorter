@@ -1,10 +1,8 @@
-use super::{get_7z_path, sanitize_path};
-use crate::configs::app_list::ValidationStatus;
+use crate::configs::app_list::AppValidationStatus;
+use crate::configs::app_list::{App, AppDetails, AppList};
+use crate::configs::env::Env;
 use crate::configs::ConfigFile;
-use crate::configs::{
-    app_list::{App, AppList, InstalledApp},
-    settings::Settings,
-};
+use crate::operations::{get_7z_path, sanitize_path};
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::io::Read;
@@ -15,25 +13,25 @@ use tauri::{AppHandle, Emitter};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct InstallationConfig {
+pub struct AppInstallConfig {
     zip_path: String,
     password: Option<String>,
-    details: InstalledApp,
+    details: AppDetails,
     timestamp: i64,
 }
 
-pub async fn installation(
-    config: InstallationConfig,
+pub async fn install_app(
+    config: AppInstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let zip_path = config.zip_path.clone();
     let app_path = format!(
         "{}\\{}",
-        config.details.install_path,
-        config.details.name.replace(" ", "-")
+        config.details.paths.install_path,
+        config.details.info.name.replace(" ", "-")
     );
 
-    app.emit("installation", 0)?;
+    app.emit("install", 0)?;
 
     let target_path = Path::new(&app_path);
     if !target_path.exists() {
@@ -47,45 +45,45 @@ pub async fn installation(
     )
     .await?;
 
-    app.emit("installation", 101)?;
+    app.emit("install", 101)?;
 
     let single_root = find_single_root_folder(&app_path).await?;
 
     let full_executable_path = get_full_executable_path(
         &app_path,
-        &config.details.executable_path,
+        &config.details.config.archive_exe_path,
         single_root.as_deref(),
     );
 
-    let settings = Settings::read().await?;
+    let env = Env::read().await?;
 
     // Create shortcuts
-    if config.details.create_start_menu_shortcut {
+    if config.details.config.create_start_menu_shortcut {
         create_start_menu_shortcut(
-            &settings.system_drive_letter,
-            &settings.username,
-            &config.details.name,
+            &env.system_drive_letter,
+            &env.username,
+            &config.details.info.name,
             &full_executable_path,
-            config.details.current_user_only,
+            config.details.config.current_user_only,
         )?;
     }
 
-    if config.details.create_desktop_shortcut {
-        create_desktop_shortcut(&full_executable_path, &config.details.name)?;
+    if config.details.config.create_desktop_shortcut {
+        create_desktop_shortcut(&full_executable_path, &config.details.info.name)?;
     }
 
     let timestamp = chrono::Utc::now().timestamp();
 
-    if config.details.create_registry_key {
+    if config.details.config.create_registry_key {
         create_registry_entries(&config, &full_executable_path, &app_path, timestamp)?;
     }
 
-    if config.details.add_to_path {
+    if config.details.config.add_to_path {
         // Determine which path to add to PATH environment variable
-        let path_to_add = if !config.details.path_directory.is_empty() {
+        let path_to_add = if !config.details.config.path_directory.is_empty() {
             // User specified a custom directory to add to PATH
-            if config.details.path_directory.starts_with('/')
-                || config.details.path_directory.starts_with('\\')
+            if config.details.config.path_directory.starts_with('/')
+                || config.details.config.path_directory.starts_with('\\')
             {
                 // If path starts with / or \, it's relative to the app root
                 format!(
@@ -93,6 +91,7 @@ pub async fn installation(
                     app_path,
                     config
                         .details
+                        .config
                         .path_directory
                         .trim_start_matches(['/', '\\'])
                         .replace("/", "\\")
@@ -102,7 +101,7 @@ pub async fn installation(
                 format!(
                     "{}\\{}",
                     app_path,
-                    config.details.path_directory.replace("/", "\\")
+                    config.details.config.path_directory.replace("/", "\\")
                 )
             }
         } else {
@@ -114,7 +113,7 @@ pub async fn installation(
                 .to_string()
         };
 
-        if config.details.current_user_only {
+        if config.details.config.current_user_only {
             let key = CURRENT_USER.create("Environment")?;
             let path = key.get_string("Path")?;
 
@@ -139,10 +138,11 @@ pub async fn installation(
 
     // Create a mutable copy of the details
     let mut updated_details = config.details.clone();
-    updated_details.full_path = full_executable_path.clone();
-    updated_details.validation_status = ValidationStatus {
+    updated_details.paths.full_path = full_executable_path.clone();
+    updated_details.validation_status = AppValidationStatus {
         file_exists: true,
         registry_valid: true,
+        path_exists: true,
     };
 
     let new_app = App {
@@ -152,7 +152,6 @@ pub async fn installation(
             timestamp
         },
         installed: true,
-        copy_only: false,
         details: updated_details,
         url: "".to_owned(),
     };
@@ -160,7 +159,7 @@ pub async fn installation(
     if config.timestamp != 0 {
         // Update existing app with matching timestamp
         if let Some(existing_app) = app_list
-            .links
+            .apps
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
@@ -169,16 +168,16 @@ pub async fn installation(
         }
     } else {
         // Remove existing similar app and add new one
-        app_list.links.retain(|existing_app| {
+        app_list.apps.retain(|existing_app| {
             let mut app1 = existing_app.clone();
             let mut app2 = new_app.clone();
             app1.timestamp = 0;
             app2.timestamp = 0;
-            app1.details.version = String::new();
-            app2.details.version = String::new();
+            app1.details.info.version = String::new();
+            app2.details.info.version = String::new();
             app1 != app2
         });
-        app_list.links.push(new_app);
+        app_list.apps.push(new_app);
     }
 
     app_list.save().await?;
@@ -276,7 +275,7 @@ async fn extract_files(
                 if output.contains("%") {
                     let parts: Vec<&str> = output.split('%').collect();
                     if let Ok(percent) = parts[0].trim().parse::<u32>() {
-                        let _ = app_clone.emit("installation_extract", percent);
+                        let _ = app_clone.emit("install_extract", percent);
                     }
                 }
             }
@@ -289,7 +288,7 @@ async fn extract_files(
     }
     handle.join().unwrap();
 
-    app.emit("installation_extract", 100)?;
+    app.emit("install_extract", 100)?;
 
     Ok(())
 }
@@ -395,32 +394,32 @@ fn create_desktop_shortcut(
 }
 
 fn create_registry_entries(
-    config: &InstallationConfig,
+    config: &AppInstallConfig,
     executable_path: &str,
     app_path: &str,
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let key = if config.details.current_user_only {
+    let key = if config.details.config.current_user_only {
         CURRENT_USER.create(format!(
             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.name
+            config.details.info.name
         ))?
     } else {
         LOCAL_MACHINE.create(format!(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.name
+            config.details.info.name
         ))?
     };
 
     key.set_string("Comments", "Installed with AppPorter")?;
     key.set_string("DisplayIcon", executable_path)?;
-    key.set_string("DisplayName", &config.details.name)?;
-    key.set_string("DisplayVersion", &config.details.version)?;
+    key.set_string("DisplayName", &config.details.info.name)?;
+    key.set_string("DisplayVersion", &config.details.info.version)?;
     key.set_string("InstallLocation", app_path)?;
     key.set_u32("NoModify", 1)?;
     key.set_u32("NoRemove", 0)?;
     key.set_u32("NoRepair", 1)?;
-    key.set_string("Publisher", &config.details.publisher)?;
+    key.set_string("Publisher", &config.details.info.publisher)?;
     key.set_string(
         "UninstallString",
         format!(

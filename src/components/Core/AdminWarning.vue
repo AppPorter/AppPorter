@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSettingsStore } from '@/stores/settings'
+import { EnvStore } from '@/stores/env'
 import { invoke } from '@tauri-apps/api/core'
 import ConfirmPopup from 'primevue/confirmpopup'
 import { useConfirm } from 'primevue/useconfirm'
@@ -11,7 +11,7 @@ defineProps<{
 
 const emit = defineEmits(['dismiss'])
 
-const settingsStore = useSettingsStore()
+const env = EnvStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 
@@ -32,7 +32,7 @@ const handleAdminPrompt = (event) => {
       label: t('accept'),
     },
     accept: () => {
-      if (!settingsStore.debug) {
+      if (!env.debug) {
         invoke('execute_command', {
           command: {
             name: 'Elevate',
@@ -49,7 +49,7 @@ const handleAdminPrompt = (event) => {
 </script>
 
 <template>
-  <div v-if="!settingsStore.elevated && !dismissWarning"
+  <div v-if="!env.elevated && !dismissWarning"
     class="flex min-h-7 flex-wrap items-center gap-x-2 gap-y-1 rounded bg-amber-50 px-3 py-1 dark:bg-amber-900/30">
     <div class="flex items-center gap-2">
       <span class="mir-warning text-amber-600 dark:text-amber-400" />

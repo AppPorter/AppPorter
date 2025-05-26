@@ -34,11 +34,11 @@
     tauri = { version = "2.5.1", features = [
         "tray-icon",
     ] }
-    tauri-plugin-opener = "2.2.6"
+    tauri-plugin-opener = "2.2.7"
 
     base64 = "0.22.1"
     check_elevation = "0.2.4"
-    chrono = "0.4.40"
+    chrono = "0.4.41"
     dirs = "6.0.0"
     erased-serde = "0.4.6"
     futures-util = "0.3.31"
@@ -49,16 +49,16 @@
         "stream",
     ] }
     systemicons = "0.9.13"
-    tauri-plugin-dialog = "2.2.1"
-    tauri-plugin-fs = "2.2.1"
+    tauri-plugin-dialog = "2.2.2"
+    tauri-plugin-fs = "2.3.0"
     tauri-plugin-process = "2.2.1"
-    tempfile = "3.19.1"
-    tokio = { version = "1.44.2", features = [
+    tempfile = "3.20.0"
+    tokio = { version = "1.45.1", features = [
         "full",
     ] }
     tokio-tungstenite = "0.26.2"
-    toml = "0.8.21"
-    windows-registry = "0.5.1"
+    toml = "0.8.22"
+    windows-registry = "0.5.2"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-    tauri-plugin-single-instance = "2.2.3"
+    tauri-plugin-single-instance = "2.2.4"

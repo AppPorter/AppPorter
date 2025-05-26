@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAppListStore } from '@/stores/app_list'
+import { AppListStore } from '@/stores/app_list'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import DataView from 'primevue/dataview'
@@ -14,7 +14,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 
-const appListStore = useAppListStore()
+const appListStore = AppListStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 const contextMenu = ref()
@@ -22,6 +22,43 @@ const selectedApp = ref()
 const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
+
+// Combine apps and libs into a unified list
+const links = computed(() => {
+  const apps = appListStore.apps.map(app => ({ ...app, type: 'app' }))
+  const libs = appListStore.libs.map(lib => ({
+    ...lib,
+    type: 'lib',
+    copy_only: true, // libs are equivalent to copy_only apps
+    details: {
+      info: {
+        name: lib.details.name,
+        icon: '',
+        publisher: '',
+        version: ''
+      },
+      config: {
+        ...lib.details.config,
+        current_user_only: false,
+        create_desktop_shortcut: false,
+        create_start_menu_shortcut: false,
+        create_registry_key: false,
+        archive_exe_path: '',
+      },
+      paths: {
+        parent_install_path: lib.details.paths.parent_install_path,
+        install_path: lib.details.paths.install_path,
+        full_path: lib.details.paths.install_path,
+      },
+      validation_status: {
+        file_exists: lib.details.validation_status.file_exists,
+        registry_valid: false,
+        path_exists: lib.details.validation_status.path_exists,
+      }
+    }
+  }))
+  return [...apps, ...libs]
+})
 
 const sortKey = ref('name')
 const sortOrder = ref(1)
@@ -32,15 +69,15 @@ const sortOptions = [
 ]
 
 const sortedApps = computed(() => {
-  const apps = [...appListStore.links]
-  return apps.sort((a, b) => {
+  const allLinks = [...links.value]
+  return allLinks.sort((a, b) => {
     let valueA, valueB
     if (sortKey.value === 'name') {
-      valueA = a.details.name.toLowerCase()
-      valueB = b.details.name.toLowerCase()
+      valueA = a.details.info.name.toLowerCase()
+      valueB = b.details.info.name.toLowerCase()
     } else if (sortKey.value === 'publisher') {
-      valueA = a.details.publisher.toLowerCase()
-      valueB = b.details.publisher.toLowerCase()
+      valueA = a.details.info.publisher.toLowerCase()
+      valueB = b.details.info.publisher.toLowerCase()
     } else {
       valueA = a.timestamp
       valueB = b.timestamp
@@ -50,7 +87,7 @@ const sortedApps = computed(() => {
 })
 
 const showPaginator = computed(() => {
-  return appListStore.links.length > 100
+  return links.value.length > 100
 })
 
 async function loadAppList() {
@@ -144,7 +181,7 @@ async function openApp() {
   await invoke('execute_command', {
     command: {
       name: 'Open',
-      path: selectedApp.value.details.full_path,
+      path: selectedApp.value.details.paths.full_path,
     },
   })
   loading.value = false
@@ -156,7 +193,7 @@ async function openInstallFolder() {
   await invoke('execute_command', {
     command: {
       name: 'OpenFolder',
-      path: selectedApp.value.details.full_path,
+      path: selectedApp.value.details.paths.full_path,
     },
   })
 }
@@ -167,8 +204,8 @@ async function openRegistry() {
   await invoke('execute_command', {
     command: {
       name: 'OpenRegistry',
-      app_name: selectedApp.value.details.name,
-      current_user_only: selectedApp.value.details.current_user_only,
+      app_name: selectedApp.value.details.info.name,
+      current_user_only: selectedApp.value.details.config.current_user_only,
     },
   })
 }
@@ -182,7 +219,7 @@ async function confirmUninstall() {
   await new Promise((resolve, reject) => {
     confirm.require({
       message: t('app_list.confirm_uninstall_message', {
-        name: app.details.name,
+        name: app.details.info.name,
       }),
       group: 'dialog',
       header: t('app_list.confirm_uninstall_header'),
@@ -210,13 +247,15 @@ async function confirmUninstall() {
 async function confirmDelete() {
   if (!selectedApp.value) return
 
-  const app = appListStore.getAppByTimestamp(selectedApp.value.timestamp)
-  if (!app) return
+  const item = selectedApp.value.type === 'app'
+    ? appListStore.getAppByTimestamp(selectedApp.value.timestamp)
+    : appListStore.getLibByTimestamp(selectedApp.value.timestamp)
+  if (!item) return
 
   await new Promise((resolve, reject) => {
     confirm.require({
       message: t('app_list.confirm_delete_message', {
-        name: app.details.name,
+        name: selectedApp.value.details.info.name,
       }),
       group: 'dialog',
       header: t('app_list.confirm_delete_header'),
@@ -233,9 +272,11 @@ async function confirmDelete() {
         icon: 'mir-delete',
       },
       accept: async () => {
-        // Since we don't have a specific method for copy_only apps yet,
-        // we'll use the general removeApp method
-        await appListStore.removeApp(selectedApp.value.timestamp)
+        if (selectedApp.value.type === 'lib') {
+          await appListStore.removeLib(selectedApp.value.timestamp)
+        } else {
+          await appListStore.removeApp(selectedApp.value.timestamp)
+        }
         resolve(true)
       },
       reject: () => reject(),
@@ -249,7 +290,7 @@ async function confirmRemove() {
   await new Promise((resolve, reject) => {
     confirm.require({
       message: t('app_list.confirm_remove_message', {
-        name: selectedApp.value.details.name,
+        name: selectedApp.value.details.info.name,
       }),
       group: 'dialog',
       header: t('app_list.confirm_remove_header'),
@@ -304,7 +345,7 @@ function handleStatusClick(app) {
 
     if (!fileExists && !registryValid) {
       confirm.require({
-        message: t('validation.issue', { name: app.details.name }) + t('validation.missing_both'),
+        message: t('validation.issue', { name: app.details.info.name }) + t('validation.missing_both'),
         header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
@@ -322,7 +363,7 @@ function handleStatusClick(app) {
       })
     } else if (!fileExists) {
       confirm.require({
-        message: t('validation.issue', { name: app.details.name }) + t('validation.missing_file'),
+        message: t('validation.issue', { name: app.details.info.name }) + t('validation.missing_file'),
         header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
@@ -341,7 +382,7 @@ function handleStatusClick(app) {
     } else if (!registryValid) {
       confirm.require({
         message:
-          t('validation.issue', { name: app.details.name }) + t('validation.missing_registry'),
+          t('validation.issue', { name: app.details.info.name }) + t('validation.missing_registry'),
         header: t('validation.title'),
         icon: 'mir-warning',
         rejectProps: {
@@ -368,7 +409,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     await new Promise((resolve, reject) => {
       confirm.require({
         message: t('confirm_uninstall_message', {
-          name: appToValidate.value.details.name,
+          name: appToValidate.value.details.info.name,
         }),
         group: 'dialog',
         header: t('confirm_uninstall_header'),
@@ -454,8 +495,9 @@ onMounted(() => {
       </template>
 
       <DataView :value="sortedApps" :loading="loading" :paginator="showPaginator" :rows="100"
-        :rows-per-page-options="[50, 100, 200, 500]" filterBy="details.name,details.publisher,details.version"
-        :filter-value="filters.global.value" dataKey="timestamp">
+        :rows-per-page-options="[50, 100, 200, 500]"
+        filterBy="details.info.name,details.info.publisher,details.info.version" :filter-value="filters.global.value"
+        dataKey="timestamp">
         <template #list="{ items }">
           <div class="grid">
             <div v-for="item in items" :key="item.timestamp"
@@ -464,7 +506,7 @@ onMounted(() => {
                 <div class="mr-4 flex items-center justify-center">
                   <div
                     class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                    <img v-if="item.details.icon" :src="item.details.icon" class="size-8 object-contain"
+                    <img v-if="item.details.info.icon" :src="item.details.info.icon" class="size-8 object-contain"
                       alt="App Icon" />
                     <span v-else class="mir-apps text-2xl"></span>
                   </div>
@@ -472,18 +514,18 @@ onMounted(() => {
 
                 <div class="flex-1">
                   <div class="mb-2 flex flex-col">
-                    <span class="text-sm font-medium">{{ item.details.name || item.url }}</span>
+                    <span class="text-sm font-medium">{{ item.details.info.name || item.url }}</span>
                     <div v-if="!item.copy_only"
                       class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <span>{{ item.details.version || t('app.unknown_version') }}</span>
+                      <span>{{ item.details.info.version || t('app.unknown_version') }}</span>
                       <span class="opacity-50">•</span>
-                      <span>{{ item.details.publisher || t('app.unknown_publisher') }}</span>
+                      <span>{{ item.details.info.publisher || t('app.unknown_publisher') }}</span>
                     </div>
                   </div>
 
                   <div class="flex items-center gap-2 text-xs">
-                    <template v-if="item.details.install_path">
-                      <span class="break-all opacity-75">{{ item.details.install_path }}</span>
+                    <template v-if="item.details.paths.install_path">
+                      <span class="break-all opacity-75">{{ item.details.paths.install_path }}</span>
                       <span class="opacity-50">•</span>
                     </template>
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>

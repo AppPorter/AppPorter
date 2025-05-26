@@ -1,11 +1,10 @@
-use crate::configs::settings::Settings;
-use crate::configs::ConfigFile;
+use crate::configs::{env::Env, ConfigFile};
 use std::error::Error;
 use tokio::process::Command;
 
 // Modifies Windows registry to enable/disable application elevation privileges
 pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let settings = Settings::read().await?;
+    let env = Env::read().await?;
 
     let operation = if !revert {
         "Set-ItemProperty -Path $regPath -Name $programPath -Value $adminFlag"
@@ -21,7 +20,7 @@ pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error + Send + Sync
         {}
         "#,
         std::env::current_exe()?.to_string_lossy(),
-        settings.user_sid,
+        env.user_sid,
         operation
     );
 

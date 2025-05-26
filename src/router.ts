@@ -1,11 +1,10 @@
 import AppList from '@/pages/AppList.vue'
-import CopyOnly from '@/pages/CopyOnly/Config.vue'
-import CopyOnlyProgress from '@/pages/CopyOnly/Progress.vue'
+import Install_Lib_Config from '@/pages/CopyOnly/Config.vue'
+import Install_Lib_Progress from '@/pages/CopyOnly/Progress.vue'
 import Home from '@/pages/Home.vue'
-import Installation_Config from '@/pages/Installation/Config.vue'
-import Installation_Progress from '@/pages/Installation/Progress.vue'
+import Install_Config from '@/pages/Installation/Config.vue'
+import Install_Progress from '@/pages/Installation/Progress.vue'
 import Settings from '@/pages/Settings.vue'
-import { useInstallationConfigStore } from '@/stores/installation_config'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
@@ -14,8 +13,8 @@ const Dummy = { render: () => null }
 
 // Route configuration with metadata
 const routes = [
-  { path: '/', redirect: '/Installation' },
-  { path: '/Installation', component: Dummy },
+  { path: '/', redirect: '/Install' },
+  { path: '/Install', component: Dummy },
   {
     path: '/Home',
     component: Home,
@@ -24,29 +23,29 @@ const routes = [
     },
   },
   {
-    path: '/Installation/Config',
-    component: Installation_Config,
+    path: '/Install/App/Config',
+    component: Install_Config,
     meta: {
       icon: 'mir-settings_applications',
     },
   },
   {
-    path: '/Installation/Progress',
-    component: Installation_Progress,
+    path: '/Install/App/Progress',
+    component: Install_Progress,
     meta: {
       icon: 'mir-pending_actions',
     },
   },
   {
-    path: '/CopyOnly/Config',
-    component: CopyOnly,
+    path: '/Install/Lib/Config',
+    component: Install_Lib_Config,
     meta: {
       icon: 'mir-folder_copy',
     },
   },
   {
-    path: '/CopyOnly/Progress',
-    component: CopyOnlyProgress,
+    path: '/Install/Lib/Progress',
+    component: Install_Lib_Progress,
     meta: {
       icon: 'mir-pending_actions',
     },
@@ -79,26 +78,28 @@ export function setupRouterGuards(router: Router) {
       return true
     }
 
-    const installationConfig = useInstallationConfigStore()
-
     // Handle installation wizard navigation based on current page state
-    if (to.path === '/Installation') {
+    if (to.path === '/Install') {
+      // Import store here to avoid accessing it before Pinia is initialized
+      const { InstallConfigStore } = await import('./stores/install_config')
+      const installConfig = InstallConfigStore()
+
       let path = ''
-      switch (installationConfig.page) {
+      switch (installConfig.page) {
         case 'Home':
           path = '/Home'
           break
-        case 'InstallationConfig':
-          path = '/Installation/Config'
+        case 'Install_App_Config':
+          path = '/Install/App/Config'
           break
-        case 'InstallationProgress':
-          path = '/Installation/Progress'
+        case 'Install_App_Progress':
+          path = '/Install/App/Progress'
           break
-        case 'CopyOnlyConfig':
-          path = '/CopyOnly/Config'
+        case 'Install_Lib_Config':
+          path = '/Install/Lib/Config'
           break
-        case 'CopyOnlyProgress':
-          path = '/CopyOnly/Progress'
+        case 'Install_Lib_Progress':
+          path = '/Install/Lib/Progress'
           break
       }
       return { path }
@@ -106,7 +107,10 @@ export function setupRouterGuards(router: Router) {
 
     // Reset installation state when returning to home page
     if (to.path === '/Home') {
-      installationConfig.$reset()
+      // Import store here to avoid accessing it before Pinia is initialized
+      const { InstallConfigStore } = await import('./stores/install_config')
+      const installConfig = InstallConfigStore()
+      installConfig.$reset()
     }
 
     return true

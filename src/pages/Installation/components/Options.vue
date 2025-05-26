@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
-import { useInstallationConfigStore } from '@/stores/installation_config'
-import { useSettingsStore } from '@/stores/settings'
+import { InstallConfigStore } from '@/stores/install_config'
+import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
@@ -17,12 +17,12 @@ defineProps<{
   pathError: string
 }>()
 
-const settingsStore = useSettingsStore()
+const settingsStore = SettingsStore()
 const {
-  installation: { current_user_only: settings_current_user_only, all_users, current_user },
+  app_install: { current_user_only: settings_current_user_only, all_users, current_user },
 } = settingsStore
 
-const installationConfig = useInstallationConfigStore()
+const installConfig = InstallConfigStore()
 const {
   current_user_only,
   create_desktop_shortcut,
@@ -32,7 +32,7 @@ const {
   add_to_path,
   path_directory,
   zip_path,
-} = storeToRefs(installationConfig)
+} = storeToRefs(installConfig)
 
 const { t } = useI18n()
 
@@ -46,44 +46,44 @@ function handleDetailsLoading(loading: boolean) {
 
 // Format app path based on install path and app name
 const formatted_app_path = computed(() => {
-  return `${install_path.value}\\${installationConfig.name.replace(/ /g, '-')}`
+  return `${install_path.value}\\${installConfig.name.replace(/ /g, '-')}`
 })
 
-// Sync settings between installation modes
+// Sync settings between install modes
 function updateConfig(isCurrentUser: boolean) {
   const sourceConfig = isCurrentUser ? current_user : all_users
 
-  create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
-  create_registry_key.value = sourceConfig.create_registry_key
-  create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
-  install_path.value = sourceConfig.install_path
-  add_to_path.value = sourceConfig.add_to_path
-  path_directory.value = ''  // Reset path directory when switching modes
+  installConfig.details.config.create_desktop_shortcut = sourceConfig.create_desktop_shortcut
+  installConfig.details.config.create_registry_key = sourceConfig.create_registry_key
+  installConfig.details.config.create_start_menu_shortcut = sourceConfig.create_start_menu_shortcut
+  installConfig.details.paths.parent_install_path = sourceConfig.install_path
+  installConfig.details.config.add_to_path = sourceConfig.add_to_path
+  installConfig.details.config.path_directory = ''  // Reset path directory when switching modes
 }
 
 // Initialize with settings
-current_user_only.value = settings_current_user_only
+installConfig.details.config.current_user_only = settings_current_user_only
 updateConfig(current_user_only.value)
 
-// Select installation directory using file dialog
+// Select install directory using file dialog
 async function select_install_path() {
   const selected = await open({
     directory: true,
     multiple: false,
   })
   if (selected) {
-    install_path.value = String(selected)
+    installConfig.details.paths.parent_install_path = String(selected)
   }
 }
 
-// Update configuration when installation mode changes
+// Update configuration when install mode changes
 function handleInstallModeChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
-  current_user_only.value = checked
+  installConfig.details.config.current_user_only = checked
   updateConfig(checked)
 }
 
-// Ensure configuration stays in sync with installation mode
+// Ensure configuration stays in sync with install mode
 watchEffect(() => {
   updateConfig(current_user_only.value)
 })
@@ -96,7 +96,7 @@ watchEffect(() => {
         <div class="flex items-center gap-1.5">
           <span class="mir-settings" />
           <h2 class="text-base font-medium">
-            {{ t('installation.config.installation_options') }}
+            {{ t('install.config.install_options') }}
           </h2>
         </div>
       </div>
@@ -125,7 +125,7 @@ watchEffect(() => {
           </div>
 
           <!-- Formatted App Path -->
-          <div v-if="install_path && installationConfig.name" class="mt-1 text-xs text-gray-500">
+          <div v-if="install_path && installConfig.name" class="mt-1 text-xs text-gray-500">
             {{ t('final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
@@ -144,7 +144,7 @@ watchEffect(() => {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

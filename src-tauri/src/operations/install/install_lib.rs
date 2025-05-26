@@ -1,7 +1,9 @@
-use super::get_7z_path;
-use crate::configs::{
-    app_list::{App, AppList, InstalledApp, ValidationStatus},
-    ConfigFile,
+use crate::{
+    configs::{
+        app_list::{AppList, Lib, LibConfig, LibDetails, LibPaths, LibValidationStatus},
+        ConfigFile,
+    },
+    operations::get_7z_path,
 };
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -12,7 +14,7 @@ use std::process::Stdio;
 use tauri::{AppHandle, Emitter};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct CopyOnlyConfig {
+pub struct LibInstallConfig {
     zip_path: String,
     password: Option<String>,
     extract_path: String,
@@ -20,15 +22,15 @@ pub struct CopyOnlyConfig {
     timestamp: i64,
 }
 
-pub async fn copy_only(
-    config: CopyOnlyConfig,
+pub async fn install_lib(
+    config: LibInstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let zip_path = config.zip_path.clone();
     let extract_path = config.extract_path.clone();
 
     // Notify frontend preparing
-    app.emit("copyonly", 0)?;
+    app.emit("install_lib", 0)?;
 
     // Ensure extract directory exists
     if !Path::new(&extract_path).exists() {
@@ -99,7 +101,7 @@ pub async fn copy_only(
     }
 
     // Notify frontend completed
-    app.emit("copyonly", 101)?;
+    app.emit("install_lib", 101)?;
 
     // Add to app list
     let mut app_list = AppList::read().await?;
@@ -108,36 +110,32 @@ pub async fn copy_only(
     } else {
         chrono::Utc::now().timestamp()
     };
-    let details = InstalledApp {
-        install_path: extract_path.clone(),
+    let details = LibDetails {
         name: config.name,
-        version: String::new(),
-        publisher: String::new(),
-        executable_path: String::new(),
-        full_path: app_path,
-        icon: String::new(),
-        create_start_menu_shortcut: false,
-        create_desktop_shortcut: false,
-        create_registry_key: false,
-        add_to_path: false,
-        path_directory: String::new(),
-        current_user_only: true,
-        validation_status: ValidationStatus {
+        config: LibConfig {
+            archive_password: config.password.unwrap_or_default(),
+            add_to_path: false,
+            path_directory: String::new(),
+        },
+        paths: LibPaths {
+            parent_install_path: extract_path.clone(),
+            install_path: app_path.clone(),
+        },
+        validation_status: LibValidationStatus {
             file_exists: true,
-            registry_valid: false,
+            path_exists: true,
         },
     };
-    let app_item = App {
+    let app_item = Lib {
         timestamp,
         installed: true,
-        copy_only: true,
         details,
         url: String::new(),
     };
     if config.timestamp != 0 {
         // Update existing app with matching timestamp
         if let Some(existing_app) = app_list
-            .links
+            .libs
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
@@ -146,16 +144,14 @@ pub async fn copy_only(
         }
     } else {
         // Remove existing similar app and add new one
-        app_list.links.retain(|existing_app| {
+        app_list.libs.retain(|existing_app| {
             let mut app1 = existing_app.clone();
             let mut app2 = app_item.clone();
             app1.timestamp = 0;
             app2.timestamp = 0;
-            app1.details.version = String::new();
-            app2.details.version = String::new();
             app1 != app2
         });
-        app_list.links.push(app_item);
+        app_list.libs.push(app_item);
     }
     app_list.save().await?;
 
