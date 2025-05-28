@@ -12,7 +12,11 @@ lazy_static! {
 }
 
 pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let args: Vec<String> = std::env::args().collect();
+    let init_args: Vec<String> = std::env::args().collect();
+    let args: Vec<String> = init_args
+        .into_iter()
+        .filter(|arg| arg != "--silent")
+        .collect();
     if args.len() == 3 || args.len() == 4 {
         cases(app.clone(), args).await?;
     }
