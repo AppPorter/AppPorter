@@ -50,7 +50,7 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
         })
         .plugin(tauri_plugin_single_instance::init(move |app, args, _| {
             tokio::spawn(async move {
-                CHANNEL.0.send(args).unwrap();
+                CHANNEL.0.send(args).expect("Failed to send args");
             });
 
             let window = app.get_webview_window("main").expect("no main window");
