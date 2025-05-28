@@ -12,6 +12,31 @@ use tokio_tungstenite::{
     tungstenite::{Error as WsError, Message},
 };
 
+// Starts WebSocket server on port 7535 for browser extension communication
+pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let addr = "127.0.0.1:7535";
+    let listener = TcpListener::bind(&addr).await?;
+
+    while let Ok((stream, _)) = listener.accept().await {
+        let app = app.clone();
+        tokio::spawn(async move {
+            if let Err(e) = handle_connection(app, stream).await {
+                // Only log unexpected errors
+                if !matches!(
+                    e.downcast_ref::<WsError>(),
+                    Some(WsError::ConnectionClosed)
+                        | Some(WsError::Protocol(_))
+                        | Some(WsError::Utf8)
+                ) {
+                    eprintln!("Error processing connection: {}", e);
+                }
+            }
+        });
+    }
+
+    Ok(())
+}
+
 // Handles WebSocket connection and processes incoming messages in a loop
 async fn handle_connection(
     app: AppHandle,
@@ -26,7 +51,7 @@ async fn handle_connection(
             break;
         }
 
-        if msg.is_text() || msg.is_binary() {
+        if msg.is_text() {
             let response = handle_extension_message(app.clone(), msg).await?;
             ws_sender.send(response).await?;
         }
@@ -68,29 +93,4 @@ async fn handle_extension_message(
     } else {
         Ok(Message::Text("Invalid message format".into()))
     }
-}
-
-// Starts WebSocket server on port 7535 for browser extension communication
-pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let addr = "127.0.0.1:7535";
-    let listener = TcpListener::bind(&addr).await?;
-
-    while let Ok((stream, _)) = listener.accept().await {
-        let app = app.clone();
-        tokio::spawn(async move {
-            if let Err(e) = handle_connection(app, stream).await {
-                // Only log unexpected errors
-                if !matches!(
-                    e.downcast_ref::<WsError>(),
-                    Some(WsError::ConnectionClosed)
-                        | Some(WsError::Protocol(_))
-                        | Some(WsError::Utf8)
-                ) {
-                    eprintln!("Error processing connection: {}", e);
-                }
-            }
-        });
-    }
-
-    Ok(())
 }
