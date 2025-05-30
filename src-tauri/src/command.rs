@@ -35,11 +35,6 @@ pub enum Command {
     RemoveStartup,
 
     // Operations - Install/Uninstall
-    InstallWithLink {
-        url: String,
-        timestamp: i64,
-        is_lib: InstallType,
-    },
     InstallApp {
         config: AppInstallConfig,
     },
@@ -121,11 +116,6 @@ impl Command {
             RemoveStartup => Self::ser(remove_startup()?),
 
             // Operations - Install/Uninstall
-            InstallWithLink {
-                url,
-                timestamp,
-                is_lib,
-            } => Self::ser(install_with_link(app, url, timestamp, is_lib).await?),
             InstallApp { config } => Self::ser(install_app(config, app).await?),
             InstallLib { config } => Self::ser(install_lib(config, app).await?),
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),

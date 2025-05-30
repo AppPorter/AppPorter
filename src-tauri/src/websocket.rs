@@ -1,11 +1,8 @@
-use crate::configs::app_list::App;
-use crate::configs::app_list::AppList;
-use crate::configs::ConfigFile;
-use crate::operations::install_with_link;
-use crate::operations::InstallType;
+use crate::core::download_file;
 use futures_util::{SinkExt, StreamExt};
 use std::error::Error;
 use tauri::AppHandle;
+use tauri::Emitter;
 use tokio::net::{TcpListener, TcpStream};
 use tokio_tungstenite::{
     accept_async,
@@ -64,32 +61,12 @@ async fn handle_extension_message(
     app: AppHandle,
     msg: Message,
 ) -> Result<Message, Box<dyn Error + Send + Sync>> {
-    if let Message::Text(text) = &msg {
-        let mut app_list = match AppList::read().await {
-            Ok(list) => list,
-            Err(_) => return Ok(Message::Text("Error: Failed to read app list".into())),
-        };
-
-        if app_list.has_link(text) {
-            return Ok(Message::Text("Link already exists".into()));
-        }
-
+    if let Message::Text(url) = &msg {
         let timestamp = chrono::Utc::now().timestamp();
-        let new_app = App {
-            timestamp,
-            installed: false,
-            url: text.to_string(),
-            ..Default::default()
-        };
-        app_list.apps.push(new_app);
-        let result = app_list.save().await;
+        let downloaded = download_file(url.to_string()).await.unwrap_or_default();
+        app.emit("received", (downloaded, timestamp))?;
 
-        install_with_link(app, text.to_string(), timestamp, InstallType::Pending).await?;
-
-        match result {
-            Ok(_) => Ok(Message::Text("Link added successfully".into())),
-            Err(_) => Ok(Message::Text("Error: Failed to save link".into())),
-        }
+        Ok(Message::Text("Success".into()))
     } else {
         Ok(Message::Text("Invalid message format".into()))
     }
