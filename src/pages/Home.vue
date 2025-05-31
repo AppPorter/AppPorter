@@ -56,10 +56,8 @@ async function selectZipFile() {
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="goTo('/Installation/Lib/Config')" :disabled="!zip_path" severity="secondary" class="h-9 px-6"
-            icon="mir-folder_copy" :label="t('install_lib')" />
-          <Button @click="goTo('/Installation/App/Config')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
-            icon="mir-install_desktop" :label="t('install_app')" />
+          <Button @click="goTo('/Installation/Preview')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
+            icon="mir-install_desktop" :label="t('next')" />
         </div>
       </div>
     </Panel>

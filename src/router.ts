@@ -2,8 +2,9 @@ import AppList from '@/pages/AppList.vue'
 import Install_Lib_Config from '@/pages/CopyOnly/Config.vue'
 import Install_Lib_Progress from '@/pages/CopyOnly/Progress.vue'
 import Home from '@/pages/Home.vue'
-import Install_Config from '@/pages/Installation/Config.vue'
-import Install_Progress from '@/pages/Installation/Progress.vue'
+import Install_Config from '@/pages/Install/Config.vue'
+import Install_Progress from '@/pages/Install/Progress.vue'
+import Preview from '@/pages/Preview.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -18,6 +19,13 @@ const routes = [
   {
     path: '/Home',
     component: Home,
+    meta: {
+      icon: 'mir-install_desktop',
+    },
+  },
+  {
+    path: '/Preview',
+    component: Preview,
     meta: {
       icon: 'mir-install_desktop',
     },

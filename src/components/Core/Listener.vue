@@ -15,6 +15,13 @@ const installConfig = InstallConfigStore()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
+    await listen('received', (event) => {
+        const payload = event.payload as { zip_path: string; timestamp: number }
+        installConfig.zip_path = payload[0]
+        installConfig.timestamp = payload[1]
+        goTo('/Installation/App/Config')
+    })
+
     await listen('install', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number }
         installConfig.zip_path = payload[0]
