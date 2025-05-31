@@ -1,6 +1,0 @@
-* text=true eol=lf
-
-*.exe binary
-*.dll binary
-*.png binary
-*.woff2 binary
