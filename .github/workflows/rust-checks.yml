@@ -1,0 +1,41 @@
+name: Rust Checks
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  rust-checks:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: src-tauri
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust stable toolchain
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Rust nightly toolchain
+        uses: dtolnay/rust-toolchain@nightly
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+          cache-directories: ~/.cargo/bin
+          cache-on-failure: true
+          shared-key: 'windows-latest-stable-nightly'
+
+      - name: Install cargo-udeps
+        run: cargo install cargo-udeps --locked
+
+      - name: Run Clippy
+        run: cargo +stable clippy --all-targets --all-features -- -D warnings
+
+      - name: Run Udeps
+        run: cargo +nightly udeps --all-targets --all-features || exit 1
