@@ -1,5 +1,5 @@
 <div align="center">
-<img src="src/assets/appporter.svg" width="128" height="128" alt="AppPorter">
+<img src="static/appporter.svg" width="128" height="128" alt="AppPorter">
 <h1>AppPorter</h1>
 <p>Simplify the installation and management of portable software</p>
 
@@ -15,8 +15,8 @@
 
 ## Overview
 
-![Screenshot 1](/public/Screenshot1.png)
-![Screenshot 2](/public/Screenshot2.png)
+![Screenshot 1](/static/Screenshot1.png)
+![Screenshot 2](/static/Screenshot2.png)
 
 AppPorter is a desktop application designed to simplify the installation and management of portable software (ZIP-packaged applications).
 
