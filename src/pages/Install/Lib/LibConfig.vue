@@ -1,39 +1,37 @@
 <script setup lang="ts">
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
-import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
-import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
-import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
-import { useConfirm } from 'primevue/useconfirm'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
+// Props
+defineProps<{
+    pathError: string
+}>()
+
+// Emits
+defineEmits<{
+    'update:pathError': [value: string]
+}>()
+
 const installConfig = InstallConfigStore()
-const toast = useToast()
-const confirm = useConfirm()
 const { t } = useI18n()
 const settingsStore = SettingsStore()
 const { lib_install } = settingsStore
 
 // UI state management
-const pathError = ref('')
 const directoryDrawerVisible = ref(false)
 const detailsLoading = ref(false)
 
 // Load archive content when component is mounted
 onMounted(async () => {
-    if (!installConfig.zip_path) {
-        goTo('/Home')
-        return
-    }
-
     // Initialize config from settings
     installConfig.lib_details.paths.parent_install_path = lib_install.install_path
     installConfig.lib_details.config.add_to_path = lib_install.add_to_path
@@ -50,107 +48,6 @@ onMounted(async () => {
 
 function handleDetailsLoading(loading: boolean) {
     detailsLoading.value = loading
-}
-
-// Handle extraction process initiation
-async function handleExtractClick() {
-    // Reset validation errors
-    pathError.value = ''
-
-    if (!installConfig.lib_details.name) {
-        toast.add({
-            severity: 'error',
-            summary: t('validation.name_required'),
-            detail: t('validation.enter_name'),
-            life: 3000,
-        })
-        return
-    }
-
-    if (!installConfig.lib_details.paths.parent_install_path) {
-        pathError.value = t('validation.select_path')
-        toast.add({
-            severity: 'error',
-            summary: t('validation.path_required'),
-            detail: t('validation.select_path'),
-            life: 3000,
-        })
-        return
-    }
-
-    try {
-        const validatedPath = (await invoke('execute_command', {
-            command: {
-                name: 'ValidatePath',
-                path: installConfig.lib_details.paths.parent_install_path,
-            },
-        })) as string
-
-        installConfig.lib_details.paths.parent_install_path = validatedPath
-        const fullPath = `${validatedPath}\\${installConfig.lib_details.name || 'Extracted-Files'}`
-
-        try {
-            await invoke('execute_command', {
-                command: {
-                    name: 'CheckPathEmpty',
-                    path: fullPath,
-                },
-            })
-
-            await new Promise((resolve, reject) => {
-                confirm.require({
-                    message: t('copyonly.confirm_extract'),
-                    group: 'dialog',
-                    icon: 'mir-folder_copy',
-                    header: t('copyonly.start_extraction'),
-                    rejectProps: {
-                        label: t('cancel'),
-                        severity: 'secondary',
-                        outlined: true,
-                        icon: 'mir-close',
-                    },
-                    acceptProps: {
-                        label: t('extract'),
-                        icon: 'mir-navigate_next',
-                    },
-                    accept: () => resolve(true),
-                    reject: () => reject(),
-                })
-            })
-        } catch (error) {
-            if (error === 'Install directory is not empty') {
-                await new Promise((resolve, reject) => {
-                    confirm.require({
-                        message: t('install.config.directory_not_empty'),
-                        group: 'dialog',
-                        icon: 'mir-warning',
-                        header: t('warning'),
-                        rejectProps: {
-                            label: t('cancel'),
-                            severity: 'secondary',
-                            outlined: true,
-                            icon: 'mir-close',
-                        },
-                        acceptProps: {
-                            label: t('copyonly.force_extract'),
-                            severity: 'danger',
-                            icon: 'mir-warning',
-                        },
-                        accept: () => resolve(true),
-                        reject: () => reject(),
-                    })
-                })
-            } else {
-                pathError.value = error as string
-                return
-            }
-        }
-
-        // Since we're just copying files, we can go directly to the progress page
-        goTo('/CopyOnly/Progress')
-    } catch (error) {
-        pathError.value = error as string
-    }
 }
 
 // Select extraction directory using file dialog
@@ -208,7 +105,8 @@ async function select_extract_path() {
                                     <div class="flex flex-1 gap-2">
                                         <InputText v-model="installConfig.lib_details.paths.parent_install_path"
                                             :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
-                                            :invalid="!!pathError" @input="pathError = ''" :title="pathError" />
+                                            :invalid="!!pathError" @input="$emit('update:pathError', '')"
+                                            :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('browse')" />
                                     </div>
@@ -225,7 +123,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installConfig.lib_details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">
@@ -248,11 +146,7 @@ async function select_extract_path() {
             </div>
 
             <!-- Button container -->
-            <div class="mt-4 flex justify-between px-1 pb-2">
-                <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
-                    icon="mir-arrow_back" :label="t('back')" outlined />
-                <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200"
-                    @click="handleExtractClick" icon="mir-folder_copy" :label="t('extract')" />
+            <div class="mt-4 flex justify-end px-1 pb-2">
             </div>
         </div>
 
