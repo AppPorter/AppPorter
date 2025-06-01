@@ -44,7 +44,8 @@ pub struct AppConfig {
     pub create_start_menu_shortcut: bool,
     pub create_registry_key: bool,
     pub add_to_path: bool,
-    pub path_directory: String,
+    pub archive_path_directory: String,
+    pub full_path_directory: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
@@ -86,7 +87,8 @@ pub struct LibDetails {
 pub struct LibConfig {
     pub archive_password: String,
     pub add_to_path: bool,
-    pub path_directory: String,
+    pub archive_path_directory: String,
+    pub full_path_directory: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]

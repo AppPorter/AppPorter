@@ -115,7 +115,8 @@ pub async fn install_lib(
         config: LibConfig {
             archive_password: config.password.unwrap_or_default(),
             add_to_path: false,
-            path_directory: String::new(),
+            archive_path_directory: String::new(),
+            full_path_directory: String::new(),
         },
         paths: LibPaths {
             parent_install_path: extract_path.clone(),

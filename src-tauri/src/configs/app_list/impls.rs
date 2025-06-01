@@ -5,6 +5,7 @@ use crate::configs::{app_list::AppDetails, settings::Settings};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
+use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[async_trait::async_trait]
 impl ConfigFile for AppList {
@@ -57,10 +58,41 @@ impl AppList {
                 true
             };
 
+            // Check PATH environment variable
+            let path_valid = if app.details.config.add_to_path {
+                let path_to_check = &app.details.config.full_path_directory;
+
+                if app.details.config.current_user_only {
+                    if let Ok(key) = CURRENT_USER.open("Environment") {
+                        if let Ok(path) = key.get_string("Path") {
+                            path.split(';').any(|p| p.trim() == path_to_check.trim())
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                } else {
+                    if let Ok(key) = LOCAL_MACHINE
+                        .open(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+                    {
+                        if let Ok(path) = key.get_string("path") {
+                            path.split(';').any(|p| p.trim() == path_to_check.trim())
+                        } else {
+                            false
+                        }
+                    } else {
+                        false
+                    }
+                }
+            } else {
+                true
+            };
+
             app.details.validation_status = AppValidationStatus {
                 file_exists,
                 registry_valid,
-                path_exists: true,
+                path_exists: path_valid,
             };
         }
 
@@ -74,9 +106,27 @@ impl AppList {
                 .await
                 .unwrap_or(false);
 
+            // Check PATH environment variable
+            let path_valid = if lib.details.config.add_to_path {
+                let path_to_check = &lib.details.config.full_path_directory;
+
+                // Libs are always added to CURRENT_USER environment
+                if let Ok(key) = CURRENT_USER.open("Environment") {
+                    if let Ok(path) = key.get_string("Path") {
+                        path.split(';').any(|p| p.trim() == path_to_check.trim())
+                    } else {
+                        false
+                    }
+                } else {
+                    false
+                }
+            } else {
+                true
+            };
+
             lib.details.validation_status = LibValidationStatus {
                 file_exists,
-                path_exists: true,
+                path_exists: path_valid,
             };
         }
         Ok(())
@@ -283,7 +333,8 @@ impl AppList {
                     create_start_menu_shortcut,
                     create_registry_key,
                     add_to_path,
-                    path_directory: install_path.clone(),
+                    archive_path_directory: String::new(),
+                    full_path_directory: install_path.clone(),
                 },
                 paths: AppPaths {
                     parent_install_path: install_path.clone(),

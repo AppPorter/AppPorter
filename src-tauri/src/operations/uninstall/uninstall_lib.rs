@@ -30,34 +30,8 @@ pub async fn uninstall_lib(
 
     // Remove from PATH if it was added
     if lib_config.details.config.add_to_path {
-        let path_to_remove = if !lib_config.details.config.path_directory.is_empty() {
-            // User specified a custom directory that was added to PATH
-            if lib_config.details.config.path_directory.starts_with('/')
-                || lib_config.details.config.path_directory.starts_with('\\')
-            {
-                // If path starts with / or \, it's relative to the lib root
-                format!(
-                    "{}\\{}",
-                    lib_config.details.paths.install_path,
-                    lib_config
-                        .details
-                        .config
-                        .path_directory
-                        .trim_start_matches(['/', '\\'])
-                        .replace("/", "\\")
-                )
-            } else {
-                // Otherwise, it's an absolute path or just a directory name
-                format!(
-                    "{}\\{}",
-                    lib_config.details.paths.install_path,
-                    lib_config.details.config.path_directory.replace("/", "\\")
-                )
-            }
-        } else {
-            // Default: use the library directory itself
-            lib_config.details.paths.install_path.clone()
-        };
+        // Use the pre-calculated full_path_directory
+        let path_to_remove = &lib_config.details.config.full_path_directory;
 
         // Remove from CURRENT_USER environment
         let key = CURRENT_USER.create("Environment")?;

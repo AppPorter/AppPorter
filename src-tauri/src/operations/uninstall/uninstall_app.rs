@@ -66,44 +66,8 @@ pub async fn uninstall_app(
 
     // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
-        // Determine which path was added to PATH environment variable
-        let path_to_remove = if !app_config.details.config.path_directory.is_empty() {
-            // User specified a custom directory that was added to PATH
-            let app_path_str = Path::new(&app_config.details.paths.install_path)
-                .join(app_config.details.info.name.replace(" ", "-"))
-                .to_string_lossy()
-                .to_string();
-
-            if app_config.details.config.path_directory.starts_with('/')
-                || app_config.details.config.path_directory.starts_with('\\')
-            {
-                // If path starts with / or \, it's relative to the app root
-                format!(
-                    "{}\\{}",
-                    app_path_str,
-                    app_config
-                        .details
-                        .config
-                        .path_directory
-                        .trim_start_matches(['/', '\\'])
-                        .replace("/", "\\")
-                )
-            } else {
-                // Otherwise, it's an absolute path or just a directory name
-                format!(
-                    "{}\\{}",
-                    app_path_str,
-                    app_config.details.config.path_directory.replace("/", "\\")
-                )
-            }
-        } else {
-            // Default: use executable's parent directory
-            Path::new(&app_config.details.paths.full_path)
-                .parent()
-                .expect("Failed to get parent directory")
-                .to_string_lossy()
-                .to_string()
-        };
+        // Use the pre-calculated full_path_directory
+        let path_to_remove = &app_config.details.config.full_path_directory;
 
         if app_config.details.config.current_user_only {
             let key = CURRENT_USER.create("Environment")?;

@@ -55,6 +55,52 @@ pub async fn install_app(
         single_root.as_deref(),
     );
 
+    // Calculate full_path_directory once based on archive_path_directory
+    let calculated_full_path_directory = if !config.details.config.archive_path_directory.is_empty()
+    {
+        if config
+            .details
+            .config
+            .archive_path_directory
+            .starts_with('/')
+            || config
+                .details
+                .config
+                .archive_path_directory
+                .starts_with('\\')
+        {
+            // If path starts with / or \, it's relative to the app root
+            format!(
+                "{}\\{}",
+                app_path,
+                config
+                    .details
+                    .config
+                    .archive_path_directory
+                    .trim_start_matches(['/', '\\'])
+                    .replace("/", "\\")
+            )
+        } else {
+            // Otherwise, it's an absolute path or just a directory name
+            format!(
+                "{}\\{}",
+                app_path,
+                config
+                    .details
+                    .config
+                    .archive_path_directory
+                    .replace("/", "\\")
+            )
+        }
+    } else {
+        // Default: use executable's parent directory
+        Path::new(&full_executable_path)
+            .parent()
+            .expect("Failed to get parent directory")
+            .to_string_lossy()
+            .to_string()
+    };
+
     let env = Env::read().await?;
 
     // Create shortcuts
@@ -79,46 +125,15 @@ pub async fn install_app(
     }
 
     if config.details.config.add_to_path {
-        // Determine which path to add to PATH environment variable
-        let path_to_add = if !config.details.config.path_directory.is_empty() {
-            // User specified a custom directory to add to PATH
-            if config.details.config.path_directory.starts_with('/')
-                || config.details.config.path_directory.starts_with('\\')
-            {
-                // If path starts with / or \, it's relative to the app root
-                format!(
-                    "{}\\{}",
-                    app_path,
-                    config
-                        .details
-                        .config
-                        .path_directory
-                        .trim_start_matches(['/', '\\'])
-                        .replace("/", "\\")
-                )
-            } else {
-                // Otherwise, it's an absolute path or just a directory name
-                format!(
-                    "{}\\{}",
-                    app_path,
-                    config.details.config.path_directory.replace("/", "\\")
-                )
-            }
-        } else {
-            // Default: use executable's parent directory
-            Path::new(&full_executable_path)
-                .parent()
-                .expect("Failed to get parent directory")
-                .to_string_lossy()
-                .to_string()
-        };
-
         if config.details.config.current_user_only {
             let key = CURRENT_USER.create("Environment")?;
             let path = key.get_string("Path")?;
 
-            if !path.split(';').any(|p| p.trim() == path_to_add.trim()) {
-                let new_path = format!("{};{}", path, path_to_add);
+            if !path
+                .split(';')
+                .any(|p| p.trim() == calculated_full_path_directory.trim())
+            {
+                let new_path = format!("{};{}", path, calculated_full_path_directory);
                 key.set_expand_string("Path", new_path)?;
             }
         } else {
@@ -126,8 +141,11 @@ pub async fn install_app(
                 .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
             let path = key.get_string("path")?;
 
-            if !path.split(';').any(|p| p.trim() == path_to_add.trim()) {
-                let new_path = format!("{};{}", path, path_to_add);
+            if !path
+                .split(';')
+                .any(|p| p.trim() == calculated_full_path_directory.trim())
+            {
+                let new_path = format!("{};{}", path, calculated_full_path_directory);
                 key.set_expand_string("path", new_path)?;
             }
         }
@@ -136,9 +154,11 @@ pub async fn install_app(
     // Add to app list
     let mut app_list = AppList::read().await?;
 
-    // Create a mutable copy of the details
+    // Create a mutable copy of the details and set full_path_directory
     let mut updated_details = config.details.clone();
     updated_details.paths.full_path = full_executable_path.clone();
+    updated_details.config.full_path_directory = calculated_full_path_directory;
+
     updated_details.validation_status = AppValidationStatus {
         file_exists: true,
         registry_valid: true,
