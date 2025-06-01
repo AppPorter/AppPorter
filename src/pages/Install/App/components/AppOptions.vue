@@ -3,7 +3,8 @@ import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
-import { computed, ref, watchEffect } from 'vue'
+import { storeToRefs } from 'pinia'
+import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -11,117 +12,84 @@ defineProps<{
 }>()
 
 const settingsStore = SettingsStore()
-const {
-  app_install: { current_user_only: settings_current_user_only, all_users, current_user },
-} = settingsStore
-
 const installConfig = InstallConfigStore()
-
-// Access refs directly from the store structure
-const current_user_only = computed({
-  get: () => installConfig.app_details.config.current_user_only,
-  set: (value: boolean) => {
-    installConfig.app_details.config.current_user_only = value
-  }
-})
-
-const create_desktop_shortcut = computed({
-  get: () => installConfig.app_details.config.create_desktop_shortcut,
-  set: (value: boolean) => {
-    installConfig.app_details.config.create_desktop_shortcut = value
-  }
-})
-
-const create_registry_key = computed({
-  get: () => installConfig.app_details.config.create_registry_key,
-  set: (value: boolean) => {
-    installConfig.app_details.config.create_registry_key = value
-  }
-})
-
-const create_start_menu_shortcut = computed({
-  get: () => installConfig.app_details.config.create_start_menu_shortcut,
-  set: (value: boolean) => {
-    installConfig.app_details.config.create_start_menu_shortcut = value
-  }
-})
-
-const add_to_path = computed({
-  get: () => installConfig.app_details.config.add_to_path,
-  set: (value: boolean) => {
-    installConfig.app_details.config.add_to_path = value
-  }
-})
-
-const path_directory = computed({
-  get: () => installConfig.app_details.config.path_directory,
-  set: (value: string) => {
-    installConfig.app_details.config.path_directory = value
-  }
-})
-
-const install_path = computed({
-  get: () => installConfig.app_details.paths.parent_install_path,
-  set: (value: string) => {
-    installConfig.app_details.paths.parent_install_path = value
-  }
-})
-
-const zip_path = computed(() => installConfig.zip_path)
-
 const { t } = useI18n()
 
-// Directory selector drawer state
+// Extract settings for better readability
+const {
+  current_user_only: settings_current_user_only,
+  all_users,
+  current_user
+} = settingsStore.app_install
+
+// Use storeToRefs pattern like AppDetails
+const { zip_path, app_details } = storeToRefs(installConfig)
+
+// Direct refs to nested properties for v-model binding
+const current_user_only = toRef(app_details.value.config, 'current_user_only')
+const create_desktop_shortcut = toRef(app_details.value.config, 'create_desktop_shortcut')
+const create_registry_key = toRef(app_details.value.config, 'create_registry_key')
+const create_start_menu_shortcut = toRef(app_details.value.config, 'create_start_menu_shortcut')
+const add_to_path = toRef(app_details.value.config, 'add_to_path')
+const path_directory = toRef(app_details.value.config, 'path_directory')
+const install_path = toRef(app_details.value.paths, 'parent_install_path')
+
+// UI state
 const directoryDrawerVisible = ref(false)
 const detailsLoading = ref(false)
+
+// Optimized formatted app path with null safety
+const formatted_app_path = computed(() => {
+  const installPath = install_path.value
+  const appName = app_details.value.info.name
+
+  if (!installPath || !appName) return ''
+
+  return `${installPath}\\${appName.replace(/\s+/g, '-')}`
+})
+
+// Optimized config update function
+function updateConfig(isCurrentUser: boolean) {
+  const sourceConfig = isCurrentUser ? current_user : all_users
+
+  // Update config values using the toRef references
+  create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
+  create_registry_key.value = sourceConfig.create_registry_key
+  create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
+  add_to_path.value = sourceConfig.add_to_path
+  path_directory.value = '' // Reset path directory when switching modes
+  install_path.value = sourceConfig.install_path
+}
+
+// Initialize with settings
+current_user_only.value = settings_current_user_only
+updateConfig(current_user_only.value)
+
+// Optimized file selection
+async function select_install_path() {
+  try {
+    const selected = await open({
+      directory: true,
+      multiple: false,
+    })
+    if (selected) {
+      install_path.value = String(selected)
+    }
+  } catch (error) {
+    console.error('Failed to select install path:', error)
+  }
+}
+
+// Simplified event handler
+function handleInstallModeChange(event: Event) {
+  const checked = (event.target as HTMLInputElement).checked
+  current_user_only.value = checked
+  updateConfig(checked)
+}
 
 function handleDetailsLoading(loading: boolean) {
   detailsLoading.value = loading
 }
-
-// Format app path based on install path and app name
-const formatted_app_path = computed(() => {
-  return `${install_path.value}\\${installConfig.app_details.info.name.replace(/ /g, '-')}`
-})
-
-// Sync settings between install modes
-function updateConfig(isCurrentUser: boolean) {
-  const sourceConfig = isCurrentUser ? current_user : all_users
-
-  installConfig.app_details.config.create_desktop_shortcut = sourceConfig.create_desktop_shortcut
-  installConfig.app_details.config.create_registry_key = sourceConfig.create_registry_key
-  installConfig.app_details.config.create_start_menu_shortcut = sourceConfig.create_start_menu_shortcut
-  installConfig.app_details.paths.parent_install_path = sourceConfig.install_path
-  installConfig.app_details.config.add_to_path = sourceConfig.add_to_path
-  installConfig.app_details.config.path_directory = ''  // Reset path directory when switching modes
-}
-
-// Initialize with settings
-installConfig.app_details.config.current_user_only = settings_current_user_only
-updateConfig(current_user_only.value)
-
-// Select install directory using file dialog
-async function select_install_path() {
-  const selected = await open({
-    directory: true,
-    multiple: false,
-  })
-  if (selected) {
-    installConfig.app_details.paths.parent_install_path = String(selected)
-  }
-}
-
-// Update configuration when install mode changes
-function handleInstallModeChange(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
-  installConfig.app_details.config.current_user_only = checked
-  updateConfig(checked)
-}
-
-// Ensure configuration stays in sync with install mode
-watchEffect(() => {
-  updateConfig(current_user_only.value)
-})
 </script>
 
 <template>
@@ -160,7 +128,7 @@ watchEffect(() => {
           </div>
 
           <!-- Formatted App Path -->
-          <div v-if="install_path && installConfig.app_details.info.name" class="mt-1 text-xs text-gray-500">
+          <div v-if="install_path && app_details.info.name" class="mt-1 text-xs text-gray-500">
             {{ t('final_path') }}: {{ formatted_app_path }}
           </div>
         </div>

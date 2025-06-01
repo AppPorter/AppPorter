@@ -3,10 +3,6 @@ import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
-import Button from 'primevue/button'
-import Panel from 'primevue/panel'
-import ProgressBar from 'primevue/progressbar'
-import Tooltip from 'primevue/tooltip'
 import { useToast } from 'primevue/usetoast'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -15,7 +11,7 @@ import { useI18n } from 'vue-i18n'
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
 const isFinished = ref(false)
-const currentStatus = ref(null)
+const currentStatus = ref('')
 const canClose = ref(false)
 const finalExecutablePath = ref('')
 
@@ -28,10 +24,8 @@ const { t } = useI18n()
 const fullInstallPath = computed(() => {
   const basePath = installConfig.app_details.paths.parent_install_path
   const appName = installConfig.app_details.info.name
-  if (basePath && appName) {
-    return `${basePath.replace(/\\$/, '')}\\${appName}\\`
-  }
-  return basePath
+  if (!basePath || !appName) return basePath || ''
+  return `${basePath.replace(/\\$/, '')}\\${appName}\\`
 })
 
 // Helper functions to format and display install information
@@ -54,64 +48,79 @@ const getShortcutsList = (config: {
 
 // Copy information to clipboard with feedback
 const handleCopy = async (text: string, type: string) => {
-  await navigator.clipboard.writeText(text)
-  toast.add({
-    severity: 'info',
-    summary: t('edit.copy'),
-    detail: `${type} copied to clipboard`,
-    life: 2000,
-  })
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.add({
+      severity: 'info',
+      summary: t('edit.copy'),
+      detail: `${type} copied to clipboard`,
+      life: 2000,
+    })
+  } catch (error) {
+    console.error('Failed to copy to clipboard:', error)
+    toast.add({
+      severity: 'error',
+      summary: t('error'),
+      detail: 'Failed to copy to clipboard',
+      life: 3000,
+    })
+  }
 }
 
-onMounted(() => {
+onMounted(async () => {
   // Initial install setup
   currentStatus.value = t('install.progress.preparing')
 
   // Setup event listeners for install progress
-  listen('install', (event) => {
-    if (event.payload === 0) {
+  const installUnlisten = await listen('install', (event) => {
+    const payload = event.payload as number
+    if (payload === 0) {
       progressMode.value = 'indeterminate'
       currentStatus.value = t('install.progress.preparing_extract')
     }
-    if (event.payload === 101) {
+    if (payload === 101) {
       currentStatus.value = t('install.progress.completed')
       isFinished.value = true
       canClose.value = true
     }
   })
 
-  listen('install_extract', (event) => {
+  const extractUnlisten = await listen('install_extract', (event) => {
     progressMode.value = 'determinate'
     extractProgress.value = event.payload as number
     currentStatus.value = t('install.progress.extracting', { progress: extractProgress.value })
   })
 
   // Start install process
-  invoke('execute_command', {
-    command: {
-      name: 'Install',
-      config: {
-        zip_path: installConfig.zip_path,
-        password: installConfig.archive_password,
-        details: installConfig.app_details,
-        timestamp: installConfig.timestamp,
+  try {
+    const result = await invoke('execute_command', {
+      command: {
+        name: 'Install',
+        config: {
+          zip_path: installConfig.zip_path,
+          password: installConfig.archive_password,
+          details: installConfig.app_details,
+          timestamp: installConfig.timestamp,
+        },
       },
-    },
-  }).then((result) => {
+    })
     finalExecutablePath.value = result as string
-  })
+  } catch (error) {
+    console.error('Install failed:', error)
+    currentStatus.value = t('install.progress.failed')
+    canClose.value = true
+  }
+
+  // Cleanup listeners on unmount
+  return () => {
+    installUnlisten()
+    extractUnlisten()
+  }
 })
 
 const handleClose = () => {
   goTo('/Home')
 }
-
-// Register tooltip directive
-defineOptions({
-  directives: {
-    tooltip: Tooltip,
-  },
-})
 </script>
 
 <template>
@@ -193,7 +202,7 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.install_settings')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -231,7 +240,7 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.package_info')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="

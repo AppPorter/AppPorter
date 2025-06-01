@@ -1,12 +1,8 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { InstallConfigStore } from '@/stores/install_config'
-import Button from 'primevue/button'
-import Divider from 'primevue/divider'
-import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
-import Panel from 'primevue/panel'
-import { computed, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -18,46 +14,26 @@ defineProps<{
 }>()
 
 const installConfig = InstallConfigStore()
-const { zip_path } = installConfig
-const name = computed({
-  get: () => installConfig.app_details.info.name,
-  set: (value: string) => {
-    installConfig.app_details.info.name = value
-  }
-})
-const icon = computed({
-  get: () => installConfig.app_details.info.icon,
-  set: (value: string) => {
-    installConfig.app_details.info.icon = value
-  }
-})
-const publisher = computed({
-  get: () => installConfig.app_details.info.publisher,
-  set: (value: string) => {
-    installConfig.app_details.info.publisher = value
-  }
-})
-const version = computed({
-  get: () => installConfig.app_details.info.version,
-  set: (value: string) => {
-    installConfig.app_details.info.version = value
-  }
-})
-const executable_path = computed({
-  get: () => installConfig.app_details.config.archive_exe_path,
-  set: (value: string) => {
-    installConfig.app_details.config.archive_exe_path = value
-  }
-})
-const { t } = useI18n()
+const { zip_path, app_details } = storeToRefs(installConfig)
 
+// Direct refs to nested properties for v-model binding
+const name = toRef(app_details.value.info, 'name')
+const icon = toRef(app_details.value.info, 'icon')
+const publisher = toRef(app_details.value.info, 'publisher')
+const version = toRef(app_details.value.info, 'version')
+const executable_path = toRef(app_details.value.config, 'archive_exe_path')
+
+const { t } = useI18n()
 const detailsLoading = ref(false)
+const drawerVisible = ref(false)
 
 function clearIcon() {
-  installConfig.app_details.info.icon = ''
+  icon.value = ''
 }
 
-const drawerVisible = ref(false)
+function closeDrawer() {
+  drawerVisible.value = false
+}
 
 function handleDetailsLoading(loading: boolean) {
   detailsLoading.value = loading
@@ -108,13 +84,13 @@ function handleDetailsLoading(loading: boolean) {
                 <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
                 <span v-else class="mir-apps text-2xl" />
               </div>
-              <Button v-if="icon" type="button" severity="danger" text raised
-                class="invisible !absolute !-right-1.5 !-top-1.5 !h-5 !w-5 !min-w-0 scale-75 !p-0 opacity-0 transition-all duration-200 ease-out hover:scale-110 group-hover:visible group-hover:scale-100 group-hover:opacity-100"
+              <Button v-show="icon" type="button" severity="danger" text raised
+                class="!absolute !-right-1.5 !-top-1.5 !h-5 !w-5 !min-w-0 scale-75 !p-0 opacity-0 transition-all duration-200 ease-out hover:scale-110 group-hover:scale-100 group-hover:opacity-100"
                 @click="clearIcon">
                 <span class="mir-close !text-xs" />
               </Button>
             </div>
-            <span v-if="!icon" class="text-xs">
+            <span v-show="!icon" class="text-xs">
               {{ t('install.app_details.icon_extract_hint') }}
             </span>
           </div>
@@ -158,7 +134,7 @@ function handleDetailsLoading(loading: boolean) {
   <Drawer v-model:visible="drawerVisible" :header="t('select_executable')" position="bottom" :style="{ height: '95vh' }"
     class="rounded-lg">
     <div class="h-full overflow-hidden">
-      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" @close="drawerVisible = false"
+      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" @close="closeDrawer"
         @loading="handleDetailsLoading" />
     </div>
   </Drawer>

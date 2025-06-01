@@ -1,22 +1,17 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config';
 import { ref } from 'vue';
 import AppDetails from './components/AppDetails.vue';
 import Options from './components/AppOptions.vue';
 
-// Props
 defineProps<{
   nameError: boolean
   executablePathError: boolean
   pathError: string
 }>()
 
-// Emits
 defineEmits<{
   'update:pathError': [value: string]
 }>()
-
-const installConfig = InstallConfigStore()
 
 // UI state management
 const detailsLoading = ref(false)
