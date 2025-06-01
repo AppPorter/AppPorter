@@ -3,8 +3,8 @@ import { InstallConfigStore } from '@/stores/install_config'
 import SelectButton from 'primevue/selectbutton'
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AppConfig from './App/Config.vue'
-import LibConfig from './Lib/Config.vue'
+import AppConfig from './App/AppConfig.vue'
+import LibConfig from './Lib/LibConfig.vue'
 
 const { t } = useI18n()
 const installConfig = InstallConfigStore()
@@ -38,7 +38,7 @@ onMounted(() => {
         <!-- Mode selector header -->
         <div class="flex justify-center">
             <SelectButton v-model="currentMode" :options="modeOptions" :allowEmpty=false option-label="label"
-                option-value="value" class="mb-2" />
+                size="small" option-value="value" class="mb-2" />
         </div>
 
         <!-- Dynamic content based on selected mode -->

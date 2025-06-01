@@ -8,7 +8,7 @@ import { useConfirm } from 'primevue/useconfirm'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
-import Options from './components/Options.vue'
+import Options from './components/AppOptions.vue'
 
 const installConfig = InstallConfigStore()
 

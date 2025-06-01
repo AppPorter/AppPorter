@@ -1,10 +1,8 @@
 import AppList from '@/pages/AppList.vue'
 import Home from '@/pages/Home.vue'
-import {
-  default as Install_Lib_Progress,
-  default as Install_Progress,
-} from '@/pages/Install/App/Progress.vue'
+import AppProgress from '@/pages/Install/App/AppProgress.vue'
 import Config from '@/pages/Install/Config.vue'
+import LibProgress from '@/pages/Install/Lib/LibProgress.vue'
 import Preview from '@/pages/Install/Preview.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
@@ -40,14 +38,14 @@ const routes = [
   },
   {
     path: '/Install/App/Progress',
-    component: Install_Progress,
+    component: AppProgress,
     meta: {
       icon: 'mir-pending_actions',
     },
   },
   {
     path: '/Install/Lib/Progress',
-    component: Install_Lib_Progress,
+    component: LibProgress,
     meta: {
       icon: 'mir-pending_actions',
     },
