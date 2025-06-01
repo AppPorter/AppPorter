@@ -163,6 +163,14 @@ async function GetArchiveContent(password: string) {
 
         <!-- Main content area -->
         <div class="flex min-h-0 flex-1 flex-col gap-4 p-4">
+            <!-- File info header -->
+            <div v-if="installConfig.zip_path" class="flex flex-col gap-1">
+                <h2 class="text-xl font-semibold text-gray-900">
+                    {{ installConfig.zip_path.split(/[/\\]/).pop() }}
+                </h2>
+                <p class="text-sm text-gray-600">{{ installConfig.zip_path }}</p>
+            </div>
+
             <!-- Zip preview component -->
             <div class="min-h-0 flex-1">
                 <ZipPreview v-if="installConfig.zip_path && installConfig.archive_content"
@@ -170,7 +178,7 @@ async function GetArchiveContent(password: string) {
             </div>
 
             <!-- Action buttons -->
-            <div class="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-zinc-600">
+            <div class="flex items-center justify-between">
                 <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
                     icon="mir-arrow_back" :label="t('back')" outlined />
 
