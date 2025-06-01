@@ -33,7 +33,7 @@
     "windows": {
       "nsis": {
         "installMode": "both",
-        "installerHooks": "./windows/hooks.nsi"
+        "installerHooks": "./hooks.nsi"
       }
     }
   }
