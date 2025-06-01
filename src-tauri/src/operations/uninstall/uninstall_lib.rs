@@ -35,16 +35,16 @@ pub async fn uninstall_lib(
 
         // Remove from CURRENT_USER environment
         let key = CURRENT_USER.create("Environment")?;
-        let current_path = key.get_string("Path")?;
+        if let Ok(current_path) = key.get_string("Path") {
+            // Split the path by semicolons and filter out the path we want to remove
+            let new_path: String = current_path
+                .split(';')
+                .filter(|p| p.trim() != path_to_remove.trim())
+                .collect::<Vec<&str>>()
+                .join(";");
 
-        // Split the path by semicolons and filter out the path we want to remove
-        let new_path: String = current_path
-            .split(';')
-            .filter(|p| p.trim() != path_to_remove.trim())
-            .collect::<Vec<&str>>()
-            .join(";");
-
-        key.set_expand_string("Path", new_path)?;
+            key.set_expand_string("Path", new_path)?;
+        }
     }
 
     app.emit("uninstall_lib", 75)?;

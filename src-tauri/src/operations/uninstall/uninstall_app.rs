@@ -21,9 +21,12 @@ pub async fn uninstall_app(
         .ok_or("App not found in app list")?;
 
     // Remove application directory
-    let app_path = Path::new(&app_config.details.paths.install_path)
-        .join(app_config.details.info.name.replace(" ", "-"));
-    if app_path.exists() {
+    let app_path = format!(
+        "{}\\{}",
+        app_config.details.paths.install_path,
+        app_config.details.info.name.replace(" ", "-")
+    );
+    if Path::new(&app_path).exists() {
         fs::remove_dir_all(&app_path).await?;
     }
 
