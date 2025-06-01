@@ -282,7 +282,11 @@ defineExpose({
               node.type === 'directory' ||
                 (props.isSelectableFunction && props.isSelectableFunction(node))
                 ? 'cursor-pointer'
-                : 'cursor-not-allowed opacity-60',
+                : 'cursor-not-allowed',
+              // Add opacity for non-selectable files only when filterFunction exists
+              props.filterFunction && !(node.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(node)))
+                ? 'opacity-60'
+                : '',
             ]" @click="
               node.type === 'directory' ||
                 (props.isSelectableFunction && props.isSelectableFunction(node))
@@ -341,7 +345,11 @@ defineExpose({
                     childNode.type === 'directory' ||
                       (props.isSelectableFunction && props.isSelectableFunction(childNode))
                       ? 'cursor-pointer'
-                      : 'cursor-not-allowed opacity-60',
+                      : 'cursor-not-allowed',
+                    // Add opacity for non-selectable files only when filterFunction exists
+                    props.filterFunction && !(childNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(childNode)))
+                      ? 'opacity-60'
+                      : '',
                   ]" @click="
                     childNode.type === 'directory' ||
                       (props.isSelectableFunction && props.isSelectableFunction(childNode))
@@ -400,7 +408,11 @@ defineExpose({
                         grandchildNode.type === 'directory' ||
                           (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
                           ? 'cursor-pointer'
-                          : 'cursor-not-allowed opacity-60',
+                          : 'cursor-not-allowed',
+                        // Add opacity for non-selectable files only when filterFunction exists
+                        props.filterFunction && !(grandchildNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(grandchildNode)))
+                          ? 'opacity-60'
+                          : '',
                       ]" @click="
                         grandchildNode.type === 'directory' ||
                           (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
@@ -448,7 +460,11 @@ defineExpose({
                             deepNode.type === 'directory' ||
                               (props.isSelectableFunction && props.isSelectableFunction(deepNode))
                               ? 'cursor-pointer'
-                              : 'cursor-not-allowed opacity-60',
+                              : 'cursor-not-allowed',
+                            // Add opacity for non-selectable files only when filterFunction exists
+                            props.filterFunction && !(deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode)))
+                              ? 'opacity-60'
+                              : '',
                           ]" @click="
                             deepNode.type === 'directory' ||
                               (props.isSelectableFunction && props.isSelectableFunction(deepNode))

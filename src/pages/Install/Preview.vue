@@ -30,7 +30,7 @@ function handleSubscribe() {
 
 function handleInstallAsApp() {
     // Navigate to app installation
-    goTo('/Install/App')
+    goTo('/Install/App/Config')
 }
 
 function handleInstallAsLibrary() {
