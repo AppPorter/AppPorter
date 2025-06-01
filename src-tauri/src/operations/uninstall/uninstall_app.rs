@@ -1,5 +1,6 @@
 use crate::configs::ConfigFile;
 use crate::configs::{app_list::AppList, env::Env};
+use crate::operations::uninstall::{remove_from_path, update_app_list_after_uninstall};
 use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
@@ -71,33 +72,7 @@ pub async fn uninstall_app(
     if app_config.details.config.add_to_path {
         // Use the pre-calculated full_path_directory
         let path_to_remove = &app_config.details.config.full_path_directory;
-
-        if app_config.details.config.current_user_only {
-            let key = CURRENT_USER.create("Environment")?;
-            let current_path = key.get_string("Path")?;
-
-            // Split the path by semicolons and filter out the path we want to remove
-            let new_path: String = current_path
-                .split(';')
-                .filter(|p| p.trim() != path_to_remove.trim())
-                .collect::<Vec<&str>>()
-                .join(";");
-
-            key.set_expand_string("Path", new_path)?;
-        } else {
-            let key = LOCAL_MACHINE
-                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
-            let current_path = key.get_string("path")?;
-
-            // Split the path by semicolons and filter out the path we want to remove
-            let new_path: String = current_path
-                .split(';')
-                .filter(|p| p.trim() != path_to_remove.trim())
-                .collect::<Vec<&str>>()
-                .join(";");
-
-            key.set_expand_string("path", new_path)?;
-        }
+        remove_from_path(path_to_remove, app_config.details.config.current_user_only).await?;
     }
 
     // Remove registry entries
@@ -124,25 +99,7 @@ pub async fn uninstall_app(
     }
 
     // Update app list
-    let mut app_list = AppList::read().await?;
-
-    // Find the app to be uninstalled
-    let app_index = app_list
-        .apps
-        .iter()
-        .position(|existing_app| existing_app.timestamp == timestamp);
-
-    if let Some(index) = app_index {
-        // If the app has a URL, just mark it as not installed
-        // Otherwise, remove it completely from the list
-        if !app_list.apps[index].url.is_empty() {
-            app_list.apps[index].installed = false;
-        } else {
-            app_list.apps.remove(index);
-        }
-    }
-
-    app_list.save().await?;
+    update_app_list_after_uninstall(timestamp).await?;
 
     app.emit("uninstall", 100)?;
 

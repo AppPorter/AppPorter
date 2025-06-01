@@ -1,10 +1,10 @@
 use crate::configs::app_list::AppList;
 use crate::configs::ConfigFile;
+use crate::operations::uninstall::{remove_from_path, update_lib_list_after_uninstall};
 use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
-use windows_registry::CURRENT_USER;
 
 pub async fn uninstall_lib(
     timestamp: i64,
@@ -32,43 +32,14 @@ pub async fn uninstall_lib(
     if lib_config.details.config.add_to_path {
         // Use the pre-calculated full_path_directory
         let path_to_remove = &lib_config.details.config.full_path_directory;
-
-        // Remove from CURRENT_USER environment
-        let key = CURRENT_USER.create("Environment")?;
-        if let Ok(current_path) = key.get_string("Path") {
-            // Split the path by semicolons and filter out the path we want to remove
-            let new_path: String = current_path
-                .split(';')
-                .filter(|p| p.trim() != path_to_remove.trim())
-                .collect::<Vec<&str>>()
-                .join(";");
-
-            key.set_expand_string("Path", new_path)?;
-        }
+        // Libraries always use current user only for PATH
+        remove_from_path(path_to_remove, true).await?;
     }
 
     app.emit("uninstall_lib", 75)?;
 
     // Update app list
-    let mut app_list = AppList::read().await?;
-
-    // Find the lib to be uninstalled
-    let lib_index = app_list
-        .libs
-        .iter()
-        .position(|existing_lib| existing_lib.timestamp == timestamp);
-
-    if let Some(index) = lib_index {
-        // If the lib has a URL, just mark it as not installed
-        // Otherwise, remove it completely from the list
-        if !app_list.libs[index].url.is_empty() {
-            app_list.libs[index].installed = false;
-        } else {
-            app_list.libs.remove(index);
-        }
-    }
-
-    app_list.save().await?;
+    update_lib_list_after_uninstall(timestamp).await?;
 
     app.emit("uninstall_lib", 100)?;
 
