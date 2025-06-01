@@ -46,7 +46,7 @@ onMounted(() => {
 
 // Handle back button click
 function handleBackClick() {
-    goTo('/Home')
+    goTo('/Install/Preview')
 }
 
 // Handle install process for both app and lib modes

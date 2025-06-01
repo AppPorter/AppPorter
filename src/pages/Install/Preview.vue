@@ -170,12 +170,17 @@ async function GetArchiveContent(password: string) {
             </div>
 
             <!-- Action buttons -->
-            <div class="flex justify-center gap-3 border-t border-slate-200 pt-4 dark:border-zinc-600">
-                <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe')" icon="mir-rss_feed"
-                    class="px-6" />
-                <Button @click="handleInstallAsApp" :label="t('install_as_app')" icon="mir-apps" class="px-6" />
-                <Button @click="handleInstallAsLibrary" :label="t('install_as_library')" icon="mir-library_books"
-                    severity="secondary" class="px-6" />
+            <div class="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-zinc-600">
+                <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
+                    icon="mir-arrow_back" :label="t('back')" outlined />
+
+                <div class="flex gap-3">
+                    <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe')"
+                        icon="mir-rss_feed" class="px-6" />
+                    <Button @click="handleInstallAsApp" :label="t('install_as_app')" icon="mir-apps" class="px-6" />
+                    <Button @click="handleInstallAsLibrary" :label="t('install_as_library')" icon="mir-library_books"
+                        severity="secondary" class="px-6" />
+                </div>
             </div>
         </div>
     </div>
