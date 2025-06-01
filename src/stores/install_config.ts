@@ -3,6 +3,7 @@ import type { AppDetails } from './app_list'
 
 type Pages =
   | 'Home'
+  | 'Preview'
   | 'Install_App_Config'
   | 'Install_App_Progress'
   | 'Install_Lib_Config'
@@ -14,6 +15,7 @@ interface InstallConfig {
   page: Pages
   archive_content: string[] | null
   timestamp: number
+  url: string
 }
 
 export const InstallConfigStore = defineStore('install_config', {
@@ -50,6 +52,7 @@ export const InstallConfigStore = defineStore('install_config', {
     page: 'Home',
     archive_content: null,
     timestamp: 0,
+    url: '',
   }),
 
   getters: {

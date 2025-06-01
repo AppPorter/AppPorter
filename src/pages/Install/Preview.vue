@@ -1,22 +1,42 @@
 <script setup lang="ts">
+import ZipPreview from '@/components/ZipPreview/ZipPreview.vue'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
+import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
-import Button from 'primevue/button'
-import { onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
-installConfig.page = 'Install_App_Preview'
+installConfig.page = 'Preview'
 const toast = useToast()
 const { t } = useI18n()
 const showErrorDialog = ref(false)
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
 const passwordError = ref(false)
+
+// Check if Subscribe button should be shown  
+const showSubscribeButton = computed(() => !!installConfig.url)
+
+// Handle button actions
+function handleSubscribe() {
+    // Handle subscribe action
+    console.log('Subscribe clicked')
+}
+
+function handleInstallAsApp() {
+    // Navigate to app installation
+    goTo('/Install/App')
+}
+
+function handleInstallAsLibrary() {
+    // Navigate to library installation
+    goTo('/Install/Library')
+}
 
 // Load archive content when component is mounted
 onMounted(async () => {
@@ -140,5 +160,23 @@ async function GetArchiveContent(password: string) {
                 </div>
             </template>
         </Dialog>
+
+        <!-- Main content area -->
+        <div class="flex min-h-0 flex-1 flex-col gap-4 p-4">
+            <!-- Zip preview component -->
+            <div class="min-h-0 flex-1">
+                <ZipPreview v-if="installConfig.zip_path && installConfig.archive_content"
+                    :zip-path="installConfig.zip_path" />
+            </div>
+
+            <!-- Action buttons -->
+            <div class="flex justify-center gap-3 border-t border-slate-200 pt-4 dark:border-zinc-600">
+                <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe')" icon="mir-rss_feed"
+                    class="px-6" />
+                <Button @click="handleInstallAsApp" :label="t('install_as_app')" icon="mir-apps" class="px-6" />
+                <Button @click="handleInstallAsLibrary" :label="t('install_as_library')" icon="mir-library_books"
+                    severity="secondary" class="px-6" />
+            </div>
+        </div>
     </div>
 </template>
