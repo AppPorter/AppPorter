@@ -3,7 +3,7 @@ use std::cmp::min;
 use std::error::Error;
 use std::io::Write;
 
-pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn download_file(url: &String) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Get the same temp directory path as used for 7z
     let temp_dir = std::env::temp_dir().join("AppPorter").join("downloads");
     std::fs::create_dir_all(&temp_dir)?;
@@ -16,10 +16,10 @@ pub async fn download_file(url: String) -> Result<String, Box<dyn Error + Send +
     let client = reqwest::Client::new();
 
     // Send GET request
-    let res = client.get(&url).send().await?;
+    let res = client.get(url).send().await?;
     let total_size = res
         .content_length()
-        .ok_or(format!("Failed to get content length from '{}'", &url))?;
+        .ok_or(format!("Failed to get content length from '{}'", url))?;
 
     // Open file for writing
     let mut file = std::fs::File::create(&file_path)?;

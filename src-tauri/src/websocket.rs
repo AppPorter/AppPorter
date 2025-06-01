@@ -62,9 +62,10 @@ async fn handle_extension_message(
     msg: Message,
 ) -> Result<Message, Box<dyn Error + Send + Sync>> {
     if let Message::Text(url) = &msg {
+        let url = url.to_string();
         let timestamp = chrono::Utc::now().timestamp();
-        let downloaded = download_file(url.to_string()).await.unwrap_or_default();
-        app.emit("received", (downloaded, timestamp))?;
+        let downloaded = download_file(&url).await.unwrap_or_default();
+        app.emit("preview_url", (downloaded, timestamp, url))?;
 
         Ok(Message::Text("Success".into()))
     } else {

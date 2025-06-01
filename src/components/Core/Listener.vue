@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
+import { AppListStore } from '@/stores/app_list'
+import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import { useConfirm } from 'primevue/useconfirm'
 import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppListStore } from '@/stores/app_list'
-import { InstallConfigStore } from '@/stores/install_config'
 
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -15,32 +15,19 @@ const installConfig = InstallConfigStore()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
-    await listen('received', (event) => {
-        const payload = event.payload as { zip_path: string; timestamp: number }
+    await listen('preview_url', (event) => {
+        const payload = event.payload as { zip_path: string; timestamp: number; url: string }
         installConfig.zip_path = payload[0]
         installConfig.timestamp = payload[1]
-        goTo('/Installation/App/Config')
+        installConfig.url = payload[2]
+        goTo('/Install/Preview')
     })
 
-    await listen('install', (event) => {
+    await listen('preview', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number }
         installConfig.zip_path = payload[0]
         installConfig.timestamp = payload[1]
-        goTo('/Installation/App/Config')
-    })
-
-    await listen('install_app', (event) => {
-        const payload = event.payload as { zip_path: string; timestamp: number }
-        installConfig.zip_path = payload[0]
-        installConfig.timestamp = payload[1]
-        goTo('/Installation/App/Config')
-    })
-
-    await listen('install_lib', (event) => {
-        const payload = event.payload as { zip_path: string; timestamp: number }
-        installConfig.zip_path = payload[0]
-        installConfig.timestamp = payload[1]
-        goTo('/Installation/Lib/Config')
+        goTo('/Install/Preview')
     })
 
     await listen('uninstall_app', async (event) => {
