@@ -32,7 +32,7 @@ const routes = [
     },
   },
   {
-    path: '/Install/App/Config',
+    path: '/Install/Config',
     component: Config,
     meta: {
       icon: 'mir-settings_applications',
@@ -92,13 +92,13 @@ export function setupRouterGuards(router: Router) {
           path = '/Home'
           break
         case 'Install_App_Config':
-          path = '/Install/App/Config'
+          path = '/Install/Config'
           break
         case 'Install_App_Progress':
           path = '/Install/App/Progress'
           break
         case 'Install_Lib_Config':
-          path = '/Install/Lib/Config'
+          path = '/Install/Config'
           break
         case 'Install_Lib_Progress':
           path = '/Install/Lib/Progress'

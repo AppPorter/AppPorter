@@ -15,6 +15,7 @@ interface InstallConfig {
   archive_content: string[] | null
   timestamp: number
   url: string
+  archive_password: string
   app_details: AppDetails
   lib_details: LibDetails
 }
@@ -26,6 +27,7 @@ export const InstallConfigStore = defineStore('install_config', {
     archive_content: null,
     timestamp: 0,
     url: '',
+    archive_password: '',
     app_details: {
       info: {
         name: '',
@@ -35,7 +37,6 @@ export const InstallConfigStore = defineStore('install_config', {
       },
       config: {
         archive_exe_path: '',
-        archive_password: '',
         current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: true,
@@ -48,26 +49,16 @@ export const InstallConfigStore = defineStore('install_config', {
         install_path: '',
         full_path: '',
       },
-      validation_status: {
-        file_exists: false,
-        registry_valid: false,
-        path_exists: false,
-      },
     },
     lib_details: {
       name: '',
       config: {
-        archive_password: '',
         add_to_path: false,
         path_directory: '',
       },
       paths: {
         parent_install_path: '',
         install_path: '',
-      },
-      validation_status: {
-        file_exists: false,
-        path_exists: false,
       },
     },
   }),

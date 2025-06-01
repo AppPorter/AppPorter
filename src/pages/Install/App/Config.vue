@@ -5,13 +5,34 @@ import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppDetails from './components/AppDetails.vue'
 import Options from './components/Options.vue'
 
 const installConfig = InstallConfigStore()
-installConfig.page = 'Install_App_Config'
+
+// Computed getters for app details
+const installPath = computed({
+  get: () => installConfig.app_details.paths.parent_install_path,
+  set: (value: string) => {
+    installConfig.app_details.paths.parent_install_path = value
+  }
+})
+
+const name = computed({
+  get: () => installConfig.app_details.info.name,
+  set: (value: string) => {
+    installConfig.app_details.info.name = value
+  }
+})
+
+const executablePath = computed({
+  get: () => installConfig.app_details.config.archive_exe_path,
+  set: (value: string) => {
+    installConfig.app_details.config.archive_exe_path = value
+  }
+})
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -40,7 +61,7 @@ async function handleInstallClick() {
   let hasErrors = false
 
   // Validate required fields
-  if (!installConfig.executable_path) {
+  if (!installConfig.app_details.config.archive_exe_path) {
     executablePathError.value = true
     toast.add({
       severity: 'error',
@@ -51,7 +72,7 @@ async function handleInstallClick() {
     hasErrors = true
   }
 
-  if (!installConfig.name) {
+  if (!installConfig.app_details.info.name) {
     nameError.value = true
     toast.add({
       severity: 'error',
@@ -62,7 +83,7 @@ async function handleInstallClick() {
     hasErrors = true
   }
 
-  if (!installConfig.install_path) {
+  if (!installConfig.app_details.paths.parent_install_path) {
     pathError.value = t('validation.select_path')
     toast.add({
       severity: 'error',
@@ -81,12 +102,12 @@ async function handleInstallClick() {
     const validatedPath = (await invoke('execute_command', {
       command: {
         name: 'ValidatePath',
-        path: installConfig.install_path,
+        path: installConfig.app_details.paths.parent_install_path,
       },
     })) as string
 
-    installConfig.details.paths.parent_install_path = validatedPath
-    const fullPath = `${validatedPath}\\${installConfig.name}`
+    installConfig.app_details.paths.parent_install_path = validatedPath
+    const fullPath = `${validatedPath}\\${installConfig.app_details.info.name}`
 
     try {
       await invoke('execute_command', {

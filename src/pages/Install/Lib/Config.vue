@@ -16,7 +16,6 @@ import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
-installConfig.page = 'Install_Lib_Config' // Reuse Config page state
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -36,16 +35,16 @@ onMounted(async () => {
     }
 
     // Initialize config from settings
-    installConfig.details.paths.parent_install_path = lib_install.install_path
-    installConfig.details.config.add_to_path = lib_install.add_to_path
-    installConfig.details.config.path_directory = ''  // Reset path directory when loading
+    installConfig.lib_details.paths.parent_install_path = lib_install.install_path
+    installConfig.lib_details.config.add_to_path = lib_install.add_to_path
+    installConfig.lib_details.config.path_directory = ''  // Reset path directory when loading
 
     // Extract filename from path and remove extension for default name
     if (installConfig.zip_path) {
         const pathParts = installConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
         // Remove file extension
-        installConfig.details.info.name = filename.replace(/\.[^/.]+$/, '')
+        installConfig.lib_details.name = filename.replace(/\.[^/.]+$/, '')
     }
 })
 
@@ -58,7 +57,7 @@ async function handleExtractClick() {
     // Reset validation errors
     pathError.value = ''
 
-    if (!installConfig.name) {
+    if (!installConfig.lib_details.name) {
         toast.add({
             severity: 'error',
             summary: t('validation.name_required'),
@@ -68,7 +67,7 @@ async function handleExtractClick() {
         return
     }
 
-    if (!installConfig.install_path) {
+    if (!installConfig.lib_details.paths.parent_install_path) {
         pathError.value = t('validation.select_path')
         toast.add({
             severity: 'error',
@@ -83,12 +82,12 @@ async function handleExtractClick() {
         const validatedPath = (await invoke('execute_command', {
             command: {
                 name: 'ValidatePath',
-                path: installConfig.install_path,
+                path: installConfig.lib_details.paths.parent_install_path,
             },
         })) as string
 
-        installConfig.details.paths.parent_install_path = validatedPath
-        const fullPath = `${validatedPath}\\${installConfig.name || 'Extracted-Files'}`
+        installConfig.lib_details.paths.parent_install_path = validatedPath
+        const fullPath = `${validatedPath}\\${installConfig.lib_details.name || 'Extracted-Files'}`
 
         try {
             await invoke('execute_command', {
@@ -161,7 +160,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installConfig.details.paths.parent_install_path = String(selected)
+        installConfig.lib_details.paths.parent_install_path = String(selected)
     }
 }
 </script>
@@ -197,8 +196,8 @@ async function select_extract_path() {
                                     {{ t('app.name') }}
                                 </label>
                                 <div class="w-full">
-                                    <InputText v-model="installConfig.details.info.name" :placeholder="t('app.name')"
-                                        class="h-8 w-full text-sm" :invalid="!installConfig.name" />
+                                    <InputText v-model="installConfig.lib_details.name" :placeholder="t('app.name')"
+                                        class="h-8 w-full text-sm" :invalid="!installConfig.lib_details.name" />
                                 </div>
                             </div>
 
@@ -207,7 +206,7 @@ async function select_extract_path() {
                                 <label class="w-24 text-sm font-medium">{{ t('extract_path') }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
-                                        <InputText v-model="installConfig.details.paths.parent_install_path"
+                                        <InputText v-model="installConfig.lib_details.paths.parent_install_path"
                                             :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
                                             :invalid="!!pathError" @input="pathError = ''" :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -223,15 +222,15 @@ async function select_extract_path() {
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
-                                                <Checkbox v-model="installConfig.details.config.add_to_path"
+                                                <Checkbox v-model="installConfig.lib_details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
-                                            <div v-if="installConfig.details.config.add_to_path" class="ml-6 mt-1">
+                                            <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
-                                                    <InputText v-model="installConfig.details.config.path_directory"
+                                                    <InputText v-model="installConfig.lib_details.config.path_directory"
                                                         :placeholder="t('select_path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
@@ -263,7 +262,7 @@ async function select_extract_path() {
             <div class="h-full overflow-hidden">
                 <DirectorySelector :zip-path="installConfig.zip_path" :details-loading="detailsLoading"
                     @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"
-                    @directory-select="installConfig.details.config.path_directory = $event" />
+                    @directory-select="installConfig.lib_details.config.path_directory = $event" />
             </div>
         </Drawer>
     </div>

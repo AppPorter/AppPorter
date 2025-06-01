@@ -30,12 +30,12 @@ function handleSubscribe() {
 
 function handleInstallAsApp() {
     // Navigate to app installation
-    goTo('/Install/App/Config')
+    goTo('/Install/Config')
 }
 
 function handleInstallAsLibrary() {
     // Navigate to library installation
-    goTo('/Install/Library')
+    goTo('/Install/Config')
 }
 
 // Load archive content when component is mounted
@@ -82,7 +82,7 @@ async function handlePasswordSubmit() {
     try {
         await GetArchiveContent(archivePassword.value)
         // Store password in the install config for later use
-        installConfig.details.config.archive_password = archivePassword.value
+        installConfig.app_details.config.archive_password = archivePassword.value
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {

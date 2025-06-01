@@ -17,7 +17,7 @@ export interface AppDetails {
   info: AppBasicInformation
   config: AppConfig
   paths: AppPaths
-  validation_status: AppValidationStatus
+  validation_status?: AppValidationStatus
 }
 
 export interface AppBasicInformation {
@@ -29,7 +29,7 @@ export interface AppBasicInformation {
 
 export interface AppConfig {
   archive_exe_path: string
-  archive_password: string
+  archive_password?: string
   current_user_only: boolean
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
@@ -61,11 +61,11 @@ export interface LibDetails {
   name: string
   config: LibConfig
   paths: LibPaths
-  validation_status: LibValidationStatus
+  validation_status?: LibValidationStatus
 }
 
 export interface LibConfig {
-  archive_password: string
+  archive_password?: string
   add_to_path: boolean
   path_directory: string
 }
