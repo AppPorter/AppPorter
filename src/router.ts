@@ -91,6 +91,9 @@ export function setupRouterGuards(router: Router) {
         case 'Home':
           path = '/Home'
           break
+        case 'Preview':
+          path = '/Install/Preview'
+          break
         case 'Install_App_Config':
           path = '/Install/Config'
           break
