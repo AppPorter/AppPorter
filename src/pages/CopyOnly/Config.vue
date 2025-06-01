@@ -8,12 +8,11 @@ import { open } from '@tauri-apps/plugin-dialog'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
-import Dialog from 'primevue/dialog'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
@@ -21,10 +20,6 @@ installConfig.page = 'Install_Lib_Config' // Reuse Config page state
 const toast = useToast()
 const confirm = useConfirm()
 const { t } = useI18n()
-const showErrorDialog = ref(false)
-const showPasswordDialog = ref(false)
-const archivePassword = ref('')
-const passwordError = ref(false)
 const settingsStore = SettingsStore()
 const { lib_install } = settingsStore
 
@@ -52,75 +47,7 @@ onMounted(async () => {
         // Remove file extension
         installConfig.details.info.name = filename.replace(/\.[^/.]+$/, '')
     }
-
-    try {
-        // First attempt without password
-        await GetArchiveContent('')
-    } catch (error) {
-        if (error === 'Wrong password') {
-            showPasswordDialog.value = true
-        } else {
-            toast.add({
-                severity: 'error',
-                summary: t('error'),
-                detail: String(error),
-                life: 0,
-            })
-            goTo('/Home')
-        }
-    }
 })
-
-// Watch for password changes to reset error
-watch(archivePassword, () => {
-    passwordError.value = false
-})
-
-async function handleDialogClose() {
-    showErrorDialog.value = false
-    goTo('/Home')
-}
-
-async function handlePasswordSubmit() {
-    if (!archivePassword.value) {
-        passwordError.value = true
-        return
-    }
-
-    try {
-        await GetArchiveContent(archivePassword.value)
-        // Store password in the install config for later use
-        installConfig.details.config.archive_password = archivePassword.value
-        showPasswordDialog.value = false
-        archivePassword.value = ''
-    } catch (error) {
-        if (error === 'Wrong password') {
-            passwordError.value = true
-        } else {
-            toast.add({
-                severity: 'error',
-                summary: t('error'),
-                detail: String(error),
-                life: 0,
-            })
-            showPasswordDialog.value = false
-            goTo('/Home')
-        }
-    }
-}
-
-async function GetArchiveContent(password: string) {
-    const result = await invoke('execute_command', {
-        command: {
-            name: 'GetArchiveContent',
-            path: installConfig.zip_path,
-            password: password,
-        },
-    })
-
-    const content = JSON.parse(result as string)
-    installConfig.archive_content = content
-}
 
 function handleDetailsLoading(loading: boolean) {
     detailsLoading.value = loading
@@ -299,7 +226,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installConfig.details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.details.config.add_to_path" class="ml-6 mt-1">
@@ -329,40 +256,6 @@ async function select_extract_path() {
                     @click="handleExtractClick" icon="mir-folder_copy" :label="t('extract')" />
             </div>
         </div>
-
-        <!-- Error Dialog -->
-        <Dialog v-model:visible="showErrorDialog" :modal="true" :closable="false"
-            :header="t('validation.invalid_archive')" class="w-[30rem]">
-            <div class="flex items-start gap-3">
-                <span class="mir-error text-3xl text-red-500"></span>
-                <p class="text-sm">{{ t('validation.archive_error') }}</p>
-            </div>
-            <template #footer>
-                <div class="flex justify-end">
-                    <Button @click="handleDialogClose" :label="t('ok')" icon="mir-close" />
-                </div>
-            </template>
-        </Dialog>
-
-        <!-- Password Dialog -->
-        <Dialog v-model:visible="showPasswordDialog" :modal="true" :closable="false"
-            :header="t('archive.password_required')" class="w-[30rem]">
-            <div class="flex flex-col gap-3">
-                <p class="text-sm">{{ t('archive.enter_password') }}</p>
-                <div class="flex flex-col gap-1">
-                    <InputText v-model="archivePassword" type="password" :class="{ 'border-red-500': passwordError }"
-                        @keydown.enter="handlePasswordSubmit" class="w-full" :invalid="passwordError" />
-                    <small v-if="passwordError" class="text-red-500">{{ t('validation.password_required') }}</small>
-                </div>
-            </div>
-            <template #footer>
-                <div class="flex justify-end gap-2">
-                    <Button @click="goTo('/Home')" :label="t('cancel')" severity="secondary" outlined
-                        icon="mir-close" />
-                    <Button @click="handlePasswordSubmit" :label="t('submit')" icon="mir-check" />
-                </div>
-            </template>
-        </Dialog>
 
         <!-- Directory Selector Drawer -->
         <Drawer v-model:visible="directoryDrawerVisible" :header="t('select_path_directory')" position="bottom"
