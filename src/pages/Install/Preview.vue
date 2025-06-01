@@ -168,7 +168,7 @@ async function GetArchiveContent(password: string) {
                 <h2 class="text-xl font-semibold text-gray-900">
                     {{ installConfig.zip_path.split(/[/\\]/).pop() }}
                 </h2>
-                <p class="text-sm text-gray-600">{{ installConfig.zip_path }}</p>
+                <p class="text-sm text-gray-600">{{ installConfig.url || installConfig.zip_path }}</p>
             </div>
 
             <!-- Zip preview component -->
