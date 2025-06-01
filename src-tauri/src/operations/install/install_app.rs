@@ -24,83 +24,49 @@ pub async fn install_app(
     config: AppInstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let zip_path = config.zip_path.clone();
-    let app_path = format!(
+    let timestamp = chrono::Utc::now().timestamp();
+
+    let install_path = format!(
         "{}\\{}",
         config.details.paths.install_path,
         config.details.info.name.replace(" ", "-")
     );
 
-    app.emit("install", 0)?;
-
-    let target_path = Path::new(&app_path);
-    if !target_path.exists() {
-        tokio::fs::create_dir_all(target_path).await?;
-    }
+    // Setup installation directory and extract files
+    tokio::fs::create_dir_all(&install_path).await?;
     extract_files(
-        &zip_path,
-        &app_path,
+        &config.zip_path,
+        &install_path,
         app.clone(),
         config.password.as_deref(),
     )
     .await?;
 
-    app.emit("install", 101)?;
-
-    let single_root = find_single_root_folder(&app_path).await?;
-
-    let full_executable_path = get_full_executable_path(
-        &app_path,
+    // Determine executable paths
+    let single_root = find_single_root_folder(&install_path).await?;
+    let full_path = get_full_executable_path(
+        &install_path,
         &config.details.config.archive_exe_path,
         single_root.as_deref(),
     );
 
-    // Calculate full_path_directory once based on archive_path_directory
-    let calculated_full_path_directory = if !config.details.config.archive_path_directory.is_empty()
-    {
-        if config
-            .details
-            .config
-            .archive_path_directory
-            .starts_with('/')
-            || config
-                .details
-                .config
-                .archive_path_directory
-                .starts_with('\\')
-        {
-            // If path starts with / or \, it's relative to the app root
-            format!(
-                "{}\\{}",
-                app_path,
-                config
-                    .details
-                    .config
-                    .archive_path_directory
-                    .trim_start_matches(['/', '\\'])
-                    .replace("/", "\\")
-            )
-        } else {
-            // Otherwise, it's an absolute path or just a directory name
-            format!(
-                "{}\\{}",
-                app_path,
-                config
-                    .details
-                    .config
-                    .archive_path_directory
-                    .replace("/", "\\")
-            )
-        }
-    } else {
-        // Default: use executable's parent directory
-        Path::new(&full_executable_path)
+    let full_path_directory = if config.details.config.archive_path_directory.is_empty() {
+        Path::new(&full_path)
             .parent()
             .expect("Failed to get parent directory")
             .to_string_lossy()
             .to_string()
+    } else {
+        let normalized_path = config
+            .details
+            .config
+            .archive_path_directory
+            .trim_start_matches(['/', '\\'])
+            .replace("/", "\\");
+        format!("{}\\{}", install_path, normalized_path)
     };
 
+    // Setup system integration
     let env = Env::read().await?;
 
     // Create shortcuts
@@ -109,56 +75,44 @@ pub async fn install_app(
             &env.system_drive_letter,
             &env.username,
             &config.details.info.name,
-            &full_executable_path,
+            &full_path,
             config.details.config.current_user_only,
         )?;
     }
 
     if config.details.config.create_desktop_shortcut {
-        create_desktop_shortcut(&full_executable_path, &config.details.info.name)?;
+        create_desktop_shortcut(&full_path, &config.details.info.name)?;
     }
 
-    let timestamp = chrono::Utc::now().timestamp();
-
+    // Create registry entries if requested
     if config.details.config.create_registry_key {
-        create_registry_entries(&config, &full_executable_path, &app_path, timestamp)?;
+        create_registry_entries(&config, &full_path, &install_path, timestamp)?;
     }
 
+    // Add to PATH if requested
     if config.details.config.add_to_path {
-        if config.details.config.current_user_only {
-            let key = CURRENT_USER.create("Environment")?;
-            let path = key.get_string("Path")?;
-
-            if !path
-                .split(';')
-                .any(|p| p.trim() == calculated_full_path_directory.trim())
-            {
-                let new_path = format!("{};{}", path, calculated_full_path_directory);
-                key.set_expand_string("Path", new_path)?;
-            }
-        } else {
-            let key = LOCAL_MACHINE
-                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
-            let path = key.get_string("path")?;
-
-            if !path
-                .split(';')
-                .any(|p| p.trim() == calculated_full_path_directory.trim())
-            {
-                let new_path = format!("{};{}", path, calculated_full_path_directory);
-                key.set_expand_string("path", new_path)?;
-            }
-        }
+        add_to_path(
+            &full_path_directory,
+            config.details.config.current_user_only,
+        )?;
     }
 
-    // Add to app list
+    // Update app list
+    update_app_list(config, full_path.clone(), full_path_directory, timestamp).await?;
+
+    Ok(full_path)
+}
+
+async fn update_app_list(
+    config: AppInstallConfig,
+    full_path: String,
+    full_path_directory: String,
+    timestamp: i64,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
-
-    // Create a mutable copy of the details and set full_path_directory
     let mut updated_details = config.details.clone();
-    updated_details.paths.full_path = full_executable_path.clone();
-    updated_details.config.full_path_directory = calculated_full_path_directory;
-
+    updated_details.paths.full_path = full_path;
+    updated_details.config.full_path_directory = full_path_directory;
     updated_details.validation_status = AppValidationStatus {
         file_exists: true,
         registry_valid: true,
@@ -201,39 +155,29 @@ pub async fn install_app(
     }
 
     app_list.save().await?;
-
-    Ok(full_executable_path)
+    Ok(())
 }
 
 async fn extract_files(
     zip_path: &str,
-    app_path: &str,
+    install_path: &str,
     app: AppHandle,
     password: Option<&str>,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let path_7z = get_7z_path()?;
+    let path_7z_str = path_7z.to_string_lossy();
+    let password_arg = password.map(|p| format!("-p{}", p)).unwrap_or_default();
 
-    // List command arguments
-    let mut list_args = vec![
-        "l", // List contents command
-        zip_path, "-y", // Yes to all prompts
-    ];
-
-    // Add password if provided for listing
-    let mut pw = String::new();
-    if let Some(pass) = password {
-        pw = format!("-p{}", pass)
-    }
-    list_args.push(&pw);
-
-    let output_list = tokio::process::Command::new(&path_7z)
+    // List command to validate archive
+    let list_args = vec!["l", zip_path, "-y", &password_arg];
+    let output_list = tokio::process::Command::new(&*path_7z_str)
         .args(list_args)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
 
     if !output_list.status.success() {
-        let error_str = String::from_utf8_lossy(&output_list.stderr).to_string();
+        let error_str = String::from_utf8_lossy(&output_list.stderr);
         if error_str.contains("Cannot open encrypted archive. Wrong password?") {
             return Err("Wrong password".into());
         }
@@ -244,16 +188,16 @@ async fn extract_files(
     let paths = parse_7z_list_output(&output_str);
 
     // Validate all paths to make sure there's no path traversal attack
-    let canonical_app_path = std::fs::canonicalize(app_path)?;
+    let canonical_install_path = std::fs::canonicalize(install_path)?;
     for path in &paths {
-        let target_path = Path::new(app_path).join(sanitize_path(path));
+        let target_path = Path::new(install_path).join(sanitize_path(path));
 
         // Try to get the canonical path (resolving any ../ etc)
         if let Ok(canonical_path) =
-            std::fs::canonicalize(target_path.parent().unwrap_or(Path::new(app_path)))
+            std::fs::canonicalize(target_path.parent().unwrap_or(Path::new(install_path)))
         {
             // Check if this file would extract outside our target directory
-            if !canonical_path.starts_with(&canonical_app_path) {
+            if !canonical_path.starts_with(&canonical_install_path) {
                 return Err(format!(
                     "Security violation: Path traversal detected in archive: {}",
                     path
@@ -263,7 +207,7 @@ async fn extract_files(
         }
     }
 
-    let dir = format!("-o{}", app_path);
+    let dir = format!("-o{}", install_path);
 
     // If all paths are safe, proceed with extraction
     let mut extract_args = vec![
@@ -273,9 +217,9 @@ async fn extract_files(
         "-aoa", // Overwrite all existing files without prompt
         "-snl", // Disable symbolic links
     ];
-    extract_args.push(&pw);
+    extract_args.push(&password_arg);
 
-    let mut child = std::process::Command::new(&path_7z)
+    let mut child = std::process::Command::new(&*path_7z_str)
         .args(extract_args)
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .stderr(Stdio::piped())
@@ -308,8 +252,6 @@ async fn extract_files(
     }
     handle.join().unwrap();
 
-    app.emit("install_extract", 100)?;
-
     Ok(())
 }
 
@@ -333,48 +275,6 @@ fn parse_7z_list_output(output: &str) -> Vec<String> {
     }
 
     result
-}
-
-// Detect if extraction created a single root folder
-async fn find_single_root_folder(
-    app_path: &str,
-) -> Result<Option<String>, Box<dyn Error + Send + Sync>> {
-    let mut entries = tokio::fs::read_dir(app_path).await?;
-    let mut items = Vec::new();
-
-    while let Some(entry) = entries.next_entry().await? {
-        items.push(entry.file_name().to_string_lossy().to_string());
-    }
-
-    if items.len() == 1 {
-        let single_item = &items[0];
-        let full_path = Path::new(app_path).join(single_item);
-        if tokio::fs::metadata(full_path).await?.is_dir() {
-            return Ok(Some(single_item.clone()));
-        }
-    }
-
-    Ok(None)
-}
-
-fn get_full_executable_path(
-    app_path: &str,
-    executable_path: &str,
-    single_root: Option<&str>,
-) -> String {
-    if let Some(root) = single_root {
-        let exe_path = if executable_path.starts_with(&format!("{}/", root)) {
-            executable_path
-                .strip_prefix(&format!("{}/", root))
-                .unwrap_or(executable_path)
-                .to_string()
-        } else {
-            executable_path.to_string()
-        };
-        format!(r"{}\{}", app_path, exe_path.replace("/", r"\"))
-    } else {
-        format!(r"{}\{}", app_path, executable_path.replace("/", r"\"))
-    }
 }
 
 fn create_start_menu_shortcut(
@@ -413,10 +313,37 @@ fn create_desktop_shortcut(
     Ok(())
 }
 
+fn add_to_path(
+    path_directory: &str,
+    current_user_only: bool,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let (key, path_key) = if current_user_only {
+        (CURRENT_USER.create("Environment")?, "Path")
+    } else {
+        (
+            LOCAL_MACHINE
+                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?,
+            "path",
+        )
+    };
+
+    let current_path = key.get_string(path_key)?;
+
+    if !current_path
+        .split(';')
+        .any(|p| p.trim() == path_directory.trim())
+    {
+        let new_path = format!("{};{}", current_path, path_directory);
+        key.set_expand_string(path_key, new_path)?;
+    }
+
+    Ok(())
+}
+
 fn create_registry_entries(
     config: &AppInstallConfig,
-    executable_path: &str,
-    app_path: &str,
+    full_path: &str,
+    install_path: &str,
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let key = if config.details.config.current_user_only {
@@ -432,10 +359,10 @@ fn create_registry_entries(
     };
 
     key.set_string("Comments", "Installed with AppPorter")?;
-    key.set_string("DisplayIcon", executable_path)?;
+    key.set_string("DisplayIcon", full_path)?;
     key.set_string("DisplayName", &config.details.info.name)?;
     key.set_string("DisplayVersion", &config.details.info.version)?;
-    key.set_string("InstallLocation", app_path)?;
+    key.set_string("InstallLocation", install_path)?;
     key.set_u32("NoModify", 1)?;
     key.set_u32("NoRemove", 0)?;
     key.set_u32("NoRepair", 1)?;
@@ -449,4 +376,46 @@ fn create_registry_entries(
         ),
     )?;
     Ok(())
+}
+
+// Detect if extraction created a single root folder
+async fn find_single_root_folder(
+    install_path: &str,
+) -> Result<Option<String>, Box<dyn Error + Send + Sync>> {
+    let mut entries = tokio::fs::read_dir(install_path).await?;
+    let mut items = Vec::new();
+
+    while let Some(entry) = entries.next_entry().await? {
+        items.push(entry.file_name().to_string_lossy().to_string());
+    }
+
+    if items.len() == 1 {
+        let single_item = &items[0];
+        let full_path = Path::new(install_path).join(single_item);
+        if tokio::fs::metadata(full_path).await?.is_dir() {
+            return Ok(Some(single_item.clone()));
+        }
+    }
+
+    Ok(None)
+}
+
+fn get_full_executable_path(
+    install_path: &str,
+    archive_exe_path: &str,
+    single_root: Option<&str>,
+) -> String {
+    if let Some(root) = single_root {
+        let exe_path = if archive_exe_path.starts_with(&format!("{}/", root)) {
+            archive_exe_path
+                .strip_prefix(&format!("{}/", root))
+                .unwrap_or(archive_exe_path)
+                .to_string()
+        } else {
+            archive_exe_path.to_string()
+        };
+        format!(r"{}\{}", install_path, exe_path.replace("/", r"\"))
+    } else {
+        format!(r"{}\{}", install_path, archive_exe_path.replace("/", r"\"))
+    }
 }
