@@ -22,8 +22,8 @@ installConfig.page = 'Install_Lib_Progress'
 const { t } = useI18n()
 
 const fullExtractPath = computed(() => {
-    const base = installConfig.install_path
-    const name = installConfig.name || 'Extracted-Files'
+    const base = installConfig.lib_details.paths.install_path
+    const name = installConfig.lib_details.name || 'Extracted-Files'
     return base && name ? `${base.replace(/\\$/, '')}\\${name}\\` : base
 })
 
@@ -55,8 +55,8 @@ onMounted(() => {
             config: {
                 zip_path: installConfig.zip_path,
                 password: installConfig.archive_password,
-                extract_path: installConfig.install_path,
-                name: installConfig.name,
+                extract_path: installConfig.lib_details.paths.install_path,
+                name: installConfig.lib_details.name,
                 timestamp: installConfig.timestamp,
             },
         },
@@ -103,9 +103,7 @@ function handleCopyPath() {
                         <div class="ml-4 flex shrink-0 select-text items-center gap-3">
                             <div
                                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                                <img v-if="installConfig.icon" :src="installConfig.icon" class="size-8 object-contain"
-                                    alt="App Icon" />
-                                <span v-else class="mir-folder_zip text-2xl"></span>
+                                <span class="mir-folder_zip text-2xl"></span>
                             </div>
                         </div>
                     </div>

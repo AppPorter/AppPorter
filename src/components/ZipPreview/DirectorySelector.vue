@@ -81,7 +81,11 @@ async function handleSelect() {
         emit('loading', true)
 
         // Set the path_directory value in the store
-        store.details.config.path_directory = selectedPath.value
+        if (store.page.includes('App')) {
+            store.app_details.config.path_directory = selectedPath.value
+        } else {
+            store.lib_details.config.path_directory = selectedPath.value
+        }
 
         // Emit selected directory
         emit('directory-select', selectedPath.value)

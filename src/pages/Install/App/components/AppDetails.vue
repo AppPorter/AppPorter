@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { InstallConfigStore } from '@/stores/install_config'
-import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import Divider from 'primevue/divider'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
@@ -20,13 +19,42 @@ defineProps<{
 
 const installConfig = InstallConfigStore()
 const { zip_path } = installConfig
-const { name, icon, publisher, version, executable_path } = storeToRefs(installConfig)
+const name = computed({
+  get: () => installConfig.app_details.info.name,
+  set: (value: string) => {
+    installConfig.app_details.info.name = value
+  }
+})
+const icon = computed({
+  get: () => installConfig.app_details.info.icon,
+  set: (value: string) => {
+    installConfig.app_details.info.icon = value
+  }
+})
+const publisher = computed({
+  get: () => installConfig.app_details.info.publisher,
+  set: (value: string) => {
+    installConfig.app_details.info.publisher = value
+  }
+})
+const version = computed({
+  get: () => installConfig.app_details.info.version,
+  set: (value: string) => {
+    installConfig.app_details.info.version = value
+  }
+})
+const executable_path = computed({
+  get: () => installConfig.app_details.config.archive_exe_path,
+  set: (value: string) => {
+    installConfig.app_details.config.archive_exe_path = value
+  }
+})
 const { t } = useI18n()
 
 const detailsLoading = ref(false)
 
 function clearIcon() {
-  installConfig.details.info.icon = ''
+  installConfig.app_details.info.icon = ''
 }
 
 const drawerVisible = ref(false)

@@ -3,13 +3,6 @@ import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
-import { storeToRefs } from 'pinia'
-import Button from 'primevue/button'
-import Checkbox from 'primevue/checkbox'
-import Drawer from 'primevue/drawer'
-import InputText from 'primevue/inputtext'
-import Panel from 'primevue/panel'
-import ToggleSwitch from 'primevue/toggleswitch'
 import { computed, ref, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -23,16 +16,58 @@ const {
 } = settingsStore
 
 const installConfig = InstallConfigStore()
-const {
-  current_user_only,
-  create_desktop_shortcut,
-  create_registry_key,
-  create_start_menu_shortcut,
-  install_path,
-  add_to_path,
-  path_directory,
-  zip_path,
-} = storeToRefs(installConfig)
+
+// Access refs directly from the store structure
+const current_user_only = computed({
+  get: () => installConfig.app_details.config.current_user_only,
+  set: (value: boolean) => {
+    installConfig.app_details.config.current_user_only = value
+  }
+})
+
+const create_desktop_shortcut = computed({
+  get: () => installConfig.app_details.config.create_desktop_shortcut,
+  set: (value: boolean) => {
+    installConfig.app_details.config.create_desktop_shortcut = value
+  }
+})
+
+const create_registry_key = computed({
+  get: () => installConfig.app_details.config.create_registry_key,
+  set: (value: boolean) => {
+    installConfig.app_details.config.create_registry_key = value
+  }
+})
+
+const create_start_menu_shortcut = computed({
+  get: () => installConfig.app_details.config.create_start_menu_shortcut,
+  set: (value: boolean) => {
+    installConfig.app_details.config.create_start_menu_shortcut = value
+  }
+})
+
+const add_to_path = computed({
+  get: () => installConfig.app_details.config.add_to_path,
+  set: (value: boolean) => {
+    installConfig.app_details.config.add_to_path = value
+  }
+})
+
+const path_directory = computed({
+  get: () => installConfig.app_details.config.path_directory,
+  set: (value: string) => {
+    installConfig.app_details.config.path_directory = value
+  }
+})
+
+const install_path = computed({
+  get: () => installConfig.app_details.paths.parent_install_path,
+  set: (value: string) => {
+    installConfig.app_details.paths.parent_install_path = value
+  }
+})
+
+const zip_path = computed(() => installConfig.zip_path)
 
 const { t } = useI18n()
 
@@ -46,23 +81,23 @@ function handleDetailsLoading(loading: boolean) {
 
 // Format app path based on install path and app name
 const formatted_app_path = computed(() => {
-  return `${install_path.value}\\${installConfig.name.replace(/ /g, '-')}`
+  return `${install_path.value}\\${installConfig.app_details.info.name.replace(/ /g, '-')}`
 })
 
 // Sync settings between install modes
 function updateConfig(isCurrentUser: boolean) {
   const sourceConfig = isCurrentUser ? current_user : all_users
 
-  installConfig.details.config.create_desktop_shortcut = sourceConfig.create_desktop_shortcut
-  installConfig.details.config.create_registry_key = sourceConfig.create_registry_key
-  installConfig.details.config.create_start_menu_shortcut = sourceConfig.create_start_menu_shortcut
-  installConfig.details.paths.parent_install_path = sourceConfig.install_path
-  installConfig.details.config.add_to_path = sourceConfig.add_to_path
-  installConfig.details.config.path_directory = ''  // Reset path directory when switching modes
+  installConfig.app_details.config.create_desktop_shortcut = sourceConfig.create_desktop_shortcut
+  installConfig.app_details.config.create_registry_key = sourceConfig.create_registry_key
+  installConfig.app_details.config.create_start_menu_shortcut = sourceConfig.create_start_menu_shortcut
+  installConfig.app_details.paths.parent_install_path = sourceConfig.install_path
+  installConfig.app_details.config.add_to_path = sourceConfig.add_to_path
+  installConfig.app_details.config.path_directory = ''  // Reset path directory when switching modes
 }
 
 // Initialize with settings
-installConfig.details.config.current_user_only = settings_current_user_only
+installConfig.app_details.config.current_user_only = settings_current_user_only
 updateConfig(current_user_only.value)
 
 // Select install directory using file dialog
@@ -72,14 +107,14 @@ async function select_install_path() {
     multiple: false,
   })
   if (selected) {
-    installConfig.details.paths.parent_install_path = String(selected)
+    installConfig.app_details.paths.parent_install_path = String(selected)
   }
 }
 
 // Update configuration when install mode changes
 function handleInstallModeChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
-  installConfig.details.config.current_user_only = checked
+  installConfig.app_details.config.current_user_only = checked
   updateConfig(checked)
 }
 
@@ -125,7 +160,7 @@ watchEffect(() => {
           </div>
 
           <!-- Formatted App Path -->
-          <div v-if="install_path && installConfig.name" class="mt-1 text-xs text-gray-500">
+          <div v-if="install_path && installConfig.app_details.info.name" class="mt-1 text-xs text-gray-500">
             {{ t('final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
@@ -144,7 +179,7 @@ watchEffect(() => {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-              }}</label>
+                }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

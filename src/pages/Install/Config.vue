@@ -36,16 +36,9 @@ onMounted(() => {
 <template>
     <div class="flex size-full flex-col overflow-hidden">
         <!-- Mode selector header -->
-        <div class="flex justify-center border-b border-surface-200 p-3 dark:border-surface-700">
-            <SelectButton v-model="currentMode" :options="modeOptions" option-label="label" option-value="value"
-                class="flex gap-1">
-                <template #option="{ option }">
-                    <div class="flex items-center gap-2 px-4 py-2">
-                        <span :class="option.icon" class="text-base" />
-                        <span class="text-sm font-medium">{{ option.label }}</span>
-                    </div>
-                </template>
-            </SelectButton>
+        <div class="flex justify-center">
+            <SelectButton v-model="currentMode" :options="modeOptions" :allowEmpty=false option-label="label"
+                option-value="value" class="mb-2" />
         </div>
 
         <!-- Dynamic content based on selected mode -->

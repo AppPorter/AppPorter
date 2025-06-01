@@ -26,8 +26,8 @@ const { t } = useI18n()
 
 // Compute full install path including app folder
 const fullInstallPath = computed(() => {
-  const basePath = installConfig.install_path
-  const appName = installConfig.name
+  const basePath = installConfig.app_details.paths.parent_install_path
+  const appName = installConfig.app_details.info.name
   if (basePath && appName) {
     return `${basePath.replace(/\\$/, '')}\\${appName}\\`
   }
@@ -93,7 +93,7 @@ onMounted(() => {
       config: {
         zip_path: installConfig.zip_path,
         password: installConfig.archive_password,
-        details: installConfig.toAppDetails,
+        details: installConfig.app_details,
         timestamp: installConfig.timestamp,
       },
     },
@@ -144,18 +144,19 @@ defineOptions({
             <div class="ml-4 flex shrink-0 select-text items-center gap-3">
               <div class="text-right">
                 <h3 class="text-base font-medium leading-none">
-                  {{ installConfig.name }}
+                  {{ installConfig.app_details.info.name }}
                 </h3>
                 <p class="mt-1 text-xs">
-                  {{ installConfig.version || 'Version N/A' }}
+                  {{ installConfig.app_details.info.version || 'Version N/A' }}
                 </p>
                 <p class="mt-0.5 text-xs">
-                  {{ installConfig.publisher || 'Publisher N/A' }}
+                  {{ installConfig.app_details.info.publisher || 'Publisher N/A' }}
                 </p>
               </div>
               <div
                 class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                <img v-if="installConfig.icon" :src="installConfig.icon" class="size-8 object-contain" alt="App Icon" />
+                <img v-if="installConfig.app_details.info.icon" :src="installConfig.app_details.info.icon"
+                  class="size-8 object-contain" alt="App Icon" />
                 <span v-else class="mir-apps text-2xl"></span>
               </div>
             </div>
@@ -192,12 +193,12 @@ defineOptions({
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.install_settings')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
                     handleCopy(
-                      `Install Mode: ${getInstallMode(installConfig.current_user_only)}\nShortcuts: ${getShortcutsList(installConfig)}\nInstall Path: ${fullInstallPath}`,
+                      `Install Mode: ${getInstallMode(installConfig.app_details.config.current_user_only)}\nShortcuts: ${getShortcutsList(installConfig.app_details.config)}\nInstall Path: ${fullInstallPath}`,
                       'Settings'
                     )
                     " />
@@ -206,13 +207,13 @@ defineOptions({
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('install.mode') }}</span>
                   <p class="text-sm font-medium">
-                    {{ getInstallMode(installConfig.current_user_only) }}
+                    {{ getInstallMode(installConfig.app_details.config.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('shortcuts') }}</span>
                   <p class="text-sm font-medium">
-                    {{ getShortcutsList(installConfig) }}
+                    {{ getShortcutsList(installConfig.app_details.config) }}
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -230,12 +231,12 @@ defineOptions({
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('install.progress.package_info')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
                   icon="mir-content_copy" @click="
                     handleCopy(
-                      `Source Archive: ${installConfig.zip_path}\nSelected Executable: ${installConfig.executable_path}`,
+                      `Source Archive: ${installConfig.zip_path}\nSelected Executable: ${installConfig.app_details.config.archive_exe_path}`,
                       'Package info'
                     )
                     " />
@@ -250,7 +251,7 @@ defineOptions({
                 <div class="space-y-1">
                   <span class="text-sm">{{ t('selected_executable') }}</span>
                   <p class="break-all text-sm font-medium">
-                    {{ installConfig.executable_path }}
+                    {{ installConfig.app_details.config.archive_exe_path }}
                   </p>
                 </div>
               </div>
