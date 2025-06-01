@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { AppDetails } from './app_list'
+import type { AppDetails, LibDetails } from './app_list'
 
 type Pages =
   | 'Home'
@@ -11,17 +11,22 @@ type Pages =
 
 interface InstallConfig {
   zip_path: string
-  details: AppDetails
   page: Pages
   archive_content: string[] | null
   timestamp: number
   url: string
+  app_details: AppDetails
+  lib_details: LibDetails
 }
 
 export const InstallConfigStore = defineStore('install_config', {
   state: (): InstallConfig => ({
     zip_path: '',
-    details: {
+    page: 'Home',
+    archive_content: null,
+    timestamp: 0,
+    url: '',
+    app_details: {
       info: {
         name: '',
         icon: '',
@@ -34,7 +39,7 @@ export const InstallConfigStore = defineStore('install_config', {
         current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: true,
-        create_registry_key: true,
+        create_registry_key: false,
         add_to_path: false,
         path_directory: '',
       },
@@ -49,33 +54,23 @@ export const InstallConfigStore = defineStore('install_config', {
         path_exists: false,
       },
     },
-    page: 'Home',
-    archive_content: null,
-    timestamp: 0,
-    url: '',
+    lib_details: {
+      name: '',
+      config: {
+        archive_password: '',
+        add_to_path: false,
+        path_directory: '',
+      },
+      paths: {
+        parent_install_path: '',
+        install_path: '',
+      },
+      validation_status: {
+        file_exists: false,
+        path_exists: false,
+      },
+    },
   }),
-
-  getters: {
-    // Convenience getters for accessing nested properties
-    name: (state) => state.details.info.name,
-    icon: (state) => state.details.info.icon,
-    publisher: (state) => state.details.info.publisher,
-    version: (state) => state.details.info.version,
-    executable_path: (state) => state.details.config.archive_exe_path,
-    archive_password: (state) => state.details.config.archive_password,
-    current_user_only: (state) => state.details.config.current_user_only,
-    create_desktop_shortcut: (state) => state.details.config.create_desktop_shortcut,
-    create_start_menu_shortcut: (state) => state.details.config.create_start_menu_shortcut,
-    create_registry_key: (state) => state.details.config.create_registry_key,
-    add_to_path: (state) => state.details.config.add_to_path,
-    path_directory: (state) => state.details.config.path_directory,
-    install_path: (state) => state.details.paths.parent_install_path,
-    full_path: (state) => state.details.paths.full_path,
-    validation_status: (state) => state.details.validation_status,
-
-    // Convert to AppDetails for Rust backend
-    toAppDetails: (state) => state.details,
-  },
 
   actions: {
     resetConfig() {

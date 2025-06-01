@@ -1,10 +1,11 @@
 import AppList from '@/pages/AppList.vue'
-import Install_Lib_Config from '@/pages/CopyOnly/Config.vue'
-import Install_Lib_Progress from '@/pages/CopyOnly/Progress.vue'
 import Home from '@/pages/Home.vue'
-import Install_Config from '@/pages/Install/Config.vue'
+import {
+  default as Install_Lib_Progress,
+  default as Install_Progress,
+} from '@/pages/Install/App/Progress.vue'
+import Config from '@/pages/Install/Config.vue'
 import Preview from '@/pages/Install/Preview.vue'
-import Install_Progress from '@/pages/Install/Progress.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -32,7 +33,7 @@ const routes = [
   },
   {
     path: '/Install/App/Config',
-    component: Install_Config,
+    component: Config,
     meta: {
       icon: 'mir-settings_applications',
     },
@@ -42,13 +43,6 @@ const routes = [
     component: Install_Progress,
     meta: {
       icon: 'mir-pending_actions',
-    },
-  },
-  {
-    path: '/Install/Lib/Config',
-    component: Install_Lib_Config,
-    meta: {
-      icon: 'mir-folder_copy',
     },
   },
   {
