@@ -28,30 +28,30 @@ const fullExtractPath = computed(() => {
 })
 
 onMounted(() => {
-    currentStatus.value = t('copyonly.progress.preparing')
+    currentStatus.value = t('install.progress.preparing')
 
-    listen('copyonly', (event) => {
+    listen('lib_install', (event) => {
         if (event.payload === 0) {
             progressMode.value = 'indeterminate'
-            currentStatus.value = t('copyonly.progress.preparing_extract')
+            currentStatus.value = t('install.progress.preparing_extract')
         }
         if (event.payload === 101) {
-            currentStatus.value = t('copyonly.progress.completed')
+            currentStatus.value = t('install.progress.completed')
             isFinished.value = true
             canClose.value = true
         }
     })
 
-    listen('copyonly_extract', (event) => {
+    listen('lib_install_extract', (event) => {
         progressMode.value = 'determinate'
         extractProgress.value = event.payload as number
-        currentStatus.value = t('copyonly.progress.extracting', { progress: extractProgress.value })
+        currentStatus.value = t('install.progress.extracting', { progress: extractProgress.value })
     })
 
-    // Start copy-only process
+    // Start library install process
     invoke('execute_command', {
         command: {
-            name: 'CopyOnly',
+            name: 'LibInstall',
             config: {
                 zip_path: installConfig.zip_path,
                 password: installConfig.archive_password,
@@ -96,8 +96,8 @@ function handleCopyPath() {
                                 ]"></span>
                             </div>
                             <div class="min-w-0 shrink">
-                                <h2 class="text-lg font-medium">{{ t('copyonly.progress.title') }}</h2>
-                                <p class="text-xs">{{ t('copyonly.progress.description') }}</p>
+                                <h2 class="text-lg font-medium">{{ t('install.progress.title') }}</h2>
+                                <p class="text-xs">{{ t('install.progress.description') }}</p>
                             </div>
                         </div>
                         <div class="ml-4 flex shrink-0 select-text items-center gap-3">
@@ -124,7 +124,7 @@ function handleCopyPath() {
                                 <span class="mir-terminal"></span>
                                 <span class="text-sm font-medium">{{ t('full_path') }}</span>
                             </div>
-                            <Button severity="secondary" outlined v-tooltip.top="t('copyonly.progress.copy_path')"
+                            <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_path')"
                                 class="h-7 w-8" icon="mir-content_copy" @click="handleCopyPath" />
                         </div>
                         <p class="select-text break-all text-sm font-medium">{{ fullExtractPath }}</p>

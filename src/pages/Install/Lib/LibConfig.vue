@@ -35,13 +35,12 @@ onMounted(async () => {
     // Initialize config from settings
     installConfig.lib_details.paths.parent_install_path = lib_install.install_path
     installConfig.lib_details.config.add_to_path = lib_install.add_to_path
-    installConfig.lib_details.config.path_directory = ''  // Reset path directory when loading
+    installConfig.lib_details.config.path_directory = ''
 
     // Extract filename from path and remove extension for default name
     if (installConfig.zip_path) {
         const pathParts = installConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
-        // Remove file extension
         installConfig.lib_details.name = filename.replace(/\.[^/.]+$/, '')
     }
 })
@@ -76,7 +75,7 @@ async function select_extract_path() {
                                 <div class="flex items-center gap-1.5">
                                     <span class="mir-folder_copy text-lg" />
                                     <h2 class="text-base font-medium">
-                                        {{ t('copyonly.file_details') }}
+                                        {{ t('install.file_details') }}
                                     </h2>
                                 </div>
                                 <p class="ml-6 mt-0.5 text-xs">
