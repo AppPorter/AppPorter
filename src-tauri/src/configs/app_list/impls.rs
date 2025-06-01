@@ -356,8 +356,9 @@ impl AppList {
 pub async fn load_app_list() -> Result<AppList, Box<dyn Error + Send + Sync>> {
     let mut app_list = AppList::read().await?;
     app_list.sync_from_registry().await?;
-    app_list.validate_installs().await?;
     app_list.remove_duplicates();
+    app_list.validate_installs().await?;
+
     app_list.save().await?;
 
     Ok(app_list)
