@@ -72,18 +72,16 @@ impl AppList {
                     } else {
                         false
                     }
-                } else {
-                    if let Ok(key) = LOCAL_MACHINE
-                        .open(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
-                    {
-                        if let Ok(path) = key.get_string("path") {
-                            path.split(';').any(|p| p.trim() == path_to_check.trim())
-                        } else {
-                            false
-                        }
+                } else if let Ok(key) = LOCAL_MACHINE
+                    .open(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+                {
+                    if let Ok(path) = key.get_string("path") {
+                        path.split(';').any(|p| p.trim() == path_to_check.trim())
                     } else {
                         false
                     }
+                } else {
+                    false
                 }
             } else {
                 true
