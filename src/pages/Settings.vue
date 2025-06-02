@@ -5,7 +5,11 @@ import { SettingsStore } from '@/stores/settings'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
+import Chip from 'primevue/chip'
 import InputText from 'primevue/inputtext'
+import Panel from 'primevue/panel'
+import Select from 'primevue/select'
+import ToggleSwitch from 'primevue/toggleswitch'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -125,176 +129,163 @@ const githubIcon = computed(() => {
 
 <template>
   <div class="flex size-full flex-col">
-    <Panel class="flex size-full flex-col overflow-auto">
-      <!-- Header Section -->
-      <template #header>
-        <div class="flex items-center gap-2">
-          <span class="mir-settings text-xl"></span>
-          <div>
-            <h2 class="text-lg font-medium">{{ t('settings.title') }}</h2>
-            <p class="mt-0.5 text-xs">{{ t('settings.description') }}</p>
+    <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4 pt-2">
+      <!-- Basic Settings -->
+      <Panel class="w-full">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <span class="mir-tune text-xl"></span>
+            <h3 class="text-base font-medium">{{ t('settings.basic.title') }}</h3>
+          </div>
+        </template>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label>{{ t('language') }}</label>
+            <Select v-model="settings.language" :options="languageOptions" optionLabel="label" optionValue="value"
+              class="w-48" size="small" />
+          </div>
+          <div class="flex items-center justify-between">
+            <label>{{ t('theme.self') }}</label>
+            <Select v-model="settings.theme" :options="themeOptions" optionLabel="label" optionValue="value"
+              class="w-48" size="small" />
+          </div>
+          <div class="flex items-center justify-between">
+            <label>{{ t('minimize_tray') }}</label>
+            <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
+          </div>
+          <div class="flex items-center justify-between">
+            <label>{{ t('context_menu') }}</label>
+            <ToggleSwitch v-model="settings.context_menu" />
+          </div>
+          <div class="flex items-center justify-between">
+            <label>{{ t('auto_startup') }}</label>
+            <ToggleSwitch v-model="settings.auto_startup" />
           </div>
         </div>
-      </template>
+      </Panel>
 
-      <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4">
-        <!-- Basic Settings -->
-        <Panel class="w-full">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <span class="mir-tune"></span>
-              <span>{{ t('settings.basic.title') }}</span>
-            </div>
-          </template>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <label>{{ t('language') }}</label>
-              <Select v-model="settings.language" :options="languageOptions" optionLabel="label" optionValue="value"
-                class="w-48" size="small" />
-            </div>
-            <div class="flex items-center justify-between">
-              <label>{{ t('theme.self') }}</label>
-              <Select v-model="settings.theme" :options="themeOptions" optionLabel="label" optionValue="value"
-                class="w-48" size="small" />
-            </div>
-            <div class="flex items-center justify-between">
-              <label>{{ t('minimize_tray') }}</label>
-              <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
-            </div>
-            <div class="flex items-center justify-between">
-              <label>{{ t('context_menu') }}</label>
-              <ToggleSwitch v-model="settings.context_menu" />
-            </div>
-            <div class="flex items-center justify-between">
-              <label>{{ t('auto_startup') }}</label>
-              <ToggleSwitch v-model="settings.auto_startup" />
-            </div>
+      <!-- App Install Settings -->
+      <Panel class="w-full">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <span class="mir-install_desktop text-xl"></span>
+            <h3 class="text-base font-medium">{{ t('settings.install.app.title') }}</h3>
           </div>
-        </Panel>
+        </template>
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <label>{{ t('current_user_only') }}</label>
+            <ToggleSwitch v-model="settings.app_install.current_user_only" />
+          </div>
 
-        <!-- App Install Settings -->
-        <Panel class="w-full">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <span class="mir-install_desktop"></span>
-              <span>{{ t('settings.install.app.title') }}</span>
-            </div>
-          </template>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between">
-              <label>{{ t('current_user_only') }}</label>
-              <ToggleSwitch v-model="settings.app_install.current_user_only" />
-            </div>
-
-            <div class="flex min-w-0 flex-col gap-4 lg:flex-row">
-              <!-- Current User Settings -->
-              <Panel class="min-w-0 flex-1">
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <span class="mir-person"></span>
-                    <span>{{ t('current_user') }}</span>
-                  </div>
-                </template>
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.desktop') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.current_user.create_desktop_shortcut" />
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.registry_key') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.current_user.create_registry_key" />
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.start_menu') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.current_user.create_start_menu_shortcut" />
-                  </div>
-                  <div class="space-y-2">
-                    <label>{{ t('install_path') }}</label>
-                    <div class="flex min-w-0 items-center gap-2">
-                      <InputText v-model="settings.app_install.current_user.install_path"
-                        :placeholder="t('install_path')" class="h-9 min-w-0 flex-1 text-sm" />
-                      <Button @click="selectAppInstallPath('current_user')" severity="secondary" class="h-9 px-4"
-                        icon="mir-folder_open" :label="t('browse')" />
-                    </div>
-                  </div>
+          <div class="flex min-w-0 flex-col gap-4 lg:flex-row">
+            <!-- Current User Settings -->
+            <Panel class="min-w-0 flex-1">
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <span class="mir-person text-lg"></span>
+                  <h4 class="text-sm font-medium">{{ t('current_user') }}</h4>
                 </div>
-              </Panel>
-
-              <!-- All Users Settings -->
-              <Panel class="min-w-0 flex-1">
-                <template #header>
-                  <div class="flex items-center gap-2">
-                    <span class="mir-group"></span>
-                    <span>{{ t('all_users') }}</span>
-                  </div>
-                </template>
-                <div class="space-y-4">
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.desktop') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.all_users.create_desktop_shortcut" />
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.registry_key') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.all_users.create_registry_key" />
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <label>{{ t('shortcuts.start_menu') }}</label>
-                    <ToggleSwitch v-model="settings.app_install.all_users.create_start_menu_shortcut" />
-                  </div>
-                  <div class="space-y-2">
-                    <label>{{ t('install_path') }}</label>
-                    <div class="flex min-w-0 items-center gap-2">
-                      <InputText v-model="settings.app_install.all_users.install_path" :placeholder="t('install_path')"
-                        class="h-9 min-w-0 flex-1 text-sm" />
-                      <Button @click="selectAppInstallPath('all_users')" severity="secondary" class="h-9 px-4"
-                        icon="mir-folder_open" :label="t('browse')" />
-                    </div>
-                  </div>
-                </div>
-              </Panel>
-            </div>
-          </div>
-        </Panel>
-
-        <!-- Lib Install Settings -->
-        <Panel class="w-full">
-          <template #header>
-            <div class="flex items-center gap-2">
-              <span class="mir-folder_copy"></span>
-              <span>{{ t('settings.install.lib.title') }}</span>
-            </div>
-          </template>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <label>{{ t('install_path') }}</label>
-              <div class="flex min-w-0 items-center gap-2">
-                <InputText v-model="settings.lib_install.install_path" :placeholder="t('install_path')"
-                  class="h-9 min-w-0 flex-1 text-sm" />
-                <Button @click="selectLibInstallPath" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
-                  :label="t('browse')" />
-              </div>
-            </div>
-            <div class="flex items-center justify-between">
-              <label>{{ t('add_to_path') }}</label>
-              <ToggleSwitch v-model="settings.lib_install.add_to_path" />
-            </div>
-          </div>
-        </Panel>
-
-        <div class="flex flex-col items-center justify-center space-y-1">
-          <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
-          <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>
-          <p class="text-lg">v0.2.0</p>
-          <a href="https://github.com/AppPorter/AppPorter" target="_blank">
-            <Chip label="GitHub" class="flex items-center">
-              <template #icon>
-                <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
               </template>
-            </Chip>
-          </a>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.desktop') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.current_user.create_desktop_shortcut" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.registry_key') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.current_user.create_registry_key" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.start_menu') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.current_user.create_start_menu_shortcut" />
+                </div>
+                <div class="space-y-2">
+                  <label>{{ t('install_path') }}</label>
+                  <div class="flex min-w-0 items-center gap-2">
+                    <InputText v-model="settings.app_install.current_user.install_path" :placeholder="t('install_path')"
+                      class="h-9 min-w-0 flex-1 text-sm" />
+                    <Button @click="selectAppInstallPath('current_user')" severity="secondary" class="h-9 px-4"
+                      icon="mir-folder_open" :label="t('browse')" />
+                  </div>
+                </div>
+              </div>
+            </Panel>
+
+            <!-- All Users Settings -->
+            <Panel class="min-w-0 flex-1">
+              <template #header>
+                <div class="flex items-center gap-2">
+                  <span class="mir-group text-lg"></span>
+                  <h4 class="text-sm font-medium">{{ t('all_users') }}</h4>
+                </div>
+              </template>
+              <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.desktop') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.all_users.create_desktop_shortcut" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.registry_key') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.all_users.create_registry_key" />
+                </div>
+                <div class="flex items-center justify-between">
+                  <label>{{ t('shortcuts.start_menu') }}</label>
+                  <ToggleSwitch v-model="settings.app_install.all_users.create_start_menu_shortcut" />
+                </div>
+                <div class="space-y-2">
+                  <label>{{ t('install_path') }}</label>
+                  <div class="flex min-w-0 items-center gap-2">
+                    <InputText v-model="settings.app_install.all_users.install_path" :placeholder="t('install_path')"
+                      class="h-9 min-w-0 flex-1 text-sm" />
+                    <Button @click="selectAppInstallPath('all_users')" severity="secondary" class="h-9 px-4"
+                      icon="mir-folder_open" :label="t('browse')" />
+                  </div>
+                </div>
+              </div>
+            </Panel>
+          </div>
         </div>
+      </Panel>
+
+      <!-- Lib Install Settings -->
+      <Panel class="w-full">
+        <template #header>
+          <div class="flex items-center gap-2">
+            <span class="mir-folder_copy text-xl"></span>
+            <h3 class="text-base font-medium">{{ t('settings.install.lib.title') }}</h3>
+          </div>
+        </template>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <label>{{ t('install_path') }}</label>
+            <div class="flex min-w-0 items-center gap-2">
+              <InputText v-model="settings.lib_install.install_path" :placeholder="t('install_path')"
+                class="h-9 min-w-0 flex-1 text-sm" />
+              <Button @click="selectLibInstallPath" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
+                :label="t('browse')" />
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <label>{{ t('add_to_path') }}</label>
+            <ToggleSwitch v-model="settings.lib_install.add_to_path" />
+          </div>
+        </div>
+      </Panel>
+
+      <div class="flex flex-col items-center justify-center space-y-1">
+        <img src="@/assets/appporter.svg" class="size-24" alt="AppPorter" />
+        <h1 class="whitespace-nowrap px-6 text-2xl font-semibold">AppPorter</h1>
+        <p class="text-lg">v0.2.0</p>
+        <a href="https://github.com/AppPorter/AppPorter" target="_blank">
+          <Chip label="GitHub" class="flex items-center">
+            <template #icon>
+              <img :src="githubIcon" class="mr-1 size-4" alt="GitHub" />
+            </template>
+          </Chip>
+        </a>
       </div>
-    </Panel>
+    </div>
   </div>
 
   <!-- Fixed position reload button -->
