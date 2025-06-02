@@ -24,7 +24,7 @@ const executablePathError = ref(false)
 // Mode options for SelectButton
 const modeOptions = [
     { label: t('install.mode.app'), value: 'app', icon: 'mir-install_desktop' },
-    { label: t('install.mode.library'), value: 'lib', icon: 'mir-folder_copy' }
+    { label: t('install.mode.lib'), value: 'lib', icon: 'mir-folder_copy' }
 ]
 
 // Current mode based on install_config page
@@ -126,18 +126,18 @@ async function handleAppInstall() {
 
             await new Promise((resolve, reject) => {
                 confirm.require({
-                    message: t('install.config.confirm_install'),
+                    message: t('install.confirm_install'),
                     group: 'dialog',
                     icon: 'mir-install_desktop',
-                    header: t('install.config.start_install'),
+                    header: t('install.start_install'),
                     rejectProps: {
-                        label: t('cancel'),
+                        label: t('basic.cancel'),
                         severity: 'secondary',
                         outlined: true,
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('install'),
+                        label: t('basic.install'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -148,18 +148,18 @@ async function handleAppInstall() {
             if (error === 'Install directory is not empty') {
                 await new Promise((resolve, reject) => {
                     confirm.require({
-                        message: t('install.config.directory_not_empty'),
+                        message: t('install.directory_not_empty'),
                         group: 'dialog',
                         icon: 'mir-warning',
-                        header: t('warning'),
+                        header: t('basic.warning'),
                         rejectProps: {
-                            label: t('cancel'),
+                            label: t('basic.cancel'),
                             severity: 'secondary',
                             outlined: true,
                             icon: 'mir-close',
                         },
                         acceptProps: {
-                            label: t('install.config.force_install'),
+                            label: t('install.force_install'),
                             severity: 'danger',
                             icon: 'mir-warning',
                         },
@@ -231,13 +231,13 @@ async function handleLibInstall() {
                     icon: 'mir-folder_copy',
                     header: t('copyonly.start_extraction'),
                     rejectProps: {
-                        label: t('cancel'),
+                        label: t('basic.cancel'),
                         severity: 'secondary',
                         outlined: true,
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('install'),
+                        label: t('basic.install'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -248,12 +248,12 @@ async function handleLibInstall() {
             if (error === 'Install directory is not empty') {
                 await new Promise((resolve, reject) => {
                     confirm.require({
-                        message: t('install.config.directory_not_empty'),
+                        message: t('install.directory_not_empty'),
                         group: 'dialog',
                         icon: 'mir-warning',
-                        header: t('warning'),
+                        header: t('basic.warning'),
                         rejectProps: {
-                            label: t('cancel'),
+                            label: t('basic.cancel'),
                             severity: 'secondary',
                             outlined: true,
                             icon: 'mir-close',

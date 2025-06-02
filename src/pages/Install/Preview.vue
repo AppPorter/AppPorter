@@ -54,7 +54,7 @@ onMounted(async () => {
         } else {
             toast.add({
                 severity: 'error',
-                summary: t('error'),
+                summary: t('basic.error'),
                 detail: String(error),
                 life: 0,
             })
@@ -91,7 +91,7 @@ async function handlePasswordSubmit() {
         } else {
             toast.add({
                 severity: 'error',
-                summary: t('error'),
+                summary: t('basic.error'),
                 detail: String(error),
                 life: 0,
             })
@@ -154,9 +154,9 @@ async function GetArchiveContent(password: string) {
             </div>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <Button @click="goTo('/Home')" :label="t('cancel')" severity="secondary" outlined
+                    <Button @click="goTo('/Home')" :label="t('basic.cancel')" severity="secondary" outlined
                         icon="mir-close" />
-                    <Button @click="handlePasswordSubmit" :label="t('submit')" icon="mir-check" />
+                    <Button @click="handlePasswordSubmit" :label="t('basic.submit')" icon="mir-check" />
                 </div>
             </template>
         </Dialog>
@@ -180,14 +180,15 @@ async function GetArchiveContent(password: string) {
             <!-- Action buttons -->
             <div class="flex items-center justify-between">
                 <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
-                    icon="mir-arrow_back" :label="t('back')" outlined />
+                    icon="mir-arrow_back" :label="t('basic.back')" outlined />
 
                 <div class="flex gap-3">
-                    <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe')"
+                    <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe.self')"
                         icon="mir-rss_feed" class="px-6" />
-                    <Button @click="handleInstallAsApp" :label="t('install_as_app')" icon="mir-apps" class="px-6" />
-                    <Button @click="handleInstallAsLibrary" :label="t('install_as_library')" icon="mir-library_books"
-                        severity="secondary" class="px-6" />
+                    <Button @click="handleInstallAsApp" :label="t('preview.install_as_app')" icon="mir-apps"
+                        class="px-6" />
+                    <Button @click="handleInstallAsLibrary" :label="t('preview.install_as_library')"
+                        icon="mir-library_books" severity="secondary" class="px-6" />
                 </div>
             </div>
         </div>
