@@ -11,7 +11,10 @@
     "exit": "退出",
     "open": "打开",
     "browse": "浏览",
-    "reload": "刷新页面"
+    "reload": "刷新页面",
+    "continue": "继续",
+    "icon": "图标",
+    "optional": "可选"
   },
   "admin_prompt": {
     "prompt": "AppPorter需要管理员权限才能实现所有功能，是否允许以管理员权限运行？"
@@ -38,7 +41,21 @@
     "start_menu_shortcut": "创建开始菜单快捷方式",
     "install_path": "安装路径",
     "all_users": "所有用户",
-    "add_to_path": "添加到PATH"
+    "add_to_path": "添加到PATH",
+    "description": "从压缩文件安装应用或库",
+    "lib_details": "库详情",
+    "selected_file": "选择的文件：",
+    "extract_path": "解压路径",
+    "environment": "环境",
+    "select_path_directory": "添加到PATH的目录",
+    "app_details": {
+      "title": "应用详情",
+      "icon_extract_hint": "图标将会在选择可执行文件路径之后自动填充"
+    },
+    "select_placeholder": "压缩文件路径",
+    "executable_path": "可执行文件路径",
+    "select_executable_path": "选择可执行文件路径",
+    "select_executable": "选择可执行文件"
   },
   "app_list": {
     "self": "软件列表"
@@ -55,7 +72,7 @@
     },
     "install": {
       "app": {
-        "title": "App安装"
+        "title": "应用安装"
       },
       "lib": {
         "title": "库安装"
@@ -86,5 +103,18 @@
     "system": "跟随系统",
     "light": "浅色",
     "dark": "深色"
+  },
+  "archives": {
+    "self": "压缩文件"
+  },
+  "sort": {
+    "name": "名称",
+    "publisher": "发布者",
+    "date": "日期"
+  },
+  "app": {
+    "name": "名称",
+    "publisher": "发布者",
+    "version": "版本"
   }
 }

@@ -51,20 +51,20 @@ function handleDetailsLoading(loading: boolean) {
           </h2>
         </div>
         <p class="ml-6 mt-0.5 text-xs">
-          {{ t('selected_file') }}:
+          {{ t('install.selected_file') }}:
           <span class="break-all font-medium">{{ zip_path }}</span>
         </p>
       </div>
     </template>
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('executable_path') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('install.executable_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
-            <InputText v-model="executable_path" :placeholder="t('select_executable_path')" class="h-8 w-full text-sm"
-              :invalid="executablePathError" />
+            <InputText v-model="executable_path" :placeholder="t('install.select_executable_path')"
+              class="h-8 w-full text-sm" :invalid="executablePathError" />
             <Button class="h-8 w-36" severity="secondary" @click="drawerVisible = true" icon="mir-folder_open"
-              :label="t('browse')" />
+              :label="t('basic.browse')" />
           </div>
         </div>
       </div>
@@ -73,8 +73,8 @@ function handleDetailsLoading(loading: boolean) {
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('icon') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          {{ t('basic.icon') }}
+          <p class="text-xs font-normal">{{ t('basic.optional') }}</p>
         </label>
         <div class="w-full">
           <div class="flex items-center gap-2">
@@ -107,7 +107,7 @@ function handleDetailsLoading(loading: boolean) {
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
           {{ t('app.publisher') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          <p class="text-xs font-normal">{{ t('basic.optional') }}</p>
         </label>
         <div class="w-full">
           <InputText v-model="publisher" :placeholder="t('app.publisher')" class="h-8 w-full text-sm" />
@@ -117,7 +117,7 @@ function handleDetailsLoading(loading: boolean) {
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
           {{ t('app.version') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          <p class="text-xs font-normal">{{ t('basic.optional') }}</p>
         </label>
         <div class="w-full">
           <InputText v-model="version" :placeholder="t('app.version')" class="h-8 w-full text-sm" />
@@ -127,12 +127,12 @@ function handleDetailsLoading(loading: boolean) {
 
     <div v-if="detailsLoading" class="absolute inset-0 flex items-center justify-center backdrop-blur-[0.125rem]">
       <h3 class="text-base font-semibold">
-        {{ t('loading') }}
+        {{ t('basic.loading') }}
       </h3>
     </div>
   </Panel>
-  <Drawer v-model:visible="drawerVisible" :header="t('select_executable')" position="bottom" :style="{ height: '95vh' }"
-    class="rounded-lg">
+  <Drawer v-model:visible="drawerVisible" :header="t('install.select_executable')" position="bottom"
+    :style="{ height: '95vh' }" class="rounded-lg">
     <div class="h-full overflow-hidden">
       <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" @close="closeDrawer"
         @loading="handleDetailsLoading" />

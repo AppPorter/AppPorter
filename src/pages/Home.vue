@@ -56,7 +56,7 @@ async function selectZipFile() {
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
           <Button @click="goTo('/Install/Preview')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
-            icon="mir-install_desktop" :label="t('basic.next')" />
+            icon="mir-install_desktop" :label="t('basic.continue')" />
         </div>
       </div>
     </Panel>

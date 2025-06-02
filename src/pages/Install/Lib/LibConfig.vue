@@ -75,7 +75,7 @@ async function select_extract_path() {
                                 <div class="flex items-center gap-1.5">
                                     <span class="mir-folder_copy text-lg" />
                                     <h2 class="text-base font-medium">
-                                        {{ t('install.file_details') }}
+                                        {{ t('install.lib_details') }}
                                     </h2>
                                 </div>
                                 <p class="ml-6 mt-0.5 text-xs">
@@ -103,7 +103,7 @@ async function select_extract_path() {
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
                                         <InputText v-model="installConfig.lib_details.paths.parent_install_path"
-                                            :placeholder="t('install.choose_dir')" class="h-8 w-full text-sm"
+                                            :placeholder="t('basic.browse')" class="h-8 w-full text-sm"
                                             :invalid="!!pathError" @input="$emit('update:pathError', '')"
                                             :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -122,7 +122,7 @@ async function select_extract_path() {
                                                 <Checkbox v-model="installConfig.lib_details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{ t('install.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">
