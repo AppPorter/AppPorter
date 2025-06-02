@@ -30,7 +30,7 @@ const createTrayMenu = (t: (key: string) => string) => {
     items: [
       {
         id: 'open',
-        text: t('open'),
+        text: t('basic.open'),
         action: () => {
           window.show()
           window.unminimize()
@@ -39,7 +39,7 @@ const createTrayMenu = (t: (key: string) => string) => {
       },
       {
         id: 'quit',
-        text: t('quit'),
+        text: t('basic.quit'),
         action: () => invoke('exit'),
       },
     ],

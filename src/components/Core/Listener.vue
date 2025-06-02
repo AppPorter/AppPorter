@@ -44,13 +44,13 @@ onMounted(async () => {
                 header: t('uninstall.confirm.header'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('cancel'),
+                    label: t('basic.cancel'),
                     severity: 'secondary',
                     outlined: true,
                     icon: 'mir-close',
                 },
                 acceptProps: {
-                    label: t('uninstall'),
+                    label: t('uninstall.self'),
                     severity: 'danger',
                     icon: 'mir-warning',
                 },

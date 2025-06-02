@@ -189,7 +189,7 @@ async function handleSelect() {
       </div>
       <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">
-        {{ t('select') }}
+        {{ t('basic.select') }}
       </Button>
     </div>
   </div>

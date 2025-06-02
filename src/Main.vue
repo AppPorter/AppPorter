@@ -31,12 +31,12 @@ onMounted(async () => {
       message: t('disclaimer.message'),
       icon: 'mir-info',
       acceptProps: {
-        label: t('accept'),
+        label: t('basic.accept'),
         icon: 'mir-check',
         severity: 'primary',
       },
       rejectProps: {
-        label: t('exit'),
+        label: t('basic.exit'),
         icon: 'mir-close',
         severity: 'secondary',
         outlined: true,

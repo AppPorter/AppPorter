@@ -12,7 +12,7 @@ const errorToast = {
   showError: (error: unknown) => {
     toast.add({
       severity: 'error',
-      summary: t('error'),
+      summary: t('basic.error'),
       detail: String(error),
       life: 0, // Persist until user dismisses
     })

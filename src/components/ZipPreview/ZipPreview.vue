@@ -511,7 +511,7 @@ defineExpose({
           class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-md dark:bg-zinc-800/60">
           <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-            {{ t('loading') }}
+            {{ t('basic.loading') }}
           </p>
         </div>
       </div>
