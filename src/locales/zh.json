@@ -1,1 +1,58 @@
-{}
+{
+  "basic": {
+    "warning": "警告",
+    "solve": "解决",
+    "dismiss": "忽略",
+    "accept": "接受",
+    "error": "错误",
+    "cancel": "取消",
+    "select": "选择",
+    "loading": "加载中",
+    "exit": "退出",
+    "open": "打开"
+  },
+  "admin_prompt": {
+    "prompt": "AppPorter需要管理员权限才能实现所有功能，是否允许以管理员权限运行？"
+  },
+  "edit": {
+    "cut": "剪切",
+    "copy": "拷贝",
+    "paste": "粘贴",
+    "select_all": "全选"
+  },
+  "uninstall": {
+    "confirm": {
+      "message": "确定要卸载%{name}吗？",
+      "header": "卸载%{name}？"
+    },
+    "self": "卸载"
+  },
+  "install": {
+    "self": "安装"
+  },
+  "app_list": {
+    "self": "软件列表"
+  },
+  "settings": {
+    "self": "设置"
+  },
+  "directory_selector": {
+    "filter": {
+      "directory": "仅目录",
+      "all": "所有"
+    }
+  },
+  "executable_selector": {
+    "filter": {
+      "exe": "仅.exe",
+      "executable": "可执行文件",
+      "all": "所有"
+    }
+  },
+  "zip_preview": {
+    "no_files": "没有文件"
+  },
+  "disclaimer": {
+    "title": "免责声明"
+  }
+}

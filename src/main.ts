@@ -39,7 +39,7 @@ const createTrayMenu = (t: (key: string) => string) => {
       },
       {
         id: 'quit',
-        text: t('basic.quit'),
+        text: t('basic.exit'),
         action: () => invoke('exit'),
       },
     ],
