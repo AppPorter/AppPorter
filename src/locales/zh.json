@@ -9,7 +9,9 @@
     "select": "选择",
     "loading": "加载中",
     "exit": "退出",
-    "open": "打开"
+    "open": "打开",
+    "browse": "浏览",
+    "reload": "刷新页面"
   },
   "admin_prompt": {
     "prompt": "AppPorter需要管理员权限才能实现所有功能，是否允许以管理员权限运行？"
@@ -28,13 +30,38 @@
     "self": "卸载"
   },
   "install": {
-    "self": "安装"
+    "self": "安装",
+    "current_user_only": "仅为当前用户安装",
+    "current_user": "当前用户",
+    "desktop_shortcut": "创建桌面快捷方式",
+    "registry_key": "创建注册表项",
+    "start_menu_shortcut": "创建开始菜单快捷方式",
+    "install_path": "安装路径",
+    "all_users": "所有用户",
+    "add_to_path": "添加到PATH"
   },
   "app_list": {
     "self": "软件列表"
   },
   "settings": {
-    "self": "设置"
+    "self": "设置",
+    "basic": {
+      "title": "基础",
+      "language": "语言",
+      "theme": "主题",
+      "minimize_tray": "最小化到托盘",
+      "context_menu": "文件上下文菜单",
+      "auto_startup": "开机自启动"
+    },
+    "install": {
+      "app": {
+        "title": "App安装"
+      },
+      "lib": {
+        "title": "库安装"
+      }
+    },
+    "reload_disabled": "由于软件正在安装中，刷新页面功能暂时不可用"
   },
   "directory_selector": {
     "filter": {
@@ -54,5 +81,10 @@
   },
   "disclaimer": {
     "title": "免责声明"
+  },
+  "theme": {
+    "system": "跟随系统",
+    "light": "浅色",
+    "dark": "深色"
   }
 }
