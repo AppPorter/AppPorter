@@ -23,8 +23,8 @@ const executablePathError = ref(false)
 
 // Mode options for SelectButton
 const modeOptions = [
-    { label: t('install.mode.app'), value: 'app', icon: 'mir-install_desktop' },
-    { label: t('install.mode.lib'), value: 'lib', icon: 'mir-folder_copy' }
+    { label: t('install.types.app'), value: 'app', icon: 'mir-install_desktop' },
+    { label: t('install.types.lib'), value: 'lib', icon: 'mir-folder_copy' }
 ]
 
 // Current mode based on install_config page
@@ -72,8 +72,8 @@ async function handleAppInstall() {
         executablePathError.value = true
         toast.add({
             severity: 'error',
-            summary: t('validation.executable_missing'),
-            detail: t('validation.select_executable'),
+            summary: t('ui.valid.executable_missing'),
+            detail: t('ui.valid.select_executable'),
             life: 3000,
         })
         hasErrors = true
@@ -83,19 +83,19 @@ async function handleAppInstall() {
         nameError.value = true
         toast.add({
             severity: 'error',
-            summary: t('validation.name_required'),
-            detail: t('validation.enter_name'),
+            summary: t('ui.valid.name_required'),
+            detail: t('ui.valid.enter_name'),
             life: 3000,
         })
         hasErrors = true
     }
 
     if (!installConfig.app_details.paths.parent_install_path) {
-        pathError.value = t('validation.select_path')
+        pathError.value = t('ui.valid.select_path')
         toast.add({
             severity: 'error',
-            summary: t('validation.path_required'),
-            detail: t('validation.select_path'),
+            summary: t('ui.valid.path_required'),
+            detail: t('ui.valid.select_path'),
             life: 3000,
         })
         hasErrors = true
@@ -126,18 +126,18 @@ async function handleAppInstall() {
 
             await new Promise((resolve, reject) => {
                 confirm.require({
-                    message: t('install.confirm_install'),
+                    message: t('ui.install.confirm_install'),
                     group: 'dialog',
                     icon: 'mir-install_desktop',
-                    header: t('install.start_install'),
+                    header: t('ui.install.start_install'),
                     rejectProps: {
-                        label: t('basic.cancel'),
+                        label: t('g.cancel'),
                         severity: 'secondary',
                         outlined: true,
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('basic.install'),
+                        label: t('g.install'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -148,18 +148,18 @@ async function handleAppInstall() {
             if (error === 'Install directory is not empty') {
                 await new Promise((resolve, reject) => {
                     confirm.require({
-                        message: t('install.directory_not_empty'),
+                        message: t('ui.valid.directory_not_empty'),
                         group: 'dialog',
                         icon: 'mir-warning',
-                        header: t('basic.warning'),
+                        header: t('g.warning'),
                         rejectProps: {
-                            label: t('basic.cancel'),
+                            label: t('g.cancel'),
                             severity: 'secondary',
                             outlined: true,
                             icon: 'mir-close',
                         },
                         acceptProps: {
-                            label: t('install.force_install'),
+                            label: t('ui.install.force_install'),
                             severity: 'danger',
                             icon: 'mir-warning',
                         },
@@ -187,19 +187,19 @@ async function handleLibInstall() {
     if (!installConfig.lib_details.name) {
         toast.add({
             severity: 'error',
-            summary: t('validation.name_required'),
-            detail: t('validation.enter_name'),
+            summary: t('ui.valid.name_required'),
+            detail: t('ui.valid.enter_name'),
             life: 3000,
         })
         return
     }
 
     if (!installConfig.lib_details.paths.parent_install_path) {
-        pathError.value = t('validation.select_path')
+        pathError.value = t('ui.valid.select_path')
         toast.add({
             severity: 'error',
-            summary: t('validation.path_required'),
-            detail: t('validation.select_path'),
+            summary: t('ui.valid.path_required'),
+            detail: t('ui.valid.select_path'),
             life: 3000,
         })
         return
@@ -226,18 +226,18 @@ async function handleLibInstall() {
 
             await new Promise((resolve, reject) => {
                 confirm.require({
-                    message: t('copyonly.confirm_extract'),
+                    message: t('ui.install.confirm_extract'),
                     group: 'dialog',
                     icon: 'mir-folder_copy',
-                    header: t('copyonly.start_extraction'),
+                    header: t('ui.install.start_extraction'),
                     rejectProps: {
-                        label: t('basic.cancel'),
+                        label: t('g.cancel'),
                         severity: 'secondary',
                         outlined: true,
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('basic.install'),
+                        label: t('g.install'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -248,18 +248,18 @@ async function handleLibInstall() {
             if (error === 'Install directory is not empty') {
                 await new Promise((resolve, reject) => {
                     confirm.require({
-                        message: t('install.directory_not_empty'),
+                        message: t('ui.valid.directory_not_empty'),
                         group: 'dialog',
                         icon: 'mir-warning',
-                        header: t('basic.warning'),
+                        header: t('g.warning'),
                         rejectProps: {
-                            label: t('basic.cancel'),
+                            label: t('g.cancel'),
                             severity: 'secondary',
                             outlined: true,
                             icon: 'mir-close',
                         },
                         acceptProps: {
-                            label: t('copyonly.force_extract'),
+                            label: t('ui.install.force_extract'),
                             severity: 'danger',
                             icon: 'mir-warning',
                         },
@@ -292,13 +292,13 @@ async function handleLibInstall() {
         <!-- Bottom bar with mode selector and buttons -->
         <div class="flex items-center justify-between border-t bg-surface-0 px-4 py-3">
             <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
-                icon="mir-arrow_back" :label="t('back')" outlined />
+                icon="mir-arrow_back" :label="t('g.back')" outlined />
 
             <SelectButton v-model="currentMode" :options="modeOptions" :allowEmpty=false option-label="label"
                 size="small" option-value="value" />
 
             <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleInstallClick"
-                icon="mir-install_desktop" :label="t('install')" />
+                icon="mir-install_desktop" :label="t('g.install')" />
         </div>
     </div>
 </template>

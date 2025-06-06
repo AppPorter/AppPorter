@@ -54,7 +54,7 @@ onMounted(async () => {
         } else {
             toast.add({
                 severity: 'error',
-                summary: t('basic.error'),
+                summary: t('g.error'),
                 detail: String(error),
                 life: 0,
             })
@@ -91,7 +91,7 @@ async function handlePasswordSubmit() {
         } else {
             toast.add({
                 severity: 'error',
-                summary: t('basic.error'),
+                summary: t('g.error'),
                 detail: String(error),
                 life: 0,
             })
@@ -129,34 +129,34 @@ async function GetArchiveContent(password: string) {
     <div class="flex size-full flex-col overflow-hidden">
         <!-- Error Dialog -->
         <Dialog v-model:visible="showErrorDialog" :modal="true" :closable="false"
-            :header="t('validation.invalid_archive')" class="w-[30rem]">
+            :header="t('ui.valid.invalid_archive')" class="w-[30rem]">
             <div class="flex items-start gap-3">
                 <span class="mir-error text-3xl text-red-500"></span>
-                <p class="text-sm">{{ t('validation.no_executable_file') }}</p>
+                <p class="text-sm">{{ t('ui.valid.no_executable_file') }}</p>
             </div>
             <template #footer>
                 <div class="flex justify-end">
-                    <Button @click="handleDialogClose" :label="t('ok')" icon="mir-close" />
+                    <Button @click="handleDialogClose" :label="t('g.ok')" icon="mir-close" />
                 </div>
             </template>
         </Dialog>
 
         <!-- Password Dialog -->
         <Dialog v-model:visible="showPasswordDialog" :modal="true" :closable="false"
-            :header="t('archive.password_required')" class="w-[30rem]">
+            :header="t('ui.archive.password_required')" class="w-[30rem]">
             <div class="flex flex-col gap-3">
-                <p class="text-sm">{{ t('archive.enter_password') }}</p>
+                <p class="text-sm">{{ t('ui.archive.enter_password') }}</p>
                 <div class="flex flex-col gap-1">
                     <InputText v-model="archivePassword" type="password" :class="{ 'border-red-500': passwordError }"
                         @keydown.enter="handlePasswordSubmit" class="w-full" :invalid="passwordError" />
-                    <small v-if="passwordError" class="text-red-500">{{ t('validation.password_required') }}</small>
+                    <small v-if="passwordError" class="text-red-500">{{ t('ui.valid.password_required') }}</small>
                 </div>
             </div>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <Button @click="goTo('/Home')" :label="t('basic.cancel')" severity="secondary" outlined
+                    <Button @click="goTo('/Home')" :label="t('g.cancel')" severity="secondary" outlined
                         icon="mir-close" />
-                    <Button @click="handlePasswordSubmit" :label="t('basic.submit')" icon="mir-check" />
+                    <Button @click="handlePasswordSubmit" :label="t('g.submit')" icon="mir-check" />
                 </div>
             </template>
         </Dialog>
@@ -180,14 +180,14 @@ async function GetArchiveContent(password: string) {
             <!-- Action buttons -->
             <div class="flex items-center justify-between">
                 <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="goTo('/Home')"
-                    icon="mir-arrow_back" :label="t('basic.back')" outlined />
+                    icon="mir-arrow_back" :label="t('g.back')" outlined />
 
                 <div class="flex gap-3">
-                    <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('subscribe.self')"
+                    <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('cls.subscribe.self')"
                         icon="mir-rss_feed" class="px-6" />
-                    <Button @click="handleInstallAsApp" :label="t('preview.install_as_app')" icon="mir-apps"
+                    <Button @click="handleInstallAsApp" :label="t('ui.preview.install_as_app')" icon="mir-apps"
                         class="px-6" />
-                    <Button @click="handleInstallAsLibrary" :label="t('preview.install_as_library')"
+                    <Button @click="handleInstallAsLibrary" :label="t('ui.preview.install_as_library')"
                         icon="mir-library_books" severity="secondary" class="px-6" />
                 </div>
             </div>

@@ -291,7 +291,7 @@ const githubIcon = computed(() => {
   <!-- Fixed position reload button -->
   <div class="fixed bottom-4 right-10 z-40">
     <Button v-if="env.isBasicSettingsChanged" @click="reloadApp" class="h-8 w-28 text-sm transition-all duration-200"
-      severity="primary" :label="t('basic.reload')" icon="mir-refresh" :disabled="isReloadDisabled"
-      v-tooltip.top="isReloadDisabled ? t('settings.reload_disabled') : ''" />
+      severity="primary" :label="t('g.reload')" icon="mir-refresh" :disabled="isReloadDisabled"
+      v-tooltip.top="isReloadDisabled ? t('ui.settings.reload_disabled') : ''" />
   </div>
 </template>
