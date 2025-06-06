@@ -15,7 +15,6 @@ interface FileNode {
   type: NodeType
   children?: FileNode[]
   expanded?: boolean
-  selected?: boolean
   level: number
 }
 
@@ -23,13 +22,12 @@ interface FileNode {
 const props = defineProps<{
   zipPath: string
   filterFunction?: (node: FileNode) => boolean
-  isSelectableFunction?: (node: FileNode) => boolean
 }>()
 
 const emits = defineEmits<{
   (event: 'loading', value: boolean): void
   (event: 'progress', value: number): void
-  (event: 'node-select', node: FileNode): void
+  (event: 'node-click', node: FileNode): void
 }>()
 
 const { t } = useI18n()
@@ -120,7 +118,6 @@ function buildFileTree(paths: string[]): FileNode[] {
           level,
           children: isFile ? undefined : [],
           expanded: false,
-          selected: false,
         }
 
         current.push(node)
@@ -197,37 +194,14 @@ function handleToggleNode(node: FileNode) {
 
 // Handle node selection
 function handleSelectNode(node: FileNode) {
-  // For directories, toggle expansion and possibly select it
+  // For directories, toggle expansion
   if (node.type === 'directory') {
-    // Check if the directory is selectable (using the prop function if provided)
-    const isSelectable = props.isSelectableFunction ? props.isSelectableFunction(node) : false
-
-    // Toggle node expansion
     handleToggleNode(node)
-
-    // If not selectable, return after toggling expansion
-    if (!isSelectable) {
-      return
-    }
-    // Otherwise, continue with selection logic for selectable directories
+    return
   }
 
-  // For files and selectable directories, proceed with selection logic
-  // Deselect all nodes first
-  const deselectAll = (nodes: FileNode[]) => {
-    nodes.forEach((node) => {
-      node.selected = false
-      if (node.children) deselectAll(node.children)
-    })
-  }
-
-  deselectAll(fileTree.value)
-
-  // Select the clicked node
-  node.selected = true
-
-  // Emit selection event with node info
-  emits('node-select', node)
+  // For files, just emit click event
+  emits('node-click', node)
 }
 
 // Effects
@@ -243,10 +217,7 @@ onMounted(() => {
 
 // Expose component interface
 defineExpose({
-  // Exporting types as string literals for parent components to reference
-  nodeTypes: ['file', 'directory'] as const,
   // Provide methods that parent can use
-  selectNode: handleSelectNode,
   toggleNode: handleToggleNode,
 })
 </script>
@@ -262,9 +233,7 @@ defineExpose({
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
               'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-              node.selected
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                : '',
+              'cursor-pointer',
               node.level === 0
                 ? 'pl-0'
                 : node.level === 1
@@ -278,21 +247,7 @@ defineExpose({
                         : node.level === 5
                           ? 'pl-20'
                           : 'pl-24',
-              // Add cursor styles based on selectability
-              node.type === 'directory' ||
-                (props.isSelectableFunction && props.isSelectableFunction(node))
-                ? 'cursor-pointer'
-                : 'cursor-not-allowed',
-              // Add opacity for non-selectable files only when filterFunction exists
-              props.filterFunction && !(node.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(node)))
-                ? 'opacity-60'
-                : '',
-            ]" @click="
-              node.type === 'directory' ||
-                (props.isSelectableFunction && props.isSelectableFunction(node))
-                ? handleSelectNode(node)
-                : undefined
-              ">
+            ]" @click="handleSelectNode(node)">
               <span v-if="node.type === 'directory'" :class="[
                 'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
                 node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more',
@@ -312,10 +267,6 @@ defineExpose({
 
               <!-- Node name with better truncation -->
               <span class="flex-1 truncate">{{ node.name }}</span>
-
-              <!-- Selection indicator for selectable files -->
-              <span v-if="node.selected && node.type === 'file'"
-                class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
             </div>
 
             <!-- Render children if expanded with animation -->
@@ -325,9 +276,7 @@ defineExpose({
                 <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
                   <div :class="[
                     'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                    childNode.selected
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                      : '',
+                    'cursor-pointer',
                     childNode.level === 0
                       ? 'pl-0'
                       : childNode.level === 1
@@ -341,21 +290,7 @@ defineExpose({
                               : childNode.level === 5
                                 ? 'pl-20'
                                 : 'pl-24',
-                    // Add cursor styles based on selectability
-                    childNode.type === 'directory' ||
-                      (props.isSelectableFunction && props.isSelectableFunction(childNode))
-                      ? 'cursor-pointer'
-                      : 'cursor-not-allowed',
-                    // Add opacity for non-selectable files only when filterFunction exists
-                    props.filterFunction && !(childNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(childNode)))
-                      ? 'opacity-60'
-                      : '',
-                  ]" @click="
-                    childNode.type === 'directory' ||
-                      (props.isSelectableFunction && props.isSelectableFunction(childNode))
-                      ? handleSelectNode(childNode)
-                      : undefined
-                    ">
+                  ]" @click="handleSelectNode(childNode)">
                     <!-- Fixed spacing for files to align with folder toggle buttons -->
                     <span v-if="childNode.type === 'directory'" :class="[
                       'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
@@ -376,10 +311,6 @@ defineExpose({
 
                     <!-- Node name -->
                     <span class="flex-1 truncate">{{ childNode.name }}</span>
-
-                    <!-- Selection indicator -->
-                    <span v-if="childNode.selected && childNode.type === 'file'"
-                      class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
                   </div>
 
                   <!-- Recursive rendering for deeper levels -->
@@ -388,9 +319,7 @@ defineExpose({
                     <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
                       <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" :class="[
                         'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                        grandchildNode.selected
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                          : '',
+                        'cursor-pointer',
                         grandchildNode.level === 0
                           ? 'pl-0'
                           : grandchildNode.level === 1
@@ -404,21 +333,7 @@ defineExpose({
                                   : grandchildNode.level === 5
                                     ? 'pl-20'
                                     : 'pl-24',
-                        // Add cursor styles based on selectability
-                        grandchildNode.type === 'directory' ||
-                          (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
-                          ? 'cursor-pointer'
-                          : 'cursor-not-allowed',
-                        // Add opacity for non-selectable files only when filterFunction exists
-                        props.filterFunction && !(grandchildNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(grandchildNode)))
-                          ? 'opacity-60'
-                          : '',
-                      ]" @click="
-                        grandchildNode.type === 'directory' ||
-                          (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
-                          ? handleSelectNode(grandchildNode)
-                          : undefined
-                        ">
+                      ]" @click="handleSelectNode(grandchildNode)">
                         <!-- Fixed spacing for files to align with folder toggle buttons -->
                         <span v-if="grandchildNode.type === 'directory'" :class="[
                           'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
@@ -441,36 +356,16 @@ defineExpose({
 
                         <!-- Node name -->
                         <span class="flex-1 truncate">{{ grandchildNode.name }}</span>
-
-                        <!-- Selection indicator -->
-                        <span v-if="grandchildNode.selected && grandchildNode.type === 'file'"
-                          class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
                       </div>
 
-                      <!-- Even deeper levels (handled with recursion in real implementation) -->
+                      <!-- Even deeper levels -->
                       <div v-if="grandchildNode.expanded && grandchildNode.children?.length"
                         class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
                         <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
                           <div v-if="!props.filterFunction || props.filterFunction(deepNode)" :class="[
                             'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                            deepNode.selected
-                              ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                              : '',
-                            // Add cursor styles based on selectability
-                            deepNode.type === 'directory' ||
-                              (props.isSelectableFunction && props.isSelectableFunction(deepNode))
-                              ? 'cursor-pointer'
-                              : 'cursor-not-allowed',
-                            // Add opacity for non-selectable files only when filterFunction exists
-                            props.filterFunction && !(deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode)))
-                              ? 'opacity-60'
-                              : '',
-                          ]" @click="
-                            deepNode.type === 'directory' ||
-                              (props.isSelectableFunction && props.isSelectableFunction(deepNode))
-                              ? handleSelectNode(deepNode)
-                              : undefined
-                            ">
+                            'cursor-pointer',
+                          ]" @click="handleSelectNode(deepNode)">
                             <!-- Fixed spacing for files to align with folder toggle buttons -->
                             <span v-if="deepNode.type === 'directory'" :class="[
                               'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
@@ -490,8 +385,6 @@ defineExpose({
                             <span class="flex-1 truncate">{{ deepNode.name }}</span>
                             <span v-if="deepNode.children?.length" class="ml-1 shrink-0 text-xs text-slate-400">({{
                               deepNode.children.length }})</span>
-                            <span v-if="deepNode.selected && deepNode.type === 'file'"
-                              class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
                           </div>
                         </template>
                       </div>

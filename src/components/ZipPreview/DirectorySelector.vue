@@ -68,7 +68,7 @@ const isSelectableNode = (node: FileNode): boolean => {
 
 // Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
-    // Only allow selecting directories, not files
+    // For directories, set as selected path
     if (node?.path && isSelectableNode(node)) {
         selectedPath.value = node.path
     }
@@ -131,8 +131,7 @@ async function handleSelect() {
         <!-- Main content area with fixed height and proper overflow handling -->
         <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
             <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
-                :is-selectable-function="isSelectableNode" :details-loading="detailsLoading"
-                @node-select="handleNodeSelect" />
+                @node-click="handleNodeSelect" />
         </div>
 
         <!-- Selected directory and button container -->
@@ -153,15 +152,15 @@ async function handleSelect() {
                         : 'text-slate-700 dark:text-slate-300',
                 ]">{{
                     selectedPath
-                        ? t('directory_selector.selected')
-                        : t('directory_selector.select_prompt')
+                        ? t('zip_preview.directory_selector.selected')
+                        : t('zip_preview.directory_selector.select_prompt')
                 }}:</span>
                 <span :class="[
                     'truncate',
                     selectedPath
                         ? 'text-green-700 dark:text-green-400'
                         : 'text-slate-600 dark:text-slate-400',
-                ]">{{ selectedPath || t('directory_selector.no_selection') }}</span>
+                ]">{{ selectedPath || t('zip_preview.directory_selector.no_selection') }}</span>
             </div>
             <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
             <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">

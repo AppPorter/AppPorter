@@ -87,6 +87,20 @@ const isSelectableFile = (node: FileNode): boolean => {
   return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
 }
 
+// Get description for filter options
+function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
+  switch (mode) {
+    case 'exe':
+      return t('zip_preview.executable_selector.filter.exe_description')
+    case 'executable':
+      return t('zip_preview.executable_selector.filter.executable_description')
+    case 'all':
+      return t('zip_preview.executable_selector.filter.all_description')
+    default:
+      return ''
+  }
+}
+
 // Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
   // Only allow selecting executable files, not directories
@@ -132,7 +146,7 @@ async function handleSelect() {
     <div
       class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
       <div class="flex flex-col gap-3">
-        <!-- Filter options with horizontal layout -->
+        <!-- Filter options with horizontal layout and better descriptions -->
         <div class="flex gap-2">
           <div v-for="option in FILTER_MODES" :key="option.value" :class="[
             'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
@@ -147,6 +161,9 @@ async function handleSelect() {
                 <span :class="[option.icon, filterMode === option.value ? 'text-blue-500' : '']" />
                 {{ option.label }}
               </label>
+              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                {{ getFilterDescription(option.value as any) }}
+              </p>
             </div>
           </div>
         </div>
@@ -156,7 +173,7 @@ async function handleSelect() {
     <!-- Main content area with fixed height and proper overflow handling -->
     <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
       <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
-        :is-selectable-function="isSelectableFile" :details-loading="detailsLoading" @node-select="handleNodeSelect" />
+        @node-click="handleNodeSelect" />
     </div>
 
     <!-- Selected file and button container -->
