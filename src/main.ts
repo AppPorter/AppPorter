@@ -63,6 +63,8 @@ await envStore.loadEnv()
 const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
 
+await envStore.setInitialSettings()
+
 // Then initialize i18n with the loaded language
 const i18n = setupI18n(settingsStore.language)
 app.use(router).use(ToastService).use(ConfirmationService).use(i18n)

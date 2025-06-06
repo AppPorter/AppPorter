@@ -46,8 +46,11 @@ export const EnvStore = defineStore('env', {
       })
     },
 
-    setInitialSettings(settings: Settings) {
-      this.initialSettings = settings
+    async setInitialSettings() {
+      const { SettingsStore } = await import('./settings')
+      const settings = SettingsStore()
+
+      this.initialSettings = JSON.parse(JSON.stringify(settings.$state))
     },
 
     async acknowledgeFirstRun() {
