@@ -108,28 +108,28 @@ function handleDetailsLoading(loading: boolean) {
     <div class="space-y-2 p-2">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('install_mode') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('install.mode.self') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
-          <span class="text-sm">{{ t('all_users') }}</span>
+          <span class="text-sm">{{ t('install.mode.all_users') }}</span>
           <ToggleSwitch v-model="current_user_only" @change="handleInstallModeChange" class="mx-1" />
-          <span class="text-sm">{{ t('current_user') }}</span>
+          <span class="text-sm">{{ t('install.mode.current_user') }}</span>
         </div>
       </div>
 
       <!-- Install Path -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('install_path') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('install.install_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
             <InputText v-model="install_path" :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
               :invalid="!!pathError" @input="$emit('update:pathError', '')" :title="pathError" />
             <Button class="h-8 w-36" severity="secondary" @click="select_install_path" icon="mir-folder_open"
-              :label="t('browse')" />
+              :label="t('basic.browse')" />
           </div>
 
           <!-- Formatted App Path -->
           <div v-if="install_path && app_details.info.name" class="mt-1 text-xs text-gray-500">
-            {{ t('final_path') }}: {{ formatted_app_path }}
+            {{ t('install.final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
       </div>
@@ -147,7 +147,7 @@ function handleDetailsLoading(loading: boolean) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

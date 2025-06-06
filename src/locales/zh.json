@@ -34,7 +34,7 @@
   },
   "install": {
     "self": "安装",
-    "current_user_only": "仅为当前用户安装",
+
     "current_user": "当前用户",
     "desktop_shortcut": "创建桌面快捷方式",
     "registry_key": "创建注册表项",
@@ -55,7 +55,16 @@
     "select_placeholder": "压缩文件路径",
     "executable_path": "可执行文件路径",
     "select_executable_path": "选择可执行文件路径",
-    "select_executable": "选择可执行文件"
+    "select_executable": "选择可执行文件",
+    "config": {
+      "install_options": "安装选项"
+    },
+    "mode": {
+      "default_mode": "默认安装模式",
+      "self": "安装模式",
+      "all_users": "所有用户",
+      "current_user": "当前用户"
+    }
   },
   "app_list": {
     "self": "软件列表"
@@ -80,21 +89,21 @@
     },
     "reload_disabled": "由于软件正在安装中，刷新页面功能暂时不可用"
   },
-  "directory_selector": {
-    "filter": {
-      "directory": "仅目录",
-      "all": "所有"
-    }
-  },
-  "executable_selector": {
-    "filter": {
-      "exe": "仅.exe",
-      "executable": "可执行文件",
-      "all": "所有"
-    }
-  },
   "zip_preview": {
-    "no_files": "没有文件"
+    "no_files": "没有文件",
+    "executable_selector": {
+      "filter": {
+        "exe": "仅.exe",
+        "executable": "可执行文件",
+        "all": "所有"
+      }
+    },
+    "directory_selector": {
+      "filter": {
+        "directory": "仅目录",
+        "all": "所有"
+      }
+    }
   },
   "disclaimer": {
     "title": "免责声明"

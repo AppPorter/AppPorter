@@ -16,17 +16,17 @@ const { t } = useI18n()
 const FILTER_MODES = {
   exe: {
     value: 'exe',
-    label: t('executable_selector.filter.exe'),
+    label: t('zip_preview.executable_selector.filter.exe'),
     icon: 'mir-terminal',
   },
   executable: {
     value: 'executable',
-    label: t('executable_selector.filter.executable'),
+    label: t('zip_preview.executable_selector.filter.executable'),
     icon: 'mir-code',
   },
   all: {
     value: 'all',
-    label: t('executable_selector.filter.all'),
+    label: t('zip_preview.executable_selector.filter.all'),
     icon: 'mir-description',
   },
 }
@@ -177,15 +177,15 @@ async function handleSelect() {
             : 'text-slate-700 dark:text-slate-300',
         ]">{{
           selectedPath
-            ? t('executable_selector.selected')
-            : t('executable_selector.select_prompt')
+            ? t('zip_preview.executable_selector.selected')
+            : t('zip_preview.executable_selector.select_prompt')
         }}:</span>
         <span :class="[
           'truncate',
           selectedPath
             ? 'text-green-700 dark:text-green-400'
             : 'text-slate-600 dark:text-slate-400',
-        ]">{{ selectedPath || t('executable_selector.no_selection') }}</span>
+        ]">{{ selectedPath || t('zip_preview.executable_selector.no_selection') }}</span>
       </div>
       <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">

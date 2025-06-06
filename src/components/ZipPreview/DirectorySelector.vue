@@ -15,12 +15,12 @@ const { t } = useI18n()
 const FILTER_MODES = {
     directory: {
         value: 'directory',
-        label: t('directory_selector.filter.directory'),
+        label: t('zip_preview.directory_selector.filter.directory'),
         icon: 'mir-folder',
     },
     all: {
         value: 'all',
-        label: t('directory_selector.filter.all'),
+        label: t('zip_preview.directory_selector.filter.all'),
         icon: 'mir-description',
     },
 }
