@@ -16,17 +16,17 @@ const { t } = useI18n()
 const FILTER_MODES = {
   exe: {
     value: 'exe',
-    label: t('zip_preview.executable_selector.filter.exe'),
+    label: t('ui.executable_selector.filter.exe'),
     icon: 'mir-terminal',
   },
   executable: {
     value: 'executable',
-    label: t('zip_preview.executable_selector.filter.executable'),
+    label: t('ui.executable_selector.filter.executable'),
     icon: 'mir-code',
   },
   all: {
     value: 'all',
-    label: t('zip_preview.executable_selector.filter.all'),
+    label: t('ui.executable_selector.filter.all'),
     icon: 'mir-description',
   },
 }
@@ -91,11 +91,11 @@ const isSelectableFile = (node: FileNode): boolean => {
 function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
   switch (mode) {
     case 'exe':
-      return t('zip_preview.executable_selector.filter.exe_description')
+      return t('ui.executable_selector.filter.exe_description')
     case 'executable':
-      return t('zip_preview.executable_selector.filter.executable_description')
+      return t('ui.executable_selector.filter.executable_description')
     case 'all':
-      return t('zip_preview.executable_selector.filter.all_description')
+      return t('ui.executable_selector.filter.all_description')
     default:
       return ''
   }
@@ -194,19 +194,19 @@ async function handleSelect() {
             : 'text-slate-700 dark:text-slate-300',
         ]">{{
           selectedPath
-            ? t('zip_preview.executable_selector.selected')
-            : t('zip_preview.executable_selector.select_prompt')
+            ? t('ui.executable_selector.selected')
+            : t('ui.executable_selector.select_prompt')
         }}:</span>
         <span :class="[
           'truncate',
           selectedPath
             ? 'text-green-700 dark:text-green-400'
             : 'text-slate-600 dark:text-slate-400',
-        ]">{{ selectedPath || t('zip_preview.executable_selector.no_selection') }}</span>
+        ]">{{ selectedPath || t('ui.executable_selector.no_selection') }}</span>
       </div>
       <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
       <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">
-        {{ t('basic.select') }}
+        {{ t('g.select') }}
       </Button>
     </div>
   </div>

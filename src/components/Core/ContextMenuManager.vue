@@ -10,24 +10,24 @@ const contextMenu = ref()
 // Context menu setup
 const editMenuItems = ref<MenuItem[]>([
   {
-    label: t('edit.cut'),
+    label: t('cls.edit.cut'),
     icon: 'mir-content_cut',
     command: () => document.execCommand('cut'),
   },
   {
-    label: t('edit.copy'),
+    label: t('cls.edit.copy'),
     icon: 'mir-content_copy',
     command: () => document.execCommand('copy'),
   },
   {
-    label: t('edit.paste'),
+    label: t('cls.edit.paste'),
     icon: 'mir-content_paste',
     command: async () =>
       document.execCommand('insertText', false, await navigator.clipboard.readText()),
   },
   { separator: true },
   {
-    label: t('edit.select_all'),
+    label: t('cls.edit.select_all'),
     icon: 'mir-select_all',
     command: () => document.execCommand('selectAll'),
   },

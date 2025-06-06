@@ -235,7 +235,7 @@ defineExpose({
           class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-md dark:bg-zinc-800/60">
           <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-            {{ t('basic.loading') }}
+            {{ t('g.loading') }}
           </p>
         </div>
       </div>
@@ -246,7 +246,7 @@ defineExpose({
         <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
           <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {{ t('zip_preview.no_files') }}
+            {{ t('ui.zip_preview.no_files') }}
           </p>
         </div>
       </div>
@@ -257,7 +257,7 @@ defineExpose({
         <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
           <span class="mir-error text-4xl text-red-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {{ error || t('basic.error') }}
+            {{ error || t('g.error') }}
           </p>
         </div>
       </div>

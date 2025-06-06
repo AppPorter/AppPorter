@@ -37,20 +37,20 @@ onMounted(async () => {
         if (!app) return
         await new Promise((resolve, reject) => {
             confirm.require({
-                message: t('uninstall.confirm.message', {
+                message: t('ui.uninstall.confirm.msg', {
                     name: app.details.info.name,
                 }),
                 group: 'dialog',
-                header: t('uninstall.confirm.header'),
+                header: t('ui.uninstall.confirm.header'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('basic.cancel'),
+                    label: t('g.cancel'),
                     severity: 'secondary',
                     outlined: true,
                     icon: 'mir-close',
                 },
                 acceptProps: {
-                    label: t('uninstall.self'),
+                    label: t('cls.uninstall.self'),
                     severity: 'danger',
                     icon: 'mir-warning',
                 },
