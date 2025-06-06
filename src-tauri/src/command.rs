@@ -77,6 +77,11 @@ pub enum Command {
     CheckPathEmpty {
         path: String,
     },
+
+    ZipPreview {
+        path: String,
+        password: Option<String>,
+    },
 }
 
 impl Command {
@@ -136,6 +141,7 @@ impl Command {
                 Self::ser(get_archive_content(path, password).await?)
             }
             CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
+            ZipPreview { path, password } => Self::ser(get_archive_tree(path, password).await?),
         }
     }
 }

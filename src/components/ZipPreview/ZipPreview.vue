@@ -1,12 +1,21 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
-import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { invoke } from '@tauri-apps/api/core'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Types and interfaces
 type FileStatus = 'ready' | 'loading' | 'error'
 type NodeType = 'file' | 'directory'
+
+interface FileTreeNode {
+  key: string
+  name: string
+  path: string
+  node_type: string
+  children?: FileTreeNode[]
+  expanded: boolean
+  level: number
+}
 
 interface FileNode {
   key: string
@@ -21,6 +30,7 @@ interface FileNode {
 // Props & emits
 const props = defineProps<{
   zipPath: string
+  password?: string
   filterFunction?: (node: FileNode) => boolean
 }>()
 
@@ -32,17 +42,59 @@ const emits = defineEmits<{
 
 const { t } = useI18n()
 
-const installConfig = InstallConfigStore()
-const { archive_content } = storeToRefs(installConfig)
-
 // State
 const status = ref<FileStatus>('ready')
-const fileTree = ref<FileNode[]>([])
-const fileCache = computed(() => archive_content.value)
+const fileTreeData = ref<FileTreeNode[]>([])
+const error = ref<string>('')
+
+// Load zip content from backend
+async function loadZipContent() {
+  if (!props.zipPath) return
+
+  status.value = 'loading'
+  emits('loading', true)
+  error.value = ''
+
+  try {
+    const command = {
+      name: 'ZipPreview',
+      path: props.zipPath,
+      password: props.password || null
+    }
+
+    const result = await invoke<string>('execute_command', { command })
+    const treeData = JSON.parse(result) as FileTreeNode[]
+    fileTreeData.value = treeData
+    status.value = 'ready'
+  } catch (err) {
+    console.error('Failed to load zip content:', err)
+    error.value = err instanceof Error ? err.message : String(err)
+    status.value = 'error'
+    fileTreeData.value = []
+  } finally {
+    emits('loading', false)
+  }
+}
+
+// Convert backend tree structure to frontend format
+function convertToFileNode(node: FileTreeNode): FileNode {
+  return {
+    key: node.key,
+    name: node.name,
+    path: node.path,
+    type: node.node_type === 'directory' ? 'directory' : 'file',
+    level: node.level,
+    expanded: node.expanded,
+    children: node.children?.map(convertToFileNode)
+  }
+}
 
 // Computed properties
-const hasScanned = computed(() => fileCache.value !== null)
-const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
+const hasData = computed(() => fileTreeData.value.length > 0)
+const isEmpty = computed(() => status.value === 'ready' && fileTreeData.value.length === 0)
+const fileTree = computed(() => {
+  return fileTreeData.value.map(convertToFileNode)
+})
 
 // Get appropriate icon based on file extension
 function getFileIcon(fileName: string): string {
@@ -74,119 +126,6 @@ function getFileIcon(fileName: string): string {
   return 'mir-draft text-slate-500 dark:text-slate-400'
 }
 
-// Format and build tree structure from flat file paths
-function buildFileTree(paths: string[]): FileNode[] {
-  // Build directory map for quick lookup
-  const dirMap = new Map<string, boolean>()
-  paths.forEach((path) => {
-    const parts = path.split('\\')
-    let currentPath = ''
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (!parts[i]) continue
-      currentPath = currentPath ? `${currentPath}\\${parts[i]}` : parts[i]
-      dirMap.set(currentPath, true)
-    }
-  })
-
-  // Build tree
-  const root: FileNode[] = []
-
-  paths.forEach((path) => {
-    if (!path.trim()) return
-
-    const parts = path.split('\\').filter((p) => p !== '')
-    if (parts.length === 0) return
-
-    let current = root
-    let currentPath = ''
-    let level = 0
-
-    parts.forEach((part, index) => {
-      currentPath = currentPath ? `${currentPath}\\${part}` : part
-      const isLast = index === parts.length - 1
-      const isFile = isLast && !dirMap.has(currentPath)
-
-      // Find or create node
-      let node = current.find((n) => n.name === part)
-
-      if (!node) {
-        node = {
-          key: currentPath,
-          name: part,
-          path: currentPath,
-          type: isFile ? 'file' : 'directory',
-          level,
-          children: isFile ? undefined : [],
-          expanded: false,
-        }
-
-        current.push(node)
-      }
-
-      if (node.children) {
-        current = node.children
-        level++
-      }
-    })
-  })
-
-  // Sort nodes (directories first, then alphabetically)
-  const sortNodes = (nodes: FileNode[]): void => {
-    nodes.sort((a, b) => {
-      // Directories first
-      if (a.type !== b.type) return a.type === 'directory' ? -1 : 1
-
-      // Alphabetical by name
-      return a.name.localeCompare(b.name)
-    })
-
-    // Sort children recursively
-    nodes.forEach((node) => {
-      if (node.children?.length) sortNodes(node.children)
-    })
-  }
-
-  sortNodes(root)
-
-  // Auto-expand if single top folder
-  if (root.length === 1 && root[0].children) {
-    root[0].expanded = true
-  }
-
-  return root
-}
-
-// Load and process archive contents
-async function loadZipContent() {
-  if (!props.zipPath || !fileCache.value) return
-
-  status.value = 'loading'
-  emits('loading', true)
-
-  const allPaths = [...fileCache.value]
-  const directories = new Set<string>()
-
-  // Generate directory paths
-  fileCache.value.forEach((path) => {
-    const parts = path.split('\\')
-    let currentDir = ''
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (!parts[i]) continue
-      currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
-      directories.add(`${currentDir}\\`)
-    }
-  })
-
-  directories.forEach((dir) => {
-    if (!allPaths.includes(dir)) allPaths.push(dir)
-  })
-
-  // Update state
-  fileTree.value = buildFileTree(allPaths)
-  status.value = 'ready'
-  emits('loading', false)
-}
-
 // Toggle node expansion
 function handleToggleNode(node: FileNode) {
   node.expanded = !node.expanded
@@ -204,21 +143,51 @@ function handleSelectNode(node: FileNode) {
   emits('node-click', node)
 }
 
-// Effects
-watchEffect(() => {
-  if (!props.zipPath || !fileCache.value) return
-  loadZipContent()
+// Recursive function to render all nodes as flat list with proper indentation
+function flattenTree(nodes: FileNode[], level = 0): FileNode[] {
+  const result: FileNode[] = []
+
+  for (const node of nodes) {
+    result.push({ ...node, level })
+
+    if (node.type === 'directory' && node.expanded && node.children) {
+      result.push(...flattenTree(node.children, level + 1))
+    }
+  }
+
+  return result
+}
+
+// Get flattened tree for rendering
+const flattenedTree = computed(() => {
+  return flattenTree(fileTree.value)
 })
 
-// Setup event listeners and load initial content
+// Watch for zipPath changes
+watch(() => props.zipPath, () => {
+  if (props.zipPath) {
+    loadZipContent()
+  }
+}, { immediate: true })
+
+// Watch for password changes
+watch(() => props.password, () => {
+  if (props.zipPath) {
+    loadZipContent()
+  }
+})
+
+// Load content on mount
 onMounted(() => {
-  if (props.zipPath && fileCache.value) loadZipContent()
+  if (props.zipPath) {
+    loadZipContent()
+  }
 })
 
 // Expose component interface
 defineExpose({
-  // Provide methods that parent can use
   toggleNode: handleToggleNode,
+  loadZipContent
 })
 </script>
 
@@ -227,35 +196,22 @@ defineExpose({
     <!-- File Tree Container with improved scrolling -->
     <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600">
       <!-- Scrollable Tree Content -->
-      <div v-if="hasScanned && !isEmpty" class="h-full overflow-auto p-2 text-sm">
-        <!-- Recursive Tree Node Template -->
-        <template v-for="node in fileTree" :key="node.key">
+      <div v-if="hasData && !isEmpty" class="h-full overflow-auto p-2 text-sm">
+        <!-- Render flattened tree with proper indentation -->
+        <template v-for="node in flattenedTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
               'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
               'cursor-pointer',
-              node.level === 0
-                ? 'pl-0'
-                : node.level === 1
-                  ? 'pl-4'
-                  : node.level === 2
-                    ? 'pl-8'
-                    : node.level === 3
-                      ? 'pl-12'
-                      : node.level === 4
-                        ? 'pl-16'
-                        : node.level === 5
-                          ? 'pl-20'
-                          : 'pl-24',
-            ]" @click="handleSelectNode(node)">
-              <span v-if="node.type === 'directory'" :class="[
-                'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more',
-              ]" @click.stop="handleToggleNode(node)"></span>
-              <!-- Placeholder for files to align with folders -->
-              <span v-else class="mr-1.5 w-4 shrink-0"></span>
+            ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
+              <!-- Expand/collapse icon for directories -->
+              <span v-if="node.type === 'directory' && node.children && node.children.length > 0" :class="[
+                'mr-1 shrink-0 text-xs transition-transform duration-200',
+                node.expanded ? 'mir-expand_more' : 'mir-chevron_right'
+              ]"></span>
+              <span v-else class="mr-4 w-3"></span>
 
-              <!-- Icon based on node type with enhanced visuals -->
+              <!-- File/folder icon -->
               <span :class="[
                 'mr-2 shrink-0',
                 node.type === 'directory'
@@ -265,133 +221,8 @@ defineExpose({
                   : getFileIcon(node.name),
               ]"></span>
 
-              <!-- Node name with better truncation -->
+              <!-- Node name -->
               <span class="flex-1 truncate">{{ node.name }}</span>
-            </div>
-
-            <!-- Render children if expanded with animation -->
-            <div v-if="node.expanded && node.children?.length"
-              class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-              <template v-for="childNode in node.children" :key="childNode.key">
-                <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
-                  <div :class="[
-                    'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                    'cursor-pointer',
-                    childNode.level === 0
-                      ? 'pl-0'
-                      : childNode.level === 1
-                        ? 'pl-4'
-                        : childNode.level === 2
-                          ? 'pl-8'
-                          : childNode.level === 3
-                            ? 'pl-12'
-                            : childNode.level === 4
-                              ? 'pl-16'
-                              : childNode.level === 5
-                                ? 'pl-20'
-                                : 'pl-24',
-                  ]" @click="handleSelectNode(childNode)">
-                    <!-- Fixed spacing for files to align with folder toggle buttons -->
-                    <span v-if="childNode.type === 'directory'" :class="[
-                      'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                      childNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more',
-                    ]" @click.stop="handleToggleNode(childNode)"></span>
-                    <!-- Placeholder for files to align with folders -->
-                    <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                    <!-- Icon based on node type -->
-                    <span :class="[
-                      'mr-2 shrink-0',
-                      childNode.type === 'directory'
-                        ? childNode.expanded
-                          ? 'mir-folder_open text-amber-500'
-                          : 'mir-folder text-amber-500'
-                        : getFileIcon(childNode.name),
-                    ]"></span>
-
-                    <!-- Node name -->
-                    <span class="flex-1 truncate">{{ childNode.name }}</span>
-                  </div>
-
-                  <!-- Recursive rendering for deeper levels -->
-                  <div v-if="childNode.expanded && childNode.children?.length"
-                    class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-                    <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
-                      <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" :class="[
-                        'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                        'cursor-pointer',
-                        grandchildNode.level === 0
-                          ? 'pl-0'
-                          : grandchildNode.level === 1
-                            ? 'pl-4'
-                            : grandchildNode.level === 2
-                              ? 'pl-8'
-                              : grandchildNode.level === 3
-                                ? 'pl-12'
-                                : grandchildNode.level === 4
-                                  ? 'pl-16'
-                                  : grandchildNode.level === 5
-                                    ? 'pl-20'
-                                    : 'pl-24',
-                      ]" @click="handleSelectNode(grandchildNode)">
-                        <!-- Fixed spacing for files to align with folder toggle buttons -->
-                        <span v-if="grandchildNode.type === 'directory'" :class="[
-                          'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                          grandchildNode.expanded
-                            ? 'mir-expand_more rotate-180'
-                            : 'mir-expand_more',
-                        ]" @click.stop="handleToggleNode(grandchildNode)"></span>
-                        <!-- Placeholder for files to align with folders -->
-                        <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                        <!-- Icon based on node type -->
-                        <span :class="[
-                          'mr-2 shrink-0',
-                          grandchildNode.type === 'directory'
-                            ? grandchildNode.expanded
-                              ? 'mir-folder_open text-amber-500'
-                              : 'mir-folder text-amber-500'
-                            : getFileIcon(grandchildNode.name),
-                        ]"></span>
-
-                        <!-- Node name -->
-                        <span class="flex-1 truncate">{{ grandchildNode.name }}</span>
-                      </div>
-
-                      <!-- Even deeper levels -->
-                      <div v-if="grandchildNode.expanded && grandchildNode.children?.length"
-                        class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-                        <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
-                          <div v-if="!props.filterFunction || props.filterFunction(deepNode)" :class="[
-                            'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                            'cursor-pointer',
-                          ]" @click="handleSelectNode(deepNode)">
-                            <!-- Fixed spacing for files to align with folder toggle buttons -->
-                            <span v-if="deepNode.type === 'directory'" :class="[
-                              'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                              deepNode.expanded
-                                ? 'mir-expand_more rotate-180'
-                                : 'mir-expand_more',
-                            ]" @click.stop="handleToggleNode(deepNode)"></span>
-                            <!-- Placeholder for files to align with folders -->
-                            <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                            <span :class="[
-                              'mr-2 shrink-0',
-                              deepNode.type === 'directory'
-                                ? 'mir-folder text-amber-500'
-                                : getFileIcon(deepNode.name),
-                            ]"></span>
-                            <span class="flex-1 truncate">{{ deepNode.name }}</span>
-                            <span v-if="deepNode.children?.length" class="ml-1 shrink-0 text-xs text-slate-400">({{
-                              deepNode.children.length }})</span>
-                          </div>
-                        </template>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
             </div>
           </div>
         </template>
@@ -410,12 +241,23 @@ defineExpose({
       </div>
 
       <!-- Enhanced empty state -->
-      <div v-if="hasScanned && isEmpty"
+      <div v-if="hasData && isEmpty"
         class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
         <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
           <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
             {{ t('zip_preview.no_files') }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div v-if="status === 'error'"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
+          <span class="mir-error text-4xl text-red-500"></span>
+          <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ error || t('basic.error') }}
           </p>
         </div>
       </div>
