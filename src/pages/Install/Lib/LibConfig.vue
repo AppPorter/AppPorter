@@ -75,11 +75,11 @@ async function select_extract_path() {
                                 <div class="flex items-center gap-1.5">
                                     <span class="mir-folder_copy text-lg" />
                                     <h2 class="text-base font-medium">
-                                        {{ t('install.lib_details') }}
+                                        {{ t('ui.install.lib_details') }}
                                     </h2>
                                 </div>
                                 <p class="ml-6 mt-0.5 text-xs">
-                                    {{ t('install.selected_file') }}:
+                                    {{ t('ui.install.selected_file') }}:
                                     <span class="break-all font-medium">{{ installConfig.zip_path }}</span>
                                 </p>
                             </div>
@@ -89,50 +89,52 @@ async function select_extract_path() {
                             <!-- Name input (required) -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">
-                                    {{ t('app.name') }}
+                                    {{ t('cls.app.name') }}
                                 </label>
                                 <div class="w-full">
-                                    <InputText v-model="installConfig.lib_details.name" :placeholder="t('app.name')"
+                                    <InputText v-model="installConfig.lib_details.name" :placeholder="t('cls.app.name')"
                                         class="h-8 w-full text-sm" :invalid="!installConfig.lib_details.name" />
                                 </div>
                             </div>
 
                             <!-- Extract Path -->
                             <div class="flex items-center gap-2">
-                                <label class="w-24 text-sm font-medium">{{ t('install.extract_path') }}</label>
+                                <label class="w-24 text-sm font-medium">{{ t('cls.install.config.extract_path')
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
                                         <InputText v-model="installConfig.lib_details.paths.parent_install_path"
-                                            :placeholder="t('basic.browse')" class="h-8 w-full text-sm"
+                                            :placeholder="t('g.browse')" class="h-8 w-full text-sm"
                                             :invalid="!!pathError" @input="$emit('update:pathError', '')"
                                             :title="pathError" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
-                                            icon="mir-folder_open" :label="t('basic.browse')" />
+                                            icon="mir-folder_open" :label="t('g.browse')" />
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Add to PATH option -->
                             <div class="mt-2 flex items-start gap-2">
-                                <label class="mt-1 w-24 text-sm font-medium">{{ t('install.environment') }}</label>
+                                <label class="mt-1 w-24 text-sm font-medium">{{ t('ui.install.environment') }}</label>
                                 <div class="w-full">
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
                                                 <Checkbox v-model="installConfig.lib_details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
-                                                <label for="add_to_path" class="text-sm">{{ t('install.add_to_path')
+                                                <label for="add_to_path" class="text-sm">{{
+                                                    t('cls.install.shortcuts.add_to_path')
                                                     }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
                                                     <InputText v-model="installConfig.lib_details.config.path_directory"
-                                                        :placeholder="t('install.select_path_directory')"
+                                                        :placeholder="t('ui.select_placeholder.path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
                                                         @click="directoryDrawerVisible = true" icon="mir-folder_open"
-                                                        :label="t('basic.browse')" />
+                                                        :label="t('g.browse')" />
                                                 </div>
                                             </div>
                                         </div>
@@ -150,8 +152,8 @@ async function select_extract_path() {
         </div>
 
         <!-- Directory Selector Drawer -->
-        <Drawer v-model:visible="directoryDrawerVisible" :header="t('install.select_path_directory')" position="bottom"
-            :style="{ height: '95vh' }" class="rounded-lg">
+        <Drawer v-model:visible="directoryDrawerVisible" :header="t('ui.install.select_path_directory')"
+            position="bottom" :style="{ height: '95vh' }" class="rounded-lg">
             <div class="h-full overflow-hidden">
                 <DirectorySelector :zip-path="installConfig.zip_path" :details-loading="detailsLoading"
                     @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"

@@ -28,15 +28,15 @@ const fullExtractPath = computed(() => {
 })
 
 onMounted(() => {
-    currentStatus.value = t('install.progress.preparing')
+    currentStatus.value = t('ui.install.progress.preparing')
 
     listen('lib_install', (event) => {
         if (event.payload === 0) {
             progressMode.value = 'indeterminate'
-            currentStatus.value = t('install.progress.preparing_extract')
+            currentStatus.value = t('ui.install.progress.preparing_extract')
         }
         if (event.payload === 101) {
-            currentStatus.value = t('install.progress.completed')
+            currentStatus.value = t('ui.install.progress.completed')
             isFinished.value = true
             canClose.value = true
         }
@@ -45,7 +45,7 @@ onMounted(() => {
     listen('lib_install_extract', (event) => {
         progressMode.value = 'determinate'
         extractProgress.value = event.payload as number
-        currentStatus.value = t('install.progress.extracting', { progress: extractProgress.value })
+        currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
     })
 
     // Start library install process
@@ -96,8 +96,8 @@ function handleCopyPath() {
                                 ]"></span>
                             </div>
                             <div class="min-w-0 shrink">
-                                <h2 class="text-lg font-medium">{{ t('install.progress.title') }}</h2>
-                                <p class="text-xs">{{ t('install.progress.description') }}</p>
+                                <h2 class="text-lg font-medium">{{ t('ui.install.progress.title') }}</h2>
+                                <p class="text-xs">{{ t('ui.install.progress.description') }}</p>
                             </div>
                         </div>
                         <div class="ml-4 flex shrink-0 select-text items-center gap-3">
@@ -122,9 +122,9 @@ function handleCopyPath() {
                         <div class="flex w-full items-center justify-between py-1">
                             <div class="flex items-center gap-2">
                                 <span class="mir-terminal"></span>
-                                <span class="text-sm font-medium">{{ t('full_path') }}</span>
+                                <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
                             </div>
-                            <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_path')"
+                            <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_path')"
                                 class="h-7 w-8" icon="mir-content_copy" @click="handleCopyPath" />
                         </div>
                         <p class="select-text break-all text-sm font-medium">{{ fullExtractPath }}</p>
@@ -134,7 +134,7 @@ function handleCopyPath() {
                 <div class="flex justify-end">
                     <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'success' : 'danger'"
                         class="h-8 w-24" :icon="isFinished ? 'mir-home' : 'mir-close'"
-                        :label="isFinished ? t('finish') : t('close')" />
+                        :label="isFinished ? t('g.finish') : t('g.close')" />
                 </div>
             </Panel>
         </div>
