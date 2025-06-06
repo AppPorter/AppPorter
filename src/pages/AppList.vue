@@ -63,9 +63,9 @@ const links = computed(() => {
 const sortKey = ref('name')
 const sortOrder = ref(1)
 const sortOptions = [
-  { label: t('sort.name'), value: 'name' },
-  { label: t('sort.publisher'), value: 'publisher' },
-  { label: t('sort.date'), value: 'timestamp' },
+  { label: t('cls.sort.name'), value: 'name' },
+  { label: t('cls.sort.publisher'), value: 'publisher' },
+  { label: t('cls.sort.date'), value: 'timestamp' },
 ]
 
 const sortedApps = computed(() => {

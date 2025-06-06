@@ -19,7 +19,7 @@ async function selectZipFile() {
     directory: false,
     filters: [
       {
-        name: t('archives.self'),
+        name: t('g.archive'),
         extensions: ['zip', '7z', 'rar', 'tar', 'gz', 'bz2', 'xz', 'cab'],
       },
     ],
@@ -38,8 +38,8 @@ async function selectZipFile() {
         <div class="flex items-center gap-2">
           <span class="mir-folder_zip text-xl"></span>
           <div>
-            <h2 class="text-lg font-medium">{{ t('install.self') }}</h2>
-            <p class="mt-0.5 text-xs">{{ t('install.description') }}</p>
+            <h2 class="text-lg font-medium">{{ t('cls.install.self') }}</h2>
+            <p class="mt-0.5 text-xs">{{ t('ui.install.description') }}</p>
           </div>
         </div>
       </template>
@@ -48,15 +48,15 @@ async function selectZipFile() {
       <div class="space-y-6">
         <!-- File Selection Input -->
         <div class="flex items-center gap-2">
-          <InputText v-model="zip_path" :placeholder="t('install.select_placeholder')" class="h-9 flex-1 text-sm" />
+          <InputText v-model="zip_path" :placeholder="t('ui.select_placeholder.archive')" class="h-9 flex-1 text-sm" />
           <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
-            :label="t('basic.browse')" />
+            :label="t('g.browse')" />
         </div>
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
           <Button @click="goTo('/Install/Preview')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
-            icon="mir-install_desktop" :label="t('basic.continue')" />
+            icon="mir-install_desktop" :label="t('g.continue')" />
         </div>
       </div>
     </Panel>

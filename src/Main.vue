@@ -27,16 +27,16 @@ onMounted(async () => {
   if (env.first_run) {
     confirm.require({
       group: 'disclaimer',
-      header: t('disclaimer.title'),
-      message: t('disclaimer.message'),
+      header: t('ui.disclaimer.title'),
+      message: t('ui.disclaimer.message'),
       icon: 'mir-info',
       acceptProps: {
-        label: t('basic.accept'),
+        label: t('g.accept'),
         icon: 'mir-check',
         severity: 'primary',
       },
       rejectProps: {
-        label: t('basic.exit'),
+        label: t('g.exit'),
         icon: 'mir-close',
         severity: 'secondary',
         outlined: true,
