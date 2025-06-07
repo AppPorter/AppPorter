@@ -97,9 +97,9 @@ async function select_extract_path() {
                                 </div>
                             </div>
 
-                            <!-- Extract Path -->
+                            <!-- Install Path -->
                             <div class="flex items-center gap-2">
-                                <label class="w-24 text-sm font-medium">{{ t('cls.install.config.extract_path')
+                                <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
                                     }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">

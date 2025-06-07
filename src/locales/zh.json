@@ -27,7 +27,8 @@
       }
     },
     "select_placeholder": {
-      "archive": "压缩文件路径"
+      "archive": "压缩文件路径",
+      "path_directory": "PATH目录"
     },
     "valid": {
       "invalid_archive": "无效压缩文件",
@@ -45,7 +46,18 @@
     "install": {
       "confirm_install": "确认安装",
       "start_install": "开始安装",
-      "force_install": "强制安装"
+      "force_install": "强制安装",
+      "lib_details": "库详情",
+      "selected_file": "选择的文件",
+      "environment": "环境",
+      "select_path_directory": "选择PATH目录",
+      "progress": {
+        "preparing": "准备中",
+        "preparing_extract": "准备解压",
+        "completed": "完成",
+        "extracting": "解压中",
+        "install_path": "安装路径"
+      }
     }
   },
   "g": {
@@ -65,7 +77,9 @@
     "continue": "继续",
     "ok": "好的",
     "submit": "提交",
-    "back": "返回"
+    "back": "返回",
+    "finish": "完成",
+    "close": "关闭"
   },
   "cls": {
     "context_menu": {
@@ -91,7 +105,8 @@
         "add_to_path": "添加到PATH"
       },
       "config": {
-        "install_path": "安装路径"
+        "install_path": "安装路径",
+        "full_path": "完整路径"
       },
       "types": {
         "app": "软件",
@@ -118,6 +133,9 @@
     },
     "subscribe": {
       "self": "订阅"
+    },
+    "app": {
+      "name": "名称"
     }
   }
 }

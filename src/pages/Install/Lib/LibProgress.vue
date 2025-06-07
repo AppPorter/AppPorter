@@ -124,7 +124,7 @@ function handleCopyPath() {
                                 <span class="mir-terminal"></span>
                                 <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
                             </div>
-                            <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_path')"
+                            <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.install_path')"
                                 class="h-7 w-8" icon="mir-content_copy" @click="handleCopyPath" />
                         </div>
                         <p class="select-text break-all text-sm font-medium">{{ fullExtractPath }}</p>
