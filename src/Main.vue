@@ -27,8 +27,8 @@ onMounted(async () => {
   if (env.first_run) {
     confirm.require({
       group: 'disclaimer',
-      header: t('ui.disclaimer.title'),
-      message: t('ui.disclaimer.message'),
+      header: t('ui.disclaimer.header'),
+      message: t('ui.disclaimer.msg'),
       icon: 'mir-info',
       acceptProps: {
         label: t('g.accept'),

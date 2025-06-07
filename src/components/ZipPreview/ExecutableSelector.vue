@@ -91,11 +91,11 @@ const isSelectableFile = (node: FileNode): boolean => {
 function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
   switch (mode) {
     case 'exe':
-      return t('ui.executable_selector.filter.exe_description')
+      return t('ui.executable_selector.filter_description.exe')
     case 'executable':
-      return t('ui.executable_selector.filter.executable_description')
+      return t('ui.executable_selector.filter_description.executable')
     case 'all':
-      return t('ui.executable_selector.filter.all_description')
+      return t('ui.executable_selector.filter_description.all')
     default:
       return ''
   }
