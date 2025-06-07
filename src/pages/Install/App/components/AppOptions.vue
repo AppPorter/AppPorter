@@ -118,7 +118,7 @@ function handleDetailsLoading(loading: boolean) {
 
       <!-- Install Path -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('cls.install.paths.install_path') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
             <InputText v-model="install_path" :placeholder="t('ui.select_placeholder.dir')" class="h-8 w-full text-sm"

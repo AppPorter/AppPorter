@@ -23,8 +23,8 @@ const executablePathError = ref(false)
 
 // Mode options for SelectButton
 const modeOptions = [
-    { label: t('install.types.app'), value: 'app', icon: 'mir-install_desktop' },
-    { label: t('install.types.lib'), value: 'lib', icon: 'mir-folder_copy' }
+    { label: t('cls.install.types.app'), value: 'app', icon: 'mir-install_desktop' },
+    { label: t('cls.install.types.lib'), value: 'lib', icon: 'mir-folder_copy' }
 ]
 
 // Current mode based on install_config page
@@ -73,7 +73,6 @@ async function handleAppInstall() {
         toast.add({
             severity: 'error',
             summary: t('ui.valid.executable_missing'),
-            detail: t('ui.valid.select_executable'),
             life: 3000,
         })
         hasErrors = true
@@ -84,7 +83,6 @@ async function handleAppInstall() {
         toast.add({
             severity: 'error',
             summary: t('ui.valid.name_required'),
-            detail: t('ui.valid.enter_name'),
             life: 3000,
         })
         hasErrors = true
@@ -95,7 +93,6 @@ async function handleAppInstall() {
         toast.add({
             severity: 'error',
             summary: t('ui.valid.path_required'),
-            detail: t('ui.valid.select_path'),
             life: 3000,
         })
         hasErrors = true
@@ -188,7 +185,6 @@ async function handleLibInstall() {
         toast.add({
             severity: 'error',
             summary: t('ui.valid.name_required'),
-            detail: t('ui.valid.enter_name'),
             life: 3000,
         })
         return
@@ -199,7 +195,6 @@ async function handleLibInstall() {
         toast.add({
             severity: 'error',
             summary: t('ui.valid.path_required'),
-            detail: t('ui.valid.select_path'),
             life: 3000,
         })
         return
