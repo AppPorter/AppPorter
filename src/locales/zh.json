@@ -18,6 +18,34 @@
     },
     "zip_preview": {
       "no_files": "没有文件"
+    },
+    "settings": {
+      "basic": "基础",
+      "install": {
+        "app": "应用安装",
+        "lib": "库安装"
+      }
+    },
+    "select_placeholder": {
+      "archive": "压缩文件路径"
+    },
+    "valid": {
+      "invalid_archive": "无效压缩文件",
+      "executable_missing": "没有可执行文件",
+      "directory_not_empty": "目录不为空"
+    },
+    "archive": {
+      "password_required": "需要压缩文件密码",
+      "enter_password": "输入密码"
+    },
+    "preview": {
+      "install_as_app": "安装软件",
+      "install_as_library": "安装库"
+    },
+    "install": {
+      "confirm_install": "确认安装",
+      "start_install": "开始安装",
+      "force_install": "强制安装"
     }
   },
   "g": {
@@ -30,7 +58,14 @@
     "error": "错误",
     "cancel": "取消",
     "select": "选择",
-    "loading": "加载中"
+    "loading": "加载中",
+    "browse": "浏览",
+    "reload": "重载",
+    "archive": "压缩文件",
+    "continue": "继续",
+    "ok": "好的",
+    "submit": "提交",
+    "back": "返回"
   },
   "cls": {
     "context_menu": {
@@ -43,13 +78,46 @@
       "self": "卸载"
     },
     "install": {
-      "self": "安装"
+      "self": "安装",
+      "modes": {
+        "self": "安装模式",
+        "current_user": "当前用户",
+        "all_users": "所有用户"
+      },
+      "shortcuts": {
+        "desktop": "桌面快捷方式",
+        "registry_key": "注册表项",
+        "start_menu": "开始菜单快捷方式",
+        "add_to_path": "添加到PATH"
+      },
+      "config": {
+        "install_path": "安装路径"
+      },
+      "types": {
+        "app": "软件",
+        "lib": "库"
+      }
     },
     "app_list": {
       "self": "软件列表"
     },
     "settings": {
-      "self": "设置"
+      "self": "设置",
+      "basic": {
+        "language": "语言",
+        "theme": "主题",
+        "minimize_tray": "最小化到托盘",
+        "context_menu": "右键菜单",
+        "auto_startup": "开机自启动"
+      }
+    },
+    "theme": {
+      "system": "跟随系统",
+      "light": "浅色",
+      "dark": "深色"
+    },
+    "subscribe": {
+      "self": "订阅"
     }
   }
 }

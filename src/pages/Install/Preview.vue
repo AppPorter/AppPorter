@@ -132,7 +132,7 @@ async function GetArchiveContent(password: string) {
             :header="t('ui.valid.invalid_archive')" class="w-[30rem]">
             <div class="flex items-start gap-3">
                 <span class="mir-error text-3xl text-red-500"></span>
-                <p class="text-sm">{{ t('ui.valid.no_executable_file') }}</p>
+                <p class="text-sm">{{ t('ui.valid.executable_missing') }}</p>
             </div>
             <template #footer>
                 <div class="flex justify-end">

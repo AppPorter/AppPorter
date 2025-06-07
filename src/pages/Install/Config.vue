@@ -2,7 +2,6 @@
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
-import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import { useConfirm } from 'primevue/useconfirm'
@@ -13,7 +12,6 @@ import LibConfig from './Lib/LibConfig.vue'
 
 const { t } = useI18n()
 const installConfig = InstallConfigStore()
-const toast = useToast()
 const confirm = useConfirm()
 
 // Validation states
@@ -65,40 +63,21 @@ async function handleAppInstall() {
     pathError.value = ''
     executablePathError.value = false
 
-    let hasErrors = false
-
     // Validate required fields
     if (!installConfig.app_details.config.archive_exe_path) {
         executablePathError.value = true
-        toast.add({
-            severity: 'error',
-            summary: t('ui.valid.executable_missing'),
-            life: 3000,
-        })
-        hasErrors = true
     }
 
     if (!installConfig.app_details.info.name) {
         nameError.value = true
-        toast.add({
-            severity: 'error',
-            summary: t('ui.valid.name_required'),
-            life: 3000,
-        })
-        hasErrors = true
     }
 
     if (!installConfig.app_details.paths.parent_install_path) {
         pathError.value = t('ui.valid.select_path')
-        toast.add({
-            severity: 'error',
-            summary: t('ui.valid.path_required'),
-            life: 3000,
-        })
-        hasErrors = true
     }
 
-    if (hasErrors) {
+    // If any validation failed, return early
+    if (executablePathError.value || nameError.value || pathError.value) {
         return
     }
 
@@ -134,7 +113,7 @@ async function handleAppInstall() {
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('g.install'),
+                        label: t('cls.install.self'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -181,22 +160,13 @@ async function handleLibInstall() {
     // Reset validation errors
     pathError.value = ''
 
+    // Validate required fields
     if (!installConfig.lib_details.name) {
-        toast.add({
-            severity: 'error',
-            summary: t('ui.valid.name_required'),
-            life: 3000,
-        })
         return
     }
 
     if (!installConfig.lib_details.paths.parent_install_path) {
         pathError.value = t('ui.valid.select_path')
-        toast.add({
-            severity: 'error',
-            summary: t('ui.valid.path_required'),
-            life: 3000,
-        })
         return
     }
 
@@ -221,10 +191,10 @@ async function handleLibInstall() {
 
             await new Promise((resolve, reject) => {
                 confirm.require({
-                    message: t('ui.install.confirm_extract'),
+                    message: t('ui.install.confirm_install'),
                     group: 'dialog',
                     icon: 'mir-folder_copy',
-                    header: t('ui.install.start_extraction'),
+                    header: t('ui.install.start_install'),
                     rejectProps: {
                         label: t('g.cancel'),
                         severity: 'secondary',
@@ -232,7 +202,7 @@ async function handleLibInstall() {
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('g.install'),
+                        label: t('cls.install.self'),
                         icon: 'mir-navigate_next',
                     },
                     accept: () => resolve(true),
@@ -254,7 +224,7 @@ async function handleLibInstall() {
                             icon: 'mir-close',
                         },
                         acceptProps: {
-                            label: t('ui.install.force_extract'),
+                            label: t('ui.install.force_install'),
                             severity: 'danger',
                             icon: 'mir-warning',
                         },
@@ -293,7 +263,7 @@ async function handleLibInstall() {
                 size="small" option-value="value" />
 
             <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleInstallClick"
-                icon="mir-install_desktop" :label="t('g.install')" />
+                icon="mir-install_desktop" :label="t('cls.install.self')" />
         </div>
     </div>
 </template>
