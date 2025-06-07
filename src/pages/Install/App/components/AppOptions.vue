@@ -140,7 +140,7 @@ function handleDetailsLoading(loading: boolean) {
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <label class="mt-1 w-24 text-sm font-medium">{{ t('cls.install.shortcuts.self') }}</label>
+        <label class="mt-1 w-24 text-sm font-medium">{{ t('g.option') }}</label>
         <div class="w-full">
           <div class="flex-1 space-y-1 rounded-lg p-1.5">
             <div class="flex items-center gap-2">

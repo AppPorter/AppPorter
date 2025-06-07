@@ -61,7 +61,7 @@ function handleDetailsLoading(loading: boolean) {
         <label class="w-24 text-sm font-medium">{{ t('ui.install.executable_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
-            <InputText v-model="executable_path" :placeholder="t('ui.install.select_executable_path')"
+            <InputText v-model="executable_path" :placeholder="t('ui.install.select_executable')"
               class="h-8 w-full text-sm" :invalid="executablePathError" />
             <Button class="h-8 w-36" severity="secondary" @click="drawerVisible = true" icon="mir-folder_open"
               :label="t('g.browse')" />

@@ -28,7 +28,8 @@
     },
     "select_placeholder": {
       "archive": "压缩文件路径",
-      "path_directory": "PATH目录"
+      "path_directory": "PATH目录",
+      "dir": "选择文件夹"
     },
     "valid": {
       "invalid_archive": "无效压缩文件",
@@ -56,8 +57,18 @@
         "preparing_extract": "准备解压",
         "completed": "完成",
         "extracting": "解压中",
-        "install_path": "安装路径"
-      }
+        "install_path": "安装路径",
+        "failed": "安装失败"
+      },
+      "app_details": {
+        "title": "App详情"
+      },
+      "executable_path": "可执行文件路径",
+      "select_executable": "选择可执行文件",
+      "config": {
+        "install_options": "安装选项"
+      },
+      "final_path": "最终路径"
     }
   },
   "g": {
@@ -79,10 +90,13 @@
     "submit": "提交",
     "back": "返回",
     "finish": "完成",
-    "close": "关闭"
+    "close": "关闭",
+    "optional": "可选",
+    "icon": "图标",
+    "option": "选项"
   },
   "cls": {
-    "context_menu": {
+    "edit": {
       "cut": "剪切",
       "copy": "拷贝",
       "paste": "粘贴",
@@ -111,6 +125,11 @@
       "types": {
         "app": "软件",
         "lib": "库"
+      },
+      "app": {
+        "name": "名称",
+        "publisher": "发布者",
+        "version": "版本"
       }
     },
     "app_list": {
