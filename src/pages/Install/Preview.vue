@@ -149,7 +149,7 @@ async function GetArchiveContent(password: string) {
                 <div class="flex flex-col gap-1">
                     <InputText v-model="archivePassword" type="password" :class="{ 'border-red-500': passwordError }"
                         @keydown.enter="handlePasswordSubmit" class="w-full" :invalid="passwordError" />
-                    <small v-if="passwordError" class="text-red-500">{{ t('ui.valid.password_required') }}</small>
+                    <small v-if="passwordError" class="text-red-500">{{ t('ui.archive.password_required') }}</small>
                 </div>
             </div>
             <template #footer>

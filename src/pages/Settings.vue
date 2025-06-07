@@ -189,7 +189,7 @@ const githubIcon = computed(() => {
               </template>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <label>{{ t('cls.install.shortcuts.desktop_shortcut') }}</label>
+                  <label>{{ t('cls.install.shortcuts.desktop') }}</label>
                   <ToggleSwitch v-model="settings.app_install.current_user.create_desktop_shortcut" />
                 </div>
                 <div class="flex items-center justify-between">
@@ -197,7 +197,7 @@ const githubIcon = computed(() => {
                   <ToggleSwitch v-model="settings.app_install.current_user.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>{{ t('cls.install.shortcuts.start_menu_shortcut') }}</label>
+                  <label>{{ t('cls.install.shortcuts.start_menu') }}</label>
                   <ToggleSwitch v-model="settings.app_install.current_user.create_start_menu_shortcut" />
                 </div>
                 <div class="space-y-2">
@@ -222,7 +222,7 @@ const githubIcon = computed(() => {
               </template>
               <div class="space-y-4">
                 <div class="flex items-center justify-between">
-                  <label>{{ t('cls.install.shortcuts.desktop_shortcut') }}</label>
+                  <label>{{ t('cls.install.shortcuts.desktop') }}</label>
                   <ToggleSwitch v-model="settings.app_install.all_users.create_desktop_shortcut" />
                 </div>
                 <div class="flex items-center justify-between">
@@ -230,7 +230,7 @@ const githubIcon = computed(() => {
                   <ToggleSwitch v-model="settings.app_install.all_users.create_registry_key" />
                 </div>
                 <div class="flex items-center justify-between">
-                  <label>{{ t('cls.install.shortcuts.start_menu_shortcut') }}</label>
+                  <label>{{ t('cls.install.shortcuts.start_menu') }}</label>
                   <ToggleSwitch v-model="settings.app_install.all_users.create_start_menu_shortcut" />
                 </div>
                 <div class="space-y-2">
