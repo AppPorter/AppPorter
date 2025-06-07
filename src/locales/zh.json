@@ -1,1 +1,55 @@
-{}
+{
+  "ui": {
+    "disclaimer": {
+      "header": "免责声明"
+    },
+    "directory_selector": {
+      "filter": {
+        "directory": "仅目录",
+        "all": "所有"
+      }
+    },
+    "executable_selector": {
+      "filter": {
+        "exe": "仅.exe",
+        "executable": "仅可执行文件",
+        "all": "所有"
+      }
+    },
+    "zip_preview": {
+      "no_files": "没有文件"
+    }
+  },
+  "g": {
+    "accept": "接受",
+    "exit": "退出",
+    "open": "打开",
+    "dismiss": "忽略",
+    "warning": "警告",
+    "solve": "解决",
+    "error": "错误",
+    "cancel": "取消",
+    "select": "选择",
+    "loading": "加载中"
+  },
+  "cls": {
+    "context_menu": {
+      "cut": "剪切",
+      "copy": "拷贝",
+      "paste": "粘贴",
+      "select_all": "全选"
+    },
+    "uninstall": {
+      "self": "卸载"
+    },
+    "install": {
+      "self": "安装"
+    },
+    "app_list": {
+      "self": "软件列表"
+    },
+    "settings": {
+      "self": "设置"
+    }
+  }
+}
