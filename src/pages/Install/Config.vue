@@ -15,7 +15,7 @@ const installConfig = InstallConfigStore()
 const confirm = useConfirm()
 
 // Validation states
-const pathError = ref('')
+const pathError = ref(false)
 const nameError = ref(false)
 const executablePathError = ref(false)
 
@@ -60,7 +60,7 @@ async function handleInstallClick() {
 async function handleAppInstall() {
     // Reset validation errors
     nameError.value = false
-    pathError.value = ''
+    pathError.value = false
     executablePathError.value = false
 
     // Validate required fields
@@ -73,7 +73,7 @@ async function handleAppInstall() {
     }
 
     if (!installConfig.app_details.paths.parent_install_path) {
-        pathError.value = t('ui.valid.select_path')
+        pathError.value = true
     }
 
     // If any validation failed, return early
@@ -144,21 +144,21 @@ async function handleAppInstall() {
                     })
                 })
             } else {
-                pathError.value = error as string
+                pathError.value = true
                 return
             }
         }
 
         goTo('/Install/Progress')
-    } catch (error) {
-        pathError.value = error as string
+    } catch {
+        pathError.value = true
     }
 }
 
 // Handle library installation
 async function handleLibInstall() {
     // Reset validation errors
-    pathError.value = ''
+    pathError.value = false
 
     // Validate required fields
     if (!installConfig.lib_details.name) {
@@ -166,7 +166,7 @@ async function handleLibInstall() {
     }
 
     if (!installConfig.lib_details.paths.parent_install_path) {
-        pathError.value = t('ui.valid.select_path')
+        pathError.value = true
         return
     }
 
@@ -233,14 +233,14 @@ async function handleLibInstall() {
                     })
                 })
             } else {
-                pathError.value = error as string
+                pathError.value = true
                 return
             }
         }
 
         goTo('/CopyOnly/Progress')
-    } catch (error) {
-        pathError.value = error as string
+    } catch {
+        pathError.value = true
     }
 }
 </script>

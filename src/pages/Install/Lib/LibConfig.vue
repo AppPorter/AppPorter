@@ -13,12 +13,12 @@ import { useI18n } from 'vue-i18n'
 
 // Props
 defineProps<{
-    pathError: string
+    pathError: boolean
 }>()
 
 // Emits
 defineEmits<{
-    'update:pathError': [value: string]
+    'update:pathError': [value: boolean]
 }>()
 
 const installConfig = InstallConfigStore()
@@ -100,13 +100,12 @@ async function select_extract_path() {
                             <!-- Extract Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.extract_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
                                         <InputText v-model="installConfig.lib_details.paths.parent_install_path"
-                                            :placeholder="t('g.browse')" class="h-8 w-full text-sm"
-                                            :invalid="!!pathError" @input="$emit('update:pathError', '')"
-                                            :title="pathError" />
+                                            :placeholder="t('g.browse')" class="h-8 w-full text-sm" :invalid="pathError"
+                                            @input="$emit('update:pathError', false)" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('g.browse')" />
                                     </div>
@@ -124,7 +123,7 @@ async function select_extract_path() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">

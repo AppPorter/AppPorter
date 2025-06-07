@@ -8,7 +8,11 @@ import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
-  pathError: string
+  pathError: boolean
+}>()
+
+defineEmits<{
+  'update:pathError': [value: boolean]
 }>()
 
 const settingsStore = SettingsStore()
@@ -122,7 +126,7 @@ function handleDetailsLoading(loading: boolean) {
         <div class="w-full">
           <div class="flex flex-1 gap-2">
             <InputText v-model="install_path" :placeholder="t('ui.select_placeholder.dir')" class="h-8 w-full text-sm"
-              :invalid="!!pathError" @input="$emit('update:pathError', '')" :title="pathError" />
+              :invalid="pathError" @input="$emit('update:pathError', false)" />
             <Button class="h-8 w-36" severity="secondary" @click="select_install_path" icon="mir-folder_open"
               :label="t('g.browse')" />
           </div>
@@ -147,7 +151,7 @@ function handleDetailsLoading(loading: boolean) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

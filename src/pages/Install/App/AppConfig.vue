@@ -6,11 +6,11 @@ import Options from './components/AppOptions.vue';
 defineProps<{
   nameError: boolean
   executablePathError: boolean
-  pathError: string
+  pathError: boolean
 }>()
 
 defineEmits<{
-  'update:pathError': [value: string]
+  'update:pathError': [value: boolean]
 }>()
 
 // UI state management
