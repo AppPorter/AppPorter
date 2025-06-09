@@ -11,7 +11,7 @@ pub struct Settings {
     pub color: String,
     pub run_as_admin: bool,
     pub app_install: AppInstall,
-    pub lib_install: LibInstall,
+    pub tool_install: ToolInstall,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -67,7 +67,7 @@ pub struct InstallSettings {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct LibInstall {
+pub struct ToolInstall {
     pub install_path: String,
     pub add_to_path: bool,
 }

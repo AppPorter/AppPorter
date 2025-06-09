@@ -70,7 +70,7 @@ pub async fn get_archive_content(
     Ok(parse_7z_list_output(&output_str))
 }
 
-// Common file extraction function for both apps and libs
+// Common file extraction function for both apps and tools
 pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,

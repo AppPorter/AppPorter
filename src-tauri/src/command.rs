@@ -38,13 +38,13 @@ pub enum Command {
     InstallApp {
         config: AppInstallConfig,
     },
-    InstallLib {
-        config: LibInstallConfig,
+    InstallTool {
+        config: ToolInstallConfig,
     },
     UninstallApp {
         timestamp: i64,
     },
-    UninstallLib {
+    UninstallTool {
         timestamp: i64,
     },
 
@@ -122,9 +122,9 @@ impl Command {
 
             // Operations - Install/Uninstall
             InstallApp { config } => Self::ser(install_app(config, app).await?),
-            InstallLib { config } => Self::ser(install_lib(config, app).await?),
+            InstallTool { config } => Self::ser(install_tool(config, app).await?),
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
-            UninstallLib { timestamp } => Self::ser(uninstall_lib(timestamp, app).await?),
+            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, app).await?),
 
             // Operations - Launcher
             OpenApp { path } => Self::ser(open_app(&path).await?),

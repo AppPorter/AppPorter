@@ -1,8 +1,8 @@
 pub mod install_app;
-pub mod install_lib;
+pub mod install_tool;
 
 pub use install_app::*;
-pub use install_lib::*;
+pub use install_tool::*;
 
 use std::{error::Error, path::Path};
 

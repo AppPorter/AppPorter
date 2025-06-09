@@ -1,4 +1,4 @@
-use super::{AppList, AppValidationStatus, LibValidationStatus};
+use super::{AppList, AppValidationStatus, ToolValidationStatus};
 use crate::configs::app_list::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
 use crate::configs::{app_list::AppDetails, settings::Settings};
@@ -17,7 +17,10 @@ impl ConfigFile for AppList {
 impl AppList {
     pub fn has_link(&self, url: &str) -> bool {
         self.apps.iter().any(|app| app.url == url && app.installed)
-            || self.libs.iter().any(|lib| lib.url == url && lib.installed)
+            || self
+                .tools
+                .iter()
+                .any(|tool| tool.url == url && tool.installed)
     }
 
     pub async fn validate_installs(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -94,21 +97,21 @@ impl AppList {
             };
         }
 
-        for lib in &mut self.libs {
-            if !lib.installed {
+        for tool in &mut self.tools {
+            if !tool.installed {
                 continue;
             }
 
             // Check if executable exists
-            let file_exists = tokio::fs::try_exists(&lib.details.paths.install_path)
+            let file_exists = tokio::fs::try_exists(&tool.details.paths.install_path)
                 .await
                 .unwrap_or(false);
 
             // Check PATH environment variable
-            let path_valid = if lib.details.config.add_to_path {
-                let path_to_check = &lib.details.config.full_path_directory;
+            let path_valid = if tool.details.config.add_to_path {
+                let path_to_check = &tool.details.config.full_path_directory;
 
-                // Libs are always added to CURRENT_USER environment
+                // tools are always added to CURRENT_USER environment
                 if let Ok(key) = CURRENT_USER.open("Environment") {
                     if let Ok(path) = key.get_string("Path") {
                         path.split(';').any(|p| p.trim() == path_to_check.trim())
@@ -122,7 +125,7 @@ impl AppList {
                 true
             };
 
-            lib.details.validation_status = LibValidationStatus {
+            tool.details.validation_status = ToolValidationStatus {
                 file_exists,
                 path_exists: path_valid,
             };
@@ -164,30 +167,30 @@ impl AppList {
             i += 1;
         }
 
-        // Remove duplicates from libs
+        // Remove duplicates from tools
         let mut i = 0;
-        while i < self.libs.len() {
+        while i < self.tools.len() {
             let mut j = i + 1;
-            while j < self.libs.len() {
-                if self.libs[i].details.paths.install_path
-                    == self.libs[j].details.paths.install_path
+            while j < self.tools.len() {
+                if self.tools[i].details.paths.install_path
+                    == self.tools[j].details.paths.install_path
                 {
                     // Check if all other fields except timestamp and version are identical
-                    let mut lib1 = self.libs[i].clone();
-                    let mut lib2 = self.libs[j].clone();
+                    let mut tool1 = self.tools[i].clone();
+                    let mut tool2 = self.tools[j].clone();
 
                     // Reset timestamp and version for comparison
-                    lib1.timestamp = 0;
-                    lib2.timestamp = 0;
+                    tool1.timestamp = 0;
+                    tool2.timestamp = 0;
 
-                    if lib1 == lib2 {
+                    if tool1 == tool2 {
                         // Remove the entry with earlier timestamp
-                        if self.libs[i].timestamp < self.libs[j].timestamp {
-                            self.libs.remove(i);
+                        if self.tools[i].timestamp < self.tools[j].timestamp {
+                            self.tools.remove(i);
                             j = i + 1;
                             continue;
                         } else {
-                            self.libs.remove(j);
+                            self.tools.remove(j);
                             continue;
                         }
                     }

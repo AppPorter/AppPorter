@@ -1,4 +1,4 @@
-use super::{AppInstall, InstallSettings, LanguageType, LibInstall, Settings, ThemeType};
+use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
 use crate::configs::{env::Env, ConfigFile};
 use std::error::Error;
 
@@ -43,7 +43,7 @@ impl Default for Settings {
                     add_to_path: false,
                 },
             },
-            lib_install: LibInstall {
+            tool_install: ToolInstall {
                 install_path: dirs::home_dir()
                     .map(|p| p.to_string_lossy().to_string())
                     .unwrap_or_else(|| String::from("C:\\")),
