@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { AppListStore } from '@/stores/app_list'
+import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import Menu from 'primevue/menu'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const appListStore = AppListStore()
+const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 
@@ -128,7 +128,7 @@ async function openRegistry() {
 async function confirmUninstall() {
     if (!props.selectedApp) return
 
-    const app = appListStore.getAppByTimestamp(props.selectedApp.timestamp)
+    const app = libraryStore.getAppByTimestamp(props.selectedApp.timestamp)
     if (!app) return
 
     await new Promise((resolve, reject) => {
@@ -151,7 +151,7 @@ async function confirmUninstall() {
                 icon: 'mir-warning',
             },
             accept: async () => {
-                await appListStore.executeUninstall(props.selectedApp!.timestamp)
+                await libraryStore.executeUninstall(props.selectedApp!.timestamp)
                 resolve(true)
             },
             reject: () => reject(),
@@ -163,8 +163,8 @@ async function confirmDelete() {
     if (!props.selectedApp) return
 
     const item = props.selectedApp.type === 'app'
-        ? appListStore.getAppByTimestamp(props.selectedApp.timestamp)
-        : appListStore.getLibByTimestamp(props.selectedApp.timestamp)
+        ? libraryStore.getAppByTimestamp(props.selectedApp.timestamp)
+        : libraryStore.getLibByTimestamp(props.selectedApp.timestamp)
     if (!item) return
 
     await new Promise((resolve, reject) => {
@@ -188,9 +188,9 @@ async function confirmDelete() {
             },
             accept: async () => {
                 if (props.selectedApp!.type === 'lib') {
-                    await appListStore.removeLib(props.selectedApp!.timestamp)
+                    await libraryStore.removeLib(props.selectedApp!.timestamp)
                 } else {
-                    await appListStore.removeApp(props.selectedApp!.timestamp)
+                    await libraryStore.removeApp(props.selectedApp!.timestamp)
                 }
                 resolve(true)
             },
@@ -222,7 +222,7 @@ async function confirmRemove() {
                 icon: 'mir-delete',
             },
             accept: async () => {
-                await appListStore.removeApp(props.selectedApp!.timestamp)
+                await libraryStore.removeApp(props.selectedApp!.timestamp)
                 resolve(true)
             },
             reject: () => reject(),

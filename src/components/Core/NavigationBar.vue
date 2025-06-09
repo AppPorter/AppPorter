@@ -17,10 +17,10 @@ const leftMenuItems = [
     paths: ['/Home', '/Install/Preview', '/Install/Config', '/Install/App/Progress', '/Install/Lib/Progress'],
   },
   {
-    label: t('cls.app_list.self'),
+    label: t('cls.library.self'),
     icon: 'mir-apps',
-    command: () => goTo('/AppList'),
-    paths: ['/AppList'],
+    command: () => goTo('/Library'),
+    paths: ['/Library'],
   },
 ]
 

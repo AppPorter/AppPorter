@@ -151,7 +151,7 @@ function handleDetailsLoading(loading: boolean) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-              }}</label>
+                }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

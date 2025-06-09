@@ -1,9 +1,9 @@
-import AppList from '@/pages/AppList/index.vue'
 import Home from '@/pages/Home.vue'
 import AppProgress from '@/pages/Install/App/AppProgress.vue'
 import Config from '@/pages/Install/Config.vue'
 import LibProgress from '@/pages/Install/Lib/LibProgress.vue'
 import Preview from '@/pages/Install/Preview.vue'
+import Library from '@/pages/Library/Index.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -51,8 +51,8 @@ const routes = [
     },
   },
   {
-    path: '/AppList',
-    component: AppList,
+    path: '/Library',
+    component: Library,
     meta: {
       icon: 'mir-apps',
     },

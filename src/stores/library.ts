@@ -1,7 +1,7 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
-interface AppList {
+interface Library {
   apps: App[]
   libs: Lib[]
 }
@@ -80,8 +80,8 @@ export interface LibValidationStatus {
   path_exists: boolean
 }
 
-export const AppListStore = defineStore('app_list', {
-  state: (): AppList => ({
+export const LibraryStore = defineStore('library', {
+  state: (): Library => ({
     apps: [],
     libs: [],
   }),
@@ -96,18 +96,18 @@ export const AppListStore = defineStore('app_list', {
   },
 
   actions: {
-    async loadAppList() {
+    async loadLibrary() {
       const result = await invoke<string>('execute_command', {
-        command: { name: 'LoadAppList' },
+        command: { name: 'LoadLibrary' },
       })
       this.$patch(JSON.parse(result))
     },
 
-    async saveAppList() {
+    async saveLibrary() {
       await invoke('execute_command', {
         command: {
-          name: 'SaveAppList',
-          app_list: this.$state,
+          name: 'SaveLibrary',
+          library: this.$state,
         },
       })
     },
@@ -139,19 +139,19 @@ export const AppListStore = defineStore('app_list', {
           timestamp,
         },
       })
-      await this.loadAppList()
+      await this.loadLibrary()
     },
 
     async removeApp(timestamp: number) {
       // Remove the app from the list (without uninstalling)
       this.apps = this.apps.filter((app) => app.timestamp !== timestamp)
-      await this.saveAppList()
+      await this.saveLibrary()
     },
 
     async removeLib(timestamp: number) {
       // Remove the lib from the list (without uninstalling)
       this.libs = this.libs.filter((lib) => lib.timestamp !== timestamp)
-      await this.saveAppList()
+      await this.saveLibrary()
     },
   },
 })

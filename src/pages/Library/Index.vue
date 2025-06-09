@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppListStore } from '@/stores/app_list'
+import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import DataView from 'primevue/dataview'
 import Panel from 'primevue/panel'
@@ -11,7 +11,7 @@ import AppListHeader from './components/AppListHeader.vue'
 import AppListItem from './components/AppListItem.vue'
 import AppListValidation from './components/AppListValidation.vue'
 
-const appListStore = AppListStore()
+const libraryStore = LibraryStore()
 const { t } = useI18n()
 const contextMenu = ref()
 const validation = ref()
@@ -22,8 +22,8 @@ const route = useRoute()
 
 // Combine apps and libs into a unified list
 const links = computed(() => {
-  const apps = appListStore.apps.map(app => ({ ...app, type: 'app' }))
-  const libs = appListStore.libs.map(lib => ({
+  const apps = libraryStore.apps.map(app => ({ ...app, type: 'app' }))
+  const libs = libraryStore.libs.map(lib => ({
     ...lib,
     type: 'lib',
     details: {
@@ -81,9 +81,9 @@ const showPaginator = computed(() => {
   return links.value.length > 100
 })
 
-async function loadAppList() {
+async function loadLibrary() {
   loading.value = true
-  await appListStore.loadAppList()
+  await libraryStore.loadLibrary()
   loading.value = false
 }
 
@@ -112,14 +112,14 @@ function handleStatusClick(app) {
 watch(
   () => route.path,
   (newPath) => {
-    if (newPath === '/AppList') {
-      loadAppList()
+    if (newPath === '/Library') {
+      loadLibrary()
     }
   }
 )
 
 onMounted(() => {
-  loadAppList()
+  loadLibrary()
 })
 </script>
 
@@ -154,9 +154,9 @@ onMounted(() => {
 
     <!-- Context Menu -->
     <AppListContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
-      @load-app-list="loadAppList" />
+      @load-app-list="loadLibrary" />
 
     <!-- Validation Handler -->
-    <AppListValidation ref="validation" @load-app-list="loadAppList" />
+    <AppListValidation ref="validation" @load-app-list="loadLibrary" />
   </div>
 </template>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { AppListStore } from '@/stores/app_list'
+import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { useConfirm } from 'primevue/useconfirm'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const appListStore = AppListStore()
+const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 
@@ -152,7 +152,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
                     icon: 'mir-warning',
                 },
                 accept: async () => {
-                    await appListStore.executeUninstall(appToValidate.value.timestamp)
+                    await libraryStore.executeUninstall(appToValidate.value.timestamp)
                     resolve(true)
                 },
                 reject: () => reject(),

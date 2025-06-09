@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import type { AppDetails, LibDetails } from './app_list'
+import type { AppDetails, LibDetails } from './library'
 
 type Pages =
   | 'Home'
