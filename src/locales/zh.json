@@ -23,7 +23,7 @@
       "basic": "基础",
       "install": {
         "app": "应用安装",
-        "lib": "库安装"
+        "tool": "工具安装"
       }
     },
     "select_placeholder": {
@@ -42,13 +42,13 @@
     },
     "preview": {
       "install_as_app": "安装软件",
-      "install_as_library": "安装库"
+      "install_as_tool": "安装工具"
     },
     "install": {
       "confirm_install": "确认安装",
       "start_install": "开始安装",
       "force_install": "强制安装",
-      "lib_details": "库详情",
+      "tool_details": "工具详情",
       "selected_file": "选择的文件",
       "environment": "环境",
       "select_path_directory": "选择PATH目录",
@@ -124,7 +124,7 @@
       },
       "types": {
         "app": "软件",
-        "lib": "库"
+        "tool": "工具"
       },
       "app": {
         "name": "名称",
@@ -132,8 +132,8 @@
         "version": "版本"
       }
     },
-    "app_list": {
-      "self": "软件列表"
+    "library": {
+      "self": "软件库"
     },
     "settings": {
       "self": "设置",
