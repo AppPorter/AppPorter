@@ -70,12 +70,12 @@ async function selectAppInstallPath(userType: 'current_user' | 'all_users') {
   }
 }
 
-async function selectLibInstallPath() {
+async function selectToolInstallPath() {
   const selected = await open({
     directory: true,
   })
   if (selected) {
-    settings.lib_install.install_path = selected as string
+    settings.tool_install.install_path = selected as string
   }
 }
 
@@ -116,7 +116,7 @@ watch(
 )
 
 // Add computed property to check if reload button should be disabled
-const isReloadDisabled = computed(() => installConfig.page === 'Install_App_Progress' || installConfig.page === 'Install_Lib_Progress')
+const isReloadDisabled = computed(() => installConfig.page === 'Install_App_Progress' || installConfig.page === 'Install_Tool_Progress')
 
 // Get GitHub icon based on current theme and isDarkMode from settings store
 const githubIcon = computed(() => {
@@ -260,15 +260,15 @@ const githubIcon = computed(() => {
           <div class="space-y-2">
             <label>{{ t('cls.install.config.install_path') }}</label>
             <div class="flex min-w-0 items-center gap-2">
-              <InputText v-model="settings.lib_install.install_path" :placeholder="t('cls.install.config.install_path')"
-                class="h-9 min-w-0 flex-1 text-sm" />
-              <Button @click="selectLibInstallPath" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
+              <InputText v-model="settings.tool_install.install_path"
+                :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
+              <Button @click="selectToolInstallPath" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
                 :label="t('g.browse')" />
             </div>
           </div>
           <div class="flex items-center justify-between">
             <label>{{ t('cls.install.shortcuts.add_to_path') }}</label>
-            <ToggleSwitch v-model="settings.lib_install.add_to_path" />
+            <ToggleSwitch v-model="settings.tool_install.add_to_path" />
           </div>
         </div>
       </Panel>

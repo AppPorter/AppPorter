@@ -9,7 +9,7 @@ interface AppListItemProps {
     item: {
         timestamp: number
         url: string
-        type: 'app' | 'lib'
+        type: 'app' | 'tool'
         installed: boolean
         details: {
             info: {
@@ -52,7 +52,7 @@ function formatTimestamp(timestamp) {
                     class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
                     <img v-if="item.details.info.icon" :src="item.details.info.icon" class="size-8 object-contain"
                         alt="App Icon" />
-                    <span v-else-if="item.type === 'lib'" class="mir-folder_zip text-2xl"></span>
+                    <span v-else-if="item.type === 'tool'" class="mir-folder_zip text-2xl"></span>
                     <span v-else class="mir-apps text-2xl"></span>
                 </div>
             </div>
@@ -66,9 +66,9 @@ function formatTimestamp(timestamp) {
                         <span class="opacity-50">•</span>
                         <span>{{ item.details.info.publisher || t('app.unknown_publisher') }}</span>
                     </div>
-                    <div v-else-if="item.type === 'lib'"
+                    <div v-else-if="item.type === 'tool'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ t('app_list.library') }}</span>
+                        <span>{{ t('app_list.tool') }}</span>
                     </div>
                 </div>
 

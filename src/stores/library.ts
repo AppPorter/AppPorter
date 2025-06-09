@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 interface Library {
   apps: App[]
-  libs: Lib[]
+  tools: Tool[]
 }
 
 export interface App {
@@ -50,32 +50,32 @@ export interface AppValidationStatus {
   path_exists: boolean
 }
 
-export interface Lib {
+export interface Tool {
   timestamp: number
   installed: boolean
   url: string
-  details: LibDetails
+  details: ToolDetails
 }
 
-export interface LibDetails {
+export interface ToolDetails {
   name: string
-  config: LibConfig
-  paths: LibPaths
-  validation_status?: LibValidationStatus
+  config: ToolConfig
+  paths: ToolPaths
+  validation_status?: ToolValidationStatus
 }
 
-export interface LibConfig {
+export interface ToolConfig {
   archive_password?: string
   add_to_path: boolean
   path_directory: string
 }
 
-export interface LibPaths {
+export interface ToolPaths {
   parent_install_path: string
   install_path: string
 }
 
-export interface LibValidationStatus {
+export interface ToolValidationStatus {
   file_exists: boolean
   path_exists: boolean
 }
@@ -83,15 +83,15 @@ export interface LibValidationStatus {
 export const LibraryStore = defineStore('library', {
   state: (): Library => ({
     apps: [],
-    libs: [],
+    tools: [],
   }),
 
   getters: {
     installedApps: (state) => {
       return state.apps.filter((app) => app.installed)
     },
-    installedLibs: (state) => {
-      return state.libs.filter((lib) => lib.installed)
+    installedTools: (state) => {
+      return state.tools.filter((tool) => tool.installed)
     },
   },
 
@@ -113,23 +113,23 @@ export const LibraryStore = defineStore('library', {
     },
 
     hasLink(url: string): boolean {
-      return this.apps.some((app) => app.url === url) || this.libs.some((lib) => lib.url === url)
+      return this.apps.some((app) => app.url === url) || this.tools.some((tool) => tool.url === url)
     },
 
     hasApp(url: string): boolean {
       return this.apps.some((app) => app.url === url)
     },
 
-    hasLib(url: string): boolean {
-      return this.libs.some((lib) => lib.url === url)
+    hasTool(url: string): boolean {
+      return this.tools.some((tool) => tool.url === url)
     },
 
     getAppByTimestamp(timestamp: number) {
       return this.installedApps.find((app) => app.timestamp === timestamp)
     },
 
-    getLibByTimestamp(timestamp: number) {
-      return this.installedLibs.find((lib) => lib.timestamp === timestamp)
+    getToolByTimestamp(timestamp: number) {
+      return this.installedTools.find((tool) => tool.timestamp === timestamp)
     },
 
     async executeUninstall(timestamp: number) {
@@ -148,9 +148,9 @@ export const LibraryStore = defineStore('library', {
       await this.saveLibrary()
     },
 
-    async removeLib(timestamp: number) {
-      // Remove the lib from the list (without uninstalling)
-      this.libs = this.libs.filter((lib) => lib.timestamp !== timestamp)
+    async removeTool(timestamp: number) {
+      // Remove the tool from the list (without uninstalling)
+      this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
       await this.saveLibrary()
     },
   },

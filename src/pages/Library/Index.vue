@@ -20,21 +20,21 @@ const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
 
-// Combine apps and libs into a unified list
+// Combine apps and tools into a unified list
 const links = computed(() => {
   const apps = libraryStore.apps.map(app => ({ ...app, type: 'app' }))
-  const libs = libraryStore.libs.map(lib => ({
-    ...lib,
-    type: 'lib',
+  const tools = libraryStore.tools.map(tool => ({
+    ...tool,
+    type: 'tool',
     details: {
       info: {
-        name: lib.details.name,
+        name: tool.details.name,
         icon: '',
         publisher: '',
         version: ''
       },
       config: {
-        ...lib.details.config,
+        ...tool.details.config,
         current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: false,
@@ -42,18 +42,18 @@ const links = computed(() => {
         archive_exe_path: '',
       },
       paths: {
-        parent_install_path: lib.details.paths.parent_install_path,
-        install_path: lib.details.paths.install_path,
-        full_path: lib.details.paths.install_path,
+        parent_install_path: tool.details.paths.parent_install_path,
+        install_path: tool.details.paths.install_path,
+        full_path: tool.details.paths.install_path,
       },
       validation_status: {
-        file_exists: lib.details.validation_status.file_exists,
+        file_exists: tool.details.validation_status.file_exists,
         registry_valid: false,
-        path_exists: lib.details.validation_status.path_exists,
+        path_exists: tool.details.validation_status.path_exists,
       }
     }
   }))
-  return [...apps, ...libs]
+  return [...apps, ...tools]
 })
 
 const sortKey = ref('name')

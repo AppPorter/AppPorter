@@ -14,7 +14,7 @@ interface AppListContextMenuProps {
     selectedApp?: {
         timestamp: number
         url: string
-        type: 'app' | 'lib'
+        type: 'app' | 'tool'
         installed: boolean
         details: {
             info: {
@@ -61,7 +61,7 @@ const menuItems = computed(() => [
         label: t('open_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
-        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'lib',
+        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'tool',
     },
     {
         label: t('open_install_folder'),
@@ -76,9 +76,9 @@ const menuItems = computed(() => [
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: props.selectedApp?.type === 'lib' ? t('delete') : (props.selectedApp?.installed ? t('uninstall') : t('remove')),
+        label: props.selectedApp?.type === 'tool' ? t('delete') : (props.selectedApp?.installed ? t('uninstall') : t('remove')),
         icon: 'mir-delete',
-        command: () => (props.selectedApp?.installed ? (props.selectedApp?.type === 'lib' ? confirmDelete() : confirmUninstall()) : confirmRemove()),
+        command: () => (props.selectedApp?.installed ? (props.selectedApp?.type === 'tool' ? confirmDelete() : confirmUninstall()) : confirmRemove()),
         visible: () => props.selectedApp !== undefined,
     },
 ])
@@ -86,7 +86,7 @@ const menuItems = computed(() => [
 async function openApp() {
     if (!props.selectedApp) return
 
-    const targetPath = props.selectedApp.type === 'lib'
+    const targetPath = props.selectedApp.type === 'tool'
         ? props.selectedApp.details.paths.install_path
         : props.selectedApp.details.paths.full_path
 
@@ -101,7 +101,7 @@ async function openApp() {
 async function openInstallFolder() {
     if (!props.selectedApp) return
 
-    const targetPath = props.selectedApp.type === 'lib'
+    const targetPath = props.selectedApp.type === 'tool'
         ? props.selectedApp.details.paths.install_path
         : props.selectedApp.details.paths.full_path
 
@@ -164,7 +164,7 @@ async function confirmDelete() {
 
     const item = props.selectedApp.type === 'app'
         ? libraryStore.getAppByTimestamp(props.selectedApp.timestamp)
-        : libraryStore.getLibByTimestamp(props.selectedApp.timestamp)
+        : libraryStore.getToolByTimestamp(props.selectedApp.timestamp)
     if (!item) return
 
     await new Promise((resolve, reject) => {
@@ -187,8 +187,8 @@ async function confirmDelete() {
                 icon: 'mir-delete',
             },
             accept: async () => {
-                if (props.selectedApp!.type === 'lib') {
-                    await libraryStore.removeLib(props.selectedApp!.timestamp)
+                if (props.selectedApp!.type === 'tool') {
+                    await libraryStore.removeTool(props.selectedApp!.timestamp)
                 } else {
                     await libraryStore.removeApp(props.selectedApp!.timestamp)
                 }

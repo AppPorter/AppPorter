@@ -18,19 +18,19 @@ const canClose = ref(false)
 const finalExtractPath = ref('')
 
 const installConfig = InstallConfigStore()
-installConfig.page = 'Install_Lib_Progress'
+installConfig.page = 'Install_Tool_Progress'
 const { t } = useI18n()
 
 const fullExtractPath = computed(() => {
-    const base = installConfig.lib_details.paths.install_path
-    const name = installConfig.lib_details.name || 'Extracted-Files'
+    const base = installConfig.tool_details.paths.install_path
+    const name = installConfig.tool_details.name || 'Extracted-Files'
     return base && name ? `${base.replace(/\\$/, '')}\\${name}\\` : base
 })
 
 onMounted(() => {
     currentStatus.value = t('ui.install.progress.preparing')
 
-    listen('lib_install', (event) => {
+    listen('tool_install', (event) => {
         if (event.payload === 0) {
             progressMode.value = 'indeterminate'
             currentStatus.value = t('ui.install.progress.preparing_extract')
@@ -42,21 +42,21 @@ onMounted(() => {
         }
     })
 
-    listen('lib_install_extract', (event) => {
+    listen('tool_install_extract', (event) => {
         progressMode.value = 'determinate'
         extractProgress.value = event.payload as number
         currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
     })
 
-    // Start library install process
+    // Start tool install process
     invoke('execute_command', {
         command: {
-            name: 'LibInstall',
+            name: 'ToolInstall',
             config: {
                 zip_path: installConfig.zip_path,
                 password: installConfig.archive_password,
-                extract_path: installConfig.lib_details.paths.install_path,
-                name: installConfig.lib_details.name,
+                extract_path: installConfig.tool_details.paths.install_path,
+                name: installConfig.tool_details.name,
                 timestamp: installConfig.timestamp,
             },
         },

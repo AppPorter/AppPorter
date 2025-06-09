@@ -24,7 +24,7 @@ defineEmits<{
 const installConfig = InstallConfigStore()
 const { t } = useI18n()
 const settingsStore = SettingsStore()
-const { lib_install } = settingsStore
+const { tool_install } = settingsStore
 
 // UI state management
 const directoryDrawerVisible = ref(false)
@@ -33,15 +33,15 @@ const detailsLoading = ref(false)
 // Load archive content when component is mounted
 onMounted(async () => {
     // Initialize config from settings
-    installConfig.lib_details.paths.parent_install_path = lib_install.install_path
-    installConfig.lib_details.config.add_to_path = lib_install.add_to_path
-    installConfig.lib_details.config.path_directory = ''
+    installConfig.tool_details.paths.parent_install_path = tool_install.install_path
+    installConfig.tool_details.config.add_to_path = tool_install.add_to_path
+    installConfig.tool_details.config.path_directory = ''
 
     // Extract filename from path and remove extension for default name
     if (installConfig.zip_path) {
         const pathParts = installConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
-        installConfig.lib_details.name = filename.replace(/\.[^/.]+$/, '')
+        installConfig.tool_details.name = filename.replace(/\.[^/.]+$/, '')
     }
 })
 
@@ -56,7 +56,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installConfig.lib_details.paths.parent_install_path = String(selected)
+        installConfig.tool_details.paths.parent_install_path = String(selected)
     }
 }
 </script>
@@ -92,18 +92,19 @@ async function select_extract_path() {
                                     {{ t('cls.app.name') }}
                                 </label>
                                 <div class="w-full">
-                                    <InputText v-model="installConfig.lib_details.name" :placeholder="t('cls.app.name')"
-                                        class="h-8 w-full text-sm" :invalid="!installConfig.lib_details.name" />
+                                    <InputText v-model="installConfig.tool_details.name"
+                                        :placeholder="t('cls.app.name')" class="h-8 w-full text-sm"
+                                        :invalid="!installConfig.tool_details.name" />
                                 </div>
                             </div>
 
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex flex-1 gap-2">
-                                        <InputText v-model="installConfig.lib_details.paths.parent_install_path"
+                                        <InputText v-model="installConfig.tool_details.paths.parent_install_path"
                                             :placeholder="t('g.browse')" class="h-8 w-full text-sm" :invalid="pathError"
                                             @input="$emit('update:pathError', false)" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -119,16 +120,17 @@ async function select_extract_path() {
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
-                                                <Checkbox v-model="installConfig.lib_details.config.add_to_path"
+                                                <Checkbox v-model="installConfig.tool_details.config.add_to_path"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
-                                            <div v-if="installConfig.lib_details.config.add_to_path" class="ml-6 mt-1">
+                                            <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
-                                                    <InputText v-model="installConfig.lib_details.config.path_directory"
+                                                    <InputText
+                                                        v-model="installConfig.tool_details.config.path_directory"
                                                         :placeholder="t('ui.select_placeholder.path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
@@ -156,7 +158,7 @@ async function select_extract_path() {
             <div class="h-full overflow-hidden">
                 <DirectorySelector :zip-path="installConfig.zip_path" :details-loading="detailsLoading"
                     @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"
-                    @directory-select="installConfig.lib_details.config.path_directory = $event" />
+                    @directory-select="installConfig.tool_details.config.path_directory = $event" />
             </div>
         </Drawer>
     </div>

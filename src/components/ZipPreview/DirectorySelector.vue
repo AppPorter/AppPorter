@@ -84,7 +84,7 @@ async function handleSelect() {
         if (store.page.includes('App')) {
             store.app_details.config.path_directory = selectedPath.value
         } else {
-            store.lib_details.config.path_directory = selectedPath.value
+            store.tool_details.config.path_directory = selectedPath.value
         }
 
         // Emit selected directory

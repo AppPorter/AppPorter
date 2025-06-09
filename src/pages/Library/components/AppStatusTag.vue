@@ -6,7 +6,7 @@ const { t } = useI18n()
 
 interface AppStatusTagProps {
     item: {
-        type: 'app' | 'lib'
+        type: 'app' | 'tool'
         installed: boolean
         details: {
             validation_status: {
@@ -34,12 +34,12 @@ function getAppStatus(data: AppStatusTagProps['item']) {
         }
     }
 
-    // Handle libs (library type)
-    if (data.type === 'lib') {
+    // Handle tools (tool type)
+    if (data.type === 'tool') {
         return {
             icon: 'mir-folder_copy',
             severity: 'info',
-            value: t('app_list.library'),
+            value: t('app_list.tool'),
         }
     }
 
@@ -63,10 +63,10 @@ function getAppStatus(data: AppStatusTagProps['item']) {
         }
     }
 
-    // For libs, only check file and path existence
-    const isLibValid = validation.file_exists && validation.path_exists
+    // For tools, only check file and path existence
+    const isToolValid = validation.file_exists && validation.path_exists
 
-    if (isLibValid) {
+    if (isToolValid) {
         return {
             icon: 'mir-check',
             value: t('app_list.installed'),

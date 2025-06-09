@@ -8,7 +8,7 @@ import { useConfirm } from 'primevue/useconfirm'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import AppConfig from './App/AppConfig.vue'
-import LibConfig from './Lib/LibConfig.vue'
+import ToolConfig from './Tool/ToolConfig.vue'
 
 const { t } = useI18n()
 const installConfig = InstallConfigStore()
@@ -22,22 +22,22 @@ const executablePathError = ref(false)
 // Mode options for SelectButton
 const modeOptions = [
     { label: t('cls.install.types.app'), value: 'app', icon: 'mir-install_desktop' },
-    { label: t('cls.install.types.lib'), value: 'lib', icon: 'mir-folder_copy' }
+    { label: t('cls.install.types.tool'), value: 'tool', icon: 'mir-folder_copy' }
 ]
 
 // Current mode based on install_config page
 const currentMode = computed({
     get: () => {
-        return installConfig.page === 'Install_App_Config' ? 'app' : 'lib'
+        return installConfig.page === 'Install_App_Config' ? 'app' : 'tool'
     },
     set: (value: string) => {
-        installConfig.page = value === 'app' ? 'Install_App_Config' : 'Install_Lib_Config'
+        installConfig.page = value === 'app' ? 'Install_App_Config' : 'Install_Tool_Config'
     }
 })
 
 onMounted(() => {
     // Set default mode if not already set
-    if (!installConfig.page || (installConfig.page !== 'Install_App_Config' && installConfig.page !== 'Install_Lib_Config')) {
+    if (!installConfig.page || (installConfig.page !== 'Install_App_Config' && installConfig.page !== 'Install_Tool_Config')) {
         installConfig.page = 'Install_App_Config'
     }
 })
@@ -47,12 +47,12 @@ function handleBackClick() {
     goTo('/Install/Preview')
 }
 
-// Handle install process for both app and lib modes
+// Handle install process for both app and tool modes
 async function handleInstallClick() {
     if (currentMode.value === 'app') {
         await handleAppInstall()
     } else {
-        await handleLibInstall()
+        await handleToolInstall()
     }
 }
 
@@ -155,17 +155,17 @@ async function handleAppInstall() {
     }
 }
 
-// Handle library installation
-async function handleLibInstall() {
+// Handle tool installation
+async function handleToolInstall() {
     // Reset validation errors
     pathError.value = false
 
     // Validate required fields
-    if (!installConfig.lib_details.name) {
+    if (!installConfig.tool_details.name) {
         return
     }
 
-    if (!installConfig.lib_details.paths.parent_install_path) {
+    if (!installConfig.tool_details.paths.parent_install_path) {
         pathError.value = true
         return
     }
@@ -174,12 +174,12 @@ async function handleLibInstall() {
         const validatedPath = (await invoke('execute_command', {
             command: {
                 name: 'ValidatePath',
-                path: installConfig.lib_details.paths.parent_install_path,
+                path: installConfig.tool_details.paths.parent_install_path,
             },
         })) as string
 
-        installConfig.lib_details.paths.parent_install_path = validatedPath
-        const fullPath = `${validatedPath}\\${installConfig.lib_details.name || 'Extracted-Files'}`
+        installConfig.tool_details.paths.parent_install_path = validatedPath
+        const fullPath = `${validatedPath}\\${installConfig.tool_details.name || 'Extracted-Files'}`
 
         try {
             await invoke('execute_command', {
@@ -251,7 +251,7 @@ async function handleLibInstall() {
         <div class="flex-1 overflow-hidden">
             <AppConfig v-if="currentMode === 'app'" :name-error="nameError" :executable-path-error="executablePathError"
                 :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
-            <LibConfig v-else :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
+            <ToolConfig v-else :path-error="pathError" @update:path-error="(val) => (pathError = val)" />
         </div>
 
         <!-- Bottom bar with mode selector and buttons -->

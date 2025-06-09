@@ -12,7 +12,7 @@ const confirm = useConfirm()
 interface AppListValidationProps {
     app?: {
         timestamp: number
-        type: 'app' | 'lib'
+        type: 'app' | 'tool'
         installed: boolean
         details: {
             info: {
@@ -40,8 +40,8 @@ function handleStatusClick(app) {
     if (app.installed) {
         appToValidate.value = app
 
-        // Skip validation for libs as they don't need registry validation
-        if (app.type === 'lib') {
+        // Skip validation for tools as they don't need registry validation
+        if (app.type === 'tool') {
             return;
         }
 

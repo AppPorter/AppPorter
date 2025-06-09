@@ -1,8 +1,8 @@
 import Home from '@/pages/Home.vue'
 import AppProgress from '@/pages/Install/App/AppProgress.vue'
 import Config from '@/pages/Install/Config.vue'
-import LibProgress from '@/pages/Install/Lib/LibProgress.vue'
 import Preview from '@/pages/Install/Preview.vue'
+import ToolProgress from '@/pages/Install/Tool/LibProgress.vue'
 import Library from '@/pages/Library/Index.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
@@ -44,8 +44,8 @@ const routes = [
     },
   },
   {
-    path: '/Install/Lib/Progress',
-    component: LibProgress,
+    path: '/Install/Tool/Progress',
+    component: ToolProgress,
     meta: {
       icon: 'mir-pending_actions',
     },
@@ -98,11 +98,11 @@ export function setupRouterGuards(router: Router) {
         case 'Install_App_Progress':
           path = '/Install/App/Progress'
           break
-        case 'Install_Lib_Config':
-          path = '/Install/Config'
+        case 'Install_Tool_Config':
+          path = '/Install/Tool/Config'
           break
-        case 'Install_Lib_Progress':
-          path = '/Install/Lib/Progress'
+        case 'Install_Tool_Progress':
+          path = '/Install/Tool/Progress'
           break
       }
       return { path }
