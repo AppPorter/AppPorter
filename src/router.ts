@@ -1,4 +1,4 @@
-import AppList from '@/pages/AppList.vue'
+import AppList from '@/pages/AppList/index.vue'
 import Home from '@/pages/Home.vue'
 import AppProgress from '@/pages/Install/App/AppProgress.vue'
 import Config from '@/pages/Install/Config.vue'
