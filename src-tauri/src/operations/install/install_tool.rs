@@ -1,6 +1,6 @@
 use crate::{
     configs::{
-        app_list::{AppList, Tool, ToolConfig, ToolDetails, ToolPaths, ToolValidationStatus},
+        library::{Library, Tool, ToolConfig, ToolDetails, ToolPaths, ToolValidationStatus},
         ConfigFile,
     },
     operations::extract_archive_files,
@@ -50,7 +50,7 @@ pub async fn install_tool(
     .await?;
 
     // Add to app list
-    let mut app_list = AppList::read().await?;
+    let mut app_list = Library::read().await?;
     let timestamp = if config.timestamp != 0 {
         config.timestamp
     } else {

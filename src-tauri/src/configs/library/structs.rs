@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct AppList {
+pub struct Library {
     pub apps: Vec<App>,
     pub tools: Vec<Tool>,
 }

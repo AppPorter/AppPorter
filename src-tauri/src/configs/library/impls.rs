@@ -1,20 +1,20 @@
-use super::{AppList, AppValidationStatus, ToolValidationStatus};
-use crate::configs::app_list::{AppBasicInformation, AppConfig, AppPaths};
+use super::{AppValidationStatus, Library, ToolValidationStatus};
+use crate::configs::library::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
-use crate::configs::{app_list::AppDetails, settings::Settings};
+use crate::configs::{library::AppDetails, settings::Settings};
 use base64::{engine::general_purpose::STANDARD, Engine};
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[async_trait::async_trait]
-impl ConfigFile for AppList {
+impl ConfigFile for Library {
     fn get_filename() -> &'static str {
-        "AppList.json"
+        "Library.json"
     }
 }
 
-impl AppList {
+impl Library {
     pub fn has_link(&self, url: &str) -> bool {
         self.apps.iter().any(|app| app.url == url && app.installed)
             || self
@@ -356,13 +356,13 @@ impl AppList {
     }
 }
 
-pub async fn load_app_list() -> Result<AppList, Box<dyn Error + Send + Sync>> {
-    let mut app_list = AppList::read().await?;
-    app_list.sync_from_registry().await?;
-    app_list.remove_duplicates();
-    app_list.validate_installs().await?;
+pub async fn load_library() -> Result<Library, Box<dyn Error + Send + Sync>> {
+    let mut library = Library::read().await?;
+    library.sync_from_registry().await?;
+    library.remove_duplicates();
+    library.validate_installs().await?;
 
-    app_list.save().await?;
+    library.save().await?;
 
-    Ok(app_list)
+    Ok(library)
 }

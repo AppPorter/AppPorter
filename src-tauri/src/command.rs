@@ -18,9 +18,9 @@ pub enum Command {
     SaveSettings {
         settings: Settings,
     },
-    LoadAppList,
-    SaveAppList {
-        app_list: AppList,
+    LoadLibrary,
+    SaveLibrary {
+        library: Library,
     },
 
     // Core
@@ -105,8 +105,8 @@ impl Command {
             SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
-            LoadAppList => Self::ser(load_app_list().await?),
-            SaveAppList { app_list } => Self::ser(app_list.save().await?),
+            LoadLibrary => Self::ser(load_library().await?),
+            SaveLibrary { library } => Self::ser(library.save().await?),
 
             // Core
             Cli => Self::ser(cli(app).await?),

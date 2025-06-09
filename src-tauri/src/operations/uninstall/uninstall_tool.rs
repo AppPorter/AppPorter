@@ -1,4 +1,4 @@
-use crate::configs::app_list::AppList;
+use crate::configs::library::Library;
 use crate::configs::ConfigFile;
 use crate::operations::uninstall::{remove_from_path, update_tool_list_after_uninstall};
 use std::error::Error;
@@ -13,7 +13,7 @@ pub async fn uninstall_tool(
     app.emit("uninstall_tool", 0)?;
 
     // Get tool configuration from app list
-    let app_list = AppList::read().await?;
+    let app_list = Library::read().await?;
     let tool_config = app_list
         .tools
         .iter()
