@@ -40,6 +40,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'close'): void
   (e: 'loading', value: boolean): void
+  (e: 'executable-selected'): void
+  (e: 'no-executable'): void
 }>()
 
 // State
@@ -132,11 +134,15 @@ async function handleSelect() {
     store.app_details.info.icon = details.icon_data_url
     store.app_details.config.archive_exe_path = selectedPath.value
 
-    emit('close')
+    emit('executable-selected')
   } finally {
     isSelecting.value = false
     emit('loading', false)
   }
+}
+
+function handleNoExecutable() {
+  emit('no-executable')
 }
 </script>
 
@@ -204,10 +210,17 @@ async function handleSelect() {
             : 'text-slate-600 dark:text-slate-400',
         ]">{{ selectedPath || t('ui.executable_selector.no_selection') }}</span>
       </div>
-      <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
-      <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">
-        {{ t('g.select') }}
-      </Button>
+      <div class="flex gap-2">
+        <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
+        <template v-else>
+          <Button severity="secondary" outlined @click="handleNoExecutable">
+            {{ t('ui.executable_selector.no_executable') }}
+          </Button>
+          <Button severity="primary" :disabled="!selectedPath" @click="handleSelect">
+            {{ t('g.select') }}
+          </Button>
+        </template>
+      </div>
     </div>
   </div>
 </template>

@@ -14,7 +14,16 @@
         "exe": "仅.exe",
         "executable": "仅可执行文件",
         "all": "所有"
-      }
+      },
+      "filter_description": {
+        "exe": "仅显示 .exe 可执行文件",
+        "executable": "显示所有可执行文件类型",
+        "all": "显示所有文件和文件夹"
+      },
+      "selected": "已选择",
+      "select_prompt": "请选择可执行文件",
+      "no_selection": "未选择",
+      "no_executable": "没有主可执行文件"
     },
     "zip_preview": {
       "no_files": "没有文件"
@@ -42,7 +51,7 @@
     },
     "preview": {
       "install_as_app": "安装软件",
-      "install_as_tool": "安装工具"
+      "install_as_library": "安装工具"
     },
     "install": {
       "confirm_install": "确认安装",
@@ -65,6 +74,7 @@
       },
       "executable_path": "可执行文件路径",
       "select_executable": "选择可执行文件",
+      "executable_selected": "已选择可执行文件",
       "config": {
         "install_options": "安装选项"
       },

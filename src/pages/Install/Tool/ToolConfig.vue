@@ -1,30 +1,30 @@
 <script setup lang="ts">
 import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
+import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
+import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
+import { useConfirm } from 'primevue/useconfirm'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-// Props
-defineProps<{
-    pathError: boolean
-}>()
-
-// Emits
-defineEmits<{
-    'update:pathError': [value: boolean]
-}>()
 
 const installConfig = InstallConfigStore()
 const { t } = useI18n()
 const settingsStore = SettingsStore()
 const { tool_install } = settingsStore
+const confirm = useConfirm()
+
+// Set the install config page
+installConfig.page = 'Install_Tool_Config'
+
+// Validation states
+const pathError = ref(false)
 
 // UI state management
 const directoryDrawerVisible = ref(false)
@@ -49,6 +49,11 @@ function handleDetailsLoading(loading: boolean) {
     detailsLoading.value = loading
 }
 
+// Handle back button click
+function handleBackClick() {
+    goTo('/Install/Preview')
+}
+
 // Select extraction directory using file dialog
 async function select_extract_path() {
     const selected = await open({
@@ -57,6 +62,84 @@ async function select_extract_path() {
     })
     if (selected) {
         installConfig.tool_details.paths.parent_install_path = String(selected)
+        pathError.value = false
+    }
+}
+
+// Handle install process
+async function handleInstallClick() {
+    // Reset validation errors
+    pathError.value = false
+
+    // Validate required fields
+    if (!installConfig.tool_details.name) {
+        return
+    }
+
+    if (!installConfig.tool_details.paths.parent_install_path) {
+        pathError.value = true
+        return
+    }
+
+    try {
+        const validatedPath = (await invoke('execute_command', {
+            command: {
+                name: 'ValidatePath',
+                path: installConfig.tool_details.paths.parent_install_path,
+            },
+        })) as string
+
+        installConfig.tool_details.paths.parent_install_path = validatedPath
+        const fullPath = `${validatedPath}\\${installConfig.tool_details.name || 'Extracted-Files'}`
+
+        try {
+            await invoke('execute_command', {
+                command: {
+                    name: 'CheckPathEmpty',
+                    path: fullPath,
+                },
+            })
+
+            await new Promise((resolve, reject) => {
+                confirm.require({
+                    message: t('ui.install.confirm_install'),
+                    group: 'dialog',
+                    icon: 'mir-folder_copy',
+                    header: t('ui.install.start_install'),
+                    rejectProps: {
+                        label: t('g.cancel'),
+                        severity: 'secondary',
+                        outlined: true,
+                        icon: 'mir-close',
+                    },
+                    acceptProps: {
+                        label: t('cls.install.self'),
+                        icon: 'mir-navigate_next',
+                    },
+                    accept: () => resolve(true),
+                    reject: () => reject(),
+                })
+            })
+        } catch (error) {
+            if (error === 'Install directory is not empty') {
+                await new Promise((resolve, reject) => {
+                    confirm.require({
+                        message: t('ui.valid.directory_not_empty'),
+                        group: 'dialog',
+                        icon: 'mir-warning',
+                        header: t('g.warning'),
+                        reject: () => reject(),
+                    })
+                })
+            } else {
+                pathError.value = true
+                return
+            }
+        }
+
+        goTo('/Install/Tool/Progress')
+    } catch {
+        pathError.value = true
     }
 }
 </script>
@@ -101,12 +184,12 @@ async function select_extract_path() {
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
-                                    <div class="flex flex-1 gap-2">
+                                    <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
                                             :placeholder="t('g.browse')" class="h-8 w-full text-sm" :invalid="pathError"
-                                            @input="$emit('update:pathError', false)" />
+                                            @input="pathError = false" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('g.browse')" />
                                     </div>
@@ -124,7 +207,7 @@ async function select_extract_path() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
@@ -150,6 +233,15 @@ async function select_extract_path() {
             <!-- Button container -->
             <div class="mt-4 flex justify-end px-1 pb-2">
             </div>
+        </div>
+
+        <!-- Bottom bar with buttons -->
+        <div class="flex items-center justify-between border-t bg-surface-0 px-4 py-3">
+            <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
+                icon="mir-arrow_back" :label="t('g.back')" outlined />
+
+            <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleInstallClick"
+                icon="mir-folder_copy" :label="t('cls.install.self')" />
         </div>
 
         <!-- Directory Selector Drawer -->

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ZipPreview from '@/components/ZipPreview/ZipPreview.vue'
+import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
@@ -14,10 +14,10 @@ const installConfig = InstallConfigStore()
 installConfig.page = 'Preview'
 const toast = useToast()
 const { t } = useI18n()
-const showErrorDialog = ref(false)
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
 const passwordError = ref(false)
+const detailsLoading = ref(false)
 
 // Check if Subscribe button should be shown  
 const showSubscribeButton = computed(() => !!installConfig.url)
@@ -28,14 +28,18 @@ function handleSubscribe() {
     console.log('Subscribe clicked')
 }
 
-function handleInstallAsApp() {
-    // Navigate to app installation
-    goTo('/Install/Config')
+function handleExecutableSelected() {
+    // User selected an executable - go to app config
+    goTo('/Install/App/Config')
 }
 
-function handleInstallAsLibrary() {
-    // Navigate to library installation
-    goTo('/Install/Config')
+function handleNoExecutable() {
+    // User says no executable files - go to tool config
+    goTo('/Install/Tool/Config')
+}
+
+function handleDetailsLoading(loading: boolean) {
+    detailsLoading.value = loading
 }
 
 // Load archive content when component is mounted
@@ -67,11 +71,6 @@ onMounted(async () => {
 watch(archivePassword, () => {
     passwordError.value = false
 })
-
-async function handleDialogClose() {
-    showErrorDialog.value = false
-    goTo('/Home')
-}
 
 async function handlePasswordSubmit() {
     if (!archivePassword.value) {
@@ -111,36 +110,12 @@ async function GetArchiveContent(password: string) {
     })
 
     const content = JSON.parse(result as string)
-    const executableExtensions = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
-    const hasExecutable = content.some((path) =>
-        executableExtensions.some((ext) => path.toLowerCase().endsWith(ext))
-    )
-
-    if (!hasExecutable) {
-        showErrorDialog.value = true
-        return
-    }
-
     installConfig.archive_content = content
 }
 </script>
 
 <template>
     <div class="flex size-full flex-col overflow-hidden">
-        <!-- Error Dialog -->
-        <Dialog v-model:visible="showErrorDialog" :modal="true" :closable="false"
-            :header="t('ui.valid.invalid_archive')" class="w-[30rem]">
-            <div class="flex items-start gap-3">
-                <span class="mir-error text-3xl text-red-500"></span>
-                <p class="text-sm">{{ t('ui.valid.executable_missing') }}</p>
-            </div>
-            <template #footer>
-                <div class="flex justify-end">
-                    <Button @click="handleDialogClose" :label="t('g.ok')" icon="mir-close" />
-                </div>
-            </template>
-        </Dialog>
-
         <!-- Password Dialog -->
         <Dialog v-model:visible="showPasswordDialog" :modal="true" :closable="false"
             :header="t('ui.archive.password_required')" class="w-[30rem]">
@@ -171,10 +146,11 @@ async function GetArchiveContent(password: string) {
                 <p class="text-sm text-gray-600">{{ installConfig.url || installConfig.zip_path }}</p>
             </div>
 
-            <!-- Zip preview component -->
+            <!-- ExecutableSelector embedded directly -->
             <div class="min-h-0 flex-1">
-                <ZipPreview v-if="installConfig.zip_path && installConfig.archive_content"
-                    :zip-path="installConfig.zip_path" />
+                <ExecutableSelector v-if="installConfig.zip_path && installConfig.archive_content"
+                    :zip-path="installConfig.zip_path" :details-loading="detailsLoading" @loading="handleDetailsLoading"
+                    @executable-selected="handleExecutableSelected" @no-executable="handleNoExecutable" />
             </div>
 
             <!-- Action buttons -->
@@ -185,10 +161,6 @@ async function GetArchiveContent(password: string) {
                 <div class="flex gap-3">
                     <Button v-if="showSubscribeButton" @click="handleSubscribe" :label="t('cls.subscribe.self')"
                         icon="mir-rss_feed" class="px-6" />
-                    <Button @click="handleInstallAsApp" :label="t('ui.preview.install_as_app')" icon="mir-apps"
-                        class="px-6" />
-                    <Button @click="handleInstallAsLibrary" :label="t('ui.preview.install_as_library')"
-                        icon="mir-library_books" severity="secondary" class="px-6" />
                 </div>
             </div>
         </div>

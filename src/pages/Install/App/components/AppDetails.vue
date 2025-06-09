@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { InstallConfigStore } from '@/stores/install_config'
-import { storeToRefs } from 'pinia'
-import { ref, toRef } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { InstallConfigStore } from '@/stores/install_config';
+import { storeToRefs } from 'pinia';
+import { toRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
   nameError: boolean
   detailsLoading: boolean
   detailsLoadingProgress: number
   progressMode: 'indeterminate' | 'determinate'
-  executablePathError?: boolean
 }>()
 
 const installConfig = InstallConfigStore()
@@ -21,22 +19,11 @@ const name = toRef(app_details.value.info, 'name')
 const icon = toRef(app_details.value.info, 'icon')
 const publisher = toRef(app_details.value.info, 'publisher')
 const version = toRef(app_details.value.info, 'version')
-const executable_path = toRef(app_details.value.config, 'archive_exe_path')
 
 const { t } = useI18n()
-const detailsLoading = ref(false)
-const drawerVisible = ref(false)
 
 function clearIcon() {
   icon.value = ''
-}
-
-function closeDrawer() {
-  drawerVisible.value = false
-}
-
-function handleDetailsLoading(loading: boolean) {
-  detailsLoading.value = loading
 }
 </script>
 
@@ -57,15 +44,12 @@ function handleDetailsLoading(loading: boolean) {
       </div>
     </template>
     <div class="space-y-2 p-2">
+      <!-- Show selected executable path (read-only) -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('ui.install.executable_path') }}</label>
         <div class="w-full">
-          <div class="flex flex-1 gap-2">
-            <InputText v-model="executable_path" :placeholder="t('ui.install.select_executable')"
-              class="h-8 w-full text-sm" :invalid="executablePathError" />
-            <Button class="h-8 w-36" severity="secondary" @click="drawerVisible = true" icon="mir-folder_open"
-              :label="t('g.browse')" />
-          </div>
+          <InputText :model-value="app_details.config.archive_exe_path"
+            :placeholder="t('ui.install.executable_selected')" class="h-8 w-full text-sm" readonly />
         </div>
       </div>
     </div>
@@ -132,11 +116,4 @@ function handleDetailsLoading(loading: boolean) {
       </h3>
     </div>
   </Panel>
-  <Drawer v-model:visible="drawerVisible" :header="t('ui.install.select_executable')" position="bottom"
-    :style="{ height: '95vh' }" class="rounded-lg">
-    <div class="h-full overflow-hidden">
-      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" @close="closeDrawer"
-        @loading="handleDetailsLoading" />
-    </div>
-  </Drawer>
 </template>

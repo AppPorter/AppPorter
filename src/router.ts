@@ -1,7 +1,8 @@
 import Home from '@/pages/Home.vue'
+import AppConfig from '@/pages/Install/App/AppConfig.vue'
 import AppProgress from '@/pages/Install/App/AppProgress.vue'
-import Config from '@/pages/Install/Config.vue'
 import Preview from '@/pages/Install/Preview.vue'
+import ToolConfig from '@/pages/Install/Tool/ToolConfig.vue'
 import ToolProgress from '@/pages/Install/Tool/ToolProgress.vue'
 import Library from '@/pages/Library/Index.vue'
 import Settings from '@/pages/Settings.vue'
@@ -30,8 +31,15 @@ const routes = [
     },
   },
   {
-    path: '/Install/Config',
-    component: Config,
+    path: '/Install/App/Config',
+    component: AppConfig,
+    meta: {
+      icon: 'mir-settings_applications',
+    },
+  },
+  {
+    path: '/Install/Tool/Config',
+    component: ToolConfig,
     meta: {
       icon: 'mir-settings_applications',
     },
@@ -93,7 +101,7 @@ export function setupRouterGuards(router: Router) {
           path = '/Install/Preview'
           break
         case 'Install_App_Config':
-          path = '/Install/Config'
+          path = '/Install/App/Config'
           break
         case 'Install_App_Progress':
           path = '/Install/App/Progress'
