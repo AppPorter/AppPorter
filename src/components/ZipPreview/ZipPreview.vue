@@ -29,6 +29,7 @@ const props = defineProps<{
   zipPath: string
   password?: string
   filterFunction?: (node: FileNode) => boolean
+  selectedPath?: string
 }>()
 
 const emits = defineEmits<{
@@ -187,8 +188,8 @@ onMounted(() => {
         <template v-for="node in flattenedTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
-              'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-              'cursor-pointer',
+              'my-0.5 flex cursor-pointer items-center rounded-md border px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+              props.selectedPath === node.path ? 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' : 'border-transparent',
             ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
               <!-- Expand/collapse icon for directories -->
               <span v-if="node.type === 'directory' && node.children && node.children.length > 0" :class="[

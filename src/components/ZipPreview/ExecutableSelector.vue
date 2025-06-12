@@ -175,7 +175,8 @@ function handleNoExecutable() {
 
     <!-- Main content area with fixed height and proper overflow handling -->
     <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-      <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" @node-click="handleNodeSelect" />
+      <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" :selected-path="selectedPath"
+        @node-click="handleNodeSelect" />
     </div>
 
     <!-- Selected file and button container -->
