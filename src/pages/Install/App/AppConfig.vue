@@ -27,7 +27,7 @@ const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 
 // Handle back button click
 function handleBackClick() {
-  goTo('/Install/Preview')
+  goTo('/Home')
 }
 
 // Handle install process

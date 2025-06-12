@@ -51,7 +51,8 @@
     },
     "preview": {
       "install_as_app": "安装软件",
-      "install_as_library": "安装工具"
+      "install_as_library": "安装工具",
+      "header": "请选择可执行文件"
     },
     "install": {
       "confirm_install": "确认安装",

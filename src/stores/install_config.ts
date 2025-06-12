@@ -3,7 +3,6 @@ import type { AppDetails, ToolDetails } from './library'
 
 type Pages =
   | 'Home'
-  | 'Preview'
   | 'Install_App_Config'
   | 'Install_App_Progress'
   | 'Install_Tool_Config'
@@ -18,6 +17,7 @@ interface InstallConfig {
   archive_password: string
   app_details: AppDetails
   tool_details: ToolDetails
+  showPreviewDrawer: boolean
 }
 
 export const InstallConfigStore = defineStore('install_config', {
@@ -28,6 +28,7 @@ export const InstallConfigStore = defineStore('install_config', {
     timestamp: 0,
     url: '',
     archive_password: '',
+    showPreviewDrawer: false,
     app_details: {
       info: {
         name: '',

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
@@ -55,8 +54,8 @@ async function selectZipFile() {
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="goTo('/Install/Preview')" :disabled="!zip_path" severity="primary" class="h-9 px-6"
-            icon="mir-install_desktop" :label="t('g.continue')" />
+          <Button @click="installConfig.showPreviewDrawer = true" :disabled="!zip_path" severity="primary"
+            class="h-9 px-6" icon="mir-install_desktop" :label="t('g.continue')" />
         </div>
       </div>
     </Panel>

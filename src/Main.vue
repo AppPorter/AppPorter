@@ -5,6 +5,7 @@ import ContextMenuManager from '@/components/Core/ContextMenuManager.vue'
 import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import Listener from '@/components/Core/Listener.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
+import PreviewDrawer from '@/components/Core/PreviewDrawer.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import { exit } from '@tauri-apps/plugin-process'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -102,5 +103,8 @@ onBeforeMount(() => {
 
     <!-- Context Menu -->
     <ContextMenuManager ref="contextMenuManager" />
+
+    <!-- Preview Drawer -->
+    <PreviewDrawer />
   </div>
 </template>
