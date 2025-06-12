@@ -9,27 +9,7 @@ import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
 
 const store = InstallConfigStore()
-
 const { t } = useI18n()
-
-// Constants
-const FILTER_MODES = {
-  exe: {
-    value: 'exe',
-    label: t('ui.executable_selector.filter.exe'),
-    icon: 'mir-terminal',
-  },
-  executable: {
-    value: 'executable',
-    label: t('ui.executable_selector.filter.executable'),
-    icon: 'mir-code',
-  },
-  all: {
-    value: 'all',
-    label: t('ui.executable_selector.filter.all'),
-    icon: 'mir-description',
-  },
-}
 
 // Props
 const props = defineProps<{
@@ -38,7 +18,6 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'close'): void
   (e: 'loading', value: boolean): void
   (e: 'executable-selected'): void
   (e: 'no-executable'): void
@@ -46,11 +25,10 @@ const emit = defineEmits<{
 
 // State
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
-const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
 const selectedPath = ref('')
 const isSelecting = ref(false)
 
-// Define the FileNode interface explicitly
+// File node interface
 interface FileNode {
   path?: string
   name: string
@@ -59,6 +37,25 @@ interface FileNode {
 
 // Executable file extensions
 const EXECUTABLE_EXTENSIONS = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+
+// Filter modes
+const FILTER_MODES = [
+  {
+    value: 'exe',
+    label: t('ui.executable_selector.filter.exe'),
+    icon: 'mir-terminal',
+  },
+  {
+    value: 'executable',
+    label: t('ui.executable_selector.filter.executable'),
+    icon: 'mir-code',
+  },
+  {
+    value: 'all',
+    label: t('ui.executable_selector.filter.all'),
+    icon: 'mir-description',
+  },
+]
 
 // File filter function based on selected filter mode
 const fileFilter = computed(() => {
@@ -178,8 +175,7 @@ function handleNoExecutable() {
 
     <!-- Main content area with fixed height and proper overflow handling -->
     <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-      <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
-        @node-click="handleNodeSelect" />
+      <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" @node-click="handleNodeSelect" />
     </div>
 
     <!-- Selected file and button container -->

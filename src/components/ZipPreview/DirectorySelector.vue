@@ -11,20 +11,6 @@ const store = InstallConfigStore()
 
 const { t } = useI18n()
 
-// Constants
-const FILTER_MODES = {
-    directory: {
-        value: 'directory',
-        label: t('ui.directory_selector.filter.directory'),
-        icon: 'mir-folder',
-    },
-    all: {
-        value: 'all',
-        label: t('ui.directory_selector.filter.all'),
-        icon: 'mir-description',
-    },
-}
-
 // Props
 defineProps<{
     zipPath: string
@@ -39,7 +25,6 @@ const emit = defineEmits<{
 
 // State
 const filterMode = ref<'directory' | 'all'>('directory')
-const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
 const selectedPath = ref('')
 const isSelecting = ref(false)
 
@@ -49,6 +34,20 @@ interface FileNode {
     name: string
     type: string
 }
+
+// Filter modes
+const FILTER_MODES = [
+    {
+        value: 'directory',
+        label: t('ui.directory_selector.filter.directory'),
+        icon: 'mir-folder',
+    },
+    {
+        value: 'all',
+        label: t('ui.directory_selector.filter.all'),
+        icon: 'mir-description',
+    },
+]
 
 // File filter function based on selected filter mode
 const fileFilter = computed(() => {
@@ -130,8 +129,7 @@ async function handleSelect() {
 
         <!-- Main content area with fixed height and proper overflow handling -->
         <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-            <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
-                @node-click="handleNodeSelect" />
+            <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" @node-click="handleNodeSelect" />
         </div>
 
         <!-- Selected directory and button container -->

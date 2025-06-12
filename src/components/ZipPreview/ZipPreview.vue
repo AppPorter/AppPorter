@@ -4,9 +4,6 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Types and interfaces
-type FileStatus = 'ready' | 'loading' | 'error'
-type NodeType = 'file' | 'directory'
-
 interface FileTreeNode {
   key: string
   name: string
@@ -21,7 +18,7 @@ interface FileNode {
   key: string
   name: string
   path: string
-  type: NodeType
+  type: 'file' | 'directory'
   children?: FileNode[]
   expanded?: boolean
   level: number
@@ -35,15 +32,13 @@ const props = defineProps<{
 }>()
 
 const emits = defineEmits<{
-  (event: 'loading', value: boolean): void
-  (event: 'progress', value: number): void
   (event: 'node-click', node: FileNode): void
 }>()
 
 const { t } = useI18n()
 
 // State
-const status = ref<FileStatus>('ready')
+const status = ref<'ready' | 'loading' | 'error'>('ready')
 const fileTreeData = ref<FileTreeNode[]>([])
 const error = ref<string>('')
 
@@ -52,7 +47,6 @@ async function loadZipContent() {
   if (!props.zipPath) return
 
   status.value = 'loading'
-  emits('loading', true)
   error.value = ''
 
   try {
@@ -71,8 +65,6 @@ async function loadZipContent() {
     error.value = err instanceof Error ? err.message : String(err)
     status.value = 'error'
     fileTreeData.value = []
-  } finally {
-    emits('loading', false)
   }
 }
 
@@ -182,12 +174,6 @@ onMounted(() => {
   if (props.zipPath) {
     loadZipContent()
   }
-})
-
-// Expose component interface
-defineExpose({
-  toggleNode: handleToggleNode,
-  loadZipContent
 })
 </script>
 
