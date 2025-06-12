@@ -41,19 +41,12 @@ function clearIcon() {
           {{ t('ui.install.selected_file') }}:
           <span class="break-all font-medium">{{ zip_path }}</span>
         </p>
+        <p class="ml-6 mt-0.5 text-xs">
+          {{ t('ui.install.executable_path') }}:
+          <span class="break-all font-medium">{{ app_details.config.archive_exe_path }}</span>
+        </p>
       </div>
     </template>
-    <div class="space-y-2 p-2">
-      <!-- Show selected executable path (read-only) -->
-      <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('ui.install.executable_path') }}</label>
-        <div class="w-full">
-          <InputText :model-value="app_details.config.archive_exe_path"
-            :placeholder="t('ui.install.executable_selected')" class="h-8 w-full text-sm" readonly />
-        </div>
-      </div>
-    </div>
-    <Divider />
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">

@@ -213,7 +213,7 @@ function handleNoExecutable() {
       <div class="flex gap-2">
         <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
         <template v-else>
-          <Button severity="secondary" outlined @click="handleNoExecutable">
+          <Button severity="secondary" @click="handleNoExecutable">
             {{ t('ui.executable_selector.no_executable') }}
           </Button>
           <Button severity="primary" :disabled="!selectedPath" @click="handleSelect">
