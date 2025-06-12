@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
+import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
@@ -40,7 +40,6 @@ const install_path = toRef(app_details.value.paths, 'parent_install_path')
 
 // UI state
 const directoryDrawerVisible = ref(false)
-const detailsLoading = ref(false)
 
 // Optimized formatted app path with null safety
 const formatted_app_path = computed(() => {
@@ -89,10 +88,6 @@ function handleInstallModeChange(event: Event) {
   const checked = (event.target as HTMLInputElement).checked
   current_user_only.value = checked
   updateConfig(checked)
-}
-
-function handleDetailsLoading(loading: boolean) {
-  detailsLoading.value = loading
 }
 </script>
 
@@ -151,7 +146,7 @@ function handleDetailsLoading(loading: boolean) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
@@ -179,11 +174,6 @@ function handleDetailsLoading(loading: boolean) {
   </Panel>
 
   <!-- Directory Selector Drawer -->
-  <Drawer v-model:visible="directoryDrawerVisible" :header="t('ui.install.select_path_directory')" position="bottom"
-    :style="{ height: '95vh' }" class="rounded-lg">
-    <div class="h-full overflow-hidden">
-      <DirectorySelector :zip-path="zip_path" :details-loading="detailsLoading" @close="directoryDrawerVisible = false"
-        @loading="handleDetailsLoading" @directory-select="path_directory = $event" />
-    </div>
-  </Drawer>
+  <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="zip_path"
+    @directory-select="path_directory = $event" />
 </template>

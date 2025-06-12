@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
+import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
@@ -7,7 +7,6 @@ import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
-import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
@@ -28,7 +27,6 @@ const pathError = ref(false)
 
 // UI state management
 const directoryDrawerVisible = ref(false)
-const detailsLoading = ref(false)
 
 // Load archive content when component is mounted
 onMounted(async () => {
@@ -44,10 +42,6 @@ onMounted(async () => {
         installConfig.tool_details.name = filename.replace(/\.[^/.]+$/, '')
     }
 })
-
-function handleDetailsLoading(loading: boolean) {
-    detailsLoading.value = loading
-}
 
 // Handle back button click
 function handleBackClick() {
@@ -184,7 +178,7 @@ async function handleInstallClick() {
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -207,7 +201,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
@@ -245,13 +239,7 @@ async function handleInstallClick() {
         </div>
 
         <!-- Directory Selector Drawer -->
-        <Drawer v-model:visible="directoryDrawerVisible" :header="t('ui.install.select_path_directory')"
-            position="bottom" :style="{ height: '95vh' }" class="rounded-lg">
-            <div class="h-full overflow-hidden">
-                <DirectorySelector :zip-path="installConfig.zip_path" :details-loading="detailsLoading"
-                    @close="directoryDrawerVisible = false" @loading="handleDetailsLoading"
-                    @directory-select="installConfig.tool_details.config.path_directory = $event" />
-            </div>
-        </Drawer>
+        <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="installConfig.zip_path"
+            @directory-select="installConfig.tool_details.config.path_directory = $event" />
     </div>
 </template>
