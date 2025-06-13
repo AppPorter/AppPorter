@@ -159,7 +159,10 @@ function handleSelectNode(node: FileNode) {
 function flattenTree(nodes: FileNode[], level = 0): FileNode[] {
   const result: FileNode[] = []
 
-  for (const node of nodes) {
+  // Sort nodes at current level
+  const sortedNodes = sortNodes([...nodes])
+
+  for (const node of sortedNodes) {
     result.push({ ...node, level })
 
     if (node.type === 'directory' && node.expanded && node.children) {
@@ -168,6 +171,33 @@ function flattenTree(nodes: FileNode[], level = 0): FileNode[] {
   }
 
   return result
+}
+
+// Sort nodes based on priority: directories first, then executable files, then other files
+function sortNodes(nodes: FileNode[]): FileNode[] {
+  const executableExtensions = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+
+  return nodes.sort((a, b) => {
+    // Directories first
+    if (a.type === 'directory' && b.type !== 'directory') return -1
+    if (a.type !== 'directory' && b.type === 'directory') return 1
+
+    // If both are directories, sort alphabetically
+    if (a.type === 'directory' && b.type === 'directory') {
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+    }
+
+    // If both are files, check for executable extensions
+    const aIsExecutable = executableExtensions.some(ext => a.name.toLowerCase().endsWith(ext))
+    const bIsExecutable = executableExtensions.some(ext => b.name.toLowerCase().endsWith(ext))
+
+    // Executable files come before other files
+    if (aIsExecutable && !bIsExecutable) return -1
+    if (!aIsExecutable && bIsExecutable) return 1
+
+    // If both are executable or both are non-executable, sort alphabetically
+    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+  })
 }
 
 // Get flattened tree for rendering
