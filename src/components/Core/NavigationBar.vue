@@ -14,7 +14,7 @@ const leftMenuItems = [
     label: t('cls.install.self'),
     icon: 'mir-install_desktop',
     command: () => goTo('/Install'),
-    paths: ['/Home', '/Install/Preview', '/Install/Config', '/Install/App/Progress', '/Install/Tool/Progress'],
+    paths: ['/Home', '/Install/App/Config', '/Install/Tool/Config', '/Install/App/Progress', '/Install/Tool/Progress'],
   },
   {
     label: t('cls.library.self'),

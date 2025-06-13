@@ -92,11 +92,11 @@ export function setupRouterGuards(router: Router) {
         case 'Install_App_Config':
           path = '/Install/App/Config'
           break
-        case 'Install_App_Progress':
-          path = '/Install/App/Progress'
-          break
         case 'Install_Tool_Config':
           path = '/Install/Tool/Config'
+          break
+        case 'Install_App_Progress':
+          path = '/Install/App/Progress'
           break
         case 'Install_Tool_Progress':
           path = '/Install/Tool/Progress'
