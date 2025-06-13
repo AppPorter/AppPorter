@@ -21,20 +21,20 @@ const detailsLoading = ref(false)
 
 // Computed properties
 const drawerVisible = computed({
-    get: () => installConfig.showPreviewDrawer,
+    get: () => installConfig.show_preview_drawer,
     set: (value: boolean) => {
-        installConfig.showPreviewDrawer = value
+        installConfig.show_preview_drawer = value
     }
 })
 
 // Handle button actions
 function handleExecutableSelected() {
-    installConfig.showPreviewDrawer = false
+    installConfig.show_preview_drawer = false
     goTo('/Install/App/Config')
 }
 
 function handleNoExecutable() {
-    installConfig.showPreviewDrawer = false
+    installConfig.show_preview_drawer = false
     goTo('/Install/Tool/Config')
 }
 
@@ -44,7 +44,7 @@ function handleDetailsLoading(loading: boolean) {
 
 // Watch for drawer visibility changes to load content
 watch(drawerVisible, async (visible) => {
-    if (visible && installConfig.zip_path && !installConfig.archive_content) {
+    if (visible && installConfig.zip_path && installConfig.file_tree.length === 0) {
         try {
             await GetArchiveContent('')
         } catch (error) {
@@ -57,7 +57,7 @@ watch(drawerVisible, async (visible) => {
                     detail: String(error),
                     life: 0,
                 })
-                installConfig.showPreviewDrawer = false
+                installConfig.show_preview_drawer = false
             }
         }
     }
@@ -76,7 +76,7 @@ async function handlePasswordSubmit() {
 
     try {
         await GetArchiveContent(archivePassword.value)
-        installConfig.app_details.config.archive_password = archivePassword.value
+        installConfig.archive_password = archivePassword.value
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {
@@ -90,7 +90,7 @@ async function handlePasswordSubmit() {
                 life: 0,
             })
             showPasswordDialog.value = false
-            installConfig.showPreviewDrawer = false
+            installConfig.show_preview_drawer = false
         }
     }
 }
@@ -98,14 +98,14 @@ async function handlePasswordSubmit() {
 async function GetArchiveContent(password: string) {
     const result = await invoke('execute_command', {
         command: {
-            name: 'GetArchiveContent',
+            name: 'GetArchiveTree',
             path: installConfig.zip_path,
             password: password,
         },
     })
 
-    const content = JSON.parse(result as string)
-    installConfig.archive_content = content
+    const treeData = JSON.parse(result as string)
+    installConfig.file_tree = treeData
 }
 </script>
 
@@ -125,8 +125,8 @@ async function GetArchiveContent(password: string) {
             </div>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <Button @click="installConfig.showPreviewDrawer = false" :label="t('g.cancel')" severity="secondary"
-                        outlined icon="mir-close" />
+                    <Button @click="installConfig.show_preview_drawer = false" :label="t('g.cancel')"
+                        severity="secondary" outlined icon="mir-close" />
                     <Button @click="handlePasswordSubmit" :label="t('g.submit')" icon="mir-check" />
                 </div>
             </template>
@@ -145,7 +145,7 @@ async function GetArchiveContent(password: string) {
 
             <!-- ExecutableSelector embedded directly -->
             <div class="min-h-0 flex-1">
-                <ExecutableSelector v-if="installConfig.zip_path && installConfig.archive_content"
+                <ExecutableSelector v-if="installConfig.zip_path && installConfig.file_tree.length > 0"
                     :zip-path="installConfig.zip_path" :details-loading="detailsLoading" @loading="handleDetailsLoading"
                     @executable-selected="handleExecutableSelected" @no-executable="handleNoExecutable" />
             </div>

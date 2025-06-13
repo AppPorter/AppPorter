@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { invoke } from '@tauri-apps/api/core'
-import { computed, onMounted, ref, watch } from 'vue'
+import { InstallConfigStore } from '@/stores/install_config'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Types and interfaces
-interface FileTreeNode {
+export interface FileTreeNode {
   key: string
   name: string
   path: string
@@ -38,37 +38,11 @@ const emits = defineEmits<{
 }>()
 
 const { t } = useI18n()
+const installConfigStore = InstallConfigStore()
 
 // State
 const status = ref<'ready' | 'loading' | 'error'>('ready')
-const fileTreeData = ref<FileTreeNode[]>([])
 const error = ref<string>('')
-
-// Load zip content from backend
-async function loadZipContent() {
-  if (!props.zipPath) return
-
-  status.value = 'loading'
-  error.value = ''
-
-  try {
-    const command = {
-      name: 'GetArchiveTree',
-      path: props.zipPath,
-      password: props.password || null
-    }
-
-    const result = await invoke<string>('execute_command', { command })
-    const treeData = JSON.parse(result) as FileTreeNode[]
-    fileTreeData.value = treeData
-    status.value = 'ready'
-  } catch (err) {
-    console.error('Failed to load zip content:', err)
-    error.value = err instanceof Error ? err.message : String(err)
-    status.value = 'error'
-    fileTreeData.value = []
-  }
-}
 
 // Convert backend tree structure to frontend format
 function convertToFileNode(node: FileTreeNode): FileNode {
@@ -84,10 +58,10 @@ function convertToFileNode(node: FileTreeNode): FileNode {
 }
 
 // Computed properties
-const hasData = computed(() => fileTreeData.value.length > 0)
-const isEmpty = computed(() => status.value === 'ready' && fileTreeData.value.length === 0)
+const hasData = computed(() => installConfigStore.file_tree.length > 0)
+const isEmpty = computed(() => status.value === 'ready' && installConfigStore.file_tree.length === 0)
 const fileTree = computed(() => {
-  return fileTreeData.value.map(convertToFileNode)
+  return installConfigStore.file_tree.map(convertToFileNode)
 })
 
 // Get appropriate icon based on file extension
@@ -136,7 +110,7 @@ function handleToggleNode(node: FileNode) {
     return false
   }
 
-  updateNodeExpansion(fileTreeData.value, node.key)
+  updateNodeExpansion(installConfigStore.file_tree, node.key)
 }
 
 // Handle node selection
@@ -203,27 +177,6 @@ function sortNodes(nodes: FileNode[]): FileNode[] {
 // Get flattened tree for rendering
 const flattenedTree = computed(() => {
   return flattenTree(fileTree.value)
-})
-
-// Watch for zipPath changes
-watch(() => props.zipPath, () => {
-  if (props.zipPath) {
-    loadZipContent()
-  }
-}, { immediate: true })
-
-// Watch for password changes
-watch(() => props.password, () => {
-  if (props.zipPath) {
-    loadZipContent()
-  }
-})
-
-// Load content on mount
-onMounted(() => {
-  if (props.zipPath) {
-    loadZipContent()
-  }
 })
 </script>
 

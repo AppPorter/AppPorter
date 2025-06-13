@@ -1,3 +1,4 @@
+import { FileTreeNode } from '@/components/ZipPreview/ZipPreview.vue'
 import { defineStore } from 'pinia'
 import type { AppDetails, ToolDetails } from './library'
 
@@ -9,26 +10,44 @@ type Pages =
   | 'Install_Tool_Progress'
 
 interface InstallConfig {
-  zip_path: string
   page: Pages
-  archive_content: string[] | null
+  show_preview_drawer: boolean
+
+  zip_path: string
   timestamp: number
   url: string
   archive_password: string
+  file_tree: FileTreeNode[]
+  temp: {
+    zip_path: string
+    timestamp: number
+    url: string
+    archive_password: string
+    file_tree: FileTreeNode[]
+  }
+
   app_details: AppDetails
   tool_details: ToolDetails
-  showPreviewDrawer: boolean
 }
 
 export const InstallConfigStore = defineStore('install_config', {
   state: (): InstallConfig => ({
-    zip_path: '',
     page: 'Home',
-    archive_content: null,
+    show_preview_drawer: false,
+
+    zip_path: '',
     timestamp: 0,
     url: '',
     archive_password: '',
-    showPreviewDrawer: false,
+    file_tree: [],
+    temp: {
+      zip_path: '',
+      timestamp: 0,
+      url: '',
+      archive_password: '',
+      file_tree: [],
+    },
+
     app_details: {
       info: {
         name: '',
@@ -67,9 +86,10 @@ export const InstallConfigStore = defineStore('install_config', {
   actions: {
     resetConfig() {
       const zipPath = this.zip_path
+      const fileTree = this.file_tree
       this.$reset()
       this.zip_path = zipPath
-      this.archive_content = null
+      this.file_tree = fileTree
     },
   },
 })
