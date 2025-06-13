@@ -24,16 +24,24 @@ const drawerVisible = computed({
     get: () => installConfig.show_preview_drawer,
     set: (value: boolean) => {
         installConfig.show_preview_drawer = value
+        // Clear temp data when drawer is closed without confirmation
+        if (!value) {
+            installConfig.clearTempData()
+        }
     }
 })
 
 // Handle button actions
 function handleExecutableSelected() {
+    // Confirm temp data when user selects executable
+    installConfig.confirmTempData()
     installConfig.show_preview_drawer = false
     goTo('/Install/App/Config')
 }
 
 function handleNoExecutable() {
+    // Confirm temp data when user selects no executable
+    installConfig.confirmTempData()
     installConfig.show_preview_drawer = false
     goTo('/Install/Tool/Config')
 }
@@ -44,7 +52,7 @@ function handleDetailsLoading(loading: boolean) {
 
 // Watch for drawer visibility changes to load content
 watch(drawerVisible, async (visible) => {
-    if (visible && installConfig.zip_path && installConfig.file_tree.length === 0) {
+    if (visible && installConfig.temp.zip_path && installConfig.temp.file_tree.length === 0) {
         try {
             await GetArchiveContent('')
         } catch (error) {
@@ -76,7 +84,7 @@ async function handlePasswordSubmit() {
 
     try {
         await GetArchiveContent(archivePassword.value)
-        installConfig.archive_password = archivePassword.value
+        installConfig.setTempData({ archive_password: archivePassword.value })
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {
@@ -99,13 +107,13 @@ async function GetArchiveContent(password: string) {
     const result = await invoke('execute_command', {
         command: {
             name: 'GetArchiveTree',
-            path: installConfig.zip_path,
+            path: installConfig.temp.zip_path,
             password: password,
         },
     })
 
     const treeData = JSON.parse(result as string)
-    installConfig.file_tree = treeData
+    installConfig.setTempData({ file_tree: treeData })
 }
 </script>
 
@@ -135,19 +143,24 @@ async function GetArchiveContent(password: string) {
         <!-- Main content area -->
         <div class="flex h-full flex-col gap-4">
             <!-- File info header -->
-            <div v-if="installConfig.zip_path" class="flex flex-col gap-1">
+            <div v-if="installConfig.temp.zip_path" class="flex flex-col gap-1">
                 <h3 class="text-lg font-semibold">
-                    {{ installConfig.zip_path.split(/[/\\]/).pop() }}
+                    {{ installConfig.temp.zip_path.split(/[/\\]/).pop() }}
                 </h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.url || installConfig.zip_path }}
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.temp.url ||
+                    installConfig.temp.zip_path
+                    }}
                 </p>
             </div>
 
             <!-- ExecutableSelector embedded directly -->
             <div class="min-h-0 flex-1">
-                <ExecutableSelector v-if="installConfig.zip_path && installConfig.file_tree.length > 0"
-                    :zip-path="installConfig.zip_path" :details-loading="detailsLoading" @loading="handleDetailsLoading"
-                    @executable-selected="handleExecutableSelected" @no-executable="handleNoExecutable" />
+                <ExecutableSelector v-if="installConfig.temp.zip_path && installConfig.temp.file_tree.length > 0"
+                    :zip-path="installConfig.temp.zip_path" :password="installConfig.temp.archive_password"
+                    :file-tree="installConfig.temp.file_tree" :details-loading="detailsLoading"
+                    @loading="handleDetailsLoading" @executable-selected="handleExecutableSelected"
+                    @no-executable="handleNoExecutable"
+                    @update-file-tree="installConfig.setTempData({ file_tree: $event })" />
             </div>
         </div>
     </Drawer>

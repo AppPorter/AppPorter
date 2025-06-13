@@ -5,7 +5,7 @@ import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ZipPreview from './ZipPreview.vue'
+import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
 
 const store = InstallConfigStore()
 
@@ -14,6 +14,8 @@ const { t } = useI18n()
 // Props
 defineProps<{
     zipPath: string
+    password?: string
+    fileTree: FileTreeNode[]
     detailsLoading?: boolean
 }>()
 
@@ -21,6 +23,7 @@ const emit = defineEmits<{
     (e: 'close'): void
     (e: 'loading', value: boolean): void
     (e: 'directory-select', path: string): void
+    (e: 'update-file-tree', fileTree: FileTreeNode[]): void
 }>()
 
 // State
@@ -129,8 +132,9 @@ async function handleSelect() {
 
         <!-- Main content area with fixed height and proper overflow handling -->
         <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-            <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" :selected-path="selectedPath"
-                :is-selectable-function="isSelectableNode" @node-click="handleNodeSelect" />
+            <ZipPreview :zip-path="zipPath" :password="password" :file-tree="fileTree" :filter-function="fileFilter"
+                :selected-path="selectedPath" :is-selectable-function="isSelectableNode" @node-click="handleNodeSelect"
+                @update-file-tree="emit('update-file-tree', $event)" />
         </div>
 
         <!-- Selected directory and button container -->

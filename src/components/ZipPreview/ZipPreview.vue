@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -31,14 +30,15 @@ const props = defineProps<{
   filterFunction?: (node: FileNode) => boolean
   selectedPath?: string
   isSelectableFunction?: (node: FileNode) => boolean
+  fileTree: FileTreeNode[]
 }>()
 
 const emits = defineEmits<{
   (event: 'node-click', node: FileNode): void
+  (event: 'update-file-tree', fileTree: FileTreeNode[]): void
 }>()
 
 const { t } = useI18n()
-const installConfigStore = InstallConfigStore()
 
 // State
 const status = ref<'ready' | 'loading' | 'error'>('ready')
@@ -58,10 +58,10 @@ function convertToFileNode(node: FileTreeNode): FileNode {
 }
 
 // Computed properties
-const hasData = computed(() => installConfigStore.file_tree.length > 0)
-const isEmpty = computed(() => status.value === 'ready' && installConfigStore.file_tree.length === 0)
+const hasData = computed(() => props.fileTree.length > 0)
+const isEmpty = computed(() => status.value === 'ready' && props.fileTree.length === 0)
 const fileTree = computed(() => {
-  return installConfigStore.file_tree.map(convertToFileNode)
+  return props.fileTree.map(convertToFileNode)
 })
 
 // Get appropriate icon based on file extension
@@ -110,7 +110,10 @@ function handleToggleNode(node: FileNode) {
     return false
   }
 
-  updateNodeExpansion(installConfigStore.file_tree, node.key)
+  // Update local file tree and emit the updated tree
+  const updatedTree = [...props.fileTree]
+  updateNodeExpansion(updatedTree, node.key)
+  emits('update-file-tree', updatedTree)
 }
 
 // Handle node selection

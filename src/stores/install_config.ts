@@ -91,5 +91,41 @@ export const InstallConfigStore = defineStore('install_config', {
       this.zip_path = zipPath
       this.file_tree = fileTree
     },
+
+    // Set temp data for new incoming app
+    setTempData(data: {
+      zip_path?: string
+      timestamp?: number
+      url?: string
+      archive_password?: string
+      file_tree?: FileTreeNode[]
+    }) {
+      if (data.zip_path !== undefined) this.temp.zip_path = data.zip_path
+      if (data.timestamp !== undefined) this.temp.timestamp = data.timestamp
+      if (data.url !== undefined) this.temp.url = data.url
+      if (data.archive_password !== undefined) this.temp.archive_password = data.archive_password
+      if (data.file_tree !== undefined) this.temp.file_tree = data.file_tree
+    },
+
+    // Clear temp data
+    clearTempData() {
+      this.temp = {
+        zip_path: '',
+        timestamp: 0,
+        url: '',
+        archive_password: '',
+        file_tree: [],
+      }
+    },
+
+    // Move temp data to main data (confirm installation)
+    confirmTempData() {
+      this.zip_path = this.temp.zip_path
+      this.timestamp = this.temp.timestamp
+      this.url = this.temp.url
+      this.archive_password = this.temp.archive_password
+      this.file_tree = this.temp.file_tree
+      this.clearTempData()
+    },
   },
 })
