@@ -120,10 +120,8 @@ export const SettingsStore = defineStore('settings', {
 
       // Update DOM
       if (isDarkMode) {
-        console.log('Dark mode enabled')
         document.documentElement.classList.add('dark')
       } else {
-        console.log('Light mode enabled')
         document.documentElement.classList.remove('dark')
       }
 
