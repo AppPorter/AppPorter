@@ -15,19 +15,23 @@ const installConfig = InstallConfigStore()
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
+    await listen('preview', (event) => {
+        const payload = event.payload as { zip_path: string; timestamp: number }
+
+        installConfig.zip_path = payload[0]
+        installConfig.timestamp = payload[1]
+
+        installConfig.showPreviewDrawer = true
+    })
+
     await listen('preview_url', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number; url: string }
+
         installConfig.zip_path = payload[0]
         installConfig.timestamp = payload[1]
         installConfig.url = payload[2]
-        goTo('/Install/Preview')
-    })
 
-    await listen('preview', (event) => {
-        const payload = event.payload as { zip_path: string; timestamp: number }
-        installConfig.zip_path = payload[0]
-        installConfig.timestamp = payload[1]
-        goTo('/Install/Preview')
+        installConfig.showPreviewDrawer = true
     })
 
     await listen('uninstall_app', async (event) => {
