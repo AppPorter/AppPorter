@@ -121,19 +121,32 @@ function getFileIcon(fileName: string): string {
 
 // Toggle node expansion
 function handleToggleNode(node: FileNode) {
-  node.expanded = !node.expanded
+  // Find the corresponding node in the original tree data and update it
+  function updateNodeExpansion(nodes: FileTreeNode[], targetKey: string): boolean {
+    for (const treeNode of nodes) {
+      if (treeNode.key === targetKey) {
+        treeNode.expanded = !treeNode.expanded
+        return true
+      }
+      if (treeNode.children && updateNodeExpansion(treeNode.children, targetKey)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  updateNodeExpansion(fileTreeData.value, node.key)
 }
 
 // Handle node selection
 function handleSelectNode(node: FileNode) {
-  // For directories, toggle expansion
+  // Always emit click event first for parent component handling
+  emits('node-click', node)
+
+  // For directories, also toggle expansion for navigation
   if (node.type === 'directory') {
     handleToggleNode(node)
-    return
   }
-
-  // For files, just emit click event
-  emits('node-click', node)
 }
 
 // Recursive function to render all nodes as flat list with proper indentation
