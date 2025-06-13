@@ -129,35 +129,35 @@ const githubIcon = computed(() => {
 
 <template>
   <div class="flex size-full flex-col">
-    <div class="mx-auto w-full max-w-5xl space-y-4 overflow-y-auto px-4 pt-2">
+    <div class="mx-auto w-full max-w-5xl space-y-2 overflow-y-auto px-4 pt-2">
       <!-- Basic Settings -->
       <Panel class="w-full">
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-tune text-xl"></span>
-            <h3 class="text-base font-medium">{{ t('ui.settings.basic') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.basic') }}</h3>
           </div>
         </template>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+        <div class="space-y-2">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.language') }}</label>
             <Select v-model="settings.language" :options="languageOptions" optionLabel="label" optionValue="value"
               class="w-48" size="small" />
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.theme') }}</label>
             <Select v-model="settings.theme" :options="themeOptions" optionLabel="label" optionValue="value"
               class="w-48" size="small" />
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.minimize_tray') }}</label>
             <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.context_menu') }}</label>
             <ToggleSwitch v-model="settings.context_menu" />
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.auto_startup') }}</label>
             <ToggleSwitch v-model="settings.auto_startup" />
           </div>
@@ -169,11 +169,11 @@ const githubIcon = computed(() => {
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-install_desktop text-xl"></span>
-            <h3 class="text-base font-medium">{{ t('ui.settings.install.app') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.install.app') }}</h3>
           </div>
         </template>
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
+        <div class="space-y-2">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.install.modes.self') }}</label>
             <ToggleSwitch v-model="settings.app_install.current_user_only" />
           </div>
@@ -184,24 +184,25 @@ const githubIcon = computed(() => {
               <template #header>
                 <div class="flex items-center gap-2">
                   <span class="mir-person text-lg"></span>
-                  <h4 class="text-sm font-medium">{{ t('cls.install.modes.current_user') }}</h4>
+                  <h4 class="font-medium">{{ t('cls.install.modes.current_user') }}</h4>
                 </div>
               </template>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
+              <div class="space-y-2">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.desktop') }}</label>
                   <ToggleSwitch v-model="settings.app_install.current_user.create_desktop_shortcut" />
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.registry_key') }}</label>
                   <ToggleSwitch v-model="settings.app_install.current_user.create_registry_key" />
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.start_menu') }}</label>
                   <ToggleSwitch v-model="settings.app_install.current_user.create_start_menu_shortcut" />
                 </div>
-                <div class="space-y-2">
-                  <label>{{ t('cls.install.config.install_path') }}</label>
+                <div>
+                  <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -217,24 +218,25 @@ const githubIcon = computed(() => {
               <template #header>
                 <div class="flex items-center gap-2">
                   <span class="mir-group text-lg"></span>
-                  <h4 class="text-sm font-medium">{{ t('cls.install.modes.all_users') }}</h4>
+                  <h4 class="font-medium">{{ t('cls.install.modes.all_users') }}</h4>
                 </div>
               </template>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
+              <div class="space-y-2">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.desktop') }}</label>
                   <ToggleSwitch v-model="settings.app_install.all_users.create_desktop_shortcut" />
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.registry_key') }}</label>
                   <ToggleSwitch v-model="settings.app_install.all_users.create_registry_key" />
                 </div>
-                <div class="flex items-center justify-between">
+                <div class="flex h-9 items-center justify-between">
                   <label>{{ t('cls.install.shortcuts.start_menu') }}</label>
                   <ToggleSwitch v-model="settings.app_install.all_users.create_start_menu_shortcut" />
                 </div>
-                <div class="space-y-2">
-                  <label>{{ t('cls.install.config.install_path') }}</label>
+                <div>
+                  <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -253,12 +255,12 @@ const githubIcon = computed(() => {
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-folder_copy text-xl"></span>
-            <h3 class="text-base font-medium">{{ t('ui.settings.install.lib') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.install.lib') }}</h3>
           </div>
         </template>
-        <div class="space-y-4">
-          <div class="space-y-2">
-            <label>{{ t('cls.install.config.install_path') }}</label>
+        <div class="space-y-2">
+          <div class="">
+            <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path') }}</label>
             <div class="flex min-w-0 items-center gap-2">
               <InputText v-model="settings.tool_install.install_path"
                 :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -266,7 +268,7 @@ const githubIcon = computed(() => {
                 :label="t('g.browse')" />
             </div>
           </div>
-          <div class="flex items-center justify-between">
+          <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.install.shortcuts.add_to_path') }}</label>
             <ToggleSwitch v-model="settings.tool_install.add_to_path" />
           </div>
