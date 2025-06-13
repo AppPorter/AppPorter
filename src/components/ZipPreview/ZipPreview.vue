@@ -30,6 +30,7 @@ const props = defineProps<{
   password?: string
   filterFunction?: (node: FileNode) => boolean
   selectedPath?: string
+  isSelectableFunction?: (node: FileNode) => boolean
 }>()
 
 const emits = defineEmits<{
@@ -140,6 +141,14 @@ function handleToggleNode(node: FileNode) {
 
 // Handle node selection
 function handleSelectNode(node: FileNode) {
+  // Check if node is selectable
+  const isSelectable = !props.isSelectableFunction || props.isSelectableFunction(node)
+
+  if (!isSelectable) {
+    // Don't emit click event for non-selectable nodes
+    return
+  }
+
   // Always emit click event first for parent component handling
   emits('node-click', node)
 
@@ -201,7 +210,11 @@ onMounted(() => {
         <template v-for="node in flattenedTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
-              'my-0.5 flex cursor-pointer items-center rounded-md border px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
+              'my-0.5 flex items-center rounded-md border px-1 py-1.5 transition-colors duration-150',
+              // Check if node is selectable
+              (!props.isSelectableFunction || props.isSelectableFunction(node))
+                ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700'
+                : 'cursor-not-allowed opacity-50',
               props.selectedPath === node.path ? 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' : 'border-transparent',
             ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
               <!-- Expand/collapse icon for directories -->
@@ -223,6 +236,10 @@ onMounted(() => {
 
               <!-- Node name -->
               <span class="flex-1 truncate">{{ node.name }}</span>
+
+              <!-- Not selectable indicator -->
+              <span v-if="props.isSelectableFunction && !props.isSelectableFunction(node)"
+                class="mir-block ml-2 shrink-0 text-slate-400 dark:text-slate-500"></span>
             </div>
           </div>
         </template>
