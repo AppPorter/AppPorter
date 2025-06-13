@@ -136,10 +136,11 @@ async function GetArchiveContent(password: string) {
         <div class="flex h-full flex-col gap-4">
             <!-- File info header -->
             <div v-if="installConfig.zip_path" class="flex flex-col gap-1">
-                <h3 class="text-lg font-semibold text-gray-900">
+                <h3 class="text-lg font-semibold">
                     {{ installConfig.zip_path.split(/[/\\]/).pop() }}
                 </h3>
-                <p class="text-sm text-gray-600">{{ installConfig.url || installConfig.zip_path }}</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.url || installConfig.zip_path }}
+                </p>
             </div>
 
             <!-- ExecutableSelector embedded directly -->
