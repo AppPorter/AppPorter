@@ -32,7 +32,7 @@ The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 - [x] AppList
 - [x] Uninstallation
 - [x] Add to PATH
-- [ ] Copy only mode
+- [x] Install Tools
 - [ ] Repair
 - [ ] Update
 - [ ] Custom app icon
