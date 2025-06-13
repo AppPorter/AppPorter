@@ -1,9 +1,9 @@
-import AppList from '@/pages/AppList.vue'
 import Home from '@/pages/Home.vue'
+import AppConfig from '@/pages/Install/App/AppConfig.vue'
 import AppProgress from '@/pages/Install/App/AppProgress.vue'
-import Config from '@/pages/Install/Config.vue'
-import LibProgress from '@/pages/Install/Lib/LibProgress.vue'
-import Preview from '@/pages/Install/Preview.vue'
+import ToolConfig from '@/pages/Install/Tool/ToolConfig.vue'
+import ToolProgress from '@/pages/Install/Tool/ToolProgress.vue'
+import Library from '@/pages/Library/Index.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -23,15 +23,15 @@ const routes = [
     },
   },
   {
-    path: '/Install/Preview',
-    component: Preview,
+    path: '/Install/App/Config',
+    component: AppConfig,
     meta: {
-      icon: 'mir-install_desktop',
+      icon: 'mir-settings_applications',
     },
   },
   {
-    path: '/Install/Config',
-    component: Config,
+    path: '/Install/Tool/Config',
+    component: ToolConfig,
     meta: {
       icon: 'mir-settings_applications',
     },
@@ -44,15 +44,15 @@ const routes = [
     },
   },
   {
-    path: '/Install/Lib/Progress',
-    component: LibProgress,
+    path: '/Install/Tool/Progress',
+    component: ToolProgress,
     meta: {
       icon: 'mir-pending_actions',
     },
   },
   {
-    path: '/AppList',
-    component: AppList,
+    path: '/Library',
+    component: Library,
     meta: {
       icon: 'mir-apps',
     },
@@ -89,20 +89,17 @@ export function setupRouterGuards(router: Router) {
         case 'Home':
           path = '/Home'
           break
-        case 'Preview':
-          path = '/Install/Preview'
-          break
         case 'Install_App_Config':
-          path = '/Install/Config'
+          path = '/Install/App/Config'
           break
         case 'Install_App_Progress':
           path = '/Install/App/Progress'
           break
-        case 'Install_Lib_Config':
-          path = '/Install/Config'
+        case 'Install_Tool_Config':
+          path = '/Install/Tool/Config'
           break
-        case 'Install_Lib_Progress':
-          path = '/Install/Lib/Progress'
+        case 'Install_Tool_Progress':
+          path = '/Install/Tool/Progress'
           break
       }
       return { path }

@@ -1,6 +1,6 @@
-use crate::configs::app_list::AppValidationStatus;
-use crate::configs::app_list::{App, AppDetails, AppList};
 use crate::configs::env::Env;
+use crate::configs::library::AppValidationStatus;
+use crate::configs::library::{App, AppDetails, Library};
 use crate::configs::ConfigFile;
 use crate::operations::extract_archive_files;
 use crate::operations::install::find_single_root_folder;
@@ -108,7 +108,7 @@ async fn update_app_list(
     full_path_directory: String,
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut app_list = AppList::read().await?;
+    let mut app_list = Library::read().await?;
     let mut updated_details = config.details.clone();
     updated_details.paths.full_path = full_path;
     updated_details.config.full_path_directory = full_path_directory;

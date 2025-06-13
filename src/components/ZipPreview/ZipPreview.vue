@@ -1,50 +1,94 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
-import { storeToRefs } from 'pinia'
-import { computed, onMounted, ref, watchEffect } from 'vue'
+import { invoke } from '@tauri-apps/api/core'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Types and interfaces
-type FileStatus = 'ready' | 'loading' | 'error'
-type NodeType = 'file' | 'directory'
+interface FileTreeNode {
+  key: string
+  name: string
+  path: string
+  node_type: string
+  children?: FileTreeNode[]
+  expanded: boolean
+  level: number
+}
 
 interface FileNode {
   key: string
   name: string
   path: string
-  type: NodeType
+  type: 'file' | 'directory'
   children?: FileNode[]
   expanded?: boolean
-  selected?: boolean
   level: number
 }
 
 // Props & emits
 const props = defineProps<{
   zipPath: string
+  password?: string
   filterFunction?: (node: FileNode) => boolean
+  selectedPath?: string
   isSelectableFunction?: (node: FileNode) => boolean
 }>()
 
 const emits = defineEmits<{
-  (event: 'loading', value: boolean): void
-  (event: 'progress', value: number): void
-  (event: 'node-select', node: FileNode): void
+  (event: 'node-click', node: FileNode): void
 }>()
 
 const { t } = useI18n()
 
-const installConfig = InstallConfigStore()
-const { archive_content } = storeToRefs(installConfig)
-
 // State
-const status = ref<FileStatus>('ready')
-const fileTree = ref<FileNode[]>([])
-const fileCache = computed(() => archive_content.value)
+const status = ref<'ready' | 'loading' | 'error'>('ready')
+const fileTreeData = ref<FileTreeNode[]>([])
+const error = ref<string>('')
+
+// Load zip content from backend
+async function loadZipContent() {
+  if (!props.zipPath) return
+
+  status.value = 'loading'
+  error.value = ''
+
+  try {
+    const command = {
+      name: 'GetArchiveTree',
+      path: props.zipPath,
+      password: props.password || null
+    }
+
+    const result = await invoke<string>('execute_command', { command })
+    const treeData = JSON.parse(result) as FileTreeNode[]
+    fileTreeData.value = treeData
+    status.value = 'ready'
+  } catch (err) {
+    console.error('Failed to load zip content:', err)
+    error.value = err instanceof Error ? err.message : String(err)
+    status.value = 'error'
+    fileTreeData.value = []
+  }
+}
+
+// Convert backend tree structure to frontend format
+function convertToFileNode(node: FileTreeNode): FileNode {
+  return {
+    key: node.key,
+    name: node.name,
+    path: node.path,
+    type: node.node_type === 'directory' ? 'directory' : 'file',
+    level: node.level,
+    expanded: node.expanded,
+    children: node.children?.map(convertToFileNode)
+  }
+}
 
 // Computed properties
-const hasScanned = computed(() => fileCache.value !== null)
-const isEmpty = computed(() => hasScanned.value && fileTree.value.length === 0)
+const hasData = computed(() => fileTreeData.value.length > 0)
+const isEmpty = computed(() => status.value === 'ready' && fileTreeData.value.length === 0)
+const fileTree = computed(() => {
+  return fileTreeData.value.map(convertToFileNode)
+})
 
 // Get appropriate icon based on file extension
 function getFileIcon(fileName: string): string {
@@ -76,178 +120,110 @@ function getFileIcon(fileName: string): string {
   return 'mir-draft text-slate-500 dark:text-slate-400'
 }
 
-// Format and build tree structure from flat file paths
-function buildFileTree(paths: string[]): FileNode[] {
-  // Build directory map for quick lookup
-  const dirMap = new Map<string, boolean>()
-  paths.forEach((path) => {
-    const parts = path.split('\\')
-    let currentPath = ''
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (!parts[i]) continue
-      currentPath = currentPath ? `${currentPath}\\${parts[i]}` : parts[i]
-      dirMap.set(currentPath, true)
-    }
-  })
-
-  // Build tree
-  const root: FileNode[] = []
-
-  paths.forEach((path) => {
-    if (!path.trim()) return
-
-    const parts = path.split('\\').filter((p) => p !== '')
-    if (parts.length === 0) return
-
-    let current = root
-    let currentPath = ''
-    let level = 0
-
-    parts.forEach((part, index) => {
-      currentPath = currentPath ? `${currentPath}\\${part}` : part
-      const isLast = index === parts.length - 1
-      const isFile = isLast && !dirMap.has(currentPath)
-
-      // Find or create node
-      let node = current.find((n) => n.name === part)
-
-      if (!node) {
-        node = {
-          key: currentPath,
-          name: part,
-          path: currentPath,
-          type: isFile ? 'file' : 'directory',
-          level,
-          children: isFile ? undefined : [],
-          expanded: false,
-          selected: false,
-        }
-
-        current.push(node)
-      }
-
-      if (node.children) {
-        current = node.children
-        level++
-      }
-    })
-  })
-
-  // Sort nodes (directories first, then alphabetically)
-  const sortNodes = (nodes: FileNode[]): void => {
-    nodes.sort((a, b) => {
-      // Directories first
-      if (a.type !== b.type) return a.type === 'directory' ? -1 : 1
-
-      // Alphabetical by name
-      return a.name.localeCompare(b.name)
-    })
-
-    // Sort children recursively
-    nodes.forEach((node) => {
-      if (node.children?.length) sortNodes(node.children)
-    })
-  }
-
-  sortNodes(root)
-
-  // Auto-expand if single top folder
-  if (root.length === 1 && root[0].children) {
-    root[0].expanded = true
-  }
-
-  return root
-}
-
-// Load and process archive contents
-async function loadZipContent() {
-  if (!props.zipPath || !fileCache.value) return
-
-  status.value = 'loading'
-  emits('loading', true)
-
-  const allPaths = [...fileCache.value]
-  const directories = new Set<string>()
-
-  // Generate directory paths
-  fileCache.value.forEach((path) => {
-    const parts = path.split('\\')
-    let currentDir = ''
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (!parts[i]) continue
-      currentDir = currentDir ? `${currentDir}\\${parts[i]}` : parts[i]
-      directories.add(`${currentDir}\\`)
-    }
-  })
-
-  directories.forEach((dir) => {
-    if (!allPaths.includes(dir)) allPaths.push(dir)
-  })
-
-  // Update state
-  fileTree.value = buildFileTree(allPaths)
-  status.value = 'ready'
-  emits('loading', false)
-}
-
 // Toggle node expansion
 function handleToggleNode(node: FileNode) {
-  node.expanded = !node.expanded
+  // Find the corresponding node in the original tree data and update it
+  function updateNodeExpansion(nodes: FileTreeNode[], targetKey: string): boolean {
+    for (const treeNode of nodes) {
+      if (treeNode.key === targetKey) {
+        treeNode.expanded = !treeNode.expanded
+        return true
+      }
+      if (treeNode.children && updateNodeExpansion(treeNode.children, targetKey)) {
+        return true
+      }
+    }
+    return false
+  }
+
+  updateNodeExpansion(fileTreeData.value, node.key)
 }
 
 // Handle node selection
 function handleSelectNode(node: FileNode) {
-  // For directories, toggle expansion and possibly select it
+  // Check if node is selectable
+  const isSelectable = !props.isSelectableFunction || props.isSelectableFunction(node)
+
+  // Always emit click event first for parent component handling
+  if (isSelectable) {
+    emits('node-click', node)
+  }
+
+  // For directories, always allow expansion for navigation regardless of selectability
   if (node.type === 'directory') {
-    // Check if the directory is selectable (using the prop function if provided)
-    const isSelectable = props.isSelectableFunction ? props.isSelectableFunction(node) : false
-
-    // Toggle node expansion
     handleToggleNode(node)
-
-    // If not selectable, return after toggling expansion
-    if (!isSelectable) {
-      return
-    }
-    // Otherwise, continue with selection logic for selectable directories
   }
-
-  // For files and selectable directories, proceed with selection logic
-  // Deselect all nodes first
-  const deselectAll = (nodes: FileNode[]) => {
-    nodes.forEach((node) => {
-      node.selected = false
-      if (node.children) deselectAll(node.children)
-    })
-  }
-
-  deselectAll(fileTree.value)
-
-  // Select the clicked node
-  node.selected = true
-
-  // Emit selection event with node info
-  emits('node-select', node)
 }
 
-// Effects
-watchEffect(() => {
-  if (!props.zipPath || !fileCache.value) return
-  loadZipContent()
+// Recursive function to render all nodes as flat list with proper indentation
+function flattenTree(nodes: FileNode[], level = 0): FileNode[] {
+  const result: FileNode[] = []
+
+  // Sort nodes at current level
+  const sortedNodes = sortNodes([...nodes])
+
+  for (const node of sortedNodes) {
+    result.push({ ...node, level })
+
+    if (node.type === 'directory' && node.expanded && node.children) {
+      result.push(...flattenTree(node.children, level + 1))
+    }
+  }
+
+  return result
+}
+
+// Sort nodes based on priority: directories first, then executable files, then other files
+function sortNodes(nodes: FileNode[]): FileNode[] {
+  const executableExtensions = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+
+  return nodes.sort((a, b) => {
+    // Directories first
+    if (a.type === 'directory' && b.type !== 'directory') return -1
+    if (a.type !== 'directory' && b.type === 'directory') return 1
+
+    // If both are directories, sort alphabetically
+    if (a.type === 'directory' && b.type === 'directory') {
+      return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+    }
+
+    // If both are files, check for executable extensions
+    const aIsExecutable = executableExtensions.some(ext => a.name.toLowerCase().endsWith(ext))
+    const bIsExecutable = executableExtensions.some(ext => b.name.toLowerCase().endsWith(ext))
+
+    // Executable files come before other files
+    if (aIsExecutable && !bIsExecutable) return -1
+    if (!aIsExecutable && bIsExecutable) return 1
+
+    // If both are executable or both are non-executable, sort alphabetically
+    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
+  })
+}
+
+// Get flattened tree for rendering
+const flattenedTree = computed(() => {
+  return flattenTree(fileTree.value)
 })
 
-// Setup event listeners and load initial content
+// Watch for zipPath changes
+watch(() => props.zipPath, () => {
+  if (props.zipPath) {
+    loadZipContent()
+  }
+}, { immediate: true })
+
+// Watch for password changes
+watch(() => props.password, () => {
+  if (props.zipPath) {
+    loadZipContent()
+  }
+})
+
+// Load content on mount
 onMounted(() => {
-  if (props.zipPath && fileCache.value) loadZipContent()
-})
-
-// Expose component interface
-defineExpose({
-  // Exporting types as string literals for parent components to reference
-  nodeTypes: ['file', 'directory'] as const,
-  // Provide methods that parent can use
-  selectNode: handleSelectNode,
-  toggleNode: handleToggleNode,
+  if (props.zipPath) {
+    loadZipContent()
+  }
 })
 </script>
 
@@ -256,51 +232,26 @@ defineExpose({
     <!-- File Tree Container with improved scrolling -->
     <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600">
       <!-- Scrollable Tree Content -->
-      <div v-if="hasScanned && !isEmpty" class="h-full overflow-auto p-2 text-sm">
-        <!-- Recursive Tree Node Template -->
-        <template v-for="node in fileTree" :key="node.key">
+      <div v-if="hasData && !isEmpty" class="h-full overflow-auto p-2 text-sm">
+        <!-- Render flattened tree with proper indentation -->
+        <template v-for="node in flattenedTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
-              'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-              node.selected
-                ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                : '',
-              node.level === 0
-                ? 'pl-0'
-                : node.level === 1
-                  ? 'pl-4'
-                  : node.level === 2
-                    ? 'pl-8'
-                    : node.level === 3
-                      ? 'pl-12'
-                      : node.level === 4
-                        ? 'pl-16'
-                        : node.level === 5
-                          ? 'pl-20'
-                          : 'pl-24',
-              // Add cursor styles based on selectability
-              node.type === 'directory' ||
-                (props.isSelectableFunction && props.isSelectableFunction(node))
-                ? 'cursor-pointer'
-                : 'cursor-not-allowed',
-              // Add opacity for non-selectable files only when filterFunction exists
-              props.filterFunction && !(node.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(node)))
-                ? 'opacity-60'
-                : '',
-            ]" @click="
-              node.type === 'directory' ||
-                (props.isSelectableFunction && props.isSelectableFunction(node))
-                ? handleSelectNode(node)
-                : undefined
-              ">
-              <span v-if="node.type === 'directory'" :class="[
-                'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                node.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more',
-              ]" @click.stop="handleToggleNode(node)"></span>
-              <!-- Placeholder for files to align with folders -->
-              <span v-else class="mr-1.5 w-4 shrink-0"></span>
+              'my-0.5 flex items-center rounded-md border px-1 py-1.5 transition-colors duration-150',
+              // Check if node is selectable - directories are always visually selectable
+              node.type === 'directory' || (!props.isSelectableFunction || props.isSelectableFunction(node))
+                ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700'
+                : 'cursor-not-allowed opacity-50',
+              props.selectedPath === node.path ? 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' : 'border-transparent',
+            ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
+              <!-- Expand/collapse icon for directories -->
+              <span v-if="node.type === 'directory' && node.children && node.children.length > 0" :class="[
+                'mr-1 w-4 shrink-0 text-xs transition-transform duration-200',
+                node.expanded ? 'mir-expand_more' : 'mir-chevron_right'
+              ]"></span>
+              <span v-else class="mr-1 w-4 shrink-0"></span>
 
-              <!-- Icon based on node type with enhanced visuals -->
+              <!-- File/folder icon -->
               <span :class="[
                 'mr-2 shrink-0',
                 node.type === 'directory'
@@ -310,195 +261,12 @@ defineExpose({
                   : getFileIcon(node.name),
               ]"></span>
 
-              <!-- Node name with better truncation -->
+              <!-- Node name -->
               <span class="flex-1 truncate">{{ node.name }}</span>
 
-              <!-- Selection indicator for selectable files -->
-              <span v-if="node.selected && node.type === 'file'"
-                class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
-            </div>
-
-            <!-- Render children if expanded with animation -->
-            <div v-if="node.expanded && node.children?.length"
-              class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-              <template v-for="childNode in node.children" :key="childNode.key">
-                <div v-if="!props.filterFunction || props.filterFunction(childNode)" class="w-full">
-                  <div :class="[
-                    'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                    childNode.selected
-                      ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                      : '',
-                    childNode.level === 0
-                      ? 'pl-0'
-                      : childNode.level === 1
-                        ? 'pl-4'
-                        : childNode.level === 2
-                          ? 'pl-8'
-                          : childNode.level === 3
-                            ? 'pl-12'
-                            : childNode.level === 4
-                              ? 'pl-16'
-                              : childNode.level === 5
-                                ? 'pl-20'
-                                : 'pl-24',
-                    // Add cursor styles based on selectability
-                    childNode.type === 'directory' ||
-                      (props.isSelectableFunction && props.isSelectableFunction(childNode))
-                      ? 'cursor-pointer'
-                      : 'cursor-not-allowed',
-                    // Add opacity for non-selectable files only when filterFunction exists
-                    props.filterFunction && !(childNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(childNode)))
-                      ? 'opacity-60'
-                      : '',
-                  ]" @click="
-                    childNode.type === 'directory' ||
-                      (props.isSelectableFunction && props.isSelectableFunction(childNode))
-                      ? handleSelectNode(childNode)
-                      : undefined
-                    ">
-                    <!-- Fixed spacing for files to align with folder toggle buttons -->
-                    <span v-if="childNode.type === 'directory'" :class="[
-                      'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                      childNode.expanded ? 'mir-expand_more rotate-180' : 'mir-expand_more',
-                    ]" @click.stop="handleToggleNode(childNode)"></span>
-                    <!-- Placeholder for files to align with folders -->
-                    <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                    <!-- Icon based on node type -->
-                    <span :class="[
-                      'mr-2 shrink-0',
-                      childNode.type === 'directory'
-                        ? childNode.expanded
-                          ? 'mir-folder_open text-amber-500'
-                          : 'mir-folder text-amber-500'
-                        : getFileIcon(childNode.name),
-                    ]"></span>
-
-                    <!-- Node name -->
-                    <span class="flex-1 truncate">{{ childNode.name }}</span>
-
-                    <!-- Selection indicator -->
-                    <span v-if="childNode.selected && childNode.type === 'file'"
-                      class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
-                  </div>
-
-                  <!-- Recursive rendering for deeper levels -->
-                  <div v-if="childNode.expanded && childNode.children?.length"
-                    class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-                    <div v-for="grandchildNode in childNode.children" :key="grandchildNode.key" class="w-full">
-                      <div v-if="!props.filterFunction || props.filterFunction(grandchildNode)" :class="[
-                        'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                        grandchildNode.selected
-                          ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                          : '',
-                        grandchildNode.level === 0
-                          ? 'pl-0'
-                          : grandchildNode.level === 1
-                            ? 'pl-4'
-                            : grandchildNode.level === 2
-                              ? 'pl-8'
-                              : grandchildNode.level === 3
-                                ? 'pl-12'
-                                : grandchildNode.level === 4
-                                  ? 'pl-16'
-                                  : grandchildNode.level === 5
-                                    ? 'pl-20'
-                                    : 'pl-24',
-                        // Add cursor styles based on selectability
-                        grandchildNode.type === 'directory' ||
-                          (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
-                          ? 'cursor-pointer'
-                          : 'cursor-not-allowed',
-                        // Add opacity for non-selectable files only when filterFunction exists
-                        props.filterFunction && !(grandchildNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(grandchildNode)))
-                          ? 'opacity-60'
-                          : '',
-                      ]" @click="
-                        grandchildNode.type === 'directory' ||
-                          (props.isSelectableFunction && props.isSelectableFunction(grandchildNode))
-                          ? handleSelectNode(grandchildNode)
-                          : undefined
-                        ">
-                        <!-- Fixed spacing for files to align with folder toggle buttons -->
-                        <span v-if="grandchildNode.type === 'directory'" :class="[
-                          'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                          grandchildNode.expanded
-                            ? 'mir-expand_more rotate-180'
-                            : 'mir-expand_more',
-                        ]" @click.stop="handleToggleNode(grandchildNode)"></span>
-                        <!-- Placeholder for files to align with folders -->
-                        <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                        <!-- Icon based on node type -->
-                        <span :class="[
-                          'mr-2 shrink-0',
-                          grandchildNode.type === 'directory'
-                            ? grandchildNode.expanded
-                              ? 'mir-folder_open text-amber-500'
-                              : 'mir-folder text-amber-500'
-                            : getFileIcon(grandchildNode.name),
-                        ]"></span>
-
-                        <!-- Node name -->
-                        <span class="flex-1 truncate">{{ grandchildNode.name }}</span>
-
-                        <!-- Selection indicator -->
-                        <span v-if="grandchildNode.selected && grandchildNode.type === 'file'"
-                          class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
-                      </div>
-
-                      <!-- Even deeper levels (handled with recursion in real implementation) -->
-                      <div v-if="grandchildNode.expanded && grandchildNode.children?.length"
-                        class="overflow-hidden pl-4 transition-all duration-200 ease-in-out">
-                        <template v-for="deepNode in grandchildNode.children" :key="deepNode.key">
-                          <div v-if="!props.filterFunction || props.filterFunction(deepNode)" :class="[
-                            'my-0.5 flex items-center rounded-md px-1 py-1.5 transition-colors duration-150 hover:bg-slate-100 dark:hover:bg-zinc-700',
-                            deepNode.selected
-                              ? 'bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300'
-                              : '',
-                            // Add cursor styles based on selectability
-                            deepNode.type === 'directory' ||
-                              (props.isSelectableFunction && props.isSelectableFunction(deepNode))
-                              ? 'cursor-pointer'
-                              : 'cursor-not-allowed',
-                            // Add opacity for non-selectable files only when filterFunction exists
-                            props.filterFunction && !(deepNode.type === 'directory' || (props.isSelectableFunction && props.isSelectableFunction(deepNode)))
-                              ? 'opacity-60'
-                              : '',
-                          ]" @click="
-                            deepNode.type === 'directory' ||
-                              (props.isSelectableFunction && props.isSelectableFunction(deepNode))
-                              ? handleSelectNode(deepNode)
-                              : undefined
-                            ">
-                            <!-- Fixed spacing for files to align with folder toggle buttons -->
-                            <span v-if="deepNode.type === 'directory'" :class="[
-                              'mr-1.5 w-4 shrink-0 cursor-pointer text-center transition-transform duration-200 ease-in-out',
-                              deepNode.expanded
-                                ? 'mir-expand_more rotate-180'
-                                : 'mir-expand_more',
-                            ]" @click.stop="handleToggleNode(deepNode)"></span>
-                            <!-- Placeholder for files to align with folders -->
-                            <span v-else class="mr-1.5 w-4 shrink-0"></span>
-
-                            <span :class="[
-                              'mr-2 shrink-0',
-                              deepNode.type === 'directory'
-                                ? 'mir-folder text-amber-500'
-                                : getFileIcon(deepNode.name),
-                            ]"></span>
-                            <span class="flex-1 truncate">{{ deepNode.name }}</span>
-                            <span v-if="deepNode.children?.length" class="ml-1 shrink-0 text-xs text-slate-400">({{
-                              deepNode.children.length }})</span>
-                            <span v-if="deepNode.selected && deepNode.type === 'file'"
-                              class="mir-check_circle ml-1.5 shrink-0 text-sm text-blue-500"></span>
-                          </div>
-                        </template>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </template>
+              <!-- Not selectable indicator - only show for files, not directories -->
+              <span v-if="node.type === 'file' && props.isSelectableFunction && !props.isSelectableFunction(node)"
+                class="mir-block ml-2 shrink-0 text-slate-400 dark:text-slate-500"></span>
             </div>
           </div>
         </template>
@@ -511,18 +279,29 @@ defineExpose({
           class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-md dark:bg-zinc-800/60">
           <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-            {{ t('loading') }}
+            {{ t('g.loading') }}
           </p>
         </div>
       </div>
 
       <!-- Enhanced empty state -->
-      <div v-if="hasScanned && isEmpty"
+      <div v-if="hasData && isEmpty"
         class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
         <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
           <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
           <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {{ t('zip_preview.no_files') }}
+            {{ t('ui.zip_preview.no_files') }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Error state -->
+      <div v-if="status === 'error'"
+        class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
+        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
+          <span class="mir-error text-4xl text-red-500"></span>
+          <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
+            {{ error || t('g.error') }}
           </p>
         </div>
       </div>

@@ -2,9 +2,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone)]
 #[serde(default)]
-pub struct AppList {
+pub struct Library {
     pub apps: Vec<App>,
-    pub libs: Vec<Lib>,
+    pub tools: Vec<Tool>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
@@ -66,25 +66,25 @@ pub struct AppValidationStatus {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct Lib {
+pub struct Tool {
     pub timestamp: i64,
     pub installed: bool,
     pub url: String,
-    pub details: LibDetails,
+    pub details: ToolDetails,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct LibDetails {
+pub struct ToolDetails {
     pub name: String,
-    pub config: LibConfig,
-    pub paths: LibPaths,
-    pub validation_status: LibValidationStatus,
+    pub config: ToolConfig,
+    pub paths: ToolPaths,
+    pub validation_status: ToolValidationStatus,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct LibConfig {
+pub struct ToolConfig {
     pub archive_password: String,
     pub add_to_path: bool,
     pub archive_path_directory: String,
@@ -93,14 +93,14 @@ pub struct LibConfig {
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct LibPaths {
+pub struct ToolPaths {
     pub parent_install_path: String,
     pub install_path: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
 #[serde(default)]
-pub struct LibValidationStatus {
+pub struct ToolValidationStatus {
     pub file_exists: bool,
     pub path_exists: bool,
 }

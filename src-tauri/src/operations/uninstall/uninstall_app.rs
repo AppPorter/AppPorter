@@ -1,5 +1,5 @@
 use crate::configs::ConfigFile;
-use crate::configs::{app_list::AppList, env::Env};
+use crate::configs::{env::Env, library::Library};
 use crate::operations::uninstall::{remove_from_path, update_app_list_after_uninstall};
 use std::error::Error;
 use std::path::Path;
@@ -14,7 +14,7 @@ pub async fn uninstall_app(
     app.emit("uninstall", 0)?;
 
     // Get app configuration from app list
-    let app_list = AppList::read().await?;
+    let app_list = Library::read().await?;
     let app_config = app_list
         .apps
         .iter()

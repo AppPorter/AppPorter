@@ -10,7 +10,7 @@ export interface Settings {
   color: string
   run_as_admin: boolean
   app_install: AppInstall
-  lib_install: LibInstall
+  tool_install: ToolInstall
 }
 
 export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
@@ -30,7 +30,7 @@ interface InstallSettings {
   add_to_path: boolean
 }
 
-interface LibInstall {
+interface ToolInstall {
   install_path: string
   add_to_path: boolean
 }
@@ -63,7 +63,7 @@ export const SettingsStore = defineStore('settings', {
         add_to_path: false,
       },
     },
-    lib_install: {
+    tool_install: {
       install_path: '',
       add_to_path: false,
     },
@@ -120,10 +120,8 @@ export const SettingsStore = defineStore('settings', {
 
       // Update DOM
       if (isDarkMode) {
-        console.log('Dark mode enabled')
         document.documentElement.classList.add('dark')
       } else {
-        console.log('Light mode enabled')
         document.documentElement.classList.remove('dark')
       }
 

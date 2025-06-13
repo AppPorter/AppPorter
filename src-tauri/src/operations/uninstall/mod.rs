@@ -1,10 +1,10 @@
 pub mod uninstall_app;
-pub mod uninstall_lib;
+pub mod uninstall_tool;
 
 pub use uninstall_app::*;
-pub use uninstall_lib::*;
+pub use uninstall_tool::*;
 
-use crate::configs::app_list::AppList;
+use crate::configs::library::Library;
 use crate::configs::ConfigFile;
 use std::error::Error;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
@@ -47,7 +47,7 @@ pub async fn remove_from_path(
 pub async fn update_app_list_after_uninstall(
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut app_list = AppList::read().await?;
+    let mut app_list = Library::read().await?;
 
     // Find the app to be uninstalled
     let app_index = app_list
@@ -69,25 +69,25 @@ pub async fn update_app_list_after_uninstall(
     Ok(())
 }
 
-/// Update lib list by either marking as uninstalled or removing completely
-pub async fn update_lib_list_after_uninstall(
+/// Update tool list by either marking as uninstalled or removing completely
+pub async fn update_tool_list_after_uninstall(
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut app_list = AppList::read().await?;
+    let mut app_list = Library::read().await?;
 
-    // Find the lib to be uninstalled
-    let lib_index = app_list
-        .libs
+    // Find the tool to be uninstalled
+    let tool_index = app_list
+        .tools
         .iter()
-        .position(|existing_lib| existing_lib.timestamp == timestamp);
+        .position(|existing_tool| existing_tool.timestamp == timestamp);
 
-    if let Some(index) = lib_index {
-        // If the lib has a URL, just mark it as not installed
+    if let Some(index) = tool_index {
+        // If the tool has a URL, just mark it as not installed
         // Otherwise, remove it completely from the list
-        if !app_list.libs[index].url.is_empty() {
-            app_list.libs[index].installed = false;
+        if !app_list.tools[index].url.is_empty() {
+            app_list.tools[index].installed = false;
         } else {
-            app_list.libs.remove(index);
+            app_list.tools.remove(index);
         }
     }
 

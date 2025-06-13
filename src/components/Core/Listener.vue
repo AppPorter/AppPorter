@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { AppListStore } from '@/stores/app_list'
 import { InstallConfigStore } from '@/stores/install_config'
+import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
 import { useConfirm } from 'primevue/useconfirm'
@@ -10,7 +10,7 @@ import { useI18n } from 'vue-i18n'
 
 const confirm = useConfirm()
 const { t } = useI18n()
-const appListStore = AppListStore()
+const libraryStore = LibraryStore()
 const installConfig = InstallConfigStore()
 
 // Setup event listeners after component is mounted
@@ -31,31 +31,31 @@ onMounted(async () => {
     })
 
     await listen('uninstall_app', async (event) => {
-        goTo('/AppList')
-        await appListStore.loadAppList()
-        const app = appListStore.getAppByTimestamp(event.payload as number)
+        goTo('/Library')
+        await libraryStore.loadLibrary()
+        const app = libraryStore.getAppByTimestamp(event.payload as number)
         if (!app) return
         await new Promise((resolve, reject) => {
             confirm.require({
-                message: t('uninstall.confirm.message', {
+                message: t('ui.uninstall.confirm.msg', {
                     name: app.details.info.name,
                 }),
                 group: 'dialog',
-                header: t('uninstall.confirm.header'),
+                header: t('ui.uninstall.confirm.header'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('cancel'),
+                    label: t('g.cancel'),
                     severity: 'secondary',
                     outlined: true,
                     icon: 'mir-close',
                 },
                 acceptProps: {
-                    label: t('uninstall'),
+                    label: t('cls.uninstall.self'),
                     severity: 'danger',
                     icon: 'mir-warning',
                 },
                 accept: async () => {
-                    await appListStore.executeUninstall(event.payload as number)
+                    await libraryStore.executeUninstall(event.payload as number)
                     resolve(true)
                 },
                 reject: () => reject(),

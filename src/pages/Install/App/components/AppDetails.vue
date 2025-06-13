@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { InstallConfigStore } from '@/stores/install_config'
-import { storeToRefs } from 'pinia'
-import { ref, toRef } from 'vue'
-import { useI18n } from 'vue-i18n'
+import { InstallConfigStore } from '@/stores/install_config';
+import { storeToRefs } from 'pinia';
+import { toRef } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 defineProps<{
   nameError: boolean
   detailsLoading: boolean
   detailsLoadingProgress: number
   progressMode: 'indeterminate' | 'determinate'
-  executablePathError?: boolean
 }>()
 
 const installConfig = InstallConfigStore()
@@ -21,22 +19,11 @@ const name = toRef(app_details.value.info, 'name')
 const icon = toRef(app_details.value.info, 'icon')
 const publisher = toRef(app_details.value.info, 'publisher')
 const version = toRef(app_details.value.info, 'version')
-const executable_path = toRef(app_details.value.config, 'archive_exe_path')
 
 const { t } = useI18n()
-const detailsLoading = ref(false)
-const drawerVisible = ref(false)
 
 function clearIcon() {
   icon.value = ''
-}
-
-function closeDrawer() {
-  drawerVisible.value = false
-}
-
-function handleDetailsLoading(loading: boolean) {
-  detailsLoading.value = loading
 }
 </script>
 
@@ -47,34 +34,24 @@ function handleDetailsLoading(loading: boolean) {
         <div class="flex items-center gap-1.5">
           <span class="mir-apps text-lg" />
           <h2 class="text-base font-medium">
-            {{ t('install.app_details.title') }}
+            {{ t('ui.install.app_details.title') }}
           </h2>
         </div>
         <p class="ml-6 mt-0.5 text-xs">
-          {{ t('selected_file') }}:
+          {{ t('ui.install.selected_file') }}:
           <span class="break-all font-medium">{{ zip_path }}</span>
+        </p>
+        <p class="ml-6 mt-0.5 text-xs">
+          {{ t('ui.install.executable_path') }}:
+          <span class="break-all font-medium">{{ app_details.config.archive_exe_path }}</span>
         </p>
       </div>
     </template>
     <div class="space-y-2 p-2">
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('executable_path') }}</label>
-        <div class="w-full">
-          <div class="flex flex-1 gap-2">
-            <InputText v-model="executable_path" :placeholder="t('select_executable_path')" class="h-8 w-full text-sm"
-              :invalid="executablePathError" />
-            <Button class="h-8 w-36" severity="secondary" @click="drawerVisible = true" icon="mir-folder_open"
-              :label="t('browse')" />
-          </div>
-        </div>
-      </div>
-    </div>
-    <Divider />
-    <div class="space-y-2 p-2">
-      <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('icon') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          {{ t('g.icon') }}
+          <p class="text-xs font-normal">{{ t('g.optional') }}</p>
         </label>
         <div class="w-full">
           <div class="flex items-center gap-2">
@@ -91,51 +68,45 @@ function handleDetailsLoading(loading: boolean) {
               </Button>
             </div>
             <span v-show="!icon" class="text-xs">
-              {{ t('install.app_details.icon_extract_hint') }}
+              {{ t('ui.install.app_details.icon_extract_hint') }}
             </span>
           </div>
         </div>
       </div>
 
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('app.name') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('cls.install.app.name') }}</label>
         <div class="w-full">
-          <InputText v-model="name" :placeholder="t('app.name')" class="h-8 w-full text-sm" :invalid="nameError" />
+          <InputText v-model="name" :placeholder="t('cls.install.app.name')" class="h-8 w-full text-sm"
+            :invalid="nameError" />
         </div>
       </div>
 
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('app.publisher') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          {{ t('cls.install.app.publisher') }}
+          <p class="text-xs font-normal">{{ t('g.optional') }}</p>
         </label>
         <div class="w-full">
-          <InputText v-model="publisher" :placeholder="t('app.publisher')" class="h-8 w-full text-sm" />
+          <InputText v-model="publisher" :placeholder="t('cls.install.app.publisher')" class="h-8 w-full text-sm" />
         </div>
       </div>
 
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">
-          {{ t('app.version') }}
-          <p class="text-xs font-normal">{{ t('optional') }}</p>
+          {{ t('cls.install.app.version') }}
+          <p class="text-xs font-normal">{{ t('g.optional') }}</p>
         </label>
         <div class="w-full">
-          <InputText v-model="version" :placeholder="t('app.version')" class="h-8 w-full text-sm" />
+          <InputText v-model="version" :placeholder="t('cls.install.app.version')" class="h-8 w-full text-sm" />
         </div>
       </div>
     </div>
 
     <div v-if="detailsLoading" class="absolute inset-0 flex items-center justify-center backdrop-blur-[0.125rem]">
       <h3 class="text-base font-semibold">
-        {{ t('loading') }}
+        {{ t('g.loading') }}
       </h3>
     </div>
   </Panel>
-  <Drawer v-model:visible="drawerVisible" :header="t('select_executable')" position="bottom" :style="{ height: '95vh' }"
-    class="rounded-lg">
-    <div class="h-full overflow-hidden">
-      <ExecutableSelector :zip-path="zip_path" :details-loading="detailsLoading" @close="closeDrawer"
-        @loading="handleDetailsLoading" />
-    </div>
-  </Drawer>
 </template>

@@ -30,7 +30,7 @@ const fullInstallPath = computed(() => {
 
 // Helper functions to format and display install information
 const getInstallMode = (isCurrentUser: boolean) =>
-  isCurrentUser ? t('current_user') : t('all_users')
+  isCurrentUser ? t('cls.install.modes.current_user') : t('cls.install.modes.all_users')
 
 const getShortcutsList = (config: {
   create_desktop_shortcut: boolean
@@ -39,11 +39,11 @@ const getShortcutsList = (config: {
   add_to_path: boolean
 }) => {
   const shortcuts = []
-  if (config.create_desktop_shortcut) shortcuts.push(t('shortcuts.desktop'))
-  if (config.create_start_menu_shortcut) shortcuts.push(t('shortcuts.start_menu'))
-  if (config.create_registry_key) shortcuts.push(t('shortcuts.registry_key'))
-  if (config.add_to_path) shortcuts.push(t('shortcuts.path'))
-  return shortcuts.length ? shortcuts.join(', ') : t('shortcuts.none')
+  if (config.create_desktop_shortcut) shortcuts.push(t('cls.install.shortcuts.desktop'))
+  if (config.create_start_menu_shortcut) shortcuts.push(t('cls.install.shortcuts.start_menu'))
+  if (config.create_registry_key) shortcuts.push(t('cls.install.shortcuts.registry_key'))
+  if (config.add_to_path) shortcuts.push(t('cls.install.shortcuts.add_to_path'))
+  return shortcuts.length ? shortcuts.join(', ') : t('ui.install.shortcuts.none')
 }
 
 // Copy information to clipboard with feedback
@@ -52,7 +52,7 @@ const handleCopy = async (text: string, type: string) => {
     await navigator.clipboard.writeText(text)
     toast.add({
       severity: 'info',
-      summary: t('edit.copy'),
+      summary: t('cls.edit.copy'),
       detail: `${type} copied to clipboard`,
       life: 2000,
     })
@@ -60,7 +60,7 @@ const handleCopy = async (text: string, type: string) => {
     console.error('Failed to copy to clipboard:', error)
     toast.add({
       severity: 'error',
-      summary: t('error'),
+      summary: t('g.error'),
       detail: 'Failed to copy to clipboard',
       life: 3000,
     })
@@ -69,17 +69,17 @@ const handleCopy = async (text: string, type: string) => {
 
 onMounted(async () => {
   // Initial install setup
-  currentStatus.value = t('install.progress.preparing')
+  currentStatus.value = t('ui.install.progress.preparing')
 
   // Setup event listeners for install progress
   const installUnlisten = await listen('install', (event) => {
     const payload = event.payload as number
     if (payload === 0) {
       progressMode.value = 'indeterminate'
-      currentStatus.value = t('install.progress.preparing_extract')
+      currentStatus.value = t('ui.install.progress.preparing_extract')
     }
     if (payload === 101) {
-      currentStatus.value = t('install.progress.completed')
+      currentStatus.value = t('ui.install.progress.completed')
       isFinished.value = true
       canClose.value = true
     }
@@ -88,7 +88,7 @@ onMounted(async () => {
   const extractUnlisten = await listen('install_extract', (event) => {
     progressMode.value = 'determinate'
     extractProgress.value = event.payload as number
-    currentStatus.value = t('install.progress.extracting', { progress: extractProgress.value })
+    currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
   })
 
   // Start install process
@@ -107,7 +107,7 @@ onMounted(async () => {
     finalExecutablePath.value = result as string
   } catch (error) {
     console.error('Install failed:', error)
-    currentStatus.value = t('install.progress.failed')
+    currentStatus.value = t('ui.install.progress.failed')
     canClose.value = true
   }
 
@@ -141,10 +141,10 @@ const handleClose = () => {
               </div>
               <div class="min-w-0 shrink">
                 <h2 class="text-lg font-medium">
-                  {{ t('install.progress.title') }}
+                  {{ t('ui.install.progress.title') }}
                 </h2>
                 <p class="text-xs">
-                  {{ t('install.progress.description') }}
+                  {{ t('ui.install.progress.description') }}
                 </p>
               </div>
             </div>
@@ -185,10 +185,11 @@ const handleClose = () => {
             <div class="flex w-full items-center justify-between py-1">
               <div class="flex items-center gap-2">
                 <span class="mir-terminal"></span>
-                <span class="text-sm font-medium">{{ t('full_path') }}</span>
+                <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
               </div>
-              <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_path')" class="h-7 w-8"
-                icon="mir-content_copy" @click="handleCopy(finalExecutablePath, t('executable_path'))" />
+              <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
+                icon="mir-content_copy"
+                @click="handleCopy(finalExecutablePath, t('cls.install.config.executable_path'))" />
             </div>
             <p class="select-text break-all text-sm font-medium">
               {{ finalExecutablePath }}
@@ -201,10 +202,10 @@ const handleClose = () => {
                 <div class="flex items-center gap-2">
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
-                    t('install.progress.install_settings')
+                    t('ui.install.progress.install_settings')
                   }}</span>
                 </div>
-                <Button severity="secondary" outlined v-tooltip.top="t('install.progress.copy_settings')"
+                <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
                     handleCopy(
                       `Install Mode: ${getInstallMode(installConfig.app_details.config.current_user_only)}\nShortcuts: ${getShortcutsList(installConfig.app_details.config)}\nInstall Path: ${fullInstallPath}`,
@@ -214,19 +215,19 @@ const handleClose = () => {
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('install.mode') }}</span>
+                  <span class="text-sm">{{ t('cls.install.modes.self') }}</span>
                   <p class="text-sm font-medium">
                     {{ getInstallMode(installConfig.app_details.config.current_user_only) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('shortcuts') }}</span>
+                  <span class="text-sm">{{ t('cls.install.shortcuts.self') }}</span>
                   <p class="text-sm font-medium">
                     {{ getShortcutsList(installConfig.app_details.config) }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('install_path') }}</span>
+                  <span class="text-sm">{{ t('cls.install.paths.self') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ fullInstallPath }}
                   </p>
@@ -239,11 +240,11 @@ const handleClose = () => {
                 <div class="flex items-center gap-2">
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
-                    t('install.progress.package_info')
+                    t('ui.install.progress.package_info')
                   }}</span>
                 </div>
-                <Button severity="secondary" outlined v-tooltip.top="t('copy_package_info')" class="h-7 w-8"
-                  icon="mir-content_copy" @click="
+                <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_package_info')"
+                  class="h-7 w-8" icon="mir-content_copy" @click="
                     handleCopy(
                       `Source Archive: ${installConfig.zip_path}\nSelected Executable: ${installConfig.app_details.config.archive_exe_path}`,
                       'Package info'
@@ -252,13 +253,13 @@ const handleClose = () => {
               </div>
               <div class="select-text space-y-3">
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('source_archive') }}</span>
+                  <span class="text-sm">{{ t('ui.install.source_archive') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ installConfig.zip_path }}
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('selected_executable') }}</span>
+                  <span class="text-sm">{{ t('ui.install.selected_executable') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ installConfig.app_details.config.archive_exe_path }}
                   </p>
@@ -269,7 +270,7 @@ const handleClose = () => {
 
           <div class="flex justify-end">
             <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'success' : 'danger'" class="h-8 w-24"
-              :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('finish') : t('close')" />
+              :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('g.finish') : t('g.close')" />
           </div>
         </div>
       </Panel>

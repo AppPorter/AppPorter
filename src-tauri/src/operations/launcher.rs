@@ -1,5 +1,4 @@
 use std::error::Error;
-
 use tokio::process::Command;
 
 pub async fn open_app(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {

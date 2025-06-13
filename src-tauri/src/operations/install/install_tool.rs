@@ -1,6 +1,6 @@
 use crate::{
     configs::{
-        app_list::{AppList, Lib, LibConfig, LibDetails, LibPaths, LibValidationStatus},
+        library::{Library, Tool, ToolConfig, ToolDetails, ToolPaths, ToolValidationStatus},
         ConfigFile,
     },
     operations::extract_archive_files,
@@ -11,7 +11,7 @@ use std::path::Path;
 use tauri::AppHandle;
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct LibInstallConfig {
+pub struct ToolInstallConfig {
     zip_path: String,
     password: Option<String>,
     extract_path: String,
@@ -19,8 +19,8 @@ pub struct LibInstallConfig {
     timestamp: i64,
 }
 
-pub async fn install_lib(
-    config: LibInstallConfig,
+pub async fn install_tool(
+    config: ToolInstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let zip_path = config.zip_path.clone();
@@ -45,35 +45,35 @@ pub async fn install_lib(
         &install_path,
         app,
         config.password.as_deref(),
-        "install_lib_extract",
+        "install_tool_extract",
     )
     .await?;
 
     // Add to app list
-    let mut app_list = AppList::read().await?;
+    let mut app_list = Library::read().await?;
     let timestamp = if config.timestamp != 0 {
         config.timestamp
     } else {
         chrono::Utc::now().timestamp()
     };
-    let details = LibDetails {
+    let details = ToolDetails {
         name: config.name,
-        config: LibConfig {
+        config: ToolConfig {
             archive_password: config.password.unwrap_or_default(),
             add_to_path: false,
             archive_path_directory: String::new(),
             full_path_directory: String::new(),
         },
-        paths: LibPaths {
+        paths: ToolPaths {
             parent_install_path: extract_path.clone(),
             install_path: install_path.clone(),
         },
-        validation_status: LibValidationStatus {
+        validation_status: ToolValidationStatus {
             file_exists: true,
             path_exists: true,
         },
     };
-    let app_item = Lib {
+    let app_item = Tool {
         timestamp,
         installed: true,
         details,
@@ -82,7 +82,7 @@ pub async fn install_lib(
     if config.timestamp != 0 {
         // Update existing app with matching timestamp
         if let Some(existing_app) = app_list
-            .libs
+            .tools
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
@@ -91,14 +91,14 @@ pub async fn install_lib(
         }
     } else {
         // Remove existing similar app and add new one
-        app_list.libs.retain(|existing_app| {
+        app_list.tools.retain(|existing_app| {
             let mut app1 = existing_app.clone();
             let mut app2 = app_item.clone();
             app1.timestamp = 0;
             app2.timestamp = 0;
             app1 != app2
         });
-        app_list.libs.push(app_item);
+        app_list.tools.push(app_item);
     }
     app_list.save().await?;
 

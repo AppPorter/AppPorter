@@ -6,6 +6,7 @@ import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import Listener from '@/components/Core/Listener.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
+import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
 import { exit } from '@tauri-apps/plugin-process'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
@@ -27,16 +28,16 @@ onMounted(async () => {
   if (env.first_run) {
     confirm.require({
       group: 'disclaimer',
-      header: t('disclaimer.title'),
-      message: t('disclaimer.message'),
+      header: t('ui.disclaimer.header'),
+      message: t('ui.disclaimer.msg'),
       icon: 'mir-info',
       acceptProps: {
-        label: t('accept'),
+        label: t('g.accept'),
         icon: 'mir-check',
         severity: 'primary',
       },
       rejectProps: {
-        label: t('exit'),
+        label: t('g.exit'),
         icon: 'mir-close',
         severity: 'secondary',
         outlined: true,
@@ -102,5 +103,8 @@ onBeforeMount(() => {
 
     <!-- Context Menu -->
     <ContextMenuManager ref="contextMenuManager" />
+
+    <!-- Preview Drawer -->
+    <PreviewDrawer />
   </div>
 </template>

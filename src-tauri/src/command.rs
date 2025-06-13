@@ -18,9 +18,9 @@ pub enum Command {
     SaveSettings {
         settings: Settings,
     },
-    LoadAppList,
-    SaveAppList {
-        app_list: AppList,
+    LoadLibrary,
+    SaveLibrary {
+        library: Library,
     },
 
     // Core
@@ -38,13 +38,13 @@ pub enum Command {
     InstallApp {
         config: AppInstallConfig,
     },
-    InstallLib {
-        config: LibInstallConfig,
+    InstallTool {
+        config: ToolInstallConfig,
     },
     UninstallApp {
         timestamp: i64,
     },
-    UninstallLib {
+    UninstallTool {
         timestamp: i64,
     },
 
@@ -77,6 +77,11 @@ pub enum Command {
     CheckPathEmpty {
         path: String,
     },
+
+    GetArchiveTree {
+        path: String,
+        password: Option<String>,
+    },
 }
 
 impl Command {
@@ -100,8 +105,8 @@ impl Command {
             SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
-            LoadAppList => Self::ser(load_app_list().await?),
-            SaveAppList { app_list } => Self::ser(app_list.save().await?),
+            LoadLibrary => Self::ser(load_library().await?),
+            SaveLibrary { library } => Self::ser(library.save().await?),
 
             // Core
             Cli => Self::ser(cli(app).await?),
@@ -117,9 +122,9 @@ impl Command {
 
             // Operations - Install/Uninstall
             InstallApp { config } => Self::ser(install_app(config, app).await?),
-            InstallLib { config } => Self::ser(install_lib(config, app).await?),
+            InstallTool { config } => Self::ser(install_tool(config, app).await?),
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
-            UninstallLib { timestamp } => Self::ser(uninstall_lib(timestamp, app).await?),
+            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, app).await?),
 
             // Operations - Launcher
             OpenApp { path } => Self::ser(open_app(&path).await?),
@@ -136,6 +141,7 @@ impl Command {
                 Self::ser(get_archive_content(path, password).await?)
             }
             CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
+            GetArchiveTree { path, password } => Self::ser(get_archive_tree(path, password).await?),
         }
     }
 }

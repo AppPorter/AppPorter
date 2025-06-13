@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
-import type { AppDetails, LibDetails } from './app_list'
+import type { AppDetails, ToolDetails } from './library'
 
 type Pages =
   | 'Home'
-  | 'Preview'
   | 'Install_App_Config'
   | 'Install_App_Progress'
-  | 'Install_Lib_Config'
-  | 'Install_Lib_Progress'
+  | 'Install_Tool_Config'
+  | 'Install_Tool_Progress'
 
 interface InstallConfig {
   zip_path: string
@@ -17,7 +16,8 @@ interface InstallConfig {
   url: string
   archive_password: string
   app_details: AppDetails
-  lib_details: LibDetails
+  tool_details: ToolDetails
+  showPreviewDrawer: boolean
 }
 
 export const InstallConfigStore = defineStore('install_config', {
@@ -28,6 +28,7 @@ export const InstallConfigStore = defineStore('install_config', {
     timestamp: 0,
     url: '',
     archive_password: '',
+    showPreviewDrawer: false,
     app_details: {
       info: {
         name: '',
@@ -50,7 +51,7 @@ export const InstallConfigStore = defineStore('install_config', {
         full_path: '',
       },
     },
-    lib_details: {
+    tool_details: {
       name: '',
       config: {
         add_to_path: false,

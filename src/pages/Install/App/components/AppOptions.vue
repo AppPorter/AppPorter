@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DirectorySelector from '@/components/ZipPreview/DirectorySelector.vue'
+import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
@@ -8,7 +8,11 @@ import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 defineProps<{
-  pathError: string
+  pathError: boolean
+}>()
+
+defineEmits<{
+  'update:pathError': [value: boolean]
 }>()
 
 const settingsStore = SettingsStore()
@@ -36,7 +40,6 @@ const install_path = toRef(app_details.value.paths, 'parent_install_path')
 
 // UI state
 const directoryDrawerVisible = ref(false)
-const detailsLoading = ref(false)
 
 // Optimized formatted app path with null safety
 const formatted_app_path = computed(() => {
@@ -86,10 +89,6 @@ function handleInstallModeChange(event: Event) {
   current_user_only.value = checked
   updateConfig(checked)
 }
-
-function handleDetailsLoading(loading: boolean) {
-  detailsLoading.value = loading
-}
 </script>
 
 <template>
@@ -99,7 +98,7 @@ function handleDetailsLoading(loading: boolean) {
         <div class="flex items-center gap-1.5">
           <span class="mir-settings" />
           <h2 class="text-base font-medium">
-            {{ t('install.config.install_options') }}
+            {{ t('ui.install.config.install_options') }}
           </h2>
         </div>
       </div>
@@ -108,63 +107,63 @@ function handleDetailsLoading(loading: boolean) {
     <div class="space-y-2 p-2">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('install_mode') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('cls.install.modes.self') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
-          <span class="text-sm">{{ t('all_users') }}</span>
+          <span class="text-sm">{{ t('cls.install.modes.all_users') }}</span>
           <ToggleSwitch v-model="current_user_only" @change="handleInstallModeChange" class="mx-1" />
-          <span class="text-sm">{{ t('current_user') }}</span>
+          <span class="text-sm">{{ t('cls.install.modes.current_user') }}</span>
         </div>
       </div>
 
       <!-- Install Path -->
       <div class="flex items-center gap-2">
-        <label class="w-24 text-sm font-medium">{{ t('install_path') }}</label>
+        <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path') }}</label>
         <div class="w-full">
           <div class="flex flex-1 gap-2">
-            <InputText v-model="install_path" :placeholder="t('choose_dir')" class="h-8 w-full text-sm"
-              :invalid="!!pathError" @input="$emit('update:pathError', '')" :title="pathError" />
+            <InputText v-model="install_path" :placeholder="t('ui.select_placeholder.dir')" class="h-8 w-full text-sm"
+              :invalid="pathError" @input="$emit('update:pathError', false)" />
             <Button class="h-8 w-36" severity="secondary" @click="select_install_path" icon="mir-folder_open"
-              :label="t('browse')" />
+              :label="t('g.browse')" />
           </div>
 
           <!-- Formatted App Path -->
           <div v-if="install_path && app_details.info.name" class="mt-1 text-xs text-gray-500">
-            {{ t('final_path') }}: {{ formatted_app_path }}
+            {{ t('ui.install.final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
       </div>
 
       <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
-        <label class="mt-1 w-24 text-sm font-medium">{{ t('shortcuts.self') }}</label>
+        <label class="mt-1 w-24 text-sm font-medium">{{ t('g.option') }}</label>
         <div class="w-full">
           <div class="flex-1 space-y-1 rounded-lg p-1.5">
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_desktop_shortcut" :binary="true" inputId="desktop_shortcut" />
-              <label for="desktop_shortcut" class="text-sm">{{ t('shortcuts.desktop') }}</label>
+              <label for="desktop_shortcut" class="text-sm">{{ t('cls.install.shortcuts.desktop') }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
-                t('shortcuts.start_menu')
-                }}</label>
+                t('cls.install.shortcuts.start_menu')
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
-              <label for="registry_key" class="text-sm">{{ t('shortcuts.registry_key') }}</label>
+              <label for="registry_key" class="text-sm">{{ t('cls.install.shortcuts.registry_key') }}</label>
             </div>
             <div class="flex flex-col gap-1">
               <div class="flex items-center gap-2">
                 <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
-                <label for="add_to_path" class="text-sm">{{ t('add_to_path') }}</label>
+                <label for="add_to_path" class="text-sm">{{ t('cls.install.shortcuts.add_to_path') }}</label>
               </div>
               <!-- PATH Directory Input - only shown when add_to_path is true -->
               <div v-if="add_to_path" class="ml-6 mt-1">
                 <div class="flex gap-2">
-                  <InputText v-model="path_directory" :placeholder="t('select_path_directory')"
+                  <InputText v-model="path_directory" :placeholder="t('ui.select_placeholder.path_directory')"
                     class="h-8 w-full text-sm" />
                   <Button class="h-8 w-36" severity="secondary" @click="directoryDrawerVisible = true"
-                    icon="mir-folder_open" :label="t('browse')" />
+                    icon="mir-folder_open" :label="t('g.browse')" />
                 </div>
               </div>
             </div>
@@ -175,11 +174,6 @@ function handleDetailsLoading(loading: boolean) {
   </Panel>
 
   <!-- Directory Selector Drawer -->
-  <Drawer v-model:visible="directoryDrawerVisible" :header="t('select_path_directory')" position="bottom"
-    :style="{ height: '95vh' }" class="rounded-lg">
-    <div class="h-full overflow-hidden">
-      <DirectorySelector :zip-path="zip_path" :details-loading="detailsLoading" @close="directoryDrawerVisible = false"
-        @loading="handleDetailsLoading" @directory-select="path_directory = $event" />
-    </div>
-  </Drawer>
+  <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="zip_path"
+    @directory-select="path_directory = $event" />
 </template>

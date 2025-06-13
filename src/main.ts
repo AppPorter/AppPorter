@@ -30,7 +30,7 @@ const createTrayMenu = (t: (key: string) => string) => {
     items: [
       {
         id: 'open',
-        text: t('open'),
+        text: t('g.open'),
         action: () => {
           window.show()
           window.unminimize()
@@ -39,7 +39,7 @@ const createTrayMenu = (t: (key: string) => string) => {
       },
       {
         id: 'quit',
-        text: t('quit'),
+        text: t('g.exit'),
         action: () => invoke('exit'),
       },
     ],
@@ -62,6 +62,8 @@ await envStore.loadEnv()
 
 const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
+
+await envStore.setInitialSettings()
 
 // Then initialize i18n with the loaded language
 const i18n = setupI18n(settingsStore.language)

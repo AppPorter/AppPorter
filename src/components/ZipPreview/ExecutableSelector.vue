@@ -9,27 +9,7 @@ import { useI18n } from 'vue-i18n'
 import ZipPreview from './ZipPreview.vue'
 
 const store = InstallConfigStore()
-
 const { t } = useI18n()
-
-// Constants
-const FILTER_MODES = {
-  exe: {
-    value: 'exe',
-    label: t('executable_selector.filter.exe'),
-    icon: 'mir-terminal',
-  },
-  executable: {
-    value: 'executable',
-    label: t('executable_selector.filter.executable'),
-    icon: 'mir-code',
-  },
-  all: {
-    value: 'all',
-    label: t('executable_selector.filter.all'),
-    icon: 'mir-description',
-  },
-}
 
 // Props
 const props = defineProps<{
@@ -38,17 +18,17 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (e: 'close'): void
   (e: 'loading', value: boolean): void
+  (e: 'executable-selected'): void
+  (e: 'no-executable'): void
 }>()
 
 // State
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
-const zipPreviewRef = ref<InstanceType<typeof ZipPreview> | null>(null)
 const selectedPath = ref('')
 const isSelecting = ref(false)
 
-// Define the FileNode interface explicitly
+// File node interface
 interface FileNode {
   path?: string
   name: string
@@ -57,6 +37,25 @@ interface FileNode {
 
 // Executable file extensions
 const EXECUTABLE_EXTENSIONS = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
+
+// Filter modes
+const FILTER_MODES = [
+  {
+    value: 'exe',
+    label: t('ui.executable_selector.filter.exe'),
+    icon: 'mir-terminal',
+  },
+  {
+    value: 'executable',
+    label: t('ui.executable_selector.filter.executable'),
+    icon: 'mir-code',
+  },
+  {
+    value: 'all',
+    label: t('ui.executable_selector.filter.all'),
+    icon: 'mir-description',
+  },
+]
 
 // File filter function based on selected filter mode
 const fileFilter = computed(() => {
@@ -85,6 +84,20 @@ const isSelectableFile = (node: FileNode): boolean => {
   if (node.type !== 'file') return false
 
   return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
+}
+
+// Get description for filter options
+function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
+  switch (mode) {
+    case 'exe':
+      return t('ui.executable_selector.filter_description.exe')
+    case 'executable':
+      return t('ui.executable_selector.filter_description.executable')
+    case 'all':
+      return t('ui.executable_selector.filter_description.all')
+    default:
+      return ''
+  }
 }
 
 // Handle node selection with proper typing
@@ -118,11 +131,15 @@ async function handleSelect() {
     store.app_details.info.icon = details.icon_data_url
     store.app_details.config.archive_exe_path = selectedPath.value
 
-    emit('close')
+    emit('executable-selected')
   } finally {
     isSelecting.value = false
     emit('loading', false)
   }
+}
+
+function handleNoExecutable() {
+  emit('no-executable')
 }
 </script>
 
@@ -132,7 +149,7 @@ async function handleSelect() {
     <div
       class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
       <div class="flex flex-col gap-3">
-        <!-- Filter options with horizontal layout -->
+        <!-- Filter options with horizontal layout and better descriptions -->
         <div class="flex gap-2">
           <div v-for="option in FILTER_MODES" :key="option.value" :class="[
             'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
@@ -147,6 +164,9 @@ async function handleSelect() {
                 <span :class="[option.icon, filterMode === option.value ? 'text-blue-500' : '']" />
                 {{ option.label }}
               </label>
+              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                {{ getFilterDescription(option.value as any) }}
+              </p>
             </div>
           </div>
         </div>
@@ -155,8 +175,8 @@ async function handleSelect() {
 
     <!-- Main content area with fixed height and proper overflow handling -->
     <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
-      <ZipPreview ref="zipPreviewRef" :zip-path="zipPath" :filter-function="fileFilter"
-        :is-selectable-function="isSelectableFile" :details-loading="detailsLoading" @node-select="handleNodeSelect" />
+      <ZipPreview :zip-path="zipPath" :filter-function="fileFilter" :selected-path="selectedPath"
+        :is-selectable-function="isSelectableFile" @node-click="handleNodeSelect" />
     </div>
 
     <!-- Selected file and button container -->
@@ -177,20 +197,27 @@ async function handleSelect() {
             : 'text-slate-700 dark:text-slate-300',
         ]">{{
           selectedPath
-            ? t('executable_selector.selected')
-            : t('executable_selector.select_prompt')
+            ? t('ui.executable_selector.selected')
+            : t('ui.executable_selector.select_prompt')
         }}:</span>
         <span :class="[
           'truncate',
           selectedPath
             ? 'text-green-700 dark:text-green-400'
             : 'text-slate-600 dark:text-slate-400',
-        ]">{{ selectedPath || t('executable_selector.no_selection') }}</span>
+        ]">{{ selectedPath || t('ui.executable_selector.no_selection') }}</span>
       </div>
-      <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
-      <Button v-else severity="primary" :disabled="!selectedPath" @click="handleSelect">
-        {{ t('select') }}
-      </Button>
+      <div class="flex gap-2">
+        <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
+        <template v-else>
+          <Button severity="secondary" @click="handleNoExecutable">
+            {{ t('ui.executable_selector.no_executable') }}
+          </Button>
+          <Button severity="primary" :disabled="!selectedPath" @click="handleSelect">
+            {{ t('g.select') }}
+          </Button>
+        </template>
+      </div>
     </div>
   </div>
 </template>

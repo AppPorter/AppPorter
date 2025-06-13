@@ -70,7 +70,7 @@ pub async fn get_archive_content(
     Ok(parse_7z_list_output(&output_str))
 }
 
-// Common file extraction function for both apps and libs
+// Common file extraction function for both apps and tools
 pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,
@@ -180,11 +180,15 @@ pub fn parse_7z_list_output(output: &str) -> Vec<String> {
 
         // Only process lines between separators
         if is_output_section {
-            if let Some(last_field) = line.split_whitespace().last() {
-                result.push(last_field.to_string());
+            // 7z output format: date time attr size compressed_size filename
+            // The filename starts at column 53 (0-indexed)
+            if line.len() >= 53 {
+                let filename = line[53..].trim();
+                if !filename.is_empty() {
+                    result.push(filename.to_string());
+                }
             }
         }
     }
-
     result
 }
