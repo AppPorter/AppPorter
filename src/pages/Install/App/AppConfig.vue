@@ -128,7 +128,7 @@ async function handleInstallClick() {
     </div>
 
     <!-- Bottom bar with buttons -->
-    <div class="flex items-center justify-between border-t bg-surface-0 px-4 py-3">
+    <div class="flex items-center justify-between px-4 py-3">
       <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
         icon="mir-arrow_back" :label="t('g.back')" outlined />
 

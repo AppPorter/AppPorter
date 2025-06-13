@@ -178,7 +178,7 @@ async function handleInstallClick() {
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -201,7 +201,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
@@ -230,7 +230,7 @@ async function handleInstallClick() {
         </div>
 
         <!-- Bottom bar with buttons -->
-        <div class="flex items-center justify-between border-t bg-surface-0 px-4 py-3">
+        <div class="flex items-center justify-between px-4 py-3">
             <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
                 icon="mir-arrow_back" :label="t('g.back')" outlined />
 
