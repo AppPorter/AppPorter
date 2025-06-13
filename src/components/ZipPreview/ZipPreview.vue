@@ -193,10 +193,10 @@ onMounted(() => {
             ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
               <!-- Expand/collapse icon for directories -->
               <span v-if="node.type === 'directory' && node.children && node.children.length > 0" :class="[
-                'mr-1 shrink-0 text-xs transition-transform duration-200',
+                'mr-1 w-4 shrink-0 text-xs transition-transform duration-200',
                 node.expanded ? 'mir-expand_more' : 'mir-chevron_right'
               ]"></span>
-              <span v-else class="mr-4 w-3"></span>
+              <span v-else class="mr-1 w-4 shrink-0"></span>
 
               <!-- File/folder icon -->
               <span :class="[
