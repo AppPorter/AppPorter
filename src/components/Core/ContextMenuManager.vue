@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { readText } from '@tauri-apps/plugin-clipboard-manager'
 import ContextMenu from 'primevue/contextmenu'
 import type { MenuItem } from 'primevue/menuitem'
 import { ref } from 'vue'
@@ -22,8 +23,11 @@ const editMenuItems = ref<MenuItem[]>([
   {
     label: t('cls.edit.paste'),
     icon: 'mir-content_paste',
-    command: async () =>
-      document.execCommand('insertText', false, await navigator.clipboard.readText()),
+    command: async () => {
+      try {
+        document.execCommand('insertText', false, await readText())
+      } catch { /* empty */ }
+    },
   },
   { separator: true },
   {
