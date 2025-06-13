@@ -52,7 +52,7 @@ async function loadZipContent() {
 
   try {
     const command = {
-      name: 'ZipPreview',
+      name: 'GetArchiveTree',
       path: props.zipPath,
       password: props.password || null
     }
