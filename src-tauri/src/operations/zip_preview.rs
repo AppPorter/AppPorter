@@ -24,14 +24,14 @@ pub fn build_file_tree(paths: Vec<String>) -> Vec<FileTreeNode> {
     for path in &paths {
         let parts: Vec<&str> = path.split('\\').collect();
         let mut current_path = String::new();
-        for i in 0..parts.len().saturating_sub(1) {
-            if parts[i].is_empty() {
+        for part in parts.iter().take(parts.len().saturating_sub(1)) {
+            if part.is_empty() {
                 continue;
             }
             current_path = if current_path.is_empty() {
-                parts[i].to_string()
+                part.to_string()
             } else {
-                format!("{}\\{}", current_path, parts[i])
+                format!("{}\\{}", current_path, part)
             };
             dir_map.insert(current_path.clone(), true);
         }
