@@ -33,7 +33,8 @@
       "install": {
         "app": "应用安装",
         "tool": "工具安装"
-      }
+      },
+      "default_install_mode": "默认安装模式"
     },
     "select_placeholder": {
       "archive": "压缩文件路径",
@@ -119,7 +120,6 @@
     "install": {
       "self": "安装",
       "modes": {
-        "self": "安装模式",
         "current_user": "当前用户",
         "all_users": "所有用户"
       },

@@ -9,6 +9,7 @@ import Chip from 'primevue/chip'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import Select from 'primevue/select'
+import SelectButton from 'primevue/selectbutton'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -38,6 +39,11 @@ const themeOptions = [
   { label: t('cls.theme.system'), value: 'system' },
   { label: t('cls.theme.light'), value: 'light' },
   { label: t('cls.theme.dark'), value: 'dark' },
+]
+
+const installModeOptions = [
+  { label: t('cls.install.modes.current_user'), value: true },
+  { label: t('cls.install.modes.all_users'), value: false },
 ]
 
 // Save settings and reload app when changes are detected
@@ -174,8 +180,9 @@ const githubIcon = computed(() => {
         </template>
         <div class="space-y-2">
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.install.modes.self') }}</label>
-            <ToggleSwitch v-model="settings.app_install.current_user_only" />
+            <label>{{ t('ui.settings.default_install_mode') }}</label>
+            <SelectButton v-model="settings.app_install.current_user_only" :options="installModeOptions"
+              optionLabel="label" optionValue="value" :allowEmpty="false" size="small" />
           </div>
 
           <div class="flex min-w-0 flex-col gap-4 lg:flex-row">
@@ -202,7 +209,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                  }}</label>
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -236,7 +243,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                    }}</label>
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
