@@ -2,6 +2,7 @@
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
+import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { useToast } from 'primevue'
 import Button from 'primevue/button'
@@ -12,12 +13,14 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
+const libraryStore = LibraryStore()
 const toast = useToast()
 const { t } = useI18n()
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
 const passwordError = ref(false)
 const detailsLoading = ref(false)
+const subscribeSuccess = ref(false)
 
 // Computed properties
 const drawerVisible = computed({
@@ -46,26 +49,78 @@ function handleNoExecutable() {
     goTo('/Install/Tool/Config')
 }
 
+async function handleSubscribe() {
+    if (!installConfig.temp.url) return
+
+    // Check if already subscribed
+    if (libraryStore.hasApp(installConfig.temp.url)) {
+        return
+    }
+
+    subscribeSuccess.value = false
+
+    // Create new app entry
+    const newApp = {
+        timestamp: Date.now(),
+        installed: false,
+        url: installConfig.temp.url,
+        details: {
+            info: {
+                name: installConfig.temp.zip_path.split(/[/\\]/).pop()?.replace(/\.[^/.]+$/, '') || 'Unknown App',
+                icon: '',
+                publisher: '',
+                version: '',
+            },
+            config: {
+                archive_exe_path: '',
+                current_user_only: false,
+                create_desktop_shortcut: false,
+                create_start_menu_shortcut: true,
+                create_registry_key: false,
+                add_to_path: false,
+                path_directory: '',
+            },
+            paths: {
+                parent_install_path: '',
+                install_path: '',
+                full_path: '',
+            },
+        },
+    }
+
+    libraryStore.apps.push(newApp)
+    await libraryStore.saveLibrary()
+
+    subscribeSuccess.value = true
+}
+
 function handleDetailsLoading(loading: boolean) {
     detailsLoading.value = loading
 }
 
 // Watch for drawer visibility changes to load content
 watch(drawerVisible, async (visible) => {
-    if (visible && installConfig.temp.zip_path && installConfig.temp.file_tree.length === 0) {
-        try {
-            await GetArchiveContent('')
-        } catch (error) {
-            if (error === 'Wrong password') {
-                showPasswordDialog.value = true
-            } else {
-                toast.add({
-                    severity: 'error',
-                    summary: t('g.error'),
-                    detail: String(error),
-                    life: 0,
-                })
-                installConfig.show_preview_drawer = false
+    if (visible) {
+        // Check if URL is already subscribed when drawer opens
+        if (installConfig.temp.url) {
+            subscribeSuccess.value = libraryStore.hasApp(installConfig.temp.url)
+        }
+
+        if (installConfig.temp.zip_path && installConfig.temp.file_tree.length === 0) {
+            try {
+                await GetArchiveContent('')
+            } catch (error) {
+                if (error === 'Wrong password') {
+                    showPasswordDialog.value = true
+                } else {
+                    toast.add({
+                        severity: 'error',
+                        summary: t('g.error'),
+                        detail: String(error),
+                        life: 0,
+                    })
+                    installConfig.show_preview_drawer = false
+                }
             }
         }
     }
@@ -143,14 +198,22 @@ async function GetArchiveContent(password: string) {
         <!-- Main content area -->
         <div class="flex h-full flex-col gap-4">
             <!-- File info header -->
-            <div v-if="installConfig.temp.zip_path" class="flex flex-col gap-1">
-                <h3 class="text-lg font-semibold">
-                    {{ installConfig.temp.zip_path.split(/[/\\]/).pop() }}
-                </h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.temp.url ||
-                    installConfig.temp.zip_path
+            <div v-if="installConfig.temp.zip_path" class="flex items-center justify-between">
+                <div class="flex flex-col gap-1">
+                    <h3 class="text-lg font-semibold">
+                        {{ installConfig.temp.zip_path.split(/[/\\]/).pop() }}
+                    </h3>
+                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.temp.url ||
+                        installConfig.temp.zip_path
                     }}
-                </p>
+                    </p>
+                </div>
+
+                <!-- Subscribe button -->
+                <Button v-if="installConfig.temp.url" @click="handleSubscribe"
+                    :label="subscribeSuccess ? t('ui.preview.subscribed') : t('ui.preview.subscribe')"
+                    :icon="subscribeSuccess ? 'mir-check' : 'mir-star'"
+                    :severity="subscribeSuccess ? 'success' : 'secondary'" outlined class="shrink-0" />
             </div>
 
             <!-- ExecutableSelector embedded directly -->

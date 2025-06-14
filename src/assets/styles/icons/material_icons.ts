@@ -46,6 +46,7 @@ const USED_ICONS = [
   'cloud_download',
   'folder_copy',
   'library_books',
+  'star',
 ] as const
 
 /**
