@@ -1,15 +1,12 @@
-use crate::core::download_file;
-use aes_gcm::{
-    aead::{Aead, KeyInit},
-    Aes256Gcm, Key, Nonce,
+use crate::utils::crypto::{
+    decrypt_data_with_key, encrypt_data_with_key, generate_session_id, generate_session_key,
+    SESSIONS,
 };
+use crate::utils::download_file;
 use base64::{engine::general_purpose, Engine as _};
 use futures_util::{SinkExt, StreamExt};
-use rand::Rng;
 use serde_json::{json, Value};
-use std::collections::HashMap;
 use std::error::Error;
-use std::sync::{Arc, Mutex};
 use tauri::AppHandle;
 use tauri::Emitter;
 use tokio::net::{TcpListener, TcpStream};
@@ -17,14 +14,6 @@ use tokio_tungstenite::{
     accept_async,
     tungstenite::{Error as WsError, Message},
 };
-
-// Session storage for dynamic keys
-type SessionStore = Arc<Mutex<HashMap<String, [u8; 32]>>>;
-
-// Global session store
-lazy_static::lazy_static! {
-    static ref SESSIONS: SessionStore = Arc::new(Mutex::new(HashMap::new()));
-}
 
 // Starts WebSocket server on port 7535 for browser extension communication
 pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
@@ -156,66 +145,4 @@ async fn handle_extension_message(
     } else {
         Ok(Message::text("Invalid message format"))
     }
-}
-
-// Generates a unique session ID
-fn generate_session_id() -> String {
-    let mut bytes = [0u8; 16];
-    let mut rng = rand::rng();
-    rng.fill(&mut bytes);
-    general_purpose::STANDARD.encode(bytes)
-}
-
-// Generates a random session key
-fn generate_session_key() -> [u8; 32] {
-    let mut key = [0u8; 32];
-    let mut rng = rand::rng();
-    rng.fill(&mut key);
-    key
-}
-
-// Encrypts data using AES-GCM with provided key
-fn encrypt_data_with_key(
-    data: &str,
-    key: &[u8; 32],
-) -> Result<(String, String), Box<dyn Error + Send + Sync>> {
-    let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
-
-    // Generate random nonce (12 bytes for GCM)
-    let mut nonce_bytes = [0u8; 12];
-    let mut rng = rand::rng();
-    rng.fill(&mut nonce_bytes);
-    let nonce = Nonce::from_slice(&nonce_bytes);
-
-    // Encrypt the data
-    let ciphertext = cipher
-        .encrypt(nonce, data.as_bytes())
-        .map_err(|e| format!("Encryption failed: {}", e))?;
-
-    // Encode to base64 for transmission
-    let encrypted_b64 = general_purpose::STANDARD.encode(&ciphertext);
-    let nonce_b64 = general_purpose::STANDARD.encode(nonce_bytes);
-
-    Ok((encrypted_b64, nonce_b64))
-}
-
-// Decrypts data using AES-GCM with provided key
-fn decrypt_data_with_key(
-    encrypted_b64: &str,
-    nonce_b64: &str,
-    key: &[u8; 32],
-) -> Result<String, Box<dyn Error + Send + Sync>> {
-    let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
-
-    // Decode from base64
-    let ciphertext = general_purpose::STANDARD.decode(encrypted_b64)?;
-    let nonce_bytes = general_purpose::STANDARD.decode(nonce_b64)?;
-    let nonce = Nonce::from_slice(&nonce_bytes);
-
-    // Decrypt the data
-    let plaintext = cipher
-        .decrypt(nonce, ciphertext.as_ref())
-        .map_err(|e| format!("Decryption failed: {}", e))?;
-
-    Ok(String::from_utf8(plaintext)?)
 }
