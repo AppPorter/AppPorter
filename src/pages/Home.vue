@@ -6,11 +6,14 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useI18n } from 'vue-i18n'
+import { toRef } from 'vue'
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Home'
-const { zip_path } = storeToRefs(installConfig)
+const { temp } = storeToRefs(installConfig)
 const { t } = useI18n()
+
+const zip_path = toRef(temp.value, 'zip_path')
 
 async function selectZipFile() {
   const selected = await open({

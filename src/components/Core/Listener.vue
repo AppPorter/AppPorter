@@ -18,8 +18,8 @@ onMounted(async () => {
     await listen('preview', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number }
 
-        installConfig.temp.zip_path = payload.zip_path
-        installConfig.temp.timestamp = payload.timestamp
+        installConfig.temp.zip_path = payload[0]
+        installConfig.temp.timestamp = payload[1]
 
         installConfig.show_preview_drawer = true
     })
@@ -27,9 +27,9 @@ onMounted(async () => {
     await listen('preview_url', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number; url: string }
 
-        installConfig.temp.zip_path = payload.zip_path
-        installConfig.temp.timestamp = payload.timestamp
-        installConfig.temp.url = payload.url
+        installConfig.temp.zip_path = payload[0]
+        installConfig.temp.timestamp = payload[1]
+        installConfig.temp.url = payload[2]
 
         installConfig.show_preview_drawer = true
     })
