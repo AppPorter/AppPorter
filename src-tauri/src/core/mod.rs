@@ -4,6 +4,7 @@ pub mod download;
 pub mod elevate;
 pub mod exit;
 pub mod startup;
+pub mod websocket;
 
 pub use cli::*;
 pub use context_menu::*;
@@ -11,3 +12,4 @@ pub use download::*;
 pub use elevate::*;
 pub use exit::*;
 pub use startup::*;
+pub use websocket::*;

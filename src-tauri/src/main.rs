@@ -5,7 +5,6 @@ use app_porter_lib::{
     configs::{env::Env, *},
     core::*,
     operations::*,
-    websocket::start_websocket_server,
 };
 use std::error::Error;
 use tauri::Manager;
