@@ -124,7 +124,8 @@
       "self": "安装",
       "modes": {
         "current_user": "当前用户",
-        "all_users": "所有用户"
+        "all_users": "所有用户",
+        "self": "安装模式"
       },
       "shortcuts": {
         "desktop": "桌面快捷方式",
