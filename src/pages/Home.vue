@@ -6,14 +6,11 @@ import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useI18n } from 'vue-i18n'
-import { toRef } from 'vue'
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Home'
 const { temp } = storeToRefs(installConfig)
 const { t } = useI18n()
-
-const zip_path = toRef(temp.value, 'zip_path')
 
 async function selectZipFile() {
   const selected = await open({
@@ -28,8 +25,16 @@ async function selectZipFile() {
   })
 
   if (selected) {
-    zip_path.value = selected
+    temp.value.zip_path = selected
   }
+}
+
+async function handleContinueClick() {
+  if (!temp.value.zip_path) {
+    return
+  }
+
+  installConfig.show_preview_drawer = true
 }
 </script>
 
@@ -50,15 +55,16 @@ async function selectZipFile() {
       <div class="space-y-6">
         <!-- File Selection Input -->
         <div class="flex items-center gap-2">
-          <InputText v-model="zip_path" :placeholder="t('ui.select_placeholder.archive')" class="h-9 flex-1 text-sm" />
+          <InputText v-model="temp.zip_path" :placeholder="t('ui.select_placeholder.archive')"
+            class="h-9 flex-1 text-sm" />
           <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
             :label="t('g.browse')" />
         </div>
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="installConfig.show_preview_drawer = true" :disabled="!zip_path" severity="primary"
-            class="h-9 px-6" icon="mir-install_desktop" :label="t('g.continue')" />
+          <Button @click="handleContinueClick" :disabled="!temp.zip_path" severity="primary" class="h-9 px-6"
+            icon="mir-install_desktop" :label="t('g.continue')" />
         </div>
       </div>
     </Panel>
