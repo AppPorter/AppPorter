@@ -94,7 +94,7 @@ async fn handle_extension_message(
             }
 
             // Encode session key for transmission
-            let session_key_b64 = general_purpose::STANDARD.encode(&session_key);
+            let session_key_b64 = general_purpose::STANDARD.encode(session_key);
 
             return Ok(Message::text(
                 json!({
@@ -163,7 +163,7 @@ fn generate_session_id() -> String {
     let mut bytes = [0u8; 16];
     let mut rng = rand::rng();
     rng.fill(&mut bytes);
-    general_purpose::STANDARD.encode(&bytes)
+    general_purpose::STANDARD.encode(bytes)
 }
 
 // Generates a random session key
@@ -194,7 +194,7 @@ fn encrypt_data_with_key(
 
     // Encode to base64 for transmission
     let encrypted_b64 = general_purpose::STANDARD.encode(&ciphertext);
-    let nonce_b64 = general_purpose::STANDARD.encode(&nonce_bytes);
+    let nonce_b64 = general_purpose::STANDARD.encode(nonce_bytes);
 
     Ok((encrypted_b64, nonce_b64))
 }
