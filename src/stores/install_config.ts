@@ -84,14 +84,6 @@ export const InstallConfigStore = defineStore('install_config', {
   }),
 
   actions: {
-    resetConfig() {
-      const zipPath = this.zip_path
-      const fileTree = this.file_tree
-      this.$reset()
-      this.zip_path = zipPath
-      this.file_tree = fileTree
-    },
-
     // Set temp data for new incoming app
     setTempData(data: {
       zip_path?: string

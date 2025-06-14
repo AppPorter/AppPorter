@@ -22,51 +22,67 @@ const passwordError = ref(false)
 const detailsLoading = ref(false)
 const subscribeSuccess = ref(false)
 
+// Check if we're in temp mode (temporary installation from external)
+const isTemporaryMode = computed(() => {
+    return installConfig.temp.zip_path !== ''
+})
+
 // Computed properties
 const drawerVisible = computed({
     get: () => installConfig.show_preview_drawer,
     set: (value: boolean) => {
         installConfig.show_preview_drawer = value
-        // Clear temp data when drawer is closed without confirmation
+        // Clear data when drawer is closed without confirmation
         if (!value) {
-            installConfig.clearTempData()
+            if (isTemporaryMode.value) {
+                installConfig.clearTempData()
+            } else {
+                // For normal mode, clear file tree to allow fresh loading next time
+                installConfig.file_tree = []
+            }
         }
     }
 })
 
 // Handle button actions
 function handleExecutableSelected() {
-    // Confirm temp data when user selects executable
-    installConfig.confirmTempData()
+    if (isTemporaryMode.value) {
+        // Confirm temp data when user selects executable
+        installConfig.confirmTempData()
+    }
     installConfig.show_preview_drawer = false
     goTo('/Install/App/Config')
 }
 
 function handleNoExecutable() {
-    // Confirm temp data when user selects no executable
-    installConfig.confirmTempData()
+    if (isTemporaryMode.value) {
+        // Confirm temp data when user selects no executable
+        installConfig.confirmTempData()
+    }
     installConfig.show_preview_drawer = false
     goTo('/Install/Tool/Config')
 }
 
 async function handleSubscribe() {
-    if (!installConfig.temp.url) return
+    const url = isTemporaryMode.value ? installConfig.temp.url : installConfig.url
+    if (!url) return
 
     // Check if already subscribed
-    if (libraryStore.hasApp(installConfig.temp.url)) {
+    if (libraryStore.hasApp(url)) {
         return
     }
 
     subscribeSuccess.value = false
 
     // Create new app entry
+    const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
     const newApp = {
         timestamp: Date.now(),
         installed: false,
-        url: installConfig.temp.url,
+        url: url,
         details: {
             info: {
-                name: installConfig.temp.zip_path.split(/[/\\]/).pop()?.replace(/\.[^/.]+$/, '') || 'Unknown App',
+                name: zipPath.split(/[/\\]/).pop()?.replace(/\.[^/.]+$/, '') || 'Unknown App',
                 icon: '',
                 publisher: '',
                 version: '',
@@ -102,11 +118,16 @@ function handleDetailsLoading(loading: boolean) {
 watch(drawerVisible, async (visible) => {
     if (visible) {
         // Check if URL is already subscribed when drawer opens
-        if (installConfig.temp.url) {
-            subscribeSuccess.value = libraryStore.hasApp(installConfig.temp.url)
+        const url = isTemporaryMode.value ? installConfig.temp.url : installConfig.url
+        if (url) {
+            subscribeSuccess.value = libraryStore.hasApp(url)
         }
 
-        if (installConfig.temp.zip_path && installConfig.temp.file_tree.length === 0) {
+        const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
+
+        // Always load archive content when drawer opens if we have a zip path
+        // This ensures fresh content is loaded even if file_tree exists from previous operations
+        if (zipPath) {
             try {
                 await GetArchiveContent('')
             } catch (error) {
@@ -139,7 +160,11 @@ async function handlePasswordSubmit() {
 
     try {
         await GetArchiveContent(archivePassword.value)
-        installConfig.setTempData({ archive_password: archivePassword.value })
+        if (isTemporaryMode.value) {
+            installConfig.setTempData({ archive_password: archivePassword.value })
+        } else {
+            installConfig.archive_password = archivePassword.value
+        }
         showPasswordDialog.value = false
         archivePassword.value = ''
     } catch (error) {
@@ -159,16 +184,21 @@ async function handlePasswordSubmit() {
 }
 
 async function GetArchiveContent(password: string) {
+    const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
     const result = await invoke('execute_command', {
         command: {
             name: 'GetArchiveTree',
-            path: installConfig.temp.zip_path,
+            path: zipPath,
             password: password,
         },
     })
 
     const treeData = JSON.parse(result as string)
-    installConfig.setTempData({ file_tree: treeData })
+    if (isTemporaryMode.value) {
+        installConfig.setTempData({ file_tree: treeData })
+    } else {
+        installConfig.file_tree = treeData
+    }
 }
 </script>
 
@@ -198,19 +228,22 @@ async function GetArchiveContent(password: string) {
         <!-- Main content area -->
         <div class="flex h-full flex-col gap-4">
             <!-- File info header -->
-            <div v-if="installConfig.temp.zip_path" class="flex items-center justify-between">
+            <div v-if="(isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)"
+                class="flex items-center justify-between">
                 <div class="flex flex-col gap-1">
                     <h3 class="text-lg font-semibold">
-                        {{ installConfig.temp.zip_path.split(/[/\\]/).pop() }}
+                        {{ (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path).split(/[/\\]/).pop()
+                        }}
                     </h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ installConfig.temp.url ||
-                        installConfig.temp.zip_path
+                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ (isTemporaryMode ? installConfig.temp.url :
+                        installConfig.url) ||
+                        (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
                     }}
                     </p>
                 </div>
 
                 <!-- Subscribe button -->
-                <Button v-if="installConfig.temp.url" @click="handleSubscribe"
+                <Button v-if="(isTemporaryMode ? installConfig.temp.url : installConfig.url)" @click="handleSubscribe"
                     :label="subscribeSuccess ? t('ui.preview.subscribed') : t('ui.preview.subscribe')"
                     :icon="subscribeSuccess ? 'mir-check' : 'mir-star'"
                     :severity="subscribeSuccess ? 'success' : 'secondary'" outlined class="shrink-0" />
@@ -218,12 +251,14 @@ async function GetArchiveContent(password: string) {
 
             <!-- ExecutableSelector embedded directly -->
             <div class="min-h-0 flex-1">
-                <ExecutableSelector v-if="installConfig.temp.zip_path && installConfig.temp.file_tree.length > 0"
-                    :zip-path="installConfig.temp.zip_path" :password="installConfig.temp.archive_password"
-                    :file-tree="installConfig.temp.file_tree" :details-loading="detailsLoading"
-                    @loading="handleDetailsLoading" @executable-selected="handleExecutableSelected"
-                    @no-executable="handleNoExecutable"
-                    @update-file-tree="installConfig.setTempData({ file_tree: $event })" />
+                <ExecutableSelector v-if="(isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
+                    && (isTemporaryMode ? installConfig.temp.file_tree : installConfig.file_tree).length > 0"
+                    :zip-path="(isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)"
+                    :password="(isTemporaryMode ? installConfig.temp.archive_password : installConfig.archive_password)"
+                    :file-tree="(isTemporaryMode ? installConfig.temp.file_tree : installConfig.file_tree)"
+                    :details-loading="detailsLoading" @loading="handleDetailsLoading"
+                    @executable-selected="handleExecutableSelected" @no-executable="handleNoExecutable"
+                    @update-file-tree="isTemporaryMode ? installConfig.setTempData({ file_tree: $event }) : (installConfig.file_tree = $event)" />
             </div>
         </div>
     </Drawer>

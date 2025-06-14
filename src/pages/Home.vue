@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config'
 import { open } from '@tauri-apps/plugin-dialog'
-import { storeToRefs } from 'pinia'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
@@ -9,7 +8,6 @@ import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Home'
-const { temp } = storeToRefs(installConfig)
 const { t } = useI18n()
 
 async function selectZipFile() {
@@ -25,12 +23,17 @@ async function selectZipFile() {
   })
 
   if (selected) {
-    temp.value.zip_path = selected
+    installConfig.zip_path = selected
+    installConfig.timestamp = Date.now()
+    // Clear previous file tree and other related data when selecting new file
+    installConfig.file_tree = []
+    installConfig.archive_password = ''
+    installConfig.url = ''
   }
 }
 
 async function handleContinueClick() {
-  if (!temp.value.zip_path) {
+  if (!installConfig.zip_path) {
     return
   }
 
@@ -55,7 +58,7 @@ async function handleContinueClick() {
       <div class="space-y-6">
         <!-- File Selection Input -->
         <div class="flex items-center gap-2">
-          <InputText v-model="temp.zip_path" :placeholder="t('ui.select_placeholder.archive')"
+          <InputText v-model="installConfig.zip_path" :placeholder="t('ui.select_placeholder.archive')"
             class="h-9 flex-1 text-sm" />
           <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
             :label="t('g.browse')" />
@@ -63,7 +66,7 @@ async function handleContinueClick() {
 
         <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
-          <Button @click="handleContinueClick" :disabled="!temp.zip_path" severity="primary" class="h-9 px-6"
+          <Button @click="handleContinueClick" :disabled="!installConfig.zip_path" severity="primary" class="h-9 px-6"
             icon="mir-install_desktop" :label="t('g.continue')" />
         </div>
       </div>
