@@ -89,6 +89,25 @@ const isSelectableFile = (node: FileNode): boolean => {
   return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
 }
 
+// Check if file tree contains any executable files
+const hasExecutableFiles = computed(() => {
+  const checkNode = (node: FileTreeNode): boolean => {
+    // Check if current node is an executable file
+    if (node.node_type === 'file') {
+      return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
+    }
+
+    // Recursively check children if it's a directory
+    if (node.node_type === 'directory' && node.children) {
+      return node.children.some((child) => checkNode(child))
+    }
+
+    return false
+  }
+
+  return props.fileTree.some((node) => checkNode(node))
+})
+
 // Get description for filter options
 function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
   switch (mode) {
@@ -187,24 +206,34 @@ function handleNoExecutable() {
     <div class="mt-3 flex items-center justify-between gap-4">
       <div :class="[
         'flex flex-1 items-center gap-2 rounded-md p-2 text-sm transition-colors',
-        selectedPath ? 'bg-green-50 dark:bg-green-900/20' : 'bg-slate-50 dark:bg-zinc-800/50',
+        selectedPath
+          ? 'bg-green-50 dark:bg-green-900/20'
+          : hasExecutableFiles
+            ? 'bg-slate-50 dark:bg-zinc-800/50'
+            : 'bg-orange-50 dark:bg-orange-900/20',
       ]">
         <span :class="[
           selectedPath
             ? 'mir-check_circle text-green-500 dark:text-green-400'
-            : 'mir-info text-slate-500 dark:text-slate-400',
+            : hasExecutableFiles
+              ? 'mir-info text-slate-500 dark:text-slate-400'
+              : 'mir-warning text-orange-500 dark:text-orange-400',
         ]"></span>
         <span :class="[
           'font-medium',
           selectedPath
             ? 'text-green-800 dark:text-green-300'
-            : 'text-slate-700 dark:text-slate-300',
+            : hasExecutableFiles
+              ? 'text-slate-700 dark:text-slate-300'
+              : 'text-orange-800 dark:text-orange-300',
         ]">{{
           selectedPath
             ? t('ui.executable_selector.selected')
-            : t('ui.executable_selector.select_prompt')
-        }}:</span>
-        <span :class="[
+            : hasExecutableFiles
+              ? t('ui.executable_selector.select_prompt')
+              : t('ui.executable_selector.no_executables_found')
+        }}{{ hasExecutableFiles ? ':' : '' }}</span>
+        <span v-if="hasExecutableFiles" :class="[
           'truncate',
           selectedPath
             ? 'text-green-700 dark:text-green-400'
@@ -217,7 +246,7 @@ function handleNoExecutable() {
           <Button severity="secondary" @click="handleNoExecutable">
             {{ t('ui.executable_selector.no_executable') }}
           </Button>
-          <Button severity="primary" :disabled="!selectedPath" @click="handleSelect">
+          <Button v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect">
             {{ t('g.select') }}
           </Button>
         </template>

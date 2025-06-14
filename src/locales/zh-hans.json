@@ -23,7 +23,8 @@
       "selected": "已选择",
       "select_prompt": "请选择可执行文件",
       "no_selection": "未选择",
-      "no_executable": "没有主可执行文件"
+      "no_executable": "没有主可执行文件",
+      "no_executables_found": "未找到可执行文件"
     },
     "zip_preview": {
       "no_files": "没有文件"
