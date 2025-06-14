@@ -13,7 +13,7 @@ export interface Settings {
   tool_install: ToolInstall
 }
 
-export type LanguageType = 'en' | 'zh' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
+export type LanguageType = 'en' | 'zh-hans' | 'zh-hant' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
 export type ThemeType = 'system' | 'light' | 'dark'
 
 interface AppInstall {

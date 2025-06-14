@@ -18,7 +18,10 @@ pub struct Settings {
 #[serde(rename_all = "lowercase")]
 pub enum LanguageType {
     En,
-    Zh,
+    #[serde(rename = "zh-hans")]
+    ZhHans,
+    #[serde(rename = "zh-hant")]
+    ZhHant,
     Fr,
     De,
     Es,
