@@ -1,11 +1,11 @@
 use crate::core::download_file;
 use aes_gcm::{
-    aead::{Aead, KeyInit, OsRng},
+    aead::{Aead, KeyInit},
     Aes256Gcm, Key, Nonce,
 };
 use base64::{engine::general_purpose, Engine as _};
 use futures_util::{SinkExt, StreamExt};
-use rand::RngCore;
+use rand::Rng;
 use serde_json::{json, Value};
 use std::collections::HashMap;
 use std::error::Error;
@@ -96,7 +96,7 @@ async fn handle_extension_message(
             // Encode session key for transmission
             let session_key_b64 = general_purpose::STANDARD.encode(&session_key);
 
-            return Ok(Message::Text(
+            return Ok(Message::text(
                 json!({
                     "type": "handshake_response",
                     "status": "ready",
@@ -134,7 +134,7 @@ async fn handle_extension_message(
                 let (encrypted_response, response_nonce) =
                     encrypt_data_with_key(success_msg, &session_key)?;
 
-                return Ok(Message::Text(
+                return Ok(Message::text(
                     json!({
                         "type": "encrypted_response",
                         "data": encrypted_response,
@@ -152,23 +152,25 @@ async fn handle_extension_message(
         let downloaded = download_file(&url).await.unwrap_or_default();
         app.emit("preview_url", (downloaded, timestamp, url))?;
 
-        Ok(Message::Text("Success".into()))
+        Ok(Message::text("Success"))
     } else {
-        Ok(Message::Text("Invalid message format".into()))
+        Ok(Message::text("Invalid message format"))
     }
 }
 
 // Generates a unique session ID
 fn generate_session_id() -> String {
     let mut bytes = [0u8; 16];
-    OsRng.fill_bytes(&mut bytes);
+    let mut rng = rand::rng();
+    rng.fill(&mut bytes);
     general_purpose::STANDARD.encode(&bytes)
 }
 
 // Generates a random session key
 fn generate_session_key() -> [u8; 32] {
     let mut key = [0u8; 32];
-    OsRng.fill_bytes(&mut key);
+    let mut rng = rand::rng();
+    rng.fill(&mut key);
     key
 }
 
@@ -181,11 +183,14 @@ fn encrypt_data_with_key(
 
     // Generate random nonce (12 bytes for GCM)
     let mut nonce_bytes = [0u8; 12];
-    OsRng.fill_bytes(&mut nonce_bytes);
+    let mut rng = rand::rng();
+    rng.fill(&mut nonce_bytes);
     let nonce = Nonce::from_slice(&nonce_bytes);
 
     // Encrypt the data
-    let ciphertext = cipher.encrypt(nonce, data.as_bytes())?;
+    let ciphertext = cipher
+        .encrypt(nonce, data.as_bytes())
+        .map_err(|e| format!("Encryption failed: {}", e))?;
 
     // Encode to base64 for transmission
     let encrypted_b64 = general_purpose::STANDARD.encode(&ciphertext);
@@ -208,23 +213,9 @@ fn decrypt_data_with_key(
     let nonce = Nonce::from_slice(&nonce_bytes);
 
     // Decrypt the data
-    let plaintext = cipher.decrypt(nonce, ciphertext.as_ref())?;
+    let plaintext = cipher
+        .decrypt(nonce, ciphertext.as_ref())
+        .map_err(|e| format!("Decryption failed: {}", e))?;
 
     Ok(String::from_utf8(plaintext)?)
-}
-
-// Legacy encryption functions for backward compatibility
-fn encrypt_data(data: &str) -> Result<(String, String), Box<dyn Error + Send + Sync>> {
-    // Use a default key for backward compatibility
-    let default_key = b"AppPorter_WebSocket_Key_32bytes!";
-    encrypt_data_with_key(data, default_key)
-}
-
-fn decrypt_data(
-    encrypted_b64: &str,
-    nonce_b64: &str,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
-    // Use a default key for backward compatibility
-    let default_key = b"AppPorter_WebSocket_Key_32bytes!";
-    decrypt_data_with_key(encrypted_b64, nonce_b64, default_key)
 }
