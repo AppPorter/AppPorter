@@ -13,8 +13,8 @@ import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import { EnvStore } from './stores/env'
 import { trayIcon } from './main.ts'
+import { EnvStore } from './stores/env'
 
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -60,7 +60,9 @@ const cachedComponents = computed(() => {
 })
 
 const handleBeforeUnload = () => {
-  trayIcon.close()
+  if (trayIcon) {
+    trayIcon.close()
+  }
 };
 
 onMounted(() => {
