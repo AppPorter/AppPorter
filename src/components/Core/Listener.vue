@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { window as tauriWindow } from '@/main'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { LibraryStore } from '@/stores/library'
@@ -9,6 +10,12 @@ import { onMounted } from 'vue'
 const libraryStore = LibraryStore()
 const installConfig = InstallConfigStore()
 
+function showWindow() {
+    tauriWindow.show()
+    tauriWindow.unminimize()
+    tauriWindow.setFocus()
+}
+
 // Setup event listeners after component is mounted
 onMounted(async () => {
     await listen('preview', (event) => {
@@ -18,6 +25,7 @@ onMounted(async () => {
         installConfig.temp.timestamp = payload[1]
 
         installConfig.show_preview_drawer = true
+        showWindow()
     })
 
     await listen('preview_url', (event) => {
@@ -28,12 +36,14 @@ onMounted(async () => {
         installConfig.temp.url = payload[2]
 
         installConfig.show_preview_drawer = true
+        showWindow()
     })
 
     await listen('uninstall_app', async (event) => {
         goTo('/Library')
         await libraryStore.loadLibrary()
         await libraryStore.confirmAndExecuteUninstall(event.payload as number)
+        showWindow()
     })
 
     // Execute initial command
