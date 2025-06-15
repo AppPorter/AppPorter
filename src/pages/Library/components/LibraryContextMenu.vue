@@ -127,36 +127,7 @@ async function openRegistry() {
 
 async function confirmUninstall() {
     if (!props.selectedApp) return
-
-    const app = libraryStore.getAppByTimestamp(props.selectedApp.timestamp)
-    if (!app) return
-
-    await new Promise((resolve, reject) => {
-        confirm.require({
-            message: t('ui.library.confirm_uninstall_message', {
-                name: app.details.info.name,
-            }),
-            group: 'dialog',
-            header: t('ui.library.confirm_uninstall_header'),
-            icon: 'mir-warning',
-            rejectProps: {
-                label: t('g.cancel'),
-                severity: 'secondary',
-                outlined: true,
-                icon: 'mir-close',
-            },
-            acceptProps: {
-                label: t('g.uninstall'),
-                severity: 'danger',
-                icon: 'mir-warning',
-            },
-            accept: async () => {
-                await libraryStore.executeUninstall(props.selectedApp!.timestamp)
-                resolve(true)
-            },
-            reject: () => reject(),
-        })
-    })
+    await libraryStore.confirmAndExecuteUninstall(props.selectedApp.timestamp)
 }
 
 async function confirmDelete() {

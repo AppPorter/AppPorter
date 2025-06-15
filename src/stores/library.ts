@@ -153,5 +153,43 @@ export const LibraryStore = defineStore('library', {
       this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
       await this.saveLibrary()
     },
+
+    async confirmAndExecuteUninstall(timestamp: number) {
+      const { useConfirm } = await import('primevue/useconfirm')
+      const { useI18n } = await import('vue-i18n')
+
+      const confirm = useConfirm()
+      const { t } = useI18n()
+
+      const app = this.getAppByTimestamp(timestamp)
+      if (!app) return
+
+      return new Promise<void>((resolve, reject) => {
+        confirm.require({
+          message: t('ui.library.confirm_uninstall_message', {
+            name: app.details.info.name,
+          }),
+          group: 'dialog',
+          header: t('ui.library.confirm_uninstall_header'),
+          icon: 'mir-warning',
+          rejectProps: {
+            label: t('g.cancel'),
+            severity: 'secondary',
+            outlined: true,
+            icon: 'mir-close',
+          },
+          acceptProps: {
+            label: t('g.uninstall'),
+            severity: 'danger',
+            icon: 'mir-warning',
+          },
+          accept: async () => {
+            await this.executeUninstall(timestamp)
+            resolve()
+          },
+          reject: () => reject(),
+        })
+      })
+    },
   },
 })

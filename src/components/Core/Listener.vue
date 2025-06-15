@@ -4,12 +4,8 @@ import { InstallConfigStore } from '@/stores/install_config'
 import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
-import { useConfirm } from 'primevue/useconfirm'
 import { onMounted } from 'vue'
-import { useI18n } from 'vue-i18n'
 
-const confirm = useConfirm()
-const { t } = useI18n()
 const libraryStore = LibraryStore()
 const installConfig = InstallConfigStore()
 
@@ -37,34 +33,7 @@ onMounted(async () => {
     await listen('uninstall_app', async (event) => {
         goTo('/Library')
         await libraryStore.loadLibrary()
-        const app = libraryStore.getAppByTimestamp(event.payload as number)
-        if (!app) return
-        await new Promise((resolve, reject) => {
-            confirm.require({
-                message: t('ui.uninstall.confirm.msg', {
-                    name: app.details.info.name,
-                }),
-                group: 'dialog',
-                header: t('ui.uninstall.confirm.header'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('g.cancel'),
-                    severity: 'secondary',
-                    outlined: true,
-                    icon: 'mir-close',
-                },
-                acceptProps: {
-                    label: t('cls.uninstall.self'),
-                    severity: 'danger',
-                    icon: 'mir-warning',
-                },
-                accept: async () => {
-                    await libraryStore.executeUninstall(event.payload as number)
-                    resolve(true)
-                },
-                reject: () => reject(),
-            })
-        })
+        await libraryStore.confirmAndExecuteUninstall(event.payload as number)
     })
 
     // Execute initial command

@@ -132,32 +132,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await new Promise((resolve, reject) => {
-            confirm.require({
-                message: t('ui.library.confirm_uninstall_message', {
-                    name: appToValidate.value.details.info.name,
-                }),
-                group: 'dialog',
-                header: t('ui.library.confirm_uninstall_header'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('g.cancel'),
-                    severity: 'secondary',
-                    outlined: true,
-                    icon: 'mir-close',
-                },
-                acceptProps: {
-                    label: t('g.uninstall'),
-                    severity: 'danger',
-                    icon: 'mir-warning',
-                },
-                accept: async () => {
-                    await libraryStore.executeUninstall(appToValidate.value.timestamp)
-                    resolve(true)
-                },
-                reject: () => reject(),
-            })
-        })
+        await libraryStore.confirmAndExecuteUninstall(appToValidate.value.timestamp)
     } else {
         await invoke('execute_command', {
             command: {
