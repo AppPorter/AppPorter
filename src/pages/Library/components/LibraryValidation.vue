@@ -9,7 +9,7 @@ const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 
-interface AppListValidationProps {
+interface LibraryValidationProps {
     app?: {
         timestamp: number
         type: 'app' | 'tool'
@@ -27,12 +27,12 @@ interface AppListValidationProps {
     }
 }
 
-interface AppListValidationEmits {
-    loadAppList: []
+interface LibraryValidationEmits {
+    loadLibrary: []
 }
 
-defineProps<AppListValidationProps>()
-const emit = defineEmits<AppListValidationEmits>()
+defineProps<LibraryValidationProps>()
+const emit = defineEmits<LibraryValidationEmits>()
 
 const appToValidate = ref()
 
@@ -165,7 +165,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
                 timestamp: appToValidate.value.timestamp,
             },
         })
-        emit('loadAppList')
+        emit('loadLibrary')
     }
 }
 

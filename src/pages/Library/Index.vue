@@ -6,10 +6,10 @@ import Panel from 'primevue/panel'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import AppListContextMenu from './components/AppListContextMenu.vue'
-import AppListHeader from './components/AppListHeader.vue'
-import AppListItem from './components/AppListItem.vue'
-import AppListValidation from './components/AppListValidation.vue'
+import LibraryContextMenu from './components/LibraryContextMenu.vue'
+import LibraryHeader from './components/LibraryHeader.vue'
+import LibraryItem from './components/LibraryItem.vue'
+import LibraryValidation from './components/LibraryValidation.vue'
 
 const libraryStore = LibraryStore()
 const { t } = useI18n()
@@ -127,7 +127,7 @@ onMounted(() => {
   <div class="flex size-full flex-col overflow-auto">
     <Panel class="mb-4 size-full shadow-sm">
       <template #header>
-        <AppListHeader v-model:sort-key="sortKey" v-model:sort-order="sortOrder"
+        <LibraryHeader v-model:sort-key="sortKey" v-model:sort-order="sortOrder"
           v-model:search-value="filters.global.value" />
       </template>
 
@@ -137,7 +137,7 @@ onMounted(() => {
         dataKey="timestamp">
         <template #list="{ items }">
           <div class="grid">
-            <AppListItem v-for="item in items" :key="item.timestamp" :item="item" @context-menu="showMenu"
+            <LibraryItem v-for="item in items" :key="item.timestamp" :item="item" @context-menu="showMenu"
               @status-click="handleStatusClick" />
           </div>
         </template>
@@ -145,18 +145,18 @@ onMounted(() => {
         <template #empty>
           <div class="flex flex-col items-center justify-center py-8">
             <span class="mir-apps text-4xl opacity-30"></span>
-            <p class="mt-2 text-center">{{ t('app_list.no_apps_found') }}</p>
-            <p class="text-center text-sm opacity-70">{{ t('app_list.install_first') }}</p>
+            <p class="mt-2 text-center">{{ t('library.no_apps_found') }}</p>
+            <p class="text-center text-sm opacity-70">{{ t('library.install_first') }}</p>
           </div>
         </template>
       </DataView>
     </Panel>
 
     <!-- Context Menu -->
-    <AppListContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
-      @load-app-list="loadLibrary" />
+    <LibraryContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
+      @load-library="loadLibrary" />
 
     <!-- Validation Handler -->
-    <AppListValidation ref="validation" @load-app-list="loadLibrary" />
+    <LibraryValidation ref="validation" @load-library="loadLibrary" />
   </div>
 </template>

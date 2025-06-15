@@ -4,7 +4,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 
-interface AppStatusTagProps {
+interface LibraryStatusTagProps {
     item: {
         type: 'app' | 'tool'
         installed: boolean
@@ -18,19 +18,19 @@ interface AppStatusTagProps {
     }
 }
 
-interface AppStatusTagEmits {
-    click: [item: AppStatusTagProps['item']]
+interface LibraryStatusTagEmits {
+    click: [item: LibraryStatusTagProps['item']]
 }
 
-defineProps<AppStatusTagProps>()
-defineEmits<AppStatusTagEmits>()
+defineProps<LibraryStatusTagProps>()
+defineEmits<LibraryStatusTagEmits>()
 
-function getAppStatus(data: AppStatusTagProps['item']) {
+function getLibraryStatus(data: LibraryStatusTagProps['item']) {
     if (!data.installed) {
         return {
             icon: 'mir-cloud_download',
             severity: 'secondary',
-            value: t('app_list.not_installed'),
+            value: t('library.not_installed'),
         }
     }
 
@@ -39,7 +39,7 @@ function getAppStatus(data: AppStatusTagProps['item']) {
         return {
             icon: 'mir-folder_copy',
             severity: 'info',
-            value: t('app_list.tool'),
+            value: t('library.tool'),
         }
     }
 
@@ -52,14 +52,14 @@ function getAppStatus(data: AppStatusTagProps['item']) {
         if (isValid) {
             return {
                 icon: 'mir-check',
-                value: t('app_list.installed'),
+                value: t('library.installed'),
             }
         }
 
         return {
             icon: 'mir-error',
             severity: 'warn',
-            value: t('app_list.validation_error'),
+            value: t('library.validation_error'),
         }
     }
 
@@ -69,19 +69,19 @@ function getAppStatus(data: AppStatusTagProps['item']) {
     if (isToolValid) {
         return {
             icon: 'mir-check',
-            value: t('app_list.installed'),
+            value: t('library.installed'),
         }
     }
 
     return {
         icon: 'mir-error',
         severity: 'warn',
-        value: t('app_list.validation_error'),
+        value: t('library.validation_error'),
     }
 }
 </script>
 
 <template>
-    <Tag :value="getAppStatus(item).value" :severity="getAppStatus(item).severity" :icon="getAppStatus(item).icon"
-        class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
+    <Tag :value="getLibraryStatus(item).value" :severity="getLibraryStatus(item).severity"
+        :icon="getLibraryStatus(item).icon" class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
 </template>

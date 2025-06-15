@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Button from 'primevue/button'
 import { useI18n } from 'vue-i18n'
-import AppStatusTag from './AppStatusTag.vue'
+import LibraryStatusTag from './LibraryStatusTag.vue'
 
 const { t } = useI18n()
 
-interface AppListItemProps {
+interface LibraryItemProps {
     item: {
         timestamp: number
         url: string
@@ -30,13 +30,13 @@ interface AppListItemProps {
     }
 }
 
-interface AppListItemEmits {
-    contextMenu: [event: { originalEvent: Event; data: AppListItemProps['item'] }]
-    statusClick: [app: AppListItemProps['item']]
+interface LibraryItemEmits {
+    contextMenu: [event: { originalEvent: Event; data: LibraryItemProps['item'] }]
+    statusClick: [app: LibraryItemProps['item']]
 }
 
-defineProps<AppListItemProps>()
-defineEmits<AppListItemEmits>()
+defineProps<LibraryItemProps>()
+defineEmits<LibraryItemEmits>()
 
 function formatTimestamp(timestamp) {
     return new Date(timestamp * 1000).toLocaleDateString()
@@ -68,7 +68,7 @@ function formatTimestamp(timestamp) {
                     </div>
                     <div v-else-if="item.type === 'tool'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ t('app_list.tool') }}</span>
+                        <span>{{ t('library.tool') }}</span>
                     </div>
                 </div>
 
@@ -81,7 +81,7 @@ function formatTimestamp(timestamp) {
                 </div>
             </div>
 
-            <AppStatusTag :item="item" class="mr-2" @click="$emit('statusClick', item)" />
+            <LibraryStatusTag :item="item" class="mr-2" @click="$emit('statusClick', item)" />
 
             <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="$emit('contextMenu', { originalEvent: $event, data: item })" />

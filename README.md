@@ -29,7 +29,7 @@ The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 - [x] Installation
 - [x] Settings
 - [x] AppPorter-Ext
-- [x] AppList
+- [x] Library
 - [x] Uninstallation
 - [x] Add to PATH
 - [x] Install Tools

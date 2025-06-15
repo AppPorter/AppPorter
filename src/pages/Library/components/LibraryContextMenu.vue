@@ -10,7 +10,7 @@ const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
 
-interface AppListContextMenuProps {
+interface LibraryContextMenuProps {
     selectedApp?: {
         timestamp: number
         url: string
@@ -34,13 +34,13 @@ interface AppListContextMenuProps {
     }
 }
 
-interface AppListContextMenuEmits {
+interface LibraryContextMenuEmits {
     installApp: []
-    loadAppList: []
+    loadLibrary: []
 }
 
-const props = defineProps<AppListContextMenuProps>()
-const emit = defineEmits<AppListContextMenuEmits>()
+const props = defineProps<LibraryContextMenuProps>()
+const emit = defineEmits<LibraryContextMenuEmits>()
 
 const contextMenu = ref()
 
@@ -133,11 +133,11 @@ async function confirmUninstall() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('app_list.confirm_uninstall_message', {
+            message: t('library.confirm_uninstall_message', {
                 name: app.details.info.name,
             }),
             group: 'dialog',
-            header: t('app_list.confirm_uninstall_header'),
+            header: t('library.confirm_uninstall_header'),
             icon: 'mir-warning',
             rejectProps: {
                 label: t('cancel'),
@@ -169,11 +169,11 @@ async function confirmDelete() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('app_list.confirm_delete_message', {
+            message: t('library.confirm_delete_message', {
                 name: props.selectedApp!.details.info.name,
             }),
             group: 'dialog',
-            header: t('app_list.confirm_delete_header'),
+            header: t('library.confirm_delete_header'),
             icon: 'mir-warning',
             rejectProps: {
                 label: t('cancel'),
@@ -204,11 +204,11 @@ async function confirmRemove() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('app_list.confirm_remove_message', {
+            message: t('library.confirm_remove_message', {
                 name: props.selectedApp!.details.info.name,
             }),
             group: 'dialog',
-            header: t('app_list.confirm_remove_header'),
+            header: t('library.confirm_remove_header'),
             icon: 'mir-warning',
             rejectProps: {
                 label: t('cancel'),
