@@ -33,7 +33,8 @@
       "basic": "基础",
       "install": {
         "app": "应用安装",
-        "tool": "工具安装"
+        "tool": "工具安装",
+        "lib": "库安装"
       },
       "default_install_mode": "默认安装模式"
     },
@@ -84,6 +85,9 @@
         "install_options": "安装选项"
       },
       "final_path": "最终路径"
+    },
+    "library": {
+      "confirm_uninstall_header": "卸载 “{name}”？"
     }
   },
   "g": {

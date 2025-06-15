@@ -170,7 +170,9 @@ export const LibraryStore = defineStore('library', {
             name: app.details.info.name,
           }),
           group: 'dialog',
-          header: t('ui.library.confirm_uninstall_header'),
+          header: t('ui.library.confirm_uninstall_header', {
+            name: app.details.info.name,
+          }),
           icon: 'mir-warning',
           rejectProps: {
             label: t('g.cancel'),
@@ -179,7 +181,7 @@ export const LibraryStore = defineStore('library', {
             icon: 'mir-close',
           },
           acceptProps: {
-            label: t('g.uninstall'),
+            label: t('cls.uninstall.self'),
             severity: 'danger',
             icon: 'mir-warning',
           },
