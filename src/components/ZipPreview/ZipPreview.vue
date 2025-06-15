@@ -58,10 +58,10 @@ function convertToFileNode(node: FileTreeNode): FileNode {
 }
 
 // Computed properties
-const hasData = computed(() => props.fileTree.length > 0)
-const isEmpty = computed(() => status.value === 'ready' && props.fileTree.length === 0)
+const hasData = computed(() => props.fileTree?.length > 0)
+const isEmpty = computed(() => status.value === 'ready' && (!props.fileTree || props.fileTree.length === 0))
 const fileTree = computed(() => {
-  return props.fileTree.map(convertToFileNode)
+  return props.fileTree?.map(convertToFileNode) || []
 })
 
 // Get appropriate icon based on file extension

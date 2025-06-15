@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config'
+import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
 
@@ -12,10 +13,9 @@ const store = InstallConfigStore()
 const { t } = useI18n()
 
 // Props
-defineProps<{
+const props = defineProps<{
     zipPath: string
     password?: string
-    fileTree: FileTreeNode[]
     detailsLoading?: boolean
 }>()
 
@@ -30,6 +30,41 @@ const emit = defineEmits<{
 const filterMode = ref<'directory' | 'all'>('directory')
 const selectedPath = ref('')
 const isSelecting = ref(false)
+const fileTree = ref<FileTreeNode[]>([])
+const loading = ref(false)
+const error = ref('')
+
+// Load file tree when component mounts
+onMounted(async () => {
+    await loadFileTree()
+})
+
+async function loadFileTree() {
+    if (!props.zipPath) return
+
+    try {
+        loading.value = true
+        emit('loading', true)
+
+        const result = await invoke('execute_command', {
+            command: {
+                name: 'GetArchiveTree',
+                path: props.zipPath,
+                password: props.password || '',
+            },
+        })
+
+        const treeData = JSON.parse(result as string)
+        fileTree.value = treeData
+        emit('update-file-tree', treeData)
+    } catch (err) {
+        error.value = err instanceof Error ? err.message : 'Failed to load archive'
+        console.error('Failed to load file tree:', err)
+    } finally {
+        loading.value = false
+        emit('loading', false)
+    }
+}
 
 // Define the FileNode interface explicitly
 interface FileNode {
@@ -134,7 +169,7 @@ async function handleSelect() {
         <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
             <ZipPreview :zip-path="zipPath" :password="password" :file-tree="fileTree" :filter-function="fileFilter"
                 :selected-path="selectedPath" :is-selectable-function="isSelectableNode" @node-click="handleNodeSelect"
-                @update-file-tree="emit('update-file-tree', $event)" />
+                @update-file-tree="fileTree = $event" />
         </div>
 
         <!-- Selected directory and button container -->
