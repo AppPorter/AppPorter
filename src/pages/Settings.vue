@@ -210,7 +210,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                  }}</label>
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -244,7 +244,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                    }}</label>
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />

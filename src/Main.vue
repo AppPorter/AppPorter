@@ -14,6 +14,7 @@ import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { EnvStore } from './stores/env'
+import { trayIcon } from './main.ts'
 
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -57,6 +58,14 @@ const route = useRoute()
 const cachedComponents = computed(() => {
   return route.path !== '/Home'
 })
+
+const handleBeforeUnload = () => {
+  trayIcon.close()
+};
+
+onMounted(() => {
+  window.addEventListener('beforeunload', handleBeforeUnload);
+});
 
 onBeforeMount(() => {
   generateMaterialIconsClasses()

@@ -1,4 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
+import { listen } from '@tauri-apps/api/event'
+import Color from 'color'
 import { defineStore } from 'pinia'
 
 export interface Settings {
@@ -37,7 +39,7 @@ interface ToolInstall {
 
 // Store definition
 export const SettingsStore = defineStore('settings', {
-  state: (): Settings => ({
+  state: (): Settings & { unlistenThemeColor?: (() => void) | null } => ({
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
@@ -67,6 +69,7 @@ export const SettingsStore = defineStore('settings', {
       install_path: '',
       add_to_path: false,
     },
+    unlistenThemeColor: null,
   }),
 
   actions: {
@@ -85,6 +88,30 @@ export const SettingsStore = defineStore('settings', {
           settings: this.$state,
         },
       })
+    },
+
+    // Initialize theme system with color palette and monitoring
+    async initializeTheme() {
+      await this.updateThemeMode()
+      await this.startThemeColorMonitoring()
+    },
+
+    // Generate color palette for PrimeVue theme
+    generateColorPalette(): Record<string, string> {
+      const baseColor = Color(this.color)
+      return {
+        50: baseColor.lighten(0.5).hex(),
+        100: baseColor.lighten(0.4).hex(),
+        200: baseColor.lighten(0.3).hex(),
+        300: baseColor.lighten(0.2).hex(),
+        400: baseColor.lighten(0.1).hex(),
+        500: baseColor.hex(),
+        600: baseColor.darken(0.1).hex(),
+        700: baseColor.darken(0.2).hex(),
+        800: baseColor.darken(0.3).hex(),
+        900: baseColor.darken(0.4).hex(),
+        950: baseColor.darken(0.5).hex(),
+      }
     },
 
     async updateBasicSettingsChanged() {
@@ -130,13 +157,9 @@ export const SettingsStore = defineStore('settings', {
       // Setup system theme change listener
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
-      // Remove any existing listener first to prevent duplicates
-      mediaQuery.removeEventListener('change', this.handleSystemThemeChange)
-
       // Only add listener when theme is set to 'system'
       if (this.theme === 'system') {
         mediaQuery.addEventListener('change', (event: MediaQueryListEvent) => {
-          // Update isDarkMode and DOM when system theme changes
           env.isDarkMode = event.matches
 
           if (event.matches) {
@@ -145,6 +168,37 @@ export const SettingsStore = defineStore('settings', {
             document.documentElement.classList.remove('dark')
           }
         })
+      }
+    },
+
+    // Start listening for system color changes
+    async startThemeColorMonitoring() {
+      await invoke('execute_command', {
+        command: { name: 'StartThemeMonitoring' },
+      })
+
+      const unlisten = await listen<string>('theme-color-changed', (event) => {
+        this.color = event.payload
+        // Update CSS custom properties when color changes
+        const colorPalette = this.generateColorPalette()
+        const root = document.documentElement
+        Object.entries(colorPalette).forEach(([shade, colorValue]) => {
+          root.style.setProperty(`--p-primary-${shade}`, colorValue as string)
+        })
+      })
+
+      this.unlistenThemeColor = unlisten
+    },
+
+    // Stop listening for system color changes
+    async stopThemeColorMonitoring() {
+      await invoke('execute_command', {
+        command: { name: 'StopThemeMonitoring' },
+      })
+
+      if (this.unlistenThemeColor) {
+        this.unlistenThemeColor()
+        this.unlistenThemeColor = null
       }
     },
   },

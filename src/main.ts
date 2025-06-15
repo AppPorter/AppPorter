@@ -10,7 +10,6 @@ import { invoke } from '@tauri-apps/api/core'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
-import Color from 'color'
 import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
@@ -23,6 +22,8 @@ document.addEventListener('contextmenu', (event) => event.preventDefault())
 // Initialize window and app core components
 export const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'
+
+export let trayIcon: void | TrayIcon
 
 // Configure tray menu with basic actions
 const createTrayMenu = (t: (key: string) => string) => {
@@ -40,16 +41,14 @@ const createTrayMenu = (t: (key: string) => string) => {
       {
         id: 'quit',
         text: t('g.exit'),
-        action: () => invoke('exit'),
+        action: () =>
+          invoke('execute_command', {
+            command: { name: 'Exit' },
+          }),
       },
     ],
   })
 }
-
-// Hide window instead of closing
-window.onCloseRequested(async () => {
-  window.hide()
-})
 
 const pinia = createPinia()
 const app = createApp(Main)
@@ -70,27 +69,14 @@ const i18n = setupI18n(settingsStore.language)
 app.use(router).use(ToastService).use(ConfirmationService).use(i18n)
 setupRouterGuards(router)
 
-// Initialize theme
+// Initialize theme using settings store
 const UserColor = definePreset(Aura, {
   semantic: {
-    primary: {
-      50: Color(settingsStore.color).lighten(0.5).hex(),
-      100: Color(settingsStore.color).lighten(0.4).hex(),
-      200: Color(settingsStore.color).lighten(0.3).hex(),
-      300: Color(settingsStore.color).lighten(0.2).hex(),
-      400: Color(settingsStore.color).lighten(0.1).hex(),
-      500: Color(settingsStore.color).hex(),
-      600: Color(settingsStore.color).darken(0.1).hex(),
-      700: Color(settingsStore.color).darken(0.2).hex(),
-      800: Color(settingsStore.color).darken(0.3).hex(),
-      900: Color(settingsStore.color).darken(0.4).hex(),
-      950: Color(settingsStore.color).darken(0.5).hex(),
-    },
+    primary: settingsStore.generateColorPalette(),
   },
 })
 
-// Initial theme setup - using the settings store's functionality
-await settingsStore.updateThemeMode()
+await settingsStore.initializeTheme()
 
 app.use(PrimeVue, {
   theme: {
@@ -119,7 +105,7 @@ if (settingsStore.minimize_to_tray_on_close) {
       }
     },
   }
-  await TrayIcon.new(trayOptions).catch(console.error)
+  trayIcon = await TrayIcon.new(trayOptions).catch(console.error)
 }
 
 app.mount('#app')

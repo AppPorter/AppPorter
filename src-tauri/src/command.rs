@@ -18,6 +18,8 @@ pub enum Command {
     SaveSettings {
         settings: Settings,
     },
+    StartThemeMonitoring,
+    StopThemeMonitoring,
     LoadLibrary,
     SaveLibrary {
         library: Library,
@@ -105,6 +107,8 @@ impl Command {
             SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
+            StartThemeMonitoring => Self::ser(Settings::start_theme_monitoring(app.clone())),
+            StopThemeMonitoring => Self::ser(Settings::stop_theme_monitoring()),
             LoadLibrary => Self::ser(load_library().await?),
             SaveLibrary { library } => Self::ser(library.save().await?),
 
