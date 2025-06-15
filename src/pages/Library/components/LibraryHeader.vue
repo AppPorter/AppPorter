@@ -49,8 +49,8 @@ function toggleSortOrder() {
         <div class="flex items-center gap-2">
             <span class="mir-apps text-xl"></span>
             <div class="min-w-32">
-                <h2 class="text-lg font-medium">{{ t('app_list.all_apps') }}</h2>
-                <p class="mt-0.5 text-xs">{{ t('app_list.description') }}</p>
+                <h2 class="text-lg font-medium">{{ t('ui.library.all_apps') }}</h2>
+                <p class="mt-0.5 text-xs">{{ t('ui.library.description') }}</p>
             </div>
         </div>
 
@@ -67,7 +67,7 @@ function toggleSortOrder() {
                     <InputIcon>
                         <i class="mir-search" />
                     </InputIcon>
-                    <InputText v-model="currentSearchValue" :placeholder="t('search')" class="h-8 text-sm" />
+                    <InputText v-model="currentSearchValue" :placeholder="t('g.search')" class="h-8 text-sm" />
                 </IconField>
             </div>
         </div>

@@ -145,8 +145,8 @@ onMounted(() => {
         <template #empty>
           <div class="flex flex-col items-center justify-center py-8">
             <span class="mir-apps text-4xl opacity-30"></span>
-            <p class="mt-2 text-center">{{ t('library.no_apps_found') }}</p>
-            <p class="text-center text-sm opacity-70">{{ t('library.install_first') }}</p>
+            <p class="mt-2 text-center">{{ t('ui.library.no_apps_found') }}</p>
+            <p class="text-center text-sm opacity-70">{{ t('ui.library.install_first') }}</p>
           </div>
         </template>
       </DataView>

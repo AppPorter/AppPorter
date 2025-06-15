@@ -46,37 +46,37 @@ const contextMenu = ref()
 
 const menuItems = computed(() => [
     {
-        label: t('install'),
+        label: t('g.install'),
         icon: 'mir-install_desktop',
         command: () => emit('installApp'),
         visible: () => props.selectedApp && !props.selectedApp.installed,
     },
     {
-        label: t('open'),
+        label: t('g.open'),
         icon: 'mir-terminal',
         command: () => openApp(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: t('open_folder'),
+        label: t('g.open_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'tool',
     },
     {
-        label: t('open_install_folder'),
+        label: t('g.open_install_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: t('open_registry'),
+        label: t('g.open_registry'),
         icon: 'mir-app_registration',
         command: () => openRegistry(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: props.selectedApp?.type === 'tool' ? t('delete') : (props.selectedApp?.installed ? t('uninstall') : t('remove')),
+        label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('g.uninstall') : t('g.remove')),
         icon: 'mir-delete',
         command: () => (props.selectedApp?.installed ? (props.selectedApp?.type === 'tool' ? confirmDelete() : confirmUninstall()) : confirmRemove()),
         visible: () => props.selectedApp !== undefined,
@@ -133,20 +133,20 @@ async function confirmUninstall() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('library.confirm_uninstall_message', {
+            message: t('ui.library.confirm_uninstall_message', {
                 name: app.details.info.name,
             }),
             group: 'dialog',
-            header: t('library.confirm_uninstall_header'),
+            header: t('ui.library.confirm_uninstall_header'),
             icon: 'mir-warning',
             rejectProps: {
-                label: t('cancel'),
+                label: t('g.cancel'),
                 severity: 'secondary',
                 outlined: true,
                 icon: 'mir-close',
             },
             acceptProps: {
-                label: t('uninstall'),
+                label: t('g.uninstall'),
                 severity: 'danger',
                 icon: 'mir-warning',
             },
@@ -169,20 +169,20 @@ async function confirmDelete() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('library.confirm_delete_message', {
+            message: t('ui.library.confirm_delete_message', {
                 name: props.selectedApp!.details.info.name,
             }),
             group: 'dialog',
-            header: t('library.confirm_delete_header'),
+            header: t('ui.library.confirm_delete_header'),
             icon: 'mir-warning',
             rejectProps: {
-                label: t('cancel'),
+                label: t('g.cancel'),
                 severity: 'secondary',
                 outlined: true,
                 icon: 'mir-close',
             },
             acceptProps: {
-                label: t('delete'),
+                label: t('g.delete'),
                 severity: 'danger',
                 icon: 'mir-delete',
             },
@@ -204,20 +204,20 @@ async function confirmRemove() {
 
     await new Promise((resolve, reject) => {
         confirm.require({
-            message: t('library.confirm_remove_message', {
+            message: t('ui.library.confirm_remove_message', {
                 name: props.selectedApp!.details.info.name,
             }),
             group: 'dialog',
-            header: t('library.confirm_remove_header'),
+            header: t('ui.library.confirm_remove_header'),
             icon: 'mir-warning',
             rejectProps: {
-                label: t('cancel'),
+                label: t('g.cancel'),
                 severity: 'secondary',
                 outlined: true,
                 icon: 'mir-close',
             },
             acceptProps: {
-                label: t('remove'),
+                label: t('g.remove'),
                 severity: 'danger',
                 icon: 'mir-delete',
             },

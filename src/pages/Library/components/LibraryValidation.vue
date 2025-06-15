@@ -52,17 +52,17 @@ function handleStatusClick(app) {
 
         if (!fileExists && !registryValid) {
             confirm.require({
-                message: t('validation.issue', { name: app.details.info.name }) + t('validation.missing_both'),
-                header: t('validation.title'),
+                message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_both'),
+                header: t('ui.validation.title'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('uninstall'),
+                    label: t('g.uninstall'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
                 },
                 acceptProps: {
-                    label: t('reinstall'),
+                    label: t('g.reinstall'),
                     icon: 'mir-refresh',
                 },
                 accept: () => handleValidationAction('reinstall'),
@@ -70,17 +70,17 @@ function handleStatusClick(app) {
             })
         } else if (!fileExists) {
             confirm.require({
-                message: t('validation.issue', { name: app.details.info.name }) + t('validation.missing_file'),
-                header: t('validation.title'),
+                message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_file'),
+                header: t('ui.validation.title'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('uninstall'),
+                    label: t('g.uninstall'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
                 },
                 acceptProps: {
-                    label: t('reinstall'),
+                    label: t('g.reinstall'),
                     icon: 'mir-refresh',
                 },
                 accept: () => handleValidationAction('reinstall'),
@@ -89,17 +89,17 @@ function handleStatusClick(app) {
         } else if (!registryValid) {
             confirm.require({
                 message:
-                    t('validation.issue', { name: app.details.info.name }) + t('validation.missing_registry'),
-                header: t('validation.title'),
+                    t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_registry'),
+                header: t('ui.validation.title'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('uninstall'),
+                    label: t('g.uninstall'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
                 },
                 acceptProps: {
-                    label: t('reinstall'),
+                    label: t('g.reinstall'),
                     icon: 'mir-build',
                 },
                 accept: () => handleValidationAction('repair'),
@@ -108,17 +108,17 @@ function handleStatusClick(app) {
         } else if (!pathExists) {
             confirm.require({
                 message:
-                    t('validation.issue', { name: app.details.info.name }) + t('validation.missing_path'),
-                header: t('validation.title'),
+                    t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_path'),
+                header: t('ui.validation.title'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('uninstall'),
+                    label: t('g.uninstall'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
                 },
                 acceptProps: {
-                    label: t('repair'),
+                    label: t('g.repair'),
                     icon: 'mir-build',
                 },
                 accept: () => handleValidationAction('repair'),
@@ -134,20 +134,20 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (action === 'uninstall') {
         await new Promise((resolve, reject) => {
             confirm.require({
-                message: t('confirm_uninstall_message', {
+                message: t('ui.library.confirm_uninstall_message', {
                     name: appToValidate.value.details.info.name,
                 }),
                 group: 'dialog',
-                header: t('confirm_uninstall_header'),
+                header: t('ui.library.confirm_uninstall_header'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('cancel'),
+                    label: t('g.cancel'),
                     severity: 'secondary',
                     outlined: true,
                     icon: 'mir-close',
                 },
                 acceptProps: {
-                    label: t('uninstall'),
+                    label: t('g.uninstall'),
                     severity: 'danger',
                     icon: 'mir-warning',
                 },
