@@ -107,8 +107,14 @@ impl Command {
             SaveEnv { env } => Self::ser(env.save().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser(settings.save().await?),
-            StartThemeMonitoring => Self::ser(Settings::start_theme_monitoring(app.clone())),
-            StopThemeMonitoring => Self::ser(Settings::stop_theme_monitoring()),
+            StartThemeMonitoring => {
+                Settings::start_theme_monitoring(app.clone());
+                Self::ser(())
+            }
+            StopThemeMonitoring => {
+                Settings::stop_theme_monitoring();
+                Self::ser(())
+            }
             LoadLibrary => Self::ser(load_library().await?),
             SaveLibrary { library } => Self::ser(library.save().await?),
 
