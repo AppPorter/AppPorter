@@ -73,7 +73,11 @@
         "completed": "完成",
         "extracting": "解压中",
         "install_path": "安装路径",
-        "failed": "安装失败"
+        "failed": "安装失败",
+        "title": "安装进度",
+        "copy_path": "复制路径",
+        "install_settings": "安装设置",
+        "copy_settings": "复制设置"
       },
       "app_details": {
         "title": "App详情"
@@ -84,7 +88,14 @@
       "config": {
         "install_options": "安装选项"
       },
-      "final_path": "最终路径"
+      "final_path": "最终路径",
+      "lib_details": "库详情",
+      "shortcuts": {
+        "none": "没有快捷方式"
+      },
+      "path": "路径",
+      "source_archive": "源压缩文件",
+      "selected_executable": "选择的可执行文件"
     },
     "library": {
       "confirm_uninstall_header": "卸载 “{name}”？"
@@ -135,11 +146,13 @@
         "desktop": "桌面快捷方式",
         "registry_key": "注册表项",
         "start_menu": "开始菜单快捷方式",
-        "add_to_path": "添加到PATH"
+        "add_to_path": "添加到PATH",
+        "self": "快捷方式"
       },
       "config": {
         "install_path": "安装路径",
-        "full_path": "完整路径"
+        "full_path": "完整路径",
+        "executable_path": "可执行文件路径"
       },
       "types": {
         "app": "软件",

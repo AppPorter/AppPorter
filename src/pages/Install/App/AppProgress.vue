@@ -203,7 +203,7 @@ const handleClose = () => {
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('ui.install.progress.install_settings')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -227,7 +227,7 @@ const handleClose = () => {
                   </p>
                 </div>
                 <div class="space-y-1">
-                  <span class="text-sm">{{ t('cls.install.paths.self') }}</span>
+                  <span class="text-sm">{{ t('ui.install.path') }}</span>
                   <p class="break-all text-sm font-medium">
                     {{ fullInstallPath }}
                   </p>
@@ -241,7 +241,7 @@ const handleClose = () => {
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('ui.install.progress.package_info')
-                    }}</span>
+                  }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_package_info')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
