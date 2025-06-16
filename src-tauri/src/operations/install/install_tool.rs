@@ -82,23 +82,26 @@ pub async fn install_tool(
         url: String::new(),
     };
     if config.timestamp != 0 {
-        // Update existing app with matching timestamp
-        if let Some(existing_app) = app_list
+        // Update existing tool with matching timestamp
+        if let Some(existing_tool) = app_list
             .tools
             .iter_mut()
-            .find(|app| app.timestamp == config.timestamp)
+            .find(|tool| tool.timestamp == config.timestamp)
         {
-            existing_app.installed = true;
-            existing_app.details = app_item.details;
+            existing_tool.installed = true;
+            existing_tool.details = app_item.details;
+        } else {
+            // If tool doesn't exist, add it as new
+            app_list.tools.push(app_item);
         }
     } else {
-        // Remove existing similar app and add new one
-        app_list.tools.retain(|existing_app| {
-            let mut app1 = existing_app.clone();
-            let mut app2 = app_item.clone();
-            app1.timestamp = 0;
-            app2.timestamp = 0;
-            app1 != app2
+        // Remove existing similar tool and add new one
+        app_list.tools.retain(|existing_tool| {
+            let mut tool1 = existing_tool.clone();
+            let mut tool2 = app_item.clone();
+            tool1.timestamp = 0;
+            tool2.timestamp = 0;
+            tool1 != tool2
         });
         app_list.tools.push(app_item);
     }
