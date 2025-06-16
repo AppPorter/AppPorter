@@ -47,7 +47,7 @@ const contextMenu = ref()
 
 const menuItems = computed(() => [
     {
-        label: t('g.install'),
+        label: t('cls.install.self'),
         icon: 'mir-install_desktop',
         command: () => emit('installApp'),
         visible: () => props.selectedApp && !props.selectedApp.installed,
@@ -77,7 +77,7 @@ const menuItems = computed(() => [
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('g.uninstall') : t('g.remove')),
+        label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
         icon: 'mir-delete',
         command: () => (props.selectedApp?.installed ? (props.selectedApp?.type === 'tool' ? confirmDelete() : confirmUninstall()) : confirmRemove()),
         visible: () => props.selectedApp !== undefined,

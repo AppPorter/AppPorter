@@ -68,7 +68,7 @@ function formatTimestamp(timestamp) {
                     </div>
                     <div v-else-if="item.type === 'tool'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ t('ui.library.tool') }}</span>
+                        <span>{{ t('cls.install.types.tool') }}</span>
                     </div>
                 </div>
 

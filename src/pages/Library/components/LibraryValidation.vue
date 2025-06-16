@@ -52,10 +52,10 @@ function handleStatusClick(app) {
         if (!fileExists && !registryValid) {
             confirm.require({
                 message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_both'),
-                header: t('ui.validation.title'),
+                header: t('ui.validation.validation_error'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('g.uninstall'),
+                    label: t('cls.uninstall.self'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
@@ -70,10 +70,10 @@ function handleStatusClick(app) {
         } else if (!fileExists) {
             confirm.require({
                 message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_file'),
-                header: t('ui.validation.title'),
+                header: t('ui.validation.validation_error'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('g.uninstall'),
+                    label: t('cls.uninstall.self'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
@@ -89,10 +89,10 @@ function handleStatusClick(app) {
             confirm.require({
                 message:
                     t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_registry'),
-                header: t('ui.validation.title'),
+                header: t('ui.validation.validation_error'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('g.uninstall'),
+                    label: t('cls.uninstall.self'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',
@@ -108,10 +108,10 @@ function handleStatusClick(app) {
             confirm.require({
                 message:
                     t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_path'),
-                header: t('ui.validation.title'),
+                header: t('ui.validation.validation_error'),
                 icon: 'mir-warning',
                 rejectProps: {
-                    label: t('g.uninstall'),
+                    label: t('cls.uninstall.self'),
                     icon: 'mir-delete',
                     severity: 'danger',
                     variant: 'outlined',

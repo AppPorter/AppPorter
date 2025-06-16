@@ -39,7 +39,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         return {
             icon: 'mir-folder_copy',
             severity: 'info',
-            value: t('ui.library.tool'),
+            value: t('cls.install.types.tool'),
         }
     }
 
@@ -59,7 +59,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         return {
             icon: 'mir-error',
             severity: 'warn',
-            value: t('ui.library.validation_error'),
+            value: t('ui.validation.validation_error'),
         }
     }
 
@@ -76,7 +76,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
     return {
         icon: 'mir-error',
         severity: 'warn',
-        value: t('ui.library.validation_error'),
+        value: t('ui.validation.validation_error'),
     }
 }
 </script>
