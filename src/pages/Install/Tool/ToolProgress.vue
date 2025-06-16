@@ -51,7 +51,7 @@ onMounted(() => {
     // Start tool install process
     invoke('execute_command', {
         command: {
-            name: 'ToolInstall',
+            name: 'InstallTool',
             config: {
                 zip_path: installConfig.zip_path,
                 password: installConfig.archive_password,

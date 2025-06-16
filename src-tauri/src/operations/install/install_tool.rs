@@ -8,7 +8,7 @@ use crate::{
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 use std::path::Path;
-use tauri::AppHandle;
+use tauri::{AppHandle, Emitter};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct ToolInstallConfig {
@@ -23,6 +23,8 @@ pub async fn install_tool(
     config: ToolInstallConfig,
     app: AppHandle,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
+    // Send install start event
+    app.emit("tool_install", 0)?;
     let zip_path = config.zip_path.clone();
     let extract_path = config.extract_path.clone();
 
@@ -43,9 +45,9 @@ pub async fn install_tool(
     extract_archive_files(
         &zip_path,
         &install_path,
-        app,
+        app.clone(),
         config.password.as_deref(),
-        "install_tool_extract",
+        "tool_install_extract",
     )
     .await?;
 
@@ -101,6 +103,9 @@ pub async fn install_tool(
         app_list.tools.push(app_item);
     }
     app_list.save().await?;
+
+    // Send completion event
+    app.emit("tool_install", 101)?;
 
     Ok(extract_path)
 }

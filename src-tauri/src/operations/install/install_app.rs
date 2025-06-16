@@ -7,7 +7,7 @@ use crate::operations::install::find_single_root_folder;
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path};
-use tauri::AppHandle;
+use tauri::{AppHandle, Emitter};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
@@ -24,9 +24,12 @@ pub async fn install_app(
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     let timestamp = chrono::Utc::now().timestamp();
 
+    // Send initial install progress event
+    app.emit("install", 0)?;
+
     let install_path = format!(
         "{}\\{}",
-        config.details.paths.install_path,
+        config.details.paths.parent_install_path,
         config.details.info.name.replace(" ", "-")
     );
 
@@ -98,6 +101,8 @@ pub async fn install_app(
 
     // Update app list
     update_app_list(config, full_path.clone(), full_path_directory, timestamp).await?;
+
+    app.emit("install", 101)?;
 
     Ok(full_path)
 }
