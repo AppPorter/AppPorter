@@ -14,8 +14,8 @@ use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 pub struct AppInstallConfig {
     zip_path: String,
     password: Option<String>,
-    details: AppDetails,
     timestamp: i64,
+    details: AppDetails,
 }
 
 pub async fn install_app(
@@ -25,7 +25,7 @@ pub async fn install_app(
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send initial install progress event
-    app.emit("install", 0)?;
+    app.emit("app_install_progress", 0)?;
 
     let install_path = format!(
         "{}\\{}",
@@ -40,7 +40,7 @@ pub async fn install_app(
         &install_path,
         app.clone(),
         config.password.as_deref(),
-        "install_extract",
+        "app_install_progress",
     )
     .await?;
 
@@ -68,18 +68,14 @@ pub async fn install_app(
         format!("{}\\{}", install_path, normalized_path)
     };
 
-    // Setup system integration
-    let env = Env::read().await?;
-
     // Create shortcuts
     if config.details.config.create_start_menu_shortcut {
         create_start_menu_shortcut(
-            &env.system_drive_letter,
-            &env.username,
             &config.details.info.name,
             &full_path,
             config.details.config.current_user_only,
-        )?;
+        )
+        .await?;
     }
 
     if config.details.config.create_desktop_shortcut {
@@ -102,7 +98,7 @@ pub async fn install_app(
     // Update app list
     update_app_list(config, full_path.clone(), full_path_directory, timestamp).await?;
 
-    app.emit("install", 101)?;
+    app.emit("app_install_progress", 101)?;
 
     Ok(full_path)
 }
@@ -162,22 +158,21 @@ async fn update_app_list(
     Ok(())
 }
 
-fn create_start_menu_shortcut(
-    system_drive: &str,
-    username: &str,
+async fn create_start_menu_shortcut(
     app_name: &str,
     executable_path: &str,
     current_user_only: bool,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let env = Env::read().await?;
     let lnk_path = if current_user_only {
         format!(
             r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            system_drive, username, app_name
+            env.system_drive_letter, env.username, app_name
         )
     } else {
         format!(
             r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            system_drive, app_name
+            env.system_drive_letter, app_name
         )
     };
     ShellLink::new(executable_path)?.create_lnk(lnk_path)?;

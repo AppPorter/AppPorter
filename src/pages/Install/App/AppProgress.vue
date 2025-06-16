@@ -48,47 +48,35 @@ const getShortcutsList = (config: {
 
 // Copy information to clipboard with feedback
 const handleCopy = async (text: string, type: string) => {
-  try {
-    await navigator.clipboard.writeText(text)
-    toast.add({
-      severity: 'info',
-      summary: t('cls.edit.copy'),
-      detail: `${type} copied to clipboard`,
-      life: 2000,
-    })
-  } catch (error) {
-    console.error('Failed to copy to clipboard:', error)
-    toast.add({
-      severity: 'error',
-      summary: t('g.error'),
-      detail: 'Failed to copy to clipboard',
-      life: 3000,
-    })
-  }
+  await navigator.clipboard.writeText(text)
+  toast.add({
+    severity: 'info',
+    summary: t('cls.edit.copy'),
+    detail: `${type} copied to clipboard`,
+    life: 2000,
+  })
 }
 
 onMounted(async () => {
   // Initial install setup
   currentStatus.value = t('ui.install.progress.preparing')
 
-  // Setup event listeners for install progress
-  const installUnlisten = await listen('install', (event) => {
+  // Setup event listener for install progress
+  const installUnlisten = await listen('app_install_progress', (event) => {
     const payload = event.payload as number
     if (payload === 0) {
       progressMode.value = 'indeterminate'
       currentStatus.value = t('ui.install.progress.preparing_extract')
-    }
-    if (payload === 101) {
+    } else if (payload === 101) {
+      extractProgress.value = 100
       currentStatus.value = t('ui.install.progress.completed')
       isFinished.value = true
       canClose.value = true
+    } else if (payload > 0 && payload <= 100) {
+      progressMode.value = 'determinate'
+      extractProgress.value = payload
+      currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
     }
-  })
-
-  const extractUnlisten = await listen('install_extract', (event) => {
-    progressMode.value = 'determinate'
-    extractProgress.value = event.payload as number
-    currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
   })
 
   // Start install process
@@ -114,7 +102,6 @@ onMounted(async () => {
   // Cleanup listeners on unmount
   return () => {
     installUnlisten()
-    extractUnlisten()
   }
 })
 
@@ -203,7 +190,7 @@ const handleClose = () => {
                   <span class="mir-settings"></span>
                   <span class="text-sm font-medium">{{
                     t('ui.install.progress.install_settings')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_settings')"
                   class="h-7 w-8" icon="mir-content_copy" @click="
@@ -241,7 +228,7 @@ const handleClose = () => {
                   <span class="mir-folder_zip"></span>
                   <span class="text-sm font-medium">{{
                     t('ui.install.progress.package_info')
-                  }}</span>
+                    }}</span>
                 </div>
                 <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.copy_package_info')"
                   class="h-7 w-8" icon="mir-content_copy" @click="

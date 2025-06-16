@@ -27,42 +27,53 @@ const fullExtractPath = computed(() => {
     return base && name ? `${base.replace(/\\$/, '')}\\${name}\\` : base
 })
 
-onMounted(() => {
+onMounted(async () => {
+    // Initial install setup
     currentStatus.value = t('ui.install.progress.preparing')
 
-    listen('tool_install', (event) => {
-        if (event.payload === 0) {
+    // Setup event listener for tool install progress
+    const toolInstallUnlisten = await listen('tool_install_progress', (event) => {
+        const payload = event.payload as number
+        if (payload === 0) {
             progressMode.value = 'indeterminate'
             currentStatus.value = t('ui.install.progress.preparing_extract')
-        }
-        if (event.payload === 101) {
+        } else if (payload === 101) {
+            extractProgress.value = 100
             currentStatus.value = t('ui.install.progress.completed')
             isFinished.value = true
             canClose.value = true
+        } else if (payload > 0 && payload <= 100) {
+            progressMode.value = 'determinate'
+            extractProgress.value = payload
+            currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
         }
     })
 
-    listen('tool_install_extract', (event) => {
-        progressMode.value = 'determinate'
-        extractProgress.value = event.payload as number
-        currentStatus.value = t('ui.install.progress.extracting', { progress: extractProgress.value })
-    })
-
     // Start tool install process
-    invoke('execute_command', {
-        command: {
-            name: 'InstallTool',
-            config: {
-                zip_path: installConfig.zip_path,
-                password: installConfig.archive_password,
-                extract_path: installConfig.tool_details.paths.install_path,
-                name: installConfig.tool_details.name,
-                timestamp: installConfig.timestamp,
+    try {
+        const result = await invoke('execute_command', {
+            command: {
+                name: 'InstallTool',
+                config: {
+                    zip_path: installConfig.zip_path,
+                    password: installConfig.archive_password,
+                    extract_path: installConfig.tool_details.paths.install_path,
+                    name: installConfig.tool_details.name,
+                    timestamp: installConfig.timestamp,
+                },
             },
-        },
-    }).then((result) => {
+        })
         finalExtractPath.value = result as string
-    })
+    } catch (error) {
+        console.error('Tool install failed:', error)
+        currentStatus.value = t('ui.install.progress.failed')
+        canClose.value = true
+    }
+
+    // Cleanup listeners on unmount
+    return () => {
+        toolInstallUnlisten()
+    }
 })
 
 const handleClose = () => {
