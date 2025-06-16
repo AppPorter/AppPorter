@@ -98,7 +98,30 @@
       "selected_executable": "选择的可执行文件"
     },
     "library": {
-      "confirm_uninstall_header": "卸载 “{name}”？"
+      "confirm_uninstall_header": "卸载 \"{name}\"？",
+      "no_apps_found": "未找到应用",
+      "install_first": "请先安装一些应用",
+      "all_apps": "所有应用",
+      "description": "管理已安装的应用和工具",
+      "confirm_delete_header": "删除确认",
+      "confirm_delete_message": "确定要删除 \"{name}\" 吗？",
+      "confirm_remove_header": "移除确认",
+      "confirm_remove_message": "确定要从库中移除 \"{name}\" 吗？",
+      "not_installed": "未安装",
+      "installed": "已安装",
+      "validation_error": "验证错误",
+      "tool": "工具",
+      "open_folder": "打开文件夹",
+      "open_install_folder": "打开安装文件夹",
+      "open_registry": "打开注册表"
+    },
+    "validation": {
+      "title": "验证问题",
+      "issue": "检测到 \"{name}\" 存在问题：",
+      "missing_both": "文件和注册表项都不存在。",
+      "missing_file": "主可执行文件不存在。",
+      "missing_registry": "注册表项不存在。",
+      "missing_path": "安装路径不存在。"
     }
   },
   "g": {
@@ -123,7 +146,14 @@
     "close": "关闭",
     "optional": "可选",
     "icon": "图标",
-    "option": "选项"
+    "option": "选项",
+    "search": "搜索",
+    "install": "安装",
+    "uninstall": "卸载",
+    "reinstall": "重新安装",
+    "repair": "修复",
+    "delete": "删除",
+    "remove": "移除"
   },
   "cls": {
     "edit": {
@@ -161,11 +191,18 @@
       "app": {
         "name": "名称",
         "publisher": "发布者",
-        "version": "版本"
+        "version": "版本",
+        "unknown_version": "未知版本",
+        "unknown_publisher": "未知发布者"
       }
     },
     "library": {
       "self": "软件库"
+    },
+    "sort": {
+      "name": "名称",
+      "publisher": "发布者",
+      "date": "日期"
     },
     "settings": {
       "self": "设置",

@@ -30,7 +30,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         return {
             icon: 'mir-cloud_download',
             severity: 'secondary',
-            value: t('cls.library.not_installed'),
+            value: t('ui.library.not_installed'),
         }
     }
 
@@ -39,7 +39,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         return {
             icon: 'mir-folder_copy',
             severity: 'info',
-            value: t('cls.library.tool'),
+            value: t('ui.library.tool'),
         }
     }
 
@@ -52,14 +52,14 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         if (isValid) {
             return {
                 icon: 'mir-check',
-                value: t('cls.library.installed'),
+                value: t('ui.library.installed'),
             }
         }
 
         return {
             icon: 'mir-error',
             severity: 'warn',
-            value: t('cls.library.validation_error'),
+            value: t('ui.library.validation_error'),
         }
     }
 
@@ -69,14 +69,14 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
     if (isToolValid) {
         return {
             icon: 'mir-check',
-            value: t('cls.library.installed'),
+            value: t('ui.library.installed'),
         }
     }
 
     return {
         icon: 'mir-error',
         severity: 'warn',
-        value: t('cls.library.validation_error'),
+        value: t('ui.library.validation_error'),
     }
 }
 </script>

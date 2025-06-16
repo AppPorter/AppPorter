@@ -62,13 +62,13 @@ function formatTimestamp(timestamp) {
                     <span class="text-sm font-medium">{{ item.details.info.name || item.url }}</span>
                     <div v-if="item.type === 'app'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ item.details.info.version || t('cls.app.unknown_version') }}</span>
+                        <span>{{ item.details.info.version || t('cls.install.app.unknown_version') }}</span>
                         <span class="opacity-50">•</span>
-                        <span>{{ item.details.info.publisher || t('cls.app.unknown_publisher') }}</span>
+                        <span>{{ item.details.info.publisher || t('cls.install.app.unknown_publisher') }}</span>
                     </div>
                     <div v-else-if="item.type === 'tool'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ t('cls.library.tool') }}</span>
+                        <span>{{ t('ui.library.tool') }}</span>
                     </div>
                 </div>
 

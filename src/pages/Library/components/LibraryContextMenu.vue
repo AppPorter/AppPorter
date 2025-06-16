@@ -93,7 +93,7 @@ async function openApp() {
 
     await invoke('execute_command', {
         command: {
-            name: 'Open',
+            name: 'OpenApp',
             path: targetPath,
         },
     })
