@@ -59,19 +59,19 @@ const menuItems = computed(() => [
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: t('g.open_folder'),
+        label: t('ui.library.open_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'tool',
     },
     {
-        label: t('g.open_install_folder'),
+        label: t('ui.library.open_install_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: t('g.open_registry'),
+        label: t('ui.library.open_registry'),
         icon: 'mir-app_registration',
         command: () => openRegistry(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
