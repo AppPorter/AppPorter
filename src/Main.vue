@@ -5,12 +5,13 @@ import ContextMenuManager from '@/components/Core/ContextMenuManager.vue'
 import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import Listener from '@/components/Core/Listener.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
+import Uninstall from '@/components/Core/Uninstall.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
 import { exit } from '@tauri-apps/plugin-process'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
-import { computed, onBeforeMount, onMounted, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
@@ -22,6 +23,14 @@ const errorHandler = ref()
 const dismissWarning = ref(false)
 const env = EnvStore()
 const contextMenuManager = ref()
+const uninstallComponent = ref()
+
+// Provide uninstall function to child components
+const triggerUninstall = async (timestamp: number) => {
+  await uninstallComponent.value?.confirmAndExecuteUninstall(timestamp)
+}
+
+provide('triggerUninstall', triggerUninstall)
 
 // Setup event listeners after component is mounted
 onMounted(async () => {
@@ -117,5 +126,8 @@ onBeforeMount(() => {
 
     <!-- Preview Drawer -->
     <PreviewDrawer />
+
+    <!-- Uninstall Component -->
+    <Uninstall ref="uninstallComponent" />
   </div>
 </template>

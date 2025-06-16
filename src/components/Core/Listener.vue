@@ -5,10 +5,11 @@ import { InstallConfigStore } from '@/stores/install_config'
 import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
-import { onMounted } from 'vue'
+import { inject, onMounted } from 'vue'
 
 const libraryStore = LibraryStore()
 const installConfig = InstallConfigStore()
+const triggerUninstall = inject('triggerUninstall') as (timestamp: number) => Promise<void>
 
 function showWindow() {
     tauriWindow.show()
@@ -42,7 +43,7 @@ onMounted(async () => {
     await listen('uninstall_app', async (event) => {
         goTo('/Library')
         await libraryStore.loadLibrary()
-        await libraryStore.confirmAndExecuteUninstall(event.payload as number)
+        await triggerUninstall(event.payload as number)
         showWindow()
     })
 

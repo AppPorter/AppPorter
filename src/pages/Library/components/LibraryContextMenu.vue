@@ -3,12 +3,13 @@ import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import Menu from 'primevue/menu'
 import { useConfirm } from 'primevue/useconfirm'
-import { computed, ref } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
+const triggerUninstall = inject('triggerUninstall') as (timestamp: number) => Promise<void>
 
 interface LibraryContextMenuProps {
     selectedApp?: {
@@ -127,7 +128,7 @@ async function openRegistry() {
 
 async function confirmUninstall() {
     if (!props.selectedApp) return
-    await libraryStore.confirmAndExecuteUninstall(props.selectedApp.timestamp)
+    await triggerUninstall(props.selectedApp.timestamp)
 }
 
 async function confirmDelete() {

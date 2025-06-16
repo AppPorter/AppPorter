@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { useConfirm } from 'primevue/useconfirm'
-import { ref } from 'vue'
+import { inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const libraryStore = LibraryStore()
 const { t } = useI18n()
 const confirm = useConfirm()
+const triggerUninstall = inject('triggerUninstall') as (timestamp: number) => Promise<void>
 
 interface LibraryValidationProps {
     app?: {
@@ -132,7 +131,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await libraryStore.confirmAndExecuteUninstall(appToValidate.value.timestamp)
+        await triggerUninstall(appToValidate.value.timestamp)
     } else {
         await invoke('execute_command', {
             command: {
@@ -148,7 +147,3 @@ defineExpose({
     handleStatusClick
 })
 </script>
-
-<template>
-    <!-- This component only provides validation logic -->
-</template>
