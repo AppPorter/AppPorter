@@ -104,7 +104,7 @@ function handleInstallModeChange(event: Event) {
       </div>
     </template>
 
-    <div class="space-y-2 p-2">
+    <div class="space-y-2 p-1">
       <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('cls.install.modes.self') }}</label>

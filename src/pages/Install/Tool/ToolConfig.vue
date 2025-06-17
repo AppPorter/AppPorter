@@ -182,7 +182,7 @@ async function handleInstallClick() {
                             </div>
                         </template>
 
-                        <div class="space-y-4 p-2">
+                        <div class="space-y-4 p-1">
                             <!-- Name input (required) -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">
@@ -255,7 +255,7 @@ async function handleInstallClick() {
                 icon="mir-arrow_back" :label="t('g.back')" outlined />
 
             <Button severity="primary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleInstallClick"
-                icon="mir-folder_copy" :label="t('cls.install.self')" />
+                icon="mir-install_desktop" :label="t('cls.install.self')" />
         </div>
 
         <!-- Directory Selector Drawer -->
