@@ -16,6 +16,7 @@ interface LibraryStatusTagProps {
             }
         }
     }
+    tagType: 'type' | 'status'
 }
 
 interface LibraryStatusTagEmits {
@@ -25,21 +26,28 @@ interface LibraryStatusTagEmits {
 defineProps<LibraryStatusTagProps>()
 defineEmits<LibraryStatusTagEmits>()
 
+function getLibraryType(data: LibraryStatusTagProps['item']) {
+    if (data.type === 'app') {
+        return {
+            icon: 'mir-apps',
+            severity: 'info',
+            value: t('cls.install.types.app'),
+        }
+    }
+
+    return {
+        icon: 'mir-folder_copy',
+        severity: 'secondary',
+        value: t('cls.install.types.tool'),
+    }
+}
+
 function getLibraryStatus(data: LibraryStatusTagProps['item']) {
     if (!data.installed) {
         return {
             icon: 'mir-cloud_download',
             severity: 'secondary',
             value: t('ui.library.not_installed'),
-        }
-    }
-
-    // Handle tools (tool type)
-    if (data.type === 'tool') {
-        return {
-            icon: 'mir-folder_copy',
-            severity: 'info',
-            value: t('cls.install.types.tool'),
         }
     }
 
@@ -52,6 +60,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         if (isValid) {
             return {
                 icon: 'mir-check',
+                severity: 'success',
                 value: t('ui.library.installed'),
             }
         }
@@ -69,6 +78,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
     if (isToolValid) {
         return {
             icon: 'mir-check',
+            severity: 'success',
             value: t('ui.library.installed'),
         }
     }
@@ -82,6 +92,8 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
 </script>
 
 <template>
-    <Tag :value="getLibraryStatus(item).value" :severity="getLibraryStatus(item).severity"
+    <Tag v-if="tagType === 'type'" :value="getLibraryType(item).value" :severity="getLibraryType(item).severity"
+        :icon="getLibraryType(item).icon" class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
+    <Tag v-else :value="getLibraryStatus(item).value" :severity="getLibraryStatus(item).severity"
         :icon="getLibraryStatus(item).icon" class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
 </template>

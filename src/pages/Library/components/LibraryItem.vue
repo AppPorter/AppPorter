@@ -57,9 +57,9 @@ function formatTimestamp(timestamp) {
                 </div>
             </div>
 
-            <div class="flex-1">
+            <div class="min-w-0 flex-1">
                 <div class="mb-2 flex flex-col">
-                    <span class="text-sm font-medium">{{ item.details.info.name || item.url }}</span>
+                    <span class="truncate text-sm font-medium">{{ item.details.info.name || item.url }}</span>
                     <div v-if="item.type === 'app'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                         <span>{{ item.details.info.version || t('cls.install.app.unknown_version') }}</span>
@@ -67,15 +67,18 @@ function formatTimestamp(timestamp) {
                 </div>
 
                 <div class="flex items-center gap-2 text-xs">
-                    <template v-if="item.details.paths.install_path">
-                        <span class="break-all opacity-75">{{ item.details.paths.install_path }}</span>
-                        <span class="opacity-50">•</span>
-                    </template>
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
+                    <template v-if="item.details.paths.install_path">
+                        <span class="hidden opacity-50 sm:inline">•</span>
+                        <span class="hidden break-all opacity-75 sm:inline">{{ item.details.paths.install_path }}</span>
+                    </template>
                 </div>
             </div>
 
-            <LibraryStatusTag :item="item" class="mr-2" @click="$emit('statusClick', item)" />
+            <div class="mr-2 flex items-center gap-2">
+                <LibraryStatusTag :item="item" tag-type="type" @click="$emit('statusClick', item)" />
+                <LibraryStatusTag :item="item" tag-type="status" @click="$emit('statusClick', item)" />
+            </div>
 
             <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="$emit('contextMenu', { originalEvent: $event, data: item })" />
