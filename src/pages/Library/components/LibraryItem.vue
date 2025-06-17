@@ -63,12 +63,6 @@ function formatTimestamp(timestamp) {
                     <div v-if="item.type === 'app'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
                         <span>{{ item.details.info.version || t('cls.install.app.unknown_version') }}</span>
-                        <span class="opacity-50">•</span>
-                        <span>{{ item.details.info.publisher || t('cls.install.app.unknown_publisher') }}</span>
-                    </div>
-                    <div v-else-if="item.type === 'tool'"
-                        class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ t('cls.install.types.tool') }}</span>
                     </div>
                 </div>
 
