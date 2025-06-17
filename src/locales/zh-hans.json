@@ -44,8 +44,7 @@
     },
     "valid": {
       "invalid_archive": "无效压缩文件",
-      "executable_missing": "没有可执行文件",
-      "directory_not_empty": "目录不为空"
+      "executable_missing": "没有可执行文件"
     },
     "archive": {
       "password_required": "需要压缩文件密码",

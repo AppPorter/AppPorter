@@ -1,4 +1,4 @@
-use crate::{configs::*, core::*, operations::*};
+use crate::{configs::*, core::*, operations::*, utils::*};
 use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
@@ -66,24 +66,21 @@ pub enum Command {
     GetDetails {
         path: ExePath,
     },
-
     ValidatePath {
         path: String,
     },
-
     GetArchiveContent {
         path: String,
         password: Option<String>,
     },
-
     CheckPathEmpty {
         path: String,
     },
-
     GetArchiveTree {
         path: String,
         password: Option<String>,
     },
+    GetTimestamp,
 }
 
 impl Command {
@@ -152,6 +149,7 @@ impl Command {
             }
             CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
             GetArchiveTree { path, password } => Self::ser(get_archive_tree(path, password).await?),
+            GetTimestamp => Self::ser(get_timestamp()),
         }
     }
 }

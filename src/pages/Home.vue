@@ -24,11 +24,6 @@ async function selectZipFile() {
 
   if (selected) {
     installConfig.zip_path = selected
-    installConfig.timestamp = Date.now()
-    // Clear previous file tree and other related data when selecting new file
-    installConfig.file_tree = []
-    installConfig.archive_password = ''
-    installConfig.url = ''
   }
 }
 
