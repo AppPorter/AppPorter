@@ -16,6 +16,8 @@ const isFinished = ref(false)
 const currentStatus = ref('')
 const canClose = ref(false)
 const finalExtractPath = ref('')
+const extractPathCopied = ref(false)
+const installPathCopied = ref(false)
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Install_Tool_Progress'
@@ -39,7 +41,7 @@ onMounted(async () => {
             currentStatus.value = t('ui.install.progress.preparing_extract')
         } else if (payload === 101) {
             extractProgress.value = 100
-            currentStatus.value = t('ui.install.progress.completed')
+            currentStatus.value = ''
             isFinished.value = true
             canClose.value = true
         } else if (payload > 0 && payload <= 100) {
@@ -84,70 +86,116 @@ defineOptions({
     directives: { tooltip: Tooltip },
 })
 
-// Add copy method for template usage
-function handleCopyPath() {
-    // Copy full extract path to clipboard
-    navigator.clipboard.writeText(fullExtractPath.value)
+// Add copy methods for template usage
+async function handleCopyPath() {
+    await navigator.clipboard.writeText(finalExtractPath.value)
+    extractPathCopied.value = true
+    setTimeout(() => {
+        extractPathCopied.value = false
+    }, 2000)
+}
+
+async function handleCopyInstallPath() {
+    await navigator.clipboard.writeText(fullExtractPath.value)
+    installPathCopied.value = true
+    setTimeout(() => {
+        installPathCopied.value = false
+    }, 2000)
 }
 </script>
 
 <template>
-    <div class="flex size-full flex-col">
-        <div class="flex-1 overflow-auto p-1.5 pb-6">
-            <Panel class="mx-auto w-full max-w-5xl shadow-sm">
-                <template #header>
-                    <div class="flex w-full min-w-0 items-center justify-between py-1">
-                        <div class="flex min-w-0 shrink items-center gap-2">
-                            <div class="shrink-0 rounded-md p-1.5">
-                                <span class="mir-text-xl" :class="[
+    <div class="flex size-full flex-col overflow-hidden">
+        <!-- Main scrollable container -->
+        <div class="flex-1 overflow-auto">
+            <!-- Content wrapper -->
+            <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
+                <div class="min-w-72 flex-1 space-y-2">
+                    <!-- Main progress panel -->
+                    <Panel class="shadow-sm">
+                        <template #header>
+                            <div class="flex items-center gap-1.5">
+                                <span class="mir-text-lg" :class="[
                                     isFinished ? 'mir-task_alt' : 'mir-folder_copy',
-                                    isFinished
-                                        ? 'text-green-600 dark:text-green-400'
-                                        : 'text-primary-600 dark:text-primary-400',
+                                    'text-primary-600 dark:text-primary-400',
                                 ]"></span>
+                                <h2 class="text-base font-medium">
+                                    {{ t('ui.install.progress.title') }}
+                                </h2>
                             </div>
-                            <div class="min-w-0 shrink">
-                                <h2 class="text-lg font-medium">{{ t('ui.install.progress.title') }}</h2>
-                                <p class="text-xs">{{ t('ui.install.progress.description') }}</p>
-                            </div>
-                        </div>
-                        <div class="ml-4 flex shrink-0 select-text items-center gap-3">
-                            <div
-                                class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                                <span class="mir-folder_zip text-2xl"></span>
-                            </div>
-                        </div>
-                    </div>
-                </template>
+                        </template>
 
-                <div class="space-y-4">
-                    <div class="space-y-2">
-                        <p :class="[isFinished ? 'text-green-600 dark:text-green-400' : '']" class="text-sm">
-                            {{ currentStatus }}
-                        </p>
-                        <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
-                    </div>
-
-                    <div v-if="isFinished"
-                        class="rounded-lg border border-slate-200 p-4 shadow-sm dark:border-zinc-600">
-                        <div class="flex w-full items-center justify-between py-1">
-                            <div class="flex items-center gap-2">
-                                <span class="mir-terminal"></span>
-                                <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
+                        <div class="space-y-4 p-2">
+                            <!-- Tool info section -->
+                            <div class="flex items-center gap-3">
+                                <div
+                                    class="flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
+                                    <span class="mir-folder_zip text-2xl"></span>
+                                </div>
+                                <div class="min-w-0 flex-1">
+                                    <h3 class="text-base font-medium leading-none">
+                                        {{ installConfig.tool_details.name || 'Extracted Files' }}
+                                    </h3>
+                                    <p class="mt-1 text-xs">
+                                        {{ t('ui.install.tool_extraction') }}
+                                    </p>
+                                </div>
                             </div>
-                            <Button severity="secondary" outlined v-tooltip.top="t('ui.install.progress.install_path')"
-                                class="h-7 w-8" icon="mir-content_copy" @click="handleCopyPath" />
+
+                            <!-- Progress section -->
+                            <div class="space-y-2">
+                                <p class="text-sm">
+                                    {{ currentStatus }}
+                                </p>
+                                <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
+                            </div>
+
+                            <!-- Extract path section (when finished) -->
+                            <div v-if="isFinished" class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="mir-terminal text-sm"></span>
+                                        <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
+                                    </div>
+                                    <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
+                                        :icon="extractPathCopied ? 'mir-check' : 'mir-content_copy'"
+                                        :severity="extractPathCopied ? 'success' : 'secondary'"
+                                        @click="handleCopyPath" />
+                                </div>
+                                <p
+                                    class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
+                                    {{ fullExtractPath }}
+                                </p>
+                            </div>
+
+                            <!-- Extract path section -->
+                            <div class="space-y-2">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="mir-folder text-sm"></span>
+                                        <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
+                                            }}</span>
+                                    </div>
+                                    <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
+                                        :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"
+                                        :severity="installPathCopied ? 'success' : 'secondary'"
+                                        @click="handleCopyInstallPath" />
+                                </div>
+                                <p
+                                    class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
+                                    {{ fullExtractPath }}
+                                </p>
+                            </div>
                         </div>
-                        <p class="select-text break-all text-sm font-medium">{{ fullExtractPath }}</p>
-                    </div>
+                    </Panel>
                 </div>
+            </div>
+        </div>
 
-                <div class="flex justify-end">
-                    <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'success' : 'danger'"
-                        class="h-8 w-24" :icon="isFinished ? 'mir-home' : 'mir-close'"
-                        :label="isFinished ? t('g.finish') : t('g.close')" />
-                </div>
-            </Panel>
+        <!-- Bottom bar with buttons -->
+        <div class="flex items-center justify-end px-4 py-3">
+            <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'primary' : 'danger'" class="h-8 w-24"
+                :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('g.finish') : t('g.close')" />
         </div>
     </div>
 </template>
