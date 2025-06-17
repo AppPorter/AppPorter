@@ -90,7 +90,7 @@ onBeforeMount(() => {
 
     <!-- System Dialogs and Notifications -->
     <ErrorHandler ref="errorHandler" />
-    <ConfirmDialog group="dialog" />
+    <ConfirmDialog group="dialog" class="w-[32rem] max-w-[90vw]" />
     <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false" />
 
     <!-- Window Controls -->

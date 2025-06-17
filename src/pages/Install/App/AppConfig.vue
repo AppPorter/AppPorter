@@ -111,6 +111,8 @@ async function handleInstallClick() {
           reject: () => reject(),
         })
       })
+    } else {
+      return
     }
   }
 

@@ -24,6 +24,7 @@ installConfig.page = 'Install_Tool_Config'
 
 // Validation states
 const pathError = ref(false)
+const nameError = ref(false)
 
 // UI state management
 const directoryDrawerVisible = ref(false)
@@ -64,17 +65,13 @@ async function select_extract_path() {
 async function handleInstallClick() {
     // Reset validation errors
     pathError.value = false
+    nameError.value = false
 
     // Validate required fields
-    if (!installConfig.tool_details.name) {
-        return
-    }
+    nameError.value = !installConfig.tool_details.name
+    pathError.value = !installConfig.tool_details.paths.parent_install_path
 
-    if (!installConfig.tool_details.paths.parent_install_path) {
-        pathError.value = true
-        return
-    }
-
+    let fullPath: string
     try {
         const validatedPath = (await invoke('execute_command', {
             command: {
@@ -84,22 +81,58 @@ async function handleInstallClick() {
         })) as string
 
         installConfig.tool_details.paths.parent_install_path = validatedPath
-        const fullPath = `${validatedPath}\\${installConfig.tool_details.name || 'Extracted-Files'}`
+        fullPath = `${validatedPath}\\${installConfig.tool_details.name}`
+    } catch {
+        pathError.value = true
+    }
 
-        try {
-            await invoke('execute_command', {
-                command: {
-                    name: 'CheckPathEmpty',
-                    path: fullPath,
+    // If any validation failed, return early
+    if (nameError.value || pathError.value) {
+        return
+    }
+
+    try {
+        console.log(fullPath)
+        await invoke('execute_command', {
+            command: {
+                name: 'CheckPathEmpty',
+                path: fullPath,
+            },
+        })
+        console.log(1)
+        await new Promise((resolve, reject) => {
+            confirm.require({
+                message: t('ui.install.confirm_install', {
+                    name: installConfig.tool_details.name,
+                }),
+                group: 'dialog',
+                icon: 'mir-folder_copy',
+                header: t('ui.install.start_install'),
+                rejectProps: {
+                    label: t('g.cancel'),
+                    severity: 'secondary',
+                    outlined: true,
+                    icon: 'mir-close',
                 },
+                acceptProps: {
+                    label: t('cls.install.self'),
+                    icon: 'mir-navigate_next',
+                },
+                accept: () => resolve(true),
+                reject: () => reject(),
             })
-
+        })
+        console.log(2)
+    } catch (error) {
+        console.log(3)
+        if (error === 'Directory is not empty') {
+            console.log(4)
             await new Promise((resolve, reject) => {
                 confirm.require({
-                    message: t('ui.install.confirm_install'),
+                    message: t('ui.valid.directory_not_empty'),
                     group: 'dialog',
-                    icon: 'mir-folder_copy',
-                    header: t('ui.install.start_install'),
+                    icon: 'mir-warning',
+                    header: t('g.warning'),
                     rejectProps: {
                         label: t('g.cancel'),
                         severity: 'secondary',
@@ -107,34 +140,20 @@ async function handleInstallClick() {
                         icon: 'mir-close',
                     },
                     acceptProps: {
-                        label: t('cls.install.self'),
-                        icon: 'mir-navigate_next',
+                        label: t('ui.install.force_install'),
+                        severity: 'danger',
+                        icon: 'mir-folder_copy',
                     },
                     accept: () => resolve(true),
                     reject: () => reject(),
                 })
             })
-        } catch (error) {
-            if (error === 'Install directory is not empty') {
-                await new Promise((resolve, reject) => {
-                    confirm.require({
-                        message: t('ui.valid.directory_not_empty'),
-                        group: 'dialog',
-                        icon: 'mir-warning',
-                        header: t('g.warning'),
-                        reject: () => reject(),
-                    })
-                })
-            } else {
-                pathError.value = true
-                return
-            }
+        } else {
+            return
         }
-
-        goTo('/Install/Tool/Progress')
-    } catch {
-        pathError.value = true
     }
+
+    goTo('/Install/Tool/Progress')
 }
 </script>
 
@@ -171,14 +190,14 @@ async function handleInstallClick() {
                                 <div class="w-full">
                                     <InputText v-model="installConfig.tool_details.name"
                                         :placeholder="t('cls.app.name')" class="h-8 w-full text-sm"
-                                        :invalid="!installConfig.tool_details.name" />
+                                        :invalid="nameError" />
                                 </div>
                             </div>
 
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -201,7 +220,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
