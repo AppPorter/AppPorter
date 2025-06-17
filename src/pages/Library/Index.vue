@@ -125,7 +125,7 @@ onMounted(() => {
 
 <template>
   <div class="flex size-full flex-col overflow-auto">
-    <Panel class="mb-4 size-full shadow-sm">
+    <Panel class="mb-4 w-full shadow-sm">
       <template #header>
         <LibraryHeader v-model:sort-key="sortKey" v-model:sort-order="sortOrder"
           v-model:search-value="filters.global.value" />
