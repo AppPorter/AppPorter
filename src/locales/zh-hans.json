@@ -59,7 +59,7 @@
       "subscribe": "订阅"
     },
     "install": {
-      "confirm_install": "确认安装",
+      "confirm_install": "是否要安装 \"{name}\"？",
       "start_install": "开始安装",
       "force_install": "强制安装",
       "tool_details": "工具详情",
@@ -93,7 +93,8 @@
       },
       "path": "路径",
       "source_archive": "源压缩文件",
-      "selected_executable": "选择的可执行文件"
+      "selected_executable": "选择的可执行文件",
+      "force_install_confirm": "安装目录不为空，是否要强制安装 \"{name}\"？这将覆盖安装目录中现有的内容"
     },
     "library": {
       "confirm_uninstall_header": "卸载 \"{name}\"？",

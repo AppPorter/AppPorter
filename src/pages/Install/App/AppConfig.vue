@@ -32,23 +32,9 @@ function handleBackClick() {
 
 // Handle install process
 async function handleInstallClick() {
-  // Reset validation errors
-  nameError.value = false
-  pathError.value = false
+  nameError.value = !installConfig.app_details.info.name
 
-  // Validate required fields
-  if (!installConfig.app_details.info.name) {
-    nameError.value = true
-  }
-
-  if (!installConfig.app_details.paths.parent_install_path) {
-    pathError.value = true
-  }
-
-  // If any validation failed, return early
-  if (nameError.value || pathError.value) {
-    return
-  }
+  pathError.value = !installConfig.app_details.paths.parent_install_path
 
   let fullPath: string
   try {
@@ -65,6 +51,11 @@ async function handleInstallClick() {
     pathError.value = true
   }
 
+  // If any validation failed, return early
+  if (nameError.value || pathError.value) {
+    return
+  }
+
   try {
     await invoke('execute_command', {
       command: {
@@ -72,40 +63,57 @@ async function handleInstallClick() {
         path: fullPath,
       },
     })
+
+    await new Promise((resolve, reject) => {
+      confirm.require({
+        message: t('ui.install.confirm_install', {
+          name: installConfig.app_details.info.name,
+        }),
+        group: 'dialog',
+        icon: 'mir-install_desktop',
+        header: t('ui.install.start_install'),
+        rejectProps: {
+          label: t('g.cancel'),
+          severity: 'secondary',
+          outlined: true,
+          icon: 'mir-close',
+        },
+        acceptProps: {
+          label: t('cls.install.self'),
+          icon: 'mir-navigate_next',
+        },
+        accept: () => resolve(true),
+        reject: () => reject(),
+      })
+    })
   } catch (error) {
-    if (error === 'Install directory is not empty') {
+    if (error == 'Directory is not empty') {
       await new Promise((resolve, reject) => {
         confirm.require({
-          message: t('ui.valid.directory_not_empty'),
+          message: t('ui.install.force_install_confirm', {
+            name: installConfig.app_details.info.name,
+          }),
           group: 'dialog',
           icon: 'mir-warning',
           header: t('g.warning'),
+          rejectProps: {
+            label: t('g.cancel'),
+            severity: 'secondary',
+            outlined: true,
+            icon: 'mir-close',
+          },
+          acceptProps: {
+            label: t('ui.install.force_install'),
+            severity: 'danger',
+            icon: 'mir-install_desktop',
+          },
+          accept: () => resolve(true),
           reject: () => reject(),
         })
       })
     }
   }
 
-  await new Promise((resolve, reject) => {
-    confirm.require({
-      message: t('ui.install.confirm_install'),
-      group: 'dialog',
-      icon: 'mir-install_desktop',
-      header: t('ui.install.start_install'),
-      rejectProps: {
-        label: t('g.cancel'),
-        severity: 'secondary',
-        outlined: true,
-        icon: 'mir-close',
-      },
-      acceptProps: {
-        label: t('cls.install.self'),
-        icon: 'mir-navigate_next',
-      },
-      accept: () => resolve(true),
-      reject: () => reject(),
-    })
-  })
 
   goTo('/Install/App/Progress')
 }
