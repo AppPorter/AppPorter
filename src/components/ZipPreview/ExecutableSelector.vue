@@ -243,12 +243,10 @@ function handleNoExecutable() {
       <div class="flex gap-2">
         <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
         <template v-else>
-          <Button severity="secondary" @click="handleNoExecutable">
-            {{ t('ui.executable_selector.no_executable') }}
-          </Button>
-          <Button v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect">
-            {{ t('g.select') }}
-          </Button>
+          <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
+            class="h-9" icon="mir-rule" />
+          <Button v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect"
+            icon="mir-check" class="h-9" :label="t('g.select')" />
         </template>
       </div>
     </div>
