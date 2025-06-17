@@ -59,7 +59,7 @@ const menuItems = computed(() => [
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
     },
     {
-        label: t('ui.library.open_folder'),
+        label: t('ui.library.open_install_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
         visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'tool',

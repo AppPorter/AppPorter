@@ -107,8 +107,6 @@
       "confirm_remove_message": "确定要从库中移除 \"{name}\" 吗？",
       "not_installed": "未安装",
       "installed": "已安装",
-
-      "open_folder": "打开文件夹",
       "open_install_folder": "打开安装文件夹",
       "open_registry": "打开注册表"
     },

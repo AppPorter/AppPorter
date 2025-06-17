@@ -20,6 +20,28 @@ const installConfig = InstallConfigStore()
 installConfig.page = 'Install_App_Progress'
 const { t } = useI18n()
 
+// Handle opening executable
+const handleOpenExecutable = async () => {
+  if (finalExecutablePath.value) {
+    await invoke('execute_command', {
+      command: {
+        name: 'OpenApp',
+        path: finalExecutablePath.value
+      }
+    })
+  }
+}
+
+// Handle opening install folder
+const handleOpenInstallFolder = async () => {
+  await invoke('execute_command', {
+    command: {
+      name: 'OpenFolder',
+      path: fullInstallPath.value
+    }
+  })
+}
+
 // Compute full install path including app folder
 const fullInstallPath = computed(() => {
   const basePath = installConfig.app_details.paths.parent_install_path
@@ -171,9 +193,20 @@ const handleClose = () => {
     </div>
 
     <!-- Bottom bar with buttons -->
-    <div class="flex items-center justify-end px-4 py-3">
-      <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'primary' : 'danger'" class="h-8 w-24"
-        :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('g.finish') : t('g.close')" />
+    <div class="flex items-center justify-between px-4 py-3">
+      <!-- Action buttons (shown only when finished) -->
+      <div v-if="isFinished" class="flex items-center gap-2">
+        <Button @click="handleOpenExecutable" severity="secondary" outlined class="h-8" icon="mir-terminal"
+          :label="t('g.open')" :disabled="!finalExecutablePath" />
+        <Button @click="handleOpenInstallFolder" severity="secondary" outlined class="h-8" icon="mir-folder"
+          :label="t('ui.library.open_install_folder')" />
+      </div>
+
+      <!-- Close/Finish button -->
+      <div class="flex items-center">
+        <Button v-if="canClose" @click="handleClose" :severity="isFinished ? 'primary' : 'danger'" class="h-8 w-24"
+          :icon="isFinished ? 'mir-home' : 'mir-close'" :label="isFinished ? t('g.finish') : t('g.close')" />
+      </div>
     </div>
   </div>
 </template>

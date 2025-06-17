@@ -15,7 +15,7 @@ pub async fn open_app(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
 pub async fn open_folder(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
     let output = Command::new("explorer")
         .arg("/select,")
-        .arg(path)
+        .arg(format!("\"{}\"", path))
         .creation_flags(0x08000000)
         .output()
         .await?;
@@ -37,7 +37,7 @@ pub async fn open_registry(
 
     let ps_command = format!(
         r#"
-        New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit" -Name "LastKey" -Value {}{} -Force
+        New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit" -Name "LastKey" -Value "{}{}" -Force
         Start-Process regedit
         "#,
         regpath, name
