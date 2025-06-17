@@ -148,23 +148,6 @@ const handleClose = () => {
                 <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
               </div>
 
-              <!-- Executable path section (when finished) -->
-              <div v-if="isFinished" class="space-y-2">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <span class="mir-terminal text-sm"></span>
-                    <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
-                  </div>
-                  <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
-                    :icon="executablePathCopied ? 'mir-check' : 'mir-content_copy'"
-                    :severity="executablePathCopied ? 'success' : 'secondary'"
-                    @click="handleCopy(finalExecutablePath, 'executable')" />
-                </div>
-                <p class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
-                  {{ finalExecutablePath }}
-                </p>
-              </div>
-
               <!-- Install path section -->
               <div class="space-y-2">
                 <div class="flex items-center justify-between">

@@ -16,7 +16,6 @@ const isFinished = ref(false)
 const currentStatus = ref('')
 const canClose = ref(false)
 const finalExtractPath = ref('')
-const extractPathCopied = ref(false)
 const installPathCopied = ref(false)
 
 const installConfig = InstallConfigStore()
@@ -86,15 +85,6 @@ defineOptions({
     directives: { tooltip: Tooltip },
 })
 
-// Add copy methods for template usage
-async function handleCopyPath() {
-    await navigator.clipboard.writeText(finalExtractPath.value)
-    extractPathCopied.value = true
-    setTimeout(() => {
-        extractPathCopied.value = false
-    }, 2000)
-}
-
 async function handleCopyInstallPath() {
     await navigator.clipboard.writeText(fullExtractPath.value)
     installPathCopied.value = true
@@ -150,31 +140,13 @@ async function handleCopyInstallPath() {
                                 <ProgressBar :mode="progressMode" :value="extractProgress" class="h-1.5" />
                             </div>
 
-                            <!-- Extract path section (when finished) -->
-                            <div v-if="isFinished" class="space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center gap-2">
-                                        <span class="mir-terminal text-sm"></span>
-                                        <span class="text-sm font-medium">{{ t('cls.install.config.full_path') }}</span>
-                                    </div>
-                                    <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
-                                        :icon="extractPathCopied ? 'mir-check' : 'mir-content_copy'"
-                                        :severity="extractPathCopied ? 'success' : 'secondary'"
-                                        @click="handleCopyPath" />
-                                </div>
-                                <p
-                                    class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
-                                    {{ fullExtractPath }}
-                                </p>
-                            </div>
-
                             <!-- Extract path section -->
                             <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"
