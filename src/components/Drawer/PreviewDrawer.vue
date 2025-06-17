@@ -21,6 +21,7 @@ const archivePassword = ref('')
 const passwordError = ref(false)
 const detailsLoading = ref(false)
 const subscribeSuccess = ref(false)
+const isLoading = ref(false)
 
 // Check if we're in temp mode (temporary installation from external)
 const isTemporaryMode = computed(() => {
@@ -129,6 +130,7 @@ watch(drawerVisible, async (visible) => {
         // This ensures fresh content is loaded even if file_tree exists from previous operations
         if (zipPath) {
             try {
+                isLoading.value = true
                 await GetArchiveContent('')
             } catch (error) {
                 if (error === 'Wrong password') {
@@ -142,6 +144,8 @@ watch(drawerVisible, async (visible) => {
                     })
                     installConfig.show_preview_drawer = false
                 }
+            } finally {
+                isLoading.value = false
             }
         }
     }
@@ -238,7 +242,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm text-slate-500 dark:text-slate-400">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -250,7 +254,20 @@ async function GetArchiveContent(password: string) {
             </div>
 
             <!-- ExecutableSelector embedded directly -->
-            <div class="min-h-0 flex-1">
+            <div class="relative min-h-0 flex-1">
+                <!-- Loading Overlay -->
+                <div v-if="isLoading"
+                    class="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="flex items-center gap-2">
+                            <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
+                            </div>
+                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('g.loading')
+                            }}</span>
+                        </div>
+                    </div>
+                </div>
+
                 <ExecutableSelector v-if="(isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
                     && (isTemporaryMode ? installConfig.temp.file_tree : installConfig.file_tree).length > 0"
                     :zip-path="(isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)"

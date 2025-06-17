@@ -2,7 +2,6 @@
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
-import ProgressSpinner from 'primevue/progressspinner'
 import RadioButton from 'primevue/radiobutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -241,7 +240,9 @@ function handleNoExecutable() {
         ]">{{ selectedPath || t('ui.executable_selector.no_selection') }}</span>
       </div>
       <div class="flex gap-2">
-        <ProgressSpinner v-if="isSelecting" style="width: 2rem; height: 2rem" strokeWidth="4" />
+        <div v-if="isSelecting" class="flex items-center gap-2">
+          <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+        </div>
         <template v-else>
           <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
             class="h-9" icon="mir-rule" />
