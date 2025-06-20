@@ -184,32 +184,32 @@ const flattenedTree = computed(() => {
 </script>
 
 <template>
-  <div class="flex h-full min-h-0 flex-col shadow-sm">
-    <!-- File Tree Container with improved scrolling -->
-    <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg border border-slate-200 dark:border-zinc-600">
+  <div class="flex h-full min-h-0 flex-col">
+    <!-- File Tree Container -->
+    <div class="relative min-h-0 flex-1 overflow-hidden rounded border">
       <!-- Scrollable Tree Content -->
-      <div v-if="hasData && !isEmpty" class="h-full overflow-auto p-2 text-sm">
+      <div v-if="hasData && !isEmpty" class="h-full overflow-auto px-3 py-2">
         <!-- Render flattened tree with proper indentation -->
         <template v-for="node in flattenedTree" :key="node.key">
           <div v-if="!props.filterFunction || props.filterFunction(node)" class="w-full">
             <div :class="[
-              'my-0.5 flex items-center rounded-md border px-1 py-1.5 transition-colors duration-150',
+              'flex h-8 items-center rounded px-2 transition-colors duration-150',
               // Check if node is selectable - directories are always visually selectable
               node.type === 'directory' || (!props.isSelectableFunction || props.isSelectableFunction(node))
-                ? 'cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-700'
+                ? 'cursor-pointer hover:bg-surface-100 dark:hover:bg-surface-700'
                 : 'cursor-not-allowed opacity-50',
-              props.selectedPath === node.path ? 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/20' : 'border-transparent',
+              props.selectedPath === node.path ? 'bg-primary-50 dark:bg-primary-900/20' : '',
             ]" :style="{ paddingLeft: `${node.level * 16 + 4}px` }" @click="handleSelectNode(node)">
               <!-- Expand/collapse icon for directories -->
               <span v-if="node.type === 'directory' && node.children && node.children.length > 0" :class="[
-                'mr-1 w-4 shrink-0 text-xs transition-transform duration-200',
+                'mr-2 text-sm transition-transform duration-200',
                 node.expanded ? 'mir-expand_more' : 'mir-chevron_right'
               ]"></span>
-              <span v-else class="mr-1 w-4 shrink-0"></span>
+              <span v-else class="mr-2 w-4"></span>
 
               <!-- File/folder icon -->
               <span :class="[
-                'mr-2 shrink-0',
+                'mr-2 text-sm',
                 node.type === 'directory'
                   ? node.expanded
                     ? 'mir-folder_open text-amber-500'
@@ -218,47 +218,37 @@ const flattenedTree = computed(() => {
               ]"></span>
 
               <!-- Node name -->
-              <span class="flex-1 truncate">{{ node.name }}</span>
+              <span class="flex-1 truncate text-sm">{{ node.name }}</span>
 
               <!-- Not selectable indicator - only show for files, not directories -->
               <span v-if="node.type === 'file' && props.isSelectableFunction && !props.isSelectableFunction(node)"
-                class="mir-block ml-2 shrink-0 text-slate-400 dark:text-slate-500"></span>
+                class="mir-block ml-2 text-sm opacity-50"></span>
             </div>
           </div>
         </template>
       </div>
 
-      <!-- Enhanced loading indicator -->
-      <div v-if="status === 'loading'"
-        class="absolute inset-0 flex items-center justify-center bg-white/90 backdrop-blur-sm transition-all duration-300 dark:bg-zinc-900/90">
-        <div
-          class="flex flex-col items-center gap-3 rounded-lg bg-white/60 p-6 shadow-sm backdrop-blur-md dark:bg-zinc-800/60">
-          <span class="mir-progress_activity animate-spin text-3xl text-blue-500"></span>
-          <p class="text-sm font-medium text-slate-700 dark:text-slate-200">
-            {{ t('g.loading') }}
-          </p>
+      <!-- Loading indicator -->
+      <div v-if="status === 'loading'" class="absolute inset-0 flex items-center justify-center">
+        <div class="flex items-center gap-2">
+          <span class="mir-progress_activity animate-spin text-xl"></span>
+          <span class="text-sm">{{ t('g.loading') }}</span>
         </div>
       </div>
 
-      <!-- Enhanced empty state -->
-      <div v-if="hasData && isEmpty"
-        class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
-        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
-          <span class="mir-folder_off text-4xl text-slate-400 dark:text-slate-500"></span>
-          <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {{ t('ui.zip_preview.no_files') }}
-          </p>
+      <!-- Empty state -->
+      <div v-if="hasData && isEmpty" class="absolute inset-0 flex items-center justify-center">
+        <div class="flex flex-col items-center gap-2">
+          <span class="mir-folder_off text-2xl opacity-50"></span>
+          <span class="text-sm opacity-75">{{ t('ui.zip_preview.no_files') }}</span>
         </div>
       </div>
 
       <!-- Error state -->
-      <div v-if="status === 'error'"
-        class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white/60 backdrop-blur-sm dark:bg-zinc-900/60">
-        <div class="flex flex-col items-center gap-3 rounded-lg bg-white p-6 shadow-sm dark:bg-zinc-800">
-          <span class="mir-error text-4xl text-red-500"></span>
-          <p class="text-sm font-medium text-slate-700 dark:text-slate-300">
-            {{ error || t('g.error') }}
-          </p>
+      <div v-if="status === 'error'" class="absolute inset-0 flex items-center justify-center">
+        <div class="flex flex-col items-center gap-2">
+          <span class="mir-error text-2xl text-red-500"></span>
+          <span class="text-sm">{{ error || t('g.error') }}</span>
         </div>
       </div>
     </div>
