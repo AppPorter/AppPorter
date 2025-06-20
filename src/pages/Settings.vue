@@ -160,13 +160,17 @@ const githubIcon = computed(() => {
             <label>{{ t('cls.settings.basic.minimize_tray') }}</label>
             <ToggleSwitch v-model="settings.minimize_to_tray_on_close" />
           </div>
+          <div class="flex h-9 items-center justify-between pl-4"
+            :class="{ 'opacity-60': !settings.minimize_to_tray_on_close }">
+            <div class="flex items-center gap-2">
+              <div class="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
+              <label class="text-sm">{{ t('cls.settings.basic.auto_startup') }}</label>
+            </div>
+            <ToggleSwitch v-model="settings.auto_startup" :disabled="!settings.minimize_to_tray_on_close" />
+          </div>
           <div class="flex h-9 items-center justify-between">
             <label>{{ t('cls.settings.basic.context_menu') }}</label>
             <ToggleSwitch v-model="settings.context_menu" />
-          </div>
-          <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.settings.basic.auto_startup') }}</label>
-            <ToggleSwitch v-model="settings.auto_startup" />
           </div>
         </div>
       </Panel>
@@ -210,7 +214,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                    }}</label>
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -244,7 +248,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                  }}</label>
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
