@@ -34,8 +34,10 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
             let window = app.get_webview_window("main").expect("no main window");
 
             let args: Vec<String> = std::env::args().collect();
-            if args.contains(&"--silent".to_owned()) {
-                window.hide()?;
+            if !args.contains(&"--silent".to_owned()) {
+                window.show()?;
+                window.unminimize()?;
+                window.set_focus()?;
             }
 
             let handle = app.handle().clone();
