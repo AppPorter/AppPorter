@@ -2,7 +2,7 @@
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
-import RadioButton from 'primevue/radiobutton'
+import SelectButton from 'primevue/selectbutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
@@ -107,19 +107,7 @@ const hasExecutableFiles = computed(() => {
   return props.fileTree.some((node) => checkNode(node))
 })
 
-// Get description for filter options
-function getFilterDescription(mode: 'exe' | 'executable' | 'all'): string {
-  switch (mode) {
-    case 'exe':
-      return t('ui.executable_selector.filter_description.exe')
-    case 'executable':
-      return t('ui.executable_selector.filter_description.executable')
-    case 'all':
-      return t('ui.executable_selector.filter_description.all')
-    default:
-      return ''
-  }
-}
+
 
 // Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
@@ -166,88 +154,51 @@ function handleNoExecutable() {
 
 <template>
   <div class="flex h-full flex-col">
-    <!-- Enhanced Filter UI -->
-    <div
-      class="mb-4 rounded-lg border border-slate-200 bg-slate-50 p-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-800/50">
-      <div class="flex flex-col gap-3">
-        <!-- Filter options with horizontal layout and better descriptions -->
-        <div class="flex gap-2">
-          <div v-for="option in FILTER_MODES" :key="option.value" :class="[
-            'flex flex-1 cursor-pointer items-start gap-2 rounded-md border border-slate-200 p-2 transition-all duration-150',
-            'hover:bg-white dark:border-zinc-700 dark:hover:bg-zinc-800',
-            filterMode === option.value
-              ? 'bg-white ring-2 ring-blue-500 dark:bg-zinc-800 dark:ring-blue-400'
-              : '',
-          ]" @click="filterMode = option.value as any">
-            <RadioButton v-model="filterMode" :value="option.value" :inputId="option.value" class="mt-0.5" />
-            <div class="flex-1">
-              <label :for="option.value" class="flex cursor-pointer items-center gap-1.5 text-sm font-medium">
-                <span :class="[option.icon, filterMode === option.value ? 'text-blue-500' : '']" />
-                {{ option.label }}
-              </label>
-              <p class="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                {{ getFilterDescription(option.value as any) }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Filter Options -->
+    <div class="mb-2">
+      <SelectButton v-model="filterMode" :options="FILTER_MODES" optionLabel="label" optionValue="value"
+        :allowEmpty="false" size="small" class="w-full" />
     </div>
 
-    <!-- Main content area with fixed height and proper overflow handling -->
-    <div class="min-h-0 flex-1 overflow-hidden rounded-lg bg-white shadow-sm dark:bg-zinc-900">
+    <!-- Main content area -->
+    <div class="min-h-0 flex-1 overflow-hidden">
       <ZipPreview :zip-path="zipPath" :password="password" :file-tree="fileTree" :filter-function="fileFilter"
         :selected-path="selectedPath" :is-selectable-function="isSelectableFile" @node-click="handleNodeSelect"
         @update-file-tree="emit('update-file-tree', $event)" />
     </div>
 
-    <!-- Selected file and button container -->
-    <div class="mt-3 flex items-center justify-between gap-4">
-      <div :class="[
-        'flex flex-1 items-center gap-2 rounded-md p-2 text-sm transition-colors',
-        selectedPath
-          ? 'bg-green-50 dark:bg-green-900/20'
-          : hasExecutableFiles
-            ? 'bg-slate-50 dark:bg-zinc-800/50'
-            : 'bg-orange-50 dark:bg-orange-900/20',
-      ]">
+    <!-- Bottom status and buttons -->
+    <div class="mt-2 flex items-center justify-between gap-4">
+      <div class="flex flex-1 items-center gap-2 text-sm">
         <span :class="[
           selectedPath
-            ? 'mir-check_circle text-green-500 dark:text-green-400'
+            ? 'mir-check_circle text-green-500'
             : hasExecutableFiles
-              ? 'mir-info text-slate-500 dark:text-slate-400'
-              : 'mir-warning text-orange-500 dark:text-orange-400',
+              ? 'mir-info text-slate-500'
+              : 'mir-warning text-orange-500',
         ]"></span>
-        <span :class="[
-          'font-medium',
-          selectedPath
-            ? 'text-green-800 dark:text-green-300'
-            : hasExecutableFiles
-              ? 'text-slate-700 dark:text-slate-300'
-              : 'text-orange-800 dark:text-orange-300',
-        ]">{{
-          selectedPath
-            ? t('ui.executable_selector.selected')
-            : hasExecutableFiles
-              ? t('ui.executable_selector.select_prompt')
-              : t('ui.executable_selector.no_executables_found')
-        }}{{ hasExecutableFiles ? ':' : '' }}</span>
-        <span v-if="hasExecutableFiles" :class="[
-          'truncate',
-          selectedPath
-            ? 'text-green-700 dark:text-green-400'
-            : 'text-slate-600 dark:text-slate-400',
-        ]">{{ selectedPath || t('ui.executable_selector.no_selection') }}</span>
+        <span class="font-medium">
+          {{
+            selectedPath
+              ? t('ui.executable_selector.selected')
+              : hasExecutableFiles
+                ? t('ui.executable_selector.select_prompt')
+                : t('ui.executable_selector.no_executables_found')
+          }}
+        </span>
+        <span v-if="selectedPath" class="truncate text-slate-600 dark:text-slate-400">
+          {{ selectedPath }}
+        </span>
       </div>
       <div class="flex gap-2">
-        <div v-if="isSelecting" class="flex items-center gap-2">
+        <div v-if="isSelecting" class="flex items-center">
           <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
         </div>
         <template v-else>
           <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
-            class="h-9" icon="mir-rule" />
+            class="h-8 text-sm" icon="mir-rule" outlined />
           <Button v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect"
-            icon="mir-check" class="h-9" :label="t('g.select')" />
+            icon="mir-check" class="h-8 text-sm" :label="t('g.select')" />
         </template>
       </div>
     </div>

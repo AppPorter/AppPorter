@@ -244,7 +244,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm text-slate-500 dark:text-slate-400">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -265,7 +265,7 @@ async function GetArchiveContent(password: string) {
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
                             <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('g.loading')
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>
