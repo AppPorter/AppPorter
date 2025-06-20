@@ -1,8 +1,10 @@
 pub mod install_app;
 pub mod install_tool;
+pub mod installer_mode;
 
 pub use install_app::*;
 pub use install_tool::*;
+pub use installer_mode::*;
 
 use std::{error::Error, path::Path};
 

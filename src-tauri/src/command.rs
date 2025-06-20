@@ -66,6 +66,9 @@ pub enum Command {
     GetDetails {
         path: ExePath,
     },
+    RunInstaller {
+        path: ExePath,
+    },
     ValidatePath {
         path: String,
     },
@@ -143,6 +146,9 @@ impl Command {
 
             // Operations - Misc
             GetDetails { path } => Self::ser(get_details(path).await?),
+            RunInstaller { path } => Self::ser(
+                run_installer(path.zip_path, path.executable_path, path.password, app).await?,
+            ),
             ValidatePath { path } => Self::ser(validate_path(path).await?),
             GetArchiveContent { path, password } => {
                 Self::ser(get_archive_content(path, password).await?)

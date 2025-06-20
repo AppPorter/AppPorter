@@ -3,6 +3,7 @@ import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
+import SplitButton from 'primevue/splitbutton'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
@@ -150,6 +151,37 @@ async function handleSelect() {
 function handleNoExecutable() {
   emit('no-executable')
 }
+
+// Handle installer mode selection
+async function handleInstallerMode() {
+  if (isSelecting.value) return
+  isSelecting.value = true
+  emit('loading', true)
+
+  await invoke('execute_command', {
+    command: {
+      name: 'RunInstaller',
+      path: {
+        zip_path: props.zipPath,
+        executable_path: selectedPath.value,
+        password: props.password,
+      },
+    },
+  })
+
+  isSelecting.value = false
+  emit('loading', false)
+  store.show_preview_drawer = false
+}
+
+// Split button menu items
+const menuItems = ref([
+  {
+    label: t('cls.install.installer_mode'),
+    icon: 'mir-settings',
+    command: handleInstallerMode
+  }
+])
 </script>
 
 <template>
@@ -197,8 +229,8 @@ function handleNoExecutable() {
         <template v-else>
           <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
             class="h-8 text-sm" icon="mir-rule" outlined />
-          <Button v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect"
-            icon="mir-check" class="h-8 text-sm" :label="t('g.select')" />
+          <SplitButton v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect"
+            icon="mir-check" class="h-8 text-sm" :label="t('g.select')" :model="menuItems" />
         </template>
       </div>
     </div>
