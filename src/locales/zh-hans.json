@@ -15,11 +15,6 @@
         "executable": "仅可执行文件",
         "all": "所有"
       },
-      "filter_description": {
-        "exe": "仅显示 .exe 可执行文件",
-        "executable": "显示所有可执行文件类型",
-        "all": "显示所有文件和文件夹"
-      },
       "selected": "已选择",
       "select_prompt": "请选择可执行文件",
       "no_selection": "未选择",
