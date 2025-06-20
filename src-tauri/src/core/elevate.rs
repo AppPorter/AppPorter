@@ -3,7 +3,7 @@ use std::error::Error;
 use tokio::process::Command;
 
 // Modifies Windows registry to enable/disable application elevation privileges
-pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error + Send + Sync>> {
     let env = Env::read().await?;
 
     let operation = if !revert {
@@ -40,5 +40,5 @@ pub async fn elevate(revert: bool) -> Result<String, Box<dyn Error + Send + Sync
     if !output.status.success() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
-    Ok("".to_owned())
+    Ok(())
 }

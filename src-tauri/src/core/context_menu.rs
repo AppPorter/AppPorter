@@ -2,7 +2,7 @@ use crate::SUPPORTED_EXTENSIONS;
 use std::error::Error;
 use windows_registry::CURRENT_USER;
 
-pub fn register_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
+pub fn register_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
     let app_path = std::env::current_exe()?.to_str().unwrap_or("").to_owned();
 
     for ext in SUPPORTED_EXTENSIONS {
@@ -20,10 +20,10 @@ pub fn register_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
             .set_string("", format!(r#""{}" preview "%1""#, app_path))?;
     }
 
-    Ok("".to_owned())
+    Ok(())
 }
 
-pub fn unregister_context_menu() -> Result<String, Box<dyn Error + Send + Sync>> {
+pub fn unregister_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
     for ext in SUPPORTED_EXTENSIONS {
         let base_path = format!(
             "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
@@ -31,5 +31,5 @@ pub fn unregister_context_menu() -> Result<String, Box<dyn Error + Send + Sync>>
         );
         CURRENT_USER.remove_tree(&base_path)?;
     }
-    Ok("".to_owned())
+    Ok(())
 }

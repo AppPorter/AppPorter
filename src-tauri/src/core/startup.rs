@@ -1,17 +1,20 @@
 use std::error::Error;
 use windows_registry::CURRENT_USER;
 
-pub fn set_startup() -> Result<String, Box<dyn Error + Send + Sync>> {
+pub fn set_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
     let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
     shell_key.set_string(
         "AppPorter",
-        format!("\"{}\"", std::env::current_exe()?.to_str().unwrap_or("")),
+        format!(
+            "\"{}\" --silent",
+            std::env::current_exe()?.to_str().unwrap_or("")
+        ),
     )?;
-    Ok("".to_owned())
+    Ok(())
 }
 
-pub fn remove_startup() -> Result<String, Box<dyn Error + Send + Sync>> {
+pub fn remove_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
     let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
     shell_key.remove_value("AppPorter")?;
-    Ok("".to_owned())
+    Ok(())
 }
