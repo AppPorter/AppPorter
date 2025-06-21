@@ -291,15 +291,19 @@ watch(() => props.fileTree, (newTree) => {
         </span>
       </div>
       <div class="flex gap-2">
-        <div v-if="isSelecting" class="flex items-center">
-          <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
-        </div>
-        <template v-else>
-          <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
-            class="h-8 text-sm" icon="mir-rule" outlined />
-          <SplitButton v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath" @click="handleSelect"
-            icon="mir-check" class="h-8 text-sm" :label="t('g.select')" :model="menuItems" />
-        </template>
+        <Button severity="secondary" @click="handleNoExecutable" :label="t('ui.executable_selector.no_executable')"
+          class="h-8 text-sm" icon="mir-rule" outlined :disabled="isSelecting" />
+        <SplitButton v-if="hasExecutableFiles" severity="primary" :disabled="!selectedPath || isSelecting"
+          @click="handleSelect" class="h-8 text-sm" :model="menuItems">
+          <template #default>
+            <div class="flex items-center gap-2">
+              <div v-if="isSelecting"
+                class="size-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+              <span v-else class="mir-check"></span>
+              <span>{{ t('g.select') }}</span>
+            </div>
+          </template>
+        </SplitButton>
       </div>
     </div>
   </div>
