@@ -3,7 +3,7 @@ use crate::configs::library::AppValidationStatus;
 use crate::configs::library::{App, AppDetails, Library};
 use crate::configs::ConfigFile;
 use crate::operations::extract_archive_files;
-use crate::operations::install::find_single_root_folder;
+use crate::operations::install::flatten_nested_folders;
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::{error::Error, path::Path};
@@ -29,8 +29,7 @@ pub async fn install_app(
 
     let install_path = format!(
         "{}\\{}",
-        config.details.paths.parent_install_path,
-        config.details.info.name.replace(" ", "-")
+        config.details.paths.parent_install_path, config.details.info.name
     );
 
     // Setup installation directory and extract files
@@ -44,12 +43,14 @@ pub async fn install_app(
     )
     .await?;
 
+    // Flatten nested single folders to avoid deep nesting
+    flatten_nested_folders(&install_path).await?;
+
     // Determine executable paths
-    let single_root = find_single_root_folder(&install_path).await?;
-    let full_path = get_full_executable_path(
-        &install_path,
-        &config.details.config.archive_exe_path,
-        single_root.as_deref(),
+    let full_path = format!(
+        r"{}\{}",
+        install_path,
+        config.details.config.archive_exe_path.replace("/", r"\")
     );
 
     let full_path_directory = if config.details.config.archive_path_directory.is_empty() {
@@ -101,6 +102,106 @@ pub async fn install_app(
     app.emit("app_install_progress", 101)?;
 
     Ok(full_path)
+}
+
+async fn create_start_menu_shortcut(
+    app_name: &str,
+    executable_path: &str,
+    current_user_only: bool,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let env = Env::read().await?;
+    let lnk_path = if current_user_only {
+        format!(
+            r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
+            env.system_drive_letter, env.username, app_name
+        )
+    } else {
+        format!(
+            r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
+            env.system_drive_letter, app_name
+        )
+    };
+    ShellLink::new(executable_path)?.create_lnk(lnk_path)?;
+    Ok(())
+}
+
+fn create_desktop_shortcut(
+    executable_path: &str,
+    app_name: &str,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    ShellLink::new(executable_path)?.create_lnk(format!(
+        r"{}\{}.lnk",
+        dirs::desktop_dir()
+            .ok_or("Failed to get desktop directory")?
+            .to_string_lossy(),
+        app_name
+    ))?;
+    Ok(())
+}
+
+fn create_registry_entries(
+    config: &AppInstallConfig,
+    full_path: &str,
+    install_path: &str,
+    timestamp: i64,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let key = if config.details.config.current_user_only {
+        CURRENT_USER.create(format!(
+            r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
+            config.details.info.name
+        ))?
+    } else {
+        LOCAL_MACHINE.create(format!(
+            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
+            config.details.info.name
+        ))?
+    };
+
+    key.set_string("Comments", "Installed with AppPorter")?;
+    key.set_string("DisplayIcon", full_path)?;
+    key.set_string("DisplayName", &config.details.info.name)?;
+    key.set_string("DisplayVersion", &config.details.info.version)?;
+    key.set_string("InstallLocation", install_path)?;
+    key.set_u32("NoModify", 1)?;
+    key.set_u32("NoRemove", 0)?;
+    key.set_u32("NoRepair", 1)?;
+    key.set_string("Publisher", &config.details.info.publisher)?;
+    key.set_string(
+        "UninstallString",
+        format!(
+            "\"{}\" uninstall {}",
+            std::env::current_exe()?.to_string_lossy(),
+            timestamp
+        ),
+    )?;
+    Ok(())
+}
+
+fn add_to_path(
+    path_directory: &str,
+    current_user_only: bool,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    let (key, path_key) = if current_user_only {
+        (CURRENT_USER.create("Environment")?, "Path")
+    } else {
+        (
+            LOCAL_MACHINE
+                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?,
+            "path",
+        )
+    };
+
+    let current_path = key.get_string(path_key)?;
+
+    if !current_path
+        .split(';')
+        .any(|p| p.trim() == path_directory.trim())
+    {
+        let new_path = format!("{};{}", current_path, path_directory);
+        key.set_expand_string(path_key, new_path)?;
+    }
+
+    Ok(())
 }
 
 async fn update_app_list(
@@ -156,124 +257,4 @@ async fn update_app_list(
 
     app_list.save().await?;
     Ok(())
-}
-
-async fn create_start_menu_shortcut(
-    app_name: &str,
-    executable_path: &str,
-    current_user_only: bool,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let env = Env::read().await?;
-    let lnk_path = if current_user_only {
-        format!(
-            r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            env.system_drive_letter, env.username, app_name
-        )
-    } else {
-        format!(
-            r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            env.system_drive_letter, app_name
-        )
-    };
-    ShellLink::new(executable_path)?.create_lnk(lnk_path)?;
-    Ok(())
-}
-
-fn create_desktop_shortcut(
-    executable_path: &str,
-    app_name: &str,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    ShellLink::new(executable_path)?.create_lnk(format!(
-        r"{}\{}.lnk",
-        dirs::desktop_dir()
-            .ok_or("Failed to get desktop directory")?
-            .to_string_lossy(),
-        app_name
-    ))?;
-    Ok(())
-}
-
-fn add_to_path(
-    path_directory: &str,
-    current_user_only: bool,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let (key, path_key) = if current_user_only {
-        (CURRENT_USER.create("Environment")?, "Path")
-    } else {
-        (
-            LOCAL_MACHINE
-                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?,
-            "path",
-        )
-    };
-
-    let current_path = key.get_string(path_key)?;
-
-    if !current_path
-        .split(';')
-        .any(|p| p.trim() == path_directory.trim())
-    {
-        let new_path = format!("{};{}", current_path, path_directory);
-        key.set_expand_string(path_key, new_path)?;
-    }
-
-    Ok(())
-}
-
-fn create_registry_entries(
-    config: &AppInstallConfig,
-    full_path: &str,
-    install_path: &str,
-    timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let key = if config.details.config.current_user_only {
-        CURRENT_USER.create(format!(
-            r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.info.name
-        ))?
-    } else {
-        LOCAL_MACHINE.create(format!(
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.info.name
-        ))?
-    };
-
-    key.set_string("Comments", "Installed with AppPorter")?;
-    key.set_string("DisplayIcon", full_path)?;
-    key.set_string("DisplayName", &config.details.info.name)?;
-    key.set_string("DisplayVersion", &config.details.info.version)?;
-    key.set_string("InstallLocation", install_path)?;
-    key.set_u32("NoModify", 1)?;
-    key.set_u32("NoRemove", 0)?;
-    key.set_u32("NoRepair", 1)?;
-    key.set_string("Publisher", &config.details.info.publisher)?;
-    key.set_string(
-        "UninstallString",
-        format!(
-            "\"{}\" uninstall {}",
-            std::env::current_exe()?.to_string_lossy(),
-            timestamp
-        ),
-    )?;
-    Ok(())
-}
-
-fn get_full_executable_path(
-    install_path: &str,
-    archive_exe_path: &str,
-    single_root: Option<&str>,
-) -> String {
-    if let Some(root) = single_root {
-        let exe_path = if archive_exe_path.starts_with(&format!("{}/", root)) {
-            archive_exe_path
-                .strip_prefix(&format!("{}/", root))
-                .unwrap_or(archive_exe_path)
-                .to_string()
-        } else {
-            archive_exe_path.to_string()
-        };
-        format!(r"{}\{}", install_path, exe_path.replace("/", r"\"))
-    } else {
-        format!(r"{}\{}", install_path, archive_exe_path.replace("/", r"\"))
-    }
 }

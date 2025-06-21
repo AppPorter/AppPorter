@@ -34,6 +34,7 @@ const handleOpenExecutable = async () => {
 
 // Handle opening install folder
 const handleOpenInstallFolder = async () => {
+  console.log(fullInstallPath.value)
   await invoke('execute_command', {
     command: {
       name: 'OpenFolder',
