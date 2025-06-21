@@ -25,7 +25,7 @@ const confirmAndUninstall = async (apptype: AppTypes, timestamp: number): Promis
                 case 'tool':
                     // For installed tools, delete (remove from filesystem)
                     message = t('ui.library.confirm_delete_message', {
-                        name: app.details.info.name,
+                        name: app.details.name,
                     })
                     header = t('ui.library.confirm_delete_header')
                     acceptLabel = t('g.delete')
@@ -45,17 +45,20 @@ const confirmAndUninstall = async (apptype: AppTypes, timestamp: number): Promis
             }
         } else {
             // For non-installed items, remove from library
-            message = t('ui.library.confirm_remove_message', {
-                name: app.details.info.name,
-            })
             header = t('ui.library.confirm_remove_header')
             acceptLabel = t('g.remove')
 
             switch (apptype) {
                 case 'tool':
+                    message = t('ui.library.confirm_remove_message', {
+                        name: app.details.name,
+                    })
                     action = () => libraryStore.removeTool(timestamp)
                     break
                 case 'app':
+                    message = t('ui.library.confirm_remove_message', {
+                        name: app.details.info.name,
+                    })
                     action = () => libraryStore.removeApp(timestamp)
                     break
             }
