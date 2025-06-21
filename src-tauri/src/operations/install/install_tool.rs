@@ -1,9 +1,6 @@
 use crate::{
-    configs::{
-        library::{Library, Tool, ToolConfig, ToolDetails, ToolPaths, ToolValidationStatus},
-        ConfigFile,
-    },
-    operations::extract_archive_files,
+    configs::{library::*, ConfigFile},
+    operations::{extract_archive_files, flatten_nested_folders},
 };
 use serde::{Deserialize, Serialize};
 use std::error::Error;
@@ -16,7 +13,7 @@ pub struct ToolInstallConfig {
     password: Option<String>,
     timestamp: i64,
     name: String,
-    extract_path: String,
+    install_path: String,
 }
 
 pub async fn install_tool(
@@ -39,8 +36,11 @@ pub async fn install_tool(
     )
     .await?;
 
+    // Flatten nested single folders to avoid deep nesting
+    flatten_nested_folders(&install_path).await?;
+
     // Store extract path before moving config
-    let extract_path = config.extract_path.clone();
+    let install_path = config.install_path.clone();
 
     // Update tool list
     update_tool_list(config, install_path.clone(), timestamp).await?;
@@ -48,19 +48,19 @@ pub async fn install_tool(
     // Send completion event
     app.emit("tool_install_progress", 101)?;
 
-    Ok(extract_path)
+    Ok(install_path)
 }
 
 async fn setup_installation_directory(
     config: &ToolInstallConfig,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Ensure extract directory exists
-    if !Path::new(&config.extract_path).exists() {
-        tokio::fs::create_dir_all(&config.extract_path).await?;
+    if !Path::new(&config.install_path).exists() {
+        tokio::fs::create_dir_all(&config.install_path).await?;
     }
 
-    // Create full path by combining extract_path and tool name
-    let install_path = format!("{}\\{}", config.extract_path, config.name.replace(" ", "-"));
+    // Create full path by combining install_path and tool name
+    let install_path = format!("{}\\{}", config.install_path, config.name.replace(" ", "-"));
 
     let target_path = Path::new(&install_path);
     if !target_path.exists() {
@@ -91,7 +91,7 @@ async fn update_tool_list(
             full_path_directory: String::new(),
         },
         paths: ToolPaths {
-            parent_install_path: config.extract_path.clone(),
+            parent_install_path: config.install_path.clone(),
             install_path: install_path.clone(),
         },
         validation_status: ToolValidationStatus {

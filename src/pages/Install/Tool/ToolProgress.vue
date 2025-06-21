@@ -7,7 +7,7 @@ import Button from 'primevue/button'
 import Panel from 'primevue/panel'
 import ProgressBar from 'primevue/progressbar'
 import Tooltip from 'primevue/tooltip'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
@@ -18,6 +18,8 @@ const canClose = ref(false)
 const finalExtractPath = ref('')
 const installPathCopied = ref(false)
 
+const installPath = ref('')
+
 const installConfig = InstallConfigStore()
 installConfig.page = 'Install_Tool_Progress'
 const { t } = useI18n()
@@ -27,16 +29,10 @@ const handleOpenInstallFolder = async () => {
     await invoke('execute_command', {
         command: {
             name: 'OpenFolder',
-            path: fullExtractPath.value
+            path: installPath.value
         }
     })
 }
-
-const fullExtractPath = computed(() => {
-    const base = installConfig.tool_details.paths.install_path
-    const name = installConfig.tool_details.name || 'Extracted-Files'
-    return base && name ? `${base.replace(/\\$/, '')}\\${name}\\` : base
-})
 
 onMounted(async () => {
     // Initial install setup
@@ -49,6 +45,7 @@ onMounted(async () => {
             progressMode.value = 'indeterminate'
             currentStatus.value = t('ui.install.progress.preparing_extract')
         } else if (payload === 101) {
+            progressMode.value = 'determinate'
             extractProgress.value = 100
             currentStatus.value = ''
             isFinished.value = true
@@ -96,7 +93,7 @@ defineOptions({
 })
 
 async function handleCopyInstallPath() {
-    await navigator.clipboard.writeText(fullExtractPath.value)
+    await navigator.clipboard.writeText(installPath.value)
     installPathCopied.value = true
     setTimeout(() => {
         installPathCopied.value = false
@@ -156,7 +153,7 @@ async function handleCopyInstallPath() {
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"
@@ -165,7 +162,7 @@ async function handleCopyInstallPath() {
                                 </div>
                                 <p
                                     class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
-                                    {{ fullExtractPath }}
+                                    {{ installPath }}
                                 </p>
                             </div>
                         </div>
