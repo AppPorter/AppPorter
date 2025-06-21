@@ -66,12 +66,10 @@ function formatTimestamp(timestamp) {
                     </div>
                 </div>
 
-                <div class="flex items-center gap-2 text-xs">
+                <div class="flex flex-col gap-1 text-xs">
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
-                    <template v-if="item.details.paths.install_path">
-                        <span class="hidden opacity-50 sm:inline">•</span>
-                        <span class="hidden break-all opacity-75 sm:inline">{{ item.details.paths.install_path }}</span>
-                    </template>
+                    <span v-if="item.details.paths.install_path" class="break-all opacity-75">{{
+                        item.details.paths.install_path }}</span>
                 </div>
             </div>
 
