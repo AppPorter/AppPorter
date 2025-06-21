@@ -48,7 +48,7 @@ const formatted_app_path = computed(() => {
 
   if (!installPath || !appName) return ''
 
-  return `${installPath}\\${appName.replace(/\s+/g, '-')}`
+  return `${installPath}\\${appName}`
 })
 
 // Optimized config update function
@@ -146,7 +146,7 @@ function handleInstallModeChange(event: Event) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />

@@ -34,7 +34,7 @@
     },
     "select_placeholder": {
       "archive": "压缩文件路径",
-      "path_directory": "PATH目录",
+      "path_directory": "PATH目录（可选）",
       "dir": "选择文件夹"
     },
     "valid": {
