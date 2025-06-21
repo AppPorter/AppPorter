@@ -1,5 +1,6 @@
 use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
 use crate::configs::{env::Env, ConfigFile};
+use crate::core::{context_menu, startup}; // Add import for context_menu and startup modules
 use std::error::Error;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -63,11 +64,18 @@ impl Default for Settings {
 }
 
 impl Settings {
-    pub async fn initialization(&mut self, env: Env) -> Result<(), Box<dyn Error + Send + Sync>> {
-        self.run_as_admin = self.check_run_as_admin(env.user_sid)?;
-        self.color = Self::get_system_accent_color().unwrap_or_default();
-        self.update_install_paths(env.system_drive_letter, env.username);
-        self.save().await?;
+    pub async fn initialization() -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut settings = Settings::read().await?;
+        Env::initialization().await?;
+        let env = Env::read().await?;
+
+        settings.run_as_admin = settings.check_run_as_admin(env.user_sid)?;
+        settings.color = Self::get_system_accent_color().unwrap_or_default();
+        settings.update_install_paths(env.system_drive_letter, env.username);
+        settings.context_menu = context_menu::check_and_fix_context_menu()?;
+        settings.auto_startup = startup::check_and_fix_startup()?;
+
+        settings.save().await?;
         Ok(())
     }
 

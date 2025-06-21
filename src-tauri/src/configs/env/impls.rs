@@ -29,13 +29,16 @@ impl Default for Env {
 }
 
 impl Env {
-    pub async fn initialization(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
-        self.debug = cfg!(debug_assertions);
-        self.elevated = is_elevated()?;
-        self.user_sid = self.get_user_sid().await?;
-        self.system_drive_letter = std::env::var("windir")?[..1].to_string();
-        self.username = std::env::var("USERNAME")?;
-        self.save().await?;
+    pub async fn initialization() -> Result<(), Box<dyn Error + Send + Sync>> {
+        let mut env = Env::read().await?;
+
+        env.debug = cfg!(debug_assertions);
+        env.elevated = is_elevated()?;
+        env.user_sid = env.get_user_sid().await?;
+        env.system_drive_letter = std::env::var("windir")?[..1].to_string();
+        env.username = std::env::var("USERNAME")?;
+
+        env.save().await?;
         Ok(())
     }
 

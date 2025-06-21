@@ -1,11 +1,6 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use app_porter_lib::{
-    command,
-    configs::{env::Env, *},
-    core::*,
-    operations::*,
-};
+use app_porter_lib::{command, configs::*, core::*, operations::*};
 use std::error::Error;
 use tauri::Manager;
 
@@ -18,12 +13,7 @@ async fn main() {
 }
 
 async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
-    Env::read().await?.initialization().await?;
-
-    Settings::read()
-        .await?
-        .initialization(Env::read().await?)
-        .await?;
+    Settings::initialization().await?;
 
     if let Err(e) = get_7z_path() {
         eprintln!("Failed to extract 7z.exe: {}", e);
