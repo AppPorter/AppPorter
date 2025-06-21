@@ -11,7 +11,7 @@ pub async fn uninstall_app(
     timestamp: i64,
     app: AppHandle,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    app.emit("uninstall", 0)?;
+    app.emit("app_uninstall_progress", 0)?;
 
     // Get app configuration from app list
     let app_list = Library::read().await?;
@@ -21,17 +21,13 @@ pub async fn uninstall_app(
         .find(|app| app.timestamp == timestamp)
         .ok_or("App not found in app list")?;
 
-    // Remove application directory
-    let app_path = format!(
-        "{}\\{}",
-        app_config.details.paths.install_path,
-        app_config.details.info.name.replace(" ", "-")
-    );
-    if Path::new(&app_path).exists() {
-        fs::remove_dir_all(&app_path).await?;
+    // Remove application directory - use the install_path directly
+    let app_path = &app_config.details.paths.install_path;
+    if Path::new(app_path).exists() {
+        fs::remove_dir_all(app_path).await?;
     }
 
-    app.emit("uninstall", 25)?;
+    app.emit("app_uninstall_progress", 25)?;
 
     let env = Env::read().await?;
 
@@ -54,7 +50,7 @@ pub async fn uninstall_app(
         }
     }
 
-    app.emit("uninstall", 50)?;
+    app.emit("app_uninstall_progress", 50)?;
 
     if app_config.details.config.create_desktop_shortcut {
         if let Some(desktop_dir) = dirs::desktop_dir() {
@@ -66,7 +62,7 @@ pub async fn uninstall_app(
         }
     }
 
-    app.emit("uninstall", 75)?;
+    app.emit("app_uninstall_progress", 75)?;
 
     // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
@@ -101,7 +97,7 @@ pub async fn uninstall_app(
     // Update app list
     update_app_list_after_uninstall(timestamp).await?;
 
-    app.emit("uninstall", 100)?;
+    app.emit("app_uninstall_progress", 100)?;
 
     Ok(())
 }
