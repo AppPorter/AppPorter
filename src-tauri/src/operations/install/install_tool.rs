@@ -13,7 +13,7 @@ pub struct ToolInstallConfig {
     password: Option<String>,
     timestamp: i64,
     name: String,
-    install_path: String,
+    parent_install_path: String,
 }
 
 pub async fn install_tool(
@@ -40,10 +40,10 @@ pub async fn install_tool(
     flatten_nested_folders(&install_path).await?;
 
     // Store extract path before moving config
-    let install_path = config.install_path.clone();
+    let final_install_path = install_path.clone();
 
     // Update tool list
-    update_tool_list(config, install_path.clone(), timestamp).await?;
+    update_tool_list(config, final_install_path.clone(), timestamp).await?;
 
     // Send completion event
     app.emit("tool_install_progress", 101)?;
@@ -55,12 +55,12 @@ async fn setup_installation_directory(
     config: &ToolInstallConfig,
 ) -> Result<String, Box<dyn Error + Send + Sync>> {
     // Ensure extract directory exists
-    if !Path::new(&config.install_path).exists() {
-        tokio::fs::create_dir_all(&config.install_path).await?;
+    if !Path::new(&config.parent_install_path).exists() {
+        tokio::fs::create_dir_all(&config.parent_install_path).await?;
     }
 
-    // Create full path by combining install_path and tool name
-    let install_path = format!("{}\\{}", config.install_path, config.name.replace(" ", "-"));
+    // Create full path by combining parent_install_path and tool name
+    let install_path = format!("{}\\{}", config.parent_install_path, config.name);
 
     let target_path = Path::new(&install_path);
     if !target_path.exists() {
@@ -91,7 +91,7 @@ async fn update_tool_list(
             full_path_directory: String::new(),
         },
         paths: ToolPaths {
-            parent_install_path: config.install_path.clone(),
+            parent_install_path: config.parent_install_path.clone(),
             install_path: install_path.clone(),
         },
         validation_status: ToolValidationStatus {

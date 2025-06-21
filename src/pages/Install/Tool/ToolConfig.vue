@@ -10,7 +10,7 @@ import Checkbox from 'primevue/checkbox'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
@@ -28,6 +28,16 @@ const nameError = ref(false)
 
 // UI state management
 const directoryDrawerVisible = ref(false)
+
+// Computed property for formatted final path
+const formatted_final_path = computed(() => {
+    const parentPath = installConfig.tool_details.paths.parent_install_path
+    const toolName = installConfig.tool_details.name
+
+    if (!parentPath || !toolName) return ''
+
+    return `${parentPath}\\${toolName}`
+})
 
 // Load archive content when component is mounted
 onMounted(async () => {
@@ -193,7 +203,7 @@ async function handleInstallClick() {
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -201,6 +211,11 @@ async function handleInstallClick() {
                                             @input="pathError = false" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('g.browse')" />
+                                    </div>
+
+                                    <!-- Formatted Final Path -->
+                                    <div v-if="formatted_final_path" class="mt-1 text-xs text-gray-500">
+                                        {{ t('ui.install.final_path') }}: {{ formatted_final_path }}
                                     </div>
                                 </div>
                             </div>
@@ -216,7 +231,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">

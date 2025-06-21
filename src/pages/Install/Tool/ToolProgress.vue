@@ -15,7 +15,6 @@ const extractProgress = ref(0)
 const isFinished = ref(false)
 const currentStatus = ref('')
 const canClose = ref(false)
-const finalExtractPath = ref('')
 const installPathCopied = ref(false)
 
 const installPath = ref('')
@@ -65,13 +64,13 @@ onMounted(async () => {
                 config: {
                     zip_path: installConfig.zip_path,
                     password: installConfig.archive_password,
-                    extract_path: installConfig.tool_details.paths.install_path,
+                    parent_install_path: installConfig.tool_details.paths.parent_install_path,
                     name: installConfig.tool_details.name,
                     timestamp: installConfig.timestamp,
                 },
             },
         })
-        finalExtractPath.value = result as string
+        installPath.value = result as string
     } catch (error) {
         console.error('Tool install failed:', error)
         currentStatus.value = t('ui.install.progress.failed')
