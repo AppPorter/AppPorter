@@ -62,13 +62,7 @@ const menuItems = computed(() => [
         label: t('ui.library.open_install_folder'),
         icon: 'mir-folder',
         command: () => openInstallFolder(),
-        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'tool',
-    },
-    {
-        label: t('ui.library.open_install_folder'),
-        icon: 'mir-folder',
-        command: () => openInstallFolder(),
-        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
+        visible: () => props.selectedApp?.installed,
     },
     {
         label: t('ui.library.open_registry'),
@@ -102,14 +96,10 @@ async function openApp() {
 async function openInstallFolder() {
     if (!props.selectedApp) return
 
-    const targetPath = props.selectedApp.type === 'tool'
-        ? props.selectedApp.details.paths.install_path
-        : props.selectedApp.details.paths.full_path
-
     await invoke('execute_command', {
         command: {
             name: 'OpenFolder',
-            path: targetPath,
+            path: props.selectedApp.details.paths.install_path,
         },
     })
 }

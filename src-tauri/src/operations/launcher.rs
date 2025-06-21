@@ -6,7 +6,7 @@ pub async fn open_app(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
         .await?;
-    if !output.status.success() {
+    if !output.stderr.is_empty() {
         return Err(String::from_utf8_lossy(&output.stderr).into());
     }
     Ok(())
@@ -14,8 +14,7 @@ pub async fn open_app(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
 
 pub async fn open_folder(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
     let output = Command::new("explorer")
-        .arg("/select,")
-        .arg(format!("\"{}\"", path))
+        .arg(path)
         .creation_flags(0x08000000)
         .output()
         .await?;
