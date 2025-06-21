@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppTypes } from '@/stores/library'
+import type { AppTypes } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import { useConfirm } from 'primevue/useconfirm'
 import { inject, ref } from 'vue'
@@ -7,7 +7,7 @@ import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
 const confirm = useConfirm()
-const triggerUninstall = inject('triggerUninstall') as (timestamp: number) => Promise<void>
+const triggerUninstall = inject('triggerUninstall') as (apptype: AppTypes, timestamp: number) => Promise<void>
 
 interface LibraryValidationProps {
     app?: {
@@ -132,7 +132,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await triggerUninstall(appToValidate.value.timestamp)
+        await triggerUninstall(appToValidate.value.type, appToValidate.value.timestamp)
     } else {
         await invoke('execute_command', {
             command: {

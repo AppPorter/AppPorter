@@ -1,15 +1,12 @@
 <script setup lang="ts">
-import { AppTypes, LibraryStore } from '@/stores/library'
+import { type AppTypes } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import Menu from 'primevue/menu'
-import { useConfirm } from 'primevue/useconfirm'
 import { computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
-const libraryStore = LibraryStore()
 const { t } = useI18n()
-const confirm = useConfirm()
-const triggerUninstall = inject('triggerUninstall') as (timestamp: number) => Promise<void>
+const triggerUninstall = inject('triggerUninstall') as (apptype: AppTypes, timestamp: number) => Promise<void>
 
 interface LibraryContextMenuProps {
     selectedApp?: {
@@ -73,7 +70,7 @@ const menuItems = computed(() => [
     {
         label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
         icon: 'mir-delete',
-        command: () => (props.selectedApp?.installed ? (props.selectedApp?.type === 'tool' ? confirmDelete() : confirmUninstall()) : confirmRemove()),
+        command: () => triggerUninstall(props.selectedApp!.type, props.selectedApp!.timestamp),
         visible: () => props.selectedApp !== undefined,
     },
 ])
@@ -109,80 +106,6 @@ async function openRegistry() {
             app_name: props.selectedApp.details.info.name,
             current_user_only: props.selectedApp.details.config.current_user_only,
         },
-    })
-}
-
-async function confirmUninstall() {
-    if (!props.selectedApp) return
-    await triggerUninstall(props.selectedApp.timestamp)
-}
-
-async function confirmDelete() {
-    if (!props.selectedApp) return
-
-    const item = libraryStore.getToolByTimestamp(props.selectedApp.timestamp)
-    if (!item) return
-
-    await new Promise((resolve, reject) => {
-        confirm.require({
-            message: t('ui.library.confirm_delete_message', {
-                name: props.selectedApp!.details.info.name,
-            }),
-            group: 'dialog',
-            header: t('ui.library.confirm_delete_header'),
-            icon: 'mir-warning',
-            rejectProps: {
-                label: t('g.cancel'),
-                severity: 'secondary',
-                outlined: true,
-                icon: 'mir-close',
-            },
-            acceptProps: {
-                label: t('g.delete'),
-                severity: 'danger',
-                icon: 'mir-delete',
-            },
-            accept: async () => {
-                if (props.selectedApp!.type === 'tool') {
-                    await libraryStore.removeTool(props.selectedApp!.timestamp)
-                } else {
-                    await libraryStore.removeApp(props.selectedApp!.timestamp)
-                }
-                resolve(true)
-            },
-            reject: () => reject(),
-        })
-    })
-}
-
-async function confirmRemove() {
-    if (!props.selectedApp) return
-
-    await new Promise((resolve, reject) => {
-        confirm.require({
-            message: t('ui.library.confirm_remove_message', {
-                name: props.selectedApp!.details.info.name,
-            }),
-            group: 'dialog',
-            header: t('ui.library.confirm_remove_header'),
-            icon: 'mir-warning',
-            rejectProps: {
-                label: t('g.cancel'),
-                severity: 'secondary',
-                outlined: true,
-                icon: 'mir-close',
-            },
-            acceptProps: {
-                label: t('g.remove'),
-                severity: 'danger',
-                icon: 'mir-delete',
-            },
-            accept: async () => {
-                await libraryStore.removeApp(props.selectedApp!.timestamp)
-                resolve(true)
-            },
-            reject: () => reject(),
-        })
     })
 }
 

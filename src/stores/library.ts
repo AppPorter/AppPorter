@@ -134,13 +134,26 @@ export const LibraryStore = defineStore('library', {
       return this.installedTools.find((tool) => tool.timestamp === timestamp)
     },
 
-    async executeUninstall(timestamp: number) {
-      await invoke('execute_command', {
-        command: {
-          name: 'Uninstall',
-          timestamp,
-        },
-      })
+    async executeUninstall(apptype: AppTypes, timestamp: number) {
+      switch (apptype) {
+        case 'app':
+          await invoke('execute_command', {
+            command: {
+              name: 'UninstallApp',
+              timestamp,
+            },
+          })
+          break
+        case 'tool':
+          await invoke('execute_command', {
+            command: {
+              name: 'UninstallTool',
+              timestamp,
+            },
+          })
+          break
+      }
+
       await this.loadLibrary()
     },
 

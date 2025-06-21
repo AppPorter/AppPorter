@@ -16,6 +16,7 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
 import { EnvStore } from './stores/env'
+import { AppTypes } from './stores/library.ts'
 
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -26,8 +27,8 @@ const contextMenuManager = ref()
 const uninstallComponent = ref()
 
 // Provide uninstall function to child components
-const triggerUninstall = async (timestamp: number) => {
-  await uninstallComponent.value?.confirmAndExecuteUninstall(timestamp)
+const triggerUninstall = async (apptype: AppTypes, timestamp: number) => {
+  await uninstallComponent.value?.confirmAndUninstall(apptype, timestamp)
 }
 
 provide('triggerUninstall', triggerUninstall)

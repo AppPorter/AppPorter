@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LibraryStore } from '@/stores/library'
+import { type AppTypes, LibraryStore } from '@/stores/library'
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
 
@@ -7,20 +7,64 @@ const confirm = useConfirm()
 const { t } = useI18n()
 const libraryStore = LibraryStore()
 
-// The actual implementation of confirmAndExecuteUninstall
-const confirmAndExecuteUninstall = async (timestamp: number): Promise<void> => {
-    const app = libraryStore.getAppByTimestamp(timestamp)
+// The actual implementation of confirmAndUninstall
+const confirmAndUninstall = async (apptype: AppTypes, timestamp: number): Promise<void> => {
+    const app = apptype === 'app' ? libraryStore.getAppByTimestamp(timestamp) : libraryStore.getToolByTimestamp(timestamp)
     if (!app) return
 
     return new Promise<void>((resolve, reject) => {
+        // Determine the appropriate message and action based on apptype and installed status
+        let message: string
+        let header: string
+        let acceptLabel: string
+        let action: () => Promise<void>
+
+        if (app.installed) {
+            // For installed items, handle based on type
+            switch (apptype) {
+                case 'tool':
+                    // For installed tools, delete (remove from filesystem)
+                    message = t('ui.library.confirm_delete_message', {
+                        name: app.details.info.name,
+                    })
+                    header = t('ui.library.confirm_delete_header')
+                    acceptLabel = t('g.delete')
+                    action = () => libraryStore.removeTool(timestamp)
+                    break
+                case 'app':
+                    // For installed apps, uninstall
+                    message = t('ui.library.confirm_uninstall_message', {
+                        name: app.details.info.name,
+                    })
+                    header = t('ui.library.confirm_uninstall_header', {
+                        name: app.details.info.name,
+                    })
+                    acceptLabel = t('cls.uninstall.self')
+                    action = () => libraryStore.executeUninstall(apptype, timestamp)
+                    break
+            }
+        } else {
+            // For non-installed items, remove from library
+            message = t('ui.library.confirm_remove_message', {
+                name: app.details.info.name,
+            })
+            header = t('ui.library.confirm_remove_header')
+            acceptLabel = t('g.remove')
+
+            switch (apptype) {
+                case 'tool':
+                    action = () => libraryStore.removeTool(timestamp)
+                    break
+                case 'app':
+                    action = () => libraryStore.removeApp(timestamp)
+                    break
+            }
+        }
+
         confirm.require({
-            message: t('ui.library.confirm_uninstall_message', {
-                name: app.details.info.name,
-            }),
+            message,
             group: 'dialog',
-            header: t('ui.library.confirm_uninstall_header', {
-                name: app.details.info.name,
-            }),
+            header,
             icon: 'mir-warning',
             rejectProps: {
                 label: t('g.cancel'),
@@ -29,17 +73,17 @@ const confirmAndExecuteUninstall = async (timestamp: number): Promise<void> => {
                 icon: 'mir-close',
             },
             acceptProps: {
-                label: t('cls.uninstall.self'),
+                label: acceptLabel,
                 severity: 'danger',
-                icon: 'mir-warning',
+                icon: apptype === 'tool' || !app.installed ? 'mir-delete' : 'mir-warning',
             },
             accept: async () => {
-                await libraryStore.executeUninstall(timestamp)
+                await action()
                 resolve()
             },
             reject: () => reject(),
         })
     })
 }
-defineExpose({ confirmAndExecuteUninstall })
+defineExpose({ confirmAndUninstall })
 </script>
