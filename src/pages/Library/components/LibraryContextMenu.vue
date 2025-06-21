@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { LibraryStore } from '@/stores/library'
+import { AppTypes, LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import Menu from 'primevue/menu'
 import { useConfirm } from 'primevue/useconfirm'
@@ -15,7 +15,7 @@ interface LibraryContextMenuProps {
     selectedApp?: {
         timestamp: number
         url: string
-        type: 'app' | 'tool'
+        type: AppTypes
         installed: boolean
         details: {
             info: {
@@ -120,9 +120,7 @@ async function confirmUninstall() {
 async function confirmDelete() {
     if (!props.selectedApp) return
 
-    const item = props.selectedApp.type === 'app'
-        ? libraryStore.getAppByTimestamp(props.selectedApp.timestamp)
-        : libraryStore.getToolByTimestamp(props.selectedApp.timestamp)
+    const item = libraryStore.getToolByTimestamp(props.selectedApp.timestamp)
     if (!item) return
 
     await new Promise((resolve, reject) => {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { AppTypes } from '@/stores/library'
 import Tag from 'primevue/tag'
 import { useI18n } from 'vue-i18n'
 
@@ -6,7 +7,7 @@ const { t } = useI18n()
 
 interface LibraryStatusTagProps {
     item: {
-        type: 'app' | 'tool'
+        type: AppTypes
         installed: boolean
         details: {
             validation_status: {

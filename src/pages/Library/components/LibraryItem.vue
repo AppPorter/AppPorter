@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { AppTypes } from '@/stores/library'
 import Button from 'primevue/button'
 import { useI18n } from 'vue-i18n'
 import LibraryStatusTag from './LibraryStatusTag.vue'
@@ -9,7 +10,7 @@ interface LibraryItemProps {
     item: {
         timestamp: number
         url: string
-        type: 'app' | 'tool'
+        type: AppTypes
         installed: boolean
         details: {
             info: {

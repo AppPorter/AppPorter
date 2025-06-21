@@ -1,6 +1,8 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
+export type AppTypes = 'app' | 'tool'
+
 interface Library {
   apps: App[]
   tools: Tool[]
