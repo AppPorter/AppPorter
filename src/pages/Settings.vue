@@ -214,7 +214,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                  }}</label>
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -248,7 +248,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                    }}</label>
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -267,7 +267,7 @@ const githubIcon = computed(() => {
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-folder_copy text-xl"></span>
-            <h3 class="font-medium">{{ t('ui.settings.install.lib') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.install.tool') }}</h3>
           </div>
         </template>
         <div class="space-y-2">
