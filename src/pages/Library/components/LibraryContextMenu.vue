@@ -81,14 +81,10 @@ const menuItems = computed(() => [
 async function openApp() {
     if (!props.selectedApp) return
 
-    const targetPath = props.selectedApp.type === 'tool'
-        ? props.selectedApp.details.paths.install_path
-        : props.selectedApp.details.paths.full_path
-
     await invoke('execute_command', {
         command: {
             name: 'OpenApp',
-            path: targetPath,
+            path: props.selectedApp.details.paths.full_path,
         },
     })
 }
