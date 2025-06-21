@@ -91,14 +91,12 @@ async function handleInstallClick() {
     }
 
     try {
-        console.log(installConfig.tool_details.paths.install_path)
         await invoke('execute_command', {
             command: {
                 name: 'CheckPathEmpty',
                 path: installConfig.tool_details.paths.install_path,
             },
         })
-        console.log(1)
         await new Promise((resolve, reject) => {
             confirm.require({
                 message: t('ui.install.confirm_install', {
@@ -121,11 +119,8 @@ async function handleInstallClick() {
                 reject: () => reject(),
             })
         })
-        console.log(2)
     } catch (error) {
-        console.log(3)
         if (error === 'Directory is not empty') {
-            console.log(4)
             await new Promise((resolve, reject) => {
                 confirm.require({
                     message: t('ui.install.force_install_confirm', {
@@ -198,7 +193,7 @@ async function handleInstallClick() {
                             <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -221,7 +216,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
