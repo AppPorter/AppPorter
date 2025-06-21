@@ -3,7 +3,7 @@ import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { listen } from '@tauri-apps/api/event'
-import { computed, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 // Install state
@@ -12,9 +12,11 @@ const extractProgress = ref(0)
 const isFinished = ref(false)
 const currentStatus = ref('')
 const canClose = ref(false)
-const finalExecutablePath = ref('')
 const executablePathCopied = ref(false)
 const installPathCopied = ref(false)
+
+const installPath = ref('')
+const fullPath = ref('')
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Install_App_Progress'
@@ -22,11 +24,11 @@ const { t } = useI18n()
 
 // Handle opening executable
 const handleOpenExecutable = async () => {
-  if (finalExecutablePath.value) {
+  if (fullPath.value) {
     await invoke('execute_command', {
       command: {
         name: 'OpenApp',
-        path: finalExecutablePath.value
+        path: fullPath.value
       }
     })
   }
@@ -34,22 +36,14 @@ const handleOpenExecutable = async () => {
 
 // Handle opening install folder
 const handleOpenInstallFolder = async () => {
-  console.log(fullInstallPath.value)
+  console.log(installPath.value)
   await invoke('execute_command', {
     command: {
       name: 'OpenFolder',
-      path: fullInstallPath.value
+      path: installPath.value
     }
   })
 }
-
-// Compute full install path including app folder
-const fullInstallPath = computed(() => {
-  const basePath = installConfig.app_details.paths.parent_install_path
-  const appName = installConfig.app_details.info.name
-  if (!basePath || !appName) return basePath || ''
-  return `${basePath.replace(/\\$/, '')}\\${appName}\\`
-})
 
 // Copy information to clipboard with feedback
 const handleCopy = async (text: string, type: 'executable' | 'install') => {
@@ -78,6 +72,7 @@ onMounted(async () => {
       progressMode.value = 'indeterminate'
       currentStatus.value = t('ui.install.progress.preparing_extract')
     } else if (payload === 101) {
+      progressMode.value = 'determinate'
       extractProgress.value = 100
       currentStatus.value = ''
       isFinished.value = true
@@ -91,7 +86,7 @@ onMounted(async () => {
 
   // Start install process
   try {
-    const result = await invoke('execute_command', {
+    let result = await invoke('execute_command', {
       command: {
         name: 'InstallApp',
         config: {
@@ -102,7 +97,9 @@ onMounted(async () => {
         },
       },
     })
-    finalExecutablePath.value = result as string
+    result = JSON.parse(result as string)
+    installPath.value = result[0]
+    fullPath.value = result[1]
   } catch (error) {
     console.error('Install failed:', error)
     currentStatus.value = t('ui.install.progress.failed')
@@ -181,10 +178,10 @@ const handleClose = () => {
                   <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                     :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"
                     :severity="installPathCopied ? 'success' : 'secondary'"
-                    @click="handleCopy(fullInstallPath, 'install')" />
+                    @click="handleCopy(installPath, 'install')" />
                 </div>
                 <p class="select-text break-all rounded bg-surface-50 p-2 text-sm font-medium dark:bg-surface-800">
-                  {{ fullInstallPath }}
+                  {{ installPath }}
                 </p>
               </div>
             </div>
@@ -198,7 +195,7 @@ const handleClose = () => {
       <!-- Action buttons (shown only when finished) -->
       <div v-if="isFinished" class="flex items-center gap-2">
         <Button @click="handleOpenExecutable" severity="secondary" outlined class="h-8" icon="mir-terminal"
-          :label="t('g.open')" :disabled="!finalExecutablePath" />
+          :label="t('g.open')" :disabled="!fullPath" />
         <Button @click="handleOpenInstallFolder" severity="secondary" outlined class="h-8" icon="mir-folder"
           :label="t('ui.library.open_install_folder')" />
       </div>

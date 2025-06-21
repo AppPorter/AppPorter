@@ -21,7 +21,7 @@ pub struct AppInstallConfig {
 pub async fn install_app(
     config: AppInstallConfig,
     app: AppHandle,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+) -> Result<(String, String), Box<dyn Error + Send + Sync>> {
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send initial install progress event
@@ -101,7 +101,7 @@ pub async fn install_app(
 
     app.emit("app_install_progress", 101)?;
 
-    Ok(full_path)
+    Ok((install_path, full_path))
 }
 
 async fn create_start_menu_shortcut(
