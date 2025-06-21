@@ -4,7 +4,7 @@ import { invoke } from '@tauri-apps/api/core'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import SplitButton from 'primevue/splitbutton'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
 
@@ -182,6 +182,74 @@ const menuItems = ref([
     command: handleInstallerMode
   }
 ])
+
+// Auto-select exe logic
+function findExeFilesInDirectory(nodes: FileTreeNode[], maxDepth: number = 3, currentDepth: number = 0): string[] {
+  if (currentDepth >= maxDepth) return []
+
+  const exeFiles: string[] = []
+
+  for (const node of nodes) {
+    if (node.node_type === 'file' && node.name.toLowerCase().endsWith('.exe')) {
+      exeFiles.push(node.path)
+    }
+  }
+
+  return exeFiles
+}
+
+function findSingleDirectoryPath(nodes: FileTreeNode[]): string | null {
+  const directories = nodes.filter(node => node.node_type === 'directory')
+  return directories.length === 1 ? directories[0].path : null
+}
+
+async function autoSelectExe() {
+  try {
+    let currentNodes = props.fileTree
+    let searchDepth = 0
+    const maxDepth = 3
+
+    while (searchDepth < maxDepth) {
+      // Search for exe files in current level
+      const exeFiles = findExeFilesInDirectory(currentNodes, 1, 0)
+
+      if (exeFiles.length === 1) {
+        // Found exactly one exe file, auto-select it
+        selectedPath.value = exeFiles[0]
+        return
+      } else if (exeFiles.length > 1) {
+        // Found multiple exe files, don't auto-select
+        return
+      }
+
+      // No exe files found, check if there's only one directory to dive into
+      if (searchDepth < maxDepth - 1) {
+        const singleDirPath = findSingleDirectoryPath(currentNodes)
+        if (singleDirPath) {
+          // Expand the directory and search its children
+          const dirNode = currentNodes.find(node => node.path === singleDirPath)
+          if (dirNode && dirNode.children && dirNode.children.length > 0) {
+            currentNodes = dirNode.children
+            searchDepth++
+            continue
+          }
+        }
+      }
+
+      // No single directory found or reached max depth
+      break
+    }
+  } catch (error) {
+    console.error('Error in auto-select exe:', error)
+  }
+}
+
+// Watch for file tree changes to trigger auto-select
+watch(() => props.fileTree, (newTree) => {
+  if (newTree && newTree.length > 0 && !selectedPath.value) {
+    autoSelectExe()
+  }
+}, { immediate: true })
 </script>
 
 <template>
