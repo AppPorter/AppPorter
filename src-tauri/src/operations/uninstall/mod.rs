@@ -47,10 +47,10 @@ pub async fn remove_from_path(
 pub async fn update_app_list_after_uninstall(
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut app_list = Library::read().await?;
+    let mut library = Library::read().await?;
 
     // Find the app to be uninstalled
-    let app_index = app_list
+    let app_index = library
         .apps
         .iter()
         .position(|existing_app| existing_app.timestamp == timestamp);
@@ -58,14 +58,14 @@ pub async fn update_app_list_after_uninstall(
     if let Some(index) = app_index {
         // If the app has a URL, just mark it as not installed
         // Otherwise, remove it completely from the list
-        if !app_list.apps[index].url.is_empty() {
-            app_list.apps[index].installed = false;
+        if !library.apps[index].url.is_empty() {
+            library.apps[index].installed = false;
         } else {
-            app_list.apps.remove(index);
+            library.apps.remove(index);
         }
     }
 
-    app_list.save().await?;
+    library.save().await?;
     Ok(())
 }
 
@@ -73,10 +73,10 @@ pub async fn update_app_list_after_uninstall(
 pub async fn update_tool_list_after_uninstall(
     timestamp: i64,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    let mut app_list = Library::read().await?;
+    let mut library = Library::read().await?;
 
     // Find the tool to be uninstalled
-    let tool_index = app_list
+    let tool_index = library
         .tools
         .iter()
         .position(|existing_tool| existing_tool.timestamp == timestamp);
@@ -84,13 +84,13 @@ pub async fn update_tool_list_after_uninstall(
     if let Some(index) = tool_index {
         // If the tool has a URL, just mark it as not installed
         // Otherwise, remove it completely from the list
-        if !app_list.tools[index].url.is_empty() {
-            app_list.tools[index].installed = false;
+        if !library.tools[index].url.is_empty() {
+            library.tools[index].installed = false;
         } else {
-            app_list.tools.remove(index);
+            library.tools.remove(index);
         }
     }
 
-    app_list.save().await?;
+    library.save().await?;
     Ok(())
 }

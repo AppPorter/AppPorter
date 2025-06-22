@@ -10,23 +10,23 @@ pub async fn uninstall_tool(
     timestamp: i64,
     app: AppHandle,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
-    app.emit("uninstall_tool", 0)?;
+    app.emit("tool_uninstall_progress", 0)?;
 
-    // Get tool configuration from app list
-    let app_list = Library::read().await?;
-    let tool_config = app_list
+    // Get tool configuration from library
+    let library = Library::read().await?;
+    let tool_config = library
         .tools
         .iter()
         .find(|tool| tool.timestamp == timestamp)
-        .ok_or("Tool not found in app list")?;
+        .ok_or("Tool not found in library")?;
 
     // Remove tool directory
-    let tool_path = Path::new(&tool_config.details.paths.install_path);
-    if tool_path.exists() {
-        fs::remove_dir_all(&tool_path).await?;
+    let tool_path = &tool_config.details.paths.install_path;
+    if Path::new(tool_path).exists() {
+        fs::remove_dir_all(tool_path).await?;
     }
 
-    app.emit("uninstall_tool", 50)?;
+    app.emit("tool_uninstall_progress", 50)?;
 
     // Remove from PATH if it was added
     if tool_config.details.config.add_to_path {
@@ -36,12 +36,12 @@ pub async fn uninstall_tool(
         remove_from_path(path_to_remove, true).await?;
     }
 
-    app.emit("uninstall_tool", 75)?;
+    app.emit("tool_uninstall_progress", 75)?;
 
     // Update app list
     update_tool_list_after_uninstall(timestamp).await?;
 
-    app.emit("uninstall_tool", 100)?;
+    app.emit("tool_uninstall_progress", 100)?;
 
     Ok(())
 }

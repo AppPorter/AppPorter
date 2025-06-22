@@ -13,13 +13,13 @@ pub async fn uninstall_app(
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     app.emit("app_uninstall_progress", 0)?;
 
-    // Get app configuration from app list
-    let app_list = Library::read().await?;
-    let app_config = app_list
+    // Get app configuration from library
+    let library = Library::read().await?;
+    let app_config = library
         .apps
         .iter()
         .find(|app| app.timestamp == timestamp)
-        .ok_or("App not found in app list")?;
+        .ok_or("App not found in library")?;
 
     // Remove application directory - use the install_path directly
     let app_path = &app_config.details.paths.install_path;

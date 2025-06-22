@@ -29,7 +29,7 @@ const confirmAndUninstall = async (apptype: AppTypes, timestamp: number): Promis
                     })
                     header = t('ui.library.confirm_delete_header')
                     acceptLabel = t('g.delete')
-                    action = () => libraryStore.removeTool(timestamp)
+                    action = () => libraryStore.executeUninstall(apptype, timestamp)
                     break
                 case 'app':
                     // For installed apps, uninstall
