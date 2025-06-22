@@ -100,7 +100,7 @@ onMounted(async () => {
     installPath.value = result[0]
     fullPath.value = result[1]
   } catch (error) {
-    console.error('Install failed:', error)
+    globalThis.$errorHandler.showError(error)
     currentStatus.value = t('ui.install.progress.failed')
     canClose.value = true
   }

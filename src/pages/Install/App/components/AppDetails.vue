@@ -34,33 +34,29 @@ if (!custom_icon.value) {
 const { t } = useI18n()
 
 async function selectIcon() {
-  try {
-    const selected = await open({
-      multiple: false,
-      filters: [{
-        name: 'Icon Files',
-        extensions: ['ico', 'png', 'exe']
-      }]
-    })
-    if (selected) {
-      // Store original icon before changing
-      if (!custom_icon.value) {
-        originalIcon = icon.value
-      }
-
-      // Convert icon to base64 using Rust backend
-      const base64Icon = await invoke('execute_command', {
-        command: {
-          name: 'ConvertIconToBase64',
-          path: String(selected)
-        }
-      }) as string
-
-      icon.value = base64Icon
-      custom_icon.value = true
+  const selected = await open({
+    multiple: false,
+    filters: [{
+      name: 'Icon Files',
+      extensions: ['ico', 'png', 'exe']
+    }]
+  })
+  if (selected) {
+    // Store original icon before changing
+    if (!custom_icon.value) {
+      originalIcon = icon.value
     }
-  } catch (error) {
-    console.error('Failed to select or convert icon:', error)
+
+    // Convert icon to base64 using Rust backend
+    const base64Icon = await invoke('execute_command', {
+      command: {
+        name: 'ConvertIconToBase64',
+        path: String(selected)
+      }
+    }) as string
+
+    icon.value = base64Icon
+    custom_icon.value = true
   }
 }
 

@@ -72,7 +72,7 @@ onMounted(async () => {
         })
         installPath.value = result as string
     } catch (error) {
-        console.error('Tool install failed:', error)
+        globalThis.$errorHandler.showError(error)
         currentStatus.value = t('ui.install.progress.failed')
         canClose.value = true
     }
@@ -152,7 +152,7 @@ async function handleCopyInstallPath() {
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"

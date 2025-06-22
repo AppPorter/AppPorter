@@ -4,7 +4,6 @@ import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { LibraryStore } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
-import { useToast } from 'primevue'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Drawer from 'primevue/drawer'
@@ -14,7 +13,6 @@ import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
 const libraryStore = LibraryStore()
-const toast = useToast()
 const { t } = useI18n()
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
@@ -138,12 +136,7 @@ watch(drawerVisible, async (visible) => {
                 if (error === 'Wrong password') {
                     showPasswordDialog.value = true
                 } else {
-                    toast.add({
-                        severity: 'error',
-                        summary: t('g.error'),
-                        detail: String(error),
-                        life: 0,
-                    })
+                    globalThis.$errorHandler.showError(error)
                     installConfig.show_preview_drawer = false
                 }
             } finally {
@@ -177,12 +170,7 @@ async function handlePasswordSubmit() {
         if (error === 'Wrong password') {
             passwordError.value = true
         } else {
-            toast.add({
-                severity: 'error',
-                summary: t('g.error'),
-                detail: String(error),
-                life: 0,
-            })
+            globalThis.$errorHandler.showError(error)
             showPasswordDialog.value = false
             installConfig.show_preview_drawer = false
         }
@@ -244,7 +232,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -264,7 +252,7 @@ async function GetArchiveContent(password: string) {
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
                             <span class="text-sm font-medium">{{ t('g.loading')
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>

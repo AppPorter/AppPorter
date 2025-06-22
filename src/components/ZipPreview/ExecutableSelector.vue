@@ -120,32 +120,29 @@ function handleNodeSelect(node: FileNode) {
 
 async function handleSelect() {
   if (isSelecting.value) return
-  try {
-    isSelecting.value = true
-    emit('loading', true)
-    const result = await invoke('execute_command', {
-      command: {
-        name: 'GetDetails',
-        path: {
-          zip_path: props.zipPath,
-          executable_path: selectedPath.value,
-          password: props.password,
-        },
+  isSelecting.value = true
+  emit('loading', true)
+  const result = await invoke('execute_command', {
+    command: {
+      name: 'GetDetails',
+      path: {
+        zip_path: props.zipPath,
+        executable_path: selectedPath.value,
+        password: props.password,
       },
-    })
+    },
+  })
 
-    const details = JSON.parse(result as string)
-    store.app_details.info.name = details.product_name
-    store.app_details.info.version = details.version
-    store.app_details.info.publisher = details.copyright
-    store.app_details.info.icon = details.icon_data_url
-    store.app_details.config.archive_exe_path = selectedPath.value
+  const details = JSON.parse(result as string)
+  store.app_details.info.name = details.product_name
+  store.app_details.info.version = details.version
+  store.app_details.info.publisher = details.copyright
+  store.app_details.info.icon = details.icon_data_url
+  store.app_details.config.archive_exe_path = selectedPath.value
 
-    emit('executable-selected')
-  } finally {
-    isSelecting.value = false
-    emit('loading', false)
-  }
+  emit('executable-selected')
+  isSelecting.value = false
+  emit('loading', false)
 }
 
 function handleNoExecutable() {
@@ -204,43 +201,39 @@ function findSingleDirectoryPath(nodes: FileTreeNode[]): string | null {
 }
 
 async function autoSelectExe() {
-  try {
-    let currentNodes = props.fileTree
-    let searchDepth = 0
-    const maxDepth = 3
+  let currentNodes = props.fileTree
+  let searchDepth = 0
+  const maxDepth = 3
 
-    while (searchDepth < maxDepth) {
-      // Search for exe files in current level
-      const exeFiles = findExeFilesInDirectory(currentNodes, 1, 0)
+  while (searchDepth < maxDepth) {
+    // Search for exe files in current level
+    const exeFiles = findExeFilesInDirectory(currentNodes, 1, 0)
 
-      if (exeFiles.length === 1) {
-        // Found exactly one exe file, auto-select it
-        selectedPath.value = exeFiles[0]
-        return
-      } else if (exeFiles.length > 1) {
-        // Found multiple exe files, don't auto-select
-        return
-      }
+    if (exeFiles.length === 1) {
+      // Found exactly one exe file, auto-select it
+      selectedPath.value = exeFiles[0]
+      return
+    } else if (exeFiles.length > 1) {
+      // Found multiple exe files, don't auto-select
+      return
+    }
 
-      // No exe files found, check if there's only one directory to dive into
-      if (searchDepth < maxDepth - 1) {
-        const singleDirPath = findSingleDirectoryPath(currentNodes)
-        if (singleDirPath) {
-          // Expand the directory and search its children
-          const dirNode = currentNodes.find(node => node.path === singleDirPath)
-          if (dirNode && dirNode.children && dirNode.children.length > 0) {
-            currentNodes = dirNode.children
-            searchDepth++
-            continue
-          }
+    // No exe files found, check if there's only one directory to dive into
+    if (searchDepth < maxDepth - 1) {
+      const singleDirPath = findSingleDirectoryPath(currentNodes)
+      if (singleDirPath) {
+        // Expand the directory and search its children
+        const dirNode = currentNodes.find(node => node.path === singleDirPath)
+        if (dirNode && dirNode.children && dirNode.children.length > 0) {
+          currentNodes = dirNode.children
+          searchDepth++
+          continue
         }
       }
-
-      // No single directory found or reached max depth
-      break
     }
-  } catch (error) {
-    console.error('Error in auto-select exe:', error)
+
+    // No single directory found or reached max depth
+    break
   }
 }
 

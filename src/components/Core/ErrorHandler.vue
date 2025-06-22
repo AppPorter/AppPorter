@@ -19,6 +19,9 @@ const errorToast = {
   },
 }
 
+// Make error handler globally available
+globalThis.$errorHandler = errorToast
+
 // Expose error handling for parent components
 defineExpose({ errorToast })
 

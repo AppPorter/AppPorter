@@ -32,7 +32,6 @@ const selectedPath = ref('')
 const isSelecting = ref(false)
 const fileTree = ref<FileTreeNode[]>([])
 const loading = ref(false)
-const error = ref('')
 
 // Load file tree when component mounts
 onMounted(async () => {
@@ -42,28 +41,22 @@ onMounted(async () => {
 async function loadFileTree() {
     if (!props.zipPath) return
 
-    try {
-        loading.value = true
-        emit('loading', true)
+    loading.value = true
+    emit('loading', true)
 
-        const result = await invoke('execute_command', {
-            command: {
-                name: 'GetArchiveTree',
-                path: props.zipPath,
-                password: props.password || '',
-            },
-        })
+    const result = await invoke('execute_command', {
+        command: {
+            name: 'GetArchiveTree',
+            path: props.zipPath,
+            password: props.password || '',
+        },
+    })
 
-        const treeData = JSON.parse(result as string)
-        fileTree.value = treeData
-        emit('update-file-tree', treeData)
-    } catch (err) {
-        error.value = err instanceof Error ? err.message : 'Failed to load archive'
-        console.error('Failed to load file tree:', err)
-    } finally {
-        loading.value = false
-        emit('loading', false)
-    }
+    const treeData = JSON.parse(result as string)
+    fileTree.value = treeData
+    emit('update-file-tree', treeData)
+    loading.value = false
+    emit('loading', false)
 }
 
 // Define the FileNode interface explicitly

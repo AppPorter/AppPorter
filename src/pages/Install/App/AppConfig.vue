@@ -46,8 +46,9 @@ async function handleInstallClick() {
 
     installConfig.app_details.paths.parent_install_path = validatedPath
     installConfig.app_details.paths.install_path = `${validatedPath}\\${installConfig.app_details.info.name}`
-  } catch {
+  } catch (error) {
     pathError.value = true
+    globalThis.$errorHandler.showError(error)
   }
 
   // If any validation failed, return early
@@ -111,6 +112,7 @@ async function handleInstallClick() {
         })
       })
     } else {
+      globalThis.$errorHandler.showError(error)
       return
     }
   }

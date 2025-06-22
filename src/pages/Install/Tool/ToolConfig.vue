@@ -91,7 +91,8 @@ async function handleInstallClick() {
 
         installConfig.tool_details.paths.parent_install_path = validatedPath
         installConfig.tool_details.paths.install_path = `${validatedPath}\\${installConfig.tool_details.name}`
-    } catch {
+    } catch (error) {
+        globalThis.$errorHandler.showError(error)
         pathError.value = true
     }
 

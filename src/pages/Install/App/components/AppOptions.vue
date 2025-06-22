@@ -70,16 +70,12 @@ updateConfig(current_user_only.value)
 
 // Optimized file selection
 async function select_install_path() {
-  try {
-    const selected = await open({
-      directory: true,
-      multiple: false,
-    })
-    if (selected) {
-      install_path.value = String(selected)
-    }
-  } catch (error) {
-    console.error('Failed to select install path:', error)
+  const selected = await open({
+    directory: true,
+    multiple: false,
+  })
+  if (selected) {
+    install_path.value = String(selected)
   }
 }
 
@@ -146,7 +142,7 @@ function handleInstallModeChange(event: Event) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-              }}</label>
+                }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
