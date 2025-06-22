@@ -69,17 +69,19 @@ pub async fn install_app(
     };
 
     // Create shortcuts
-    if config.details.config.create_start_menu_shortcut {
-        create_start_menu_shortcut(
-            &config.details.info.name,
-            &full_path,
-            config.details.config.current_user_only,
-        )
-        .await?;
-    }
+    let shell_link = ShellLink::new(&full_path)?;
 
     if config.details.config.create_desktop_shortcut {
-        create_desktop_shortcut(&full_path, &config.details.info.name)?;
+        create_desktop_shortcut(&shell_link, &config.details.info.name)?;
+    }
+
+    if config.details.config.create_start_menu_shortcut {
+        create_start_menu_shortcut(
+            &shell_link,
+            config.details.config.current_user_only,
+            &config.details.info.name,
+        )
+        .await?;
     }
 
     // Create registry entries if requested
@@ -103,10 +105,24 @@ pub async fn install_app(
     Ok((install_path, full_path))
 }
 
-async fn create_start_menu_shortcut(
+fn create_desktop_shortcut(
+    shell_link: &ShellLink,
     app_name: &str,
-    executable_path: &str,
+) -> Result<(), Box<dyn Error + Send + Sync>> {
+    shell_link.create_lnk(format!(
+        r"{}\{}.lnk",
+        dirs::desktop_dir()
+            .ok_or("Failed to get desktop directory")?
+            .to_string_lossy(),
+        app_name
+    ))?;
+    Ok(())
+}
+
+async fn create_start_menu_shortcut(
+    shell_link: &ShellLink,
     current_user_only: bool,
+    app_name: &str,
 ) -> Result<(), Box<dyn Error + Send + Sync>> {
     let env = Env::read().await?;
     let lnk_path = if current_user_only {
@@ -120,21 +136,7 @@ async fn create_start_menu_shortcut(
             env.system_drive_letter, app_name
         )
     };
-    ShellLink::new(executable_path)?.create_lnk(lnk_path)?;
-    Ok(())
-}
-
-fn create_desktop_shortcut(
-    executable_path: &str,
-    app_name: &str,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
-    ShellLink::new(executable_path)?.create_lnk(format!(
-        r"{}\{}.lnk",
-        dirs::desktop_dir()
-            .ok_or("Failed to get desktop directory")?
-            .to_string_lossy(),
-        app_name
-    ))?;
+    shell_link.create_lnk(lnk_path)?;
     Ok(())
 }
 
