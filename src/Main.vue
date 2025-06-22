@@ -15,14 +15,14 @@ import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
-import { EnvStore } from './stores/env'
 import { AppTypes } from './stores/library.ts'
+import { SettingsStore } from './stores/settings.ts'
 
 const confirm = useConfirm()
 const { t } = useI18n()
 const errorHandler = ref()
 const dismissWarning = ref(false)
-const env = EnvStore()
+const settings = SettingsStore()
 const contextMenuManager = ref()
 const uninstallComponent = ref()
 
@@ -36,7 +36,7 @@ provide('triggerUninstall', triggerUninstall)
 // Setup event listeners after component is mounted
 onMounted(async () => {
   // First run check
-  if (env.first_run) {
+  if (settings.first_run) {
     confirm.require({
       group: 'disclaimer',
       header: t('ui.disclaimer.header'),
@@ -54,7 +54,7 @@ onMounted(async () => {
         outlined: true,
       },
       accept: async () => {
-        await env.acknowledgeFirstRun()
+        await settings.acknowledgeFirstRun()
       },
       reject: () => {
         invoke('execute_command', {

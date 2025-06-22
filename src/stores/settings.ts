@@ -4,6 +4,7 @@ import Color from 'color'
 import { defineStore } from 'pinia'
 
 export interface Settings {
+  first_run: boolean
   language: LanguageType
   theme: ThemeType
   minimize_to_tray_on_close: boolean
@@ -40,6 +41,7 @@ interface ToolInstall {
 // Store definition
 export const SettingsStore = defineStore('settings', {
   state: (): Settings & { unlistenThemeColor?: (() => void) | null } => ({
+    first_run: true,
     language: 'en',
     theme: 'system',
     minimize_to_tray_on_close: false,
@@ -200,6 +202,11 @@ export const SettingsStore = defineStore('settings', {
         this.unlistenThemeColor()
         this.unlistenThemeColor = null
       }
+    },
+
+    async acknowledgeFirstRun() {
+      this.first_run = false
+      await this.saveSettings()
     },
   },
 })

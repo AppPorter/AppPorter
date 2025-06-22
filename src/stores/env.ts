@@ -3,12 +3,12 @@ import { defineStore } from 'pinia'
 import type { Settings } from './settings'
 
 interface Env {
-  first_run: boolean
   debug: boolean
   elevated: boolean
   system_drive_letter: string
   user_sid: string
   username: string
+
   initialSettings: Settings | null
   isBasicSettingsChanged: boolean
   isDarkMode: boolean
@@ -16,12 +16,12 @@ interface Env {
 
 export const EnvStore = defineStore('env', {
   state: (): Env => ({
-    first_run: true,
     debug: false,
     elevated: false,
     system_drive_letter: '',
     user_sid: '',
     username: '',
+
     initialSettings: null,
     isBasicSettingsChanged: false,
     isDarkMode: window.matchMedia('(prefers-color-scheme: dark)').matches,
@@ -37,25 +37,11 @@ export const EnvStore = defineStore('env', {
       this.$patch(env)
     },
 
-    async saveEnv() {
-      await invoke('execute_command', {
-        command: {
-          name: 'SaveEnv',
-          env: this.$state,
-        },
-      })
-    },
-
     async setInitialSettings() {
       const { SettingsStore } = await import('./settings')
       const settings = SettingsStore()
 
       this.initialSettings = JSON.parse(JSON.stringify(settings.$state))
-    },
-
-    async acknowledgeFirstRun() {
-      this.first_run = false
-      await this.saveEnv()
     },
   },
 })

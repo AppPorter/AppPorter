@@ -30,6 +30,7 @@ impl Default for Settings {
             .unwrap_or_else(|_| "C".to_string());
         let username = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
         Self {
+            first_run: true,
             language: LanguageType::En,
             theme: ThemeType::System,
             context_menu: true,
@@ -70,7 +71,6 @@ impl Default for Settings {
 impl Settings {
     pub async fn initialization() -> Result<(), Box<dyn Error + Send + Sync>> {
         let mut settings = Settings::read().await?;
-        Env::initialization().await?;
         let env = Env::read().await?;
 
         settings.run_as_admin = settings.check_run_as_admin(env.user_sid)?;

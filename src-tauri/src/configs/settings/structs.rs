@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(default)]
 pub struct Settings {
+    pub first_run: bool,
     pub language: LanguageType,
     pub theme: ThemeType,
     pub minimize_to_tray_on_close: bool,

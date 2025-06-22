@@ -1,48 +1,27 @@
 use super::Env;
-use crate::configs::ConfigFile;
 use check_elevation::is_elevated;
-use std::{error::Error, path::PathBuf};
+use std::error::Error;
 use tokio::process::Command;
-
-#[async_trait::async_trait]
-impl ConfigFile for Env {
-    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
-        Ok(dirs::config_local_dir()
-            .ok_or("Failed to get local config directory")?
-            .join("AppPorter")
-            .join("Env.json"))
-    }
-}
 
 impl Default for Env {
     fn default() -> Self {
-        let system_drive = std::env::var("windir")
-            .map(|s| s[..1].to_string())
-            .unwrap_or_else(|_| "C".to_string());
-        let username = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
         Self {
-            first_run: true,
             debug: cfg!(debug_assertions),
             elevated: is_elevated().unwrap_or(false),
-            system_drive_letter: system_drive.clone(),
+            system_drive_letter: std::env::var("windir")
+                .map(|s| s[..1].to_string())
+                .unwrap_or_else(|_| "C".to_string()),
             user_sid: String::new(),
-            username: username.clone(),
+            username: std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string()),
         }
     }
 }
 
 impl Env {
-    pub async fn initialization() -> Result<(), Box<dyn Error + Send + Sync>> {
-        let mut env = Env::read().await?;
-
-        env.debug = cfg!(debug_assertions);
-        env.elevated = is_elevated()?;
+    pub async fn read() -> Result<Env, Box<dyn Error + Send + Sync>> {
+        let mut env = Env::default();
         env.user_sid = env.get_user_sid().await?;
-        env.system_drive_letter = std::env::var("windir")?[..1].to_string();
-        env.username = std::env::var("USERNAME")?;
-
-        env.save().await?;
-        Ok(())
+        Ok(env)
     }
 
     async fn get_user_sid(&self) -> Result<String, Box<dyn Error + Send + Sync>> {
