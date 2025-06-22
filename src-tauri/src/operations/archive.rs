@@ -67,6 +67,7 @@ pub async fn get_archive_content(
     }
 
     let output_str = String::from_utf8_lossy(&output.stdout);
+    println!("{}", output_str);
     Ok(parse_7z_list_output(&output_str))
 }
 
@@ -185,7 +186,17 @@ pub fn parse_7z_list_output(output: &str) -> Vec<String> {
             if line.len() >= 53 {
                 let filename = line[53..].trim();
                 if !filename.is_empty() {
-                    result.push(filename.to_string());
+                    // Check if it's a directory by looking at the attr column
+                    // Attr starts at column 20 and is 5 characters long
+                    let mut final_filename = filename.to_string();
+                    if line.len() >= 25 {
+                        let attr = &line[20..25];
+                        // If attr starts with 'D', it's a directory
+                        if attr.starts_with('D') && !final_filename.ends_with('\\') {
+                            final_filename.push('\\');
+                        }
+                    }
+                    result.push(final_filename);
                 }
             }
         }
