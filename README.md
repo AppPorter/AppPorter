@@ -17,6 +17,7 @@
 
 ![Screenshot 1](/public/Screenshot1.png)
 ![Screenshot 2](/public/Screenshot2.png)
+_v0.1.0 Screenshot. AppPorter has changed a lot since this version_
 
 AppPorter is a desktop application designed to simplify the installation and management of portable software (ZIP-packaged applications).
 
@@ -24,7 +25,9 @@ With its browser extension ([AppPorter Ext](https://github.com/AppPorter/AppPort
 
 The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 
-## Features
+## Roadmap
+
+### v1.0 Features
 
 - [x] Installation
 - [x] Settings
@@ -33,9 +36,17 @@ The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 - [x] Uninstallation
 - [x] Add to PATH
 - [x] Install Tools
+- [x] Custom app icon
 - [ ] Repair
+- [ ] Modify
 - [ ] Update
-- [ ] Custom app icon
+- [ ] Github Releases Integration
+
+### Post v1.0 Features
+
+- [ ] Other Website Integration
+- [ ] Replace Powershell commands
+- [ ] _And More..._
 
 ## Download
 
@@ -46,9 +57,3 @@ The app is built with Tauri, Rust, Vue 3, Tailwind CSS, and PrimeVue.
 AppPorter is licensed under the [Mozilla Public License 2.0 (MPL-2.0)](https://www.mozilla.org/en-US/MPL/2.0/).
 
 Additionally, this project uses parts of the 7-Zip program which is licensed under the GNU LGPL license. The source code for 7-Zip can be found at [www.7-zip.org](https://www.7-zip.org).
-
-## Todo
-
-- [ ] Complete new features
-- [ ] Replace Powershell commands
-- [ ] Optimize UI for some languages
