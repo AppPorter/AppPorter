@@ -64,6 +64,21 @@ pub async fn uninstall_app(
 
     app.emit("app_uninstall_progress", 75)?;
 
+    // Remove custom icon file if it was used
+    if app_config.details.config.custom_icon {
+        let icons_dir = dirs::config_local_dir()
+            .ok_or("Failed to get local config directory")?
+            .join("AppPorter")
+            .join("icons");
+
+        let icon_filename = format!("{}-{}.ico", app_config.details.info.name, timestamp);
+        let icon_path = icons_dir.join(&icon_filename);
+
+        if icon_path.exists() {
+            fs::remove_file(icon_path).await?;
+        }
+    }
+
     // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
         // Use the pre-calculated full_path_directory

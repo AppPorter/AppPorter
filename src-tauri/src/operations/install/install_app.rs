@@ -1,6 +1,7 @@
 use crate::configs::env::Env;
 use crate::configs::library::*;
 use crate::configs::ConfigFile;
+use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
 use crate::operations::install::flatten_nested_folders;
 use mslnk::ShellLink;
@@ -69,7 +70,15 @@ pub async fn install_app(
     };
 
     // Create shortcuts
-    let shell_link = ShellLink::new(&full_path)?;
+    let mut shell_link = ShellLink::new(&full_path)?;
+    if config.details.config.custom_icon {
+        let icon_path = convert_base64_to_ico(
+            config.details.info.icon.clone(),
+            format!("{}-{}", config.details.info.name.clone(), timestamp),
+        )
+        .await?;
+        shell_link.set_icon_location(Some(icon_path));
+    }
 
     if config.details.config.create_desktop_shortcut {
         create_desktop_shortcut(&shell_link, &config.details.info.name)?;
