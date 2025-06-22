@@ -205,7 +205,7 @@ const flattenedTree = computed(() => {
                 'mr-2 text-sm transition-transform duration-200',
                 node.expanded ? 'mir-expand_more' : 'mir-chevron_right'
               ]"></span>
-              <span v-else class="mr-2 w-4"></span>
+              <span v-else class="mr-2"></span>
 
               <!-- File/folder icon -->
               <span :class="[
