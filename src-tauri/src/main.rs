@@ -50,10 +50,7 @@ async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
             window.unminimize().expect("window failed to unminimize");
             window.set_focus().expect("window failed to focus");
         }))
-        .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .invoke_handler(tauri::generate_handler![command::execute_command])
         .run(tauri::generate_context!())?;

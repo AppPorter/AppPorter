@@ -29,7 +29,7 @@ pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error 
                     e.downcast_ref::<WsError>(),
                     Some(WsError::ConnectionClosed)
                         | Some(WsError::Protocol(_))
-                        | Some(WsError::Utf8)
+                        | Some(WsError::Utf8(_))
                 ) {
                     eprintln!("Error processing connection: {}", e);
                 }
