@@ -8,7 +8,7 @@ import NavigationBar from '@/components/Core/NavigationBar.vue'
 import Uninstall from '@/components/Core/Uninstall.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
-import { exit } from '@tauri-apps/plugin-process'
+import { invoke } from '@tauri-apps/api/core'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
@@ -57,7 +57,9 @@ onMounted(async () => {
         await env.acknowledgeFirstRun()
       },
       reject: () => {
-        exit(0)
+        invoke('execute_command', {
+          command: { name: 'Exit' },
+        })
       },
     })
   }
