@@ -45,7 +45,7 @@ function formatTimestamp(timestamp) {
 </script>
 
 <template>
-    <div class="w-full border-b border-surface-200 dark:border-surface-700">
+    <div class="w-full border-t border-surface-200 dark:border-surface-700">
         <div class="flex items-center p-4"
             @contextmenu.prevent="$emit('contextMenu', { originalEvent: $event, data: item })">
             <div class="mr-4 flex items-center justify-center">
