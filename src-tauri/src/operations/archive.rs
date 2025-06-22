@@ -1,5 +1,5 @@
 use std::error::Error;
-use std::io::{self, Read};
+use std::io::Read;
 use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
@@ -9,9 +9,9 @@ use tokio::process::Command;
 
 // Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
 // The files will be stored in the temp directory: %TEMP%\AppPorter\
-pub fn get_7z_path() -> Result<PathBuf, io::Error> {
-    let temp_dir = env::temp_dir().join("AppPorter");
-    fs::create_dir_all(&temp_dir)?;
+pub fn get_7z_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+    let current_exe = env::current_exe()?;
+    let current_dir = current_exe.parent().ok_or("Failed to get exe directory")?;
 
     let files = vec![
         (
@@ -25,13 +25,13 @@ pub fn get_7z_path() -> Result<PathBuf, io::Error> {
     ];
 
     for (filename, bytes) in &files {
-        let file_path = temp_dir.join(filename);
+        let file_path = current_dir.join(filename);
         if !file_path.exists() || fs::metadata(&file_path)?.len() != bytes.len() as u64 {
             fs::write(&file_path, bytes)?;
         }
     }
 
-    Ok(temp_dir.join("7z.exe"))
+    Ok(current_dir.join("7z.exe"))
 }
 
 pub fn sanitize_path(path: &str) -> String {

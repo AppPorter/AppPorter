@@ -3,14 +3,18 @@ use crate::configs::library::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
 use crate::configs::{library::AppDetails, settings::Settings};
 use base64::{engine::general_purpose::STANDARD, Engine};
+use std::path::PathBuf;
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[async_trait::async_trait]
 impl ConfigFile for Library {
-    fn get_filename() -> &'static str {
-        "Library.json"
+    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+        Ok(dirs::config_local_dir()
+            .ok_or("Failed to get local config directory")?
+            .join("AppPorter")
+            .join("Library.json"))
     }
 }
 

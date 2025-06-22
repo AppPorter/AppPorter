@@ -1,13 +1,16 @@
 use super::Env;
 use crate::configs::ConfigFile;
 use check_elevation::is_elevated;
-use std::error::Error;
+use std::{error::Error, path::PathBuf};
 use tokio::process::Command;
 
 #[async_trait::async_trait]
 impl ConfigFile for Env {
-    fn get_filename() -> &'static str {
-        "Env.json"
+    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+        Ok(dirs::config_local_dir()
+            .ok_or("Failed to get local config directory")?
+            .join("AppPorter")
+            .join("Env.json"))
     }
 }
 

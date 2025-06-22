@@ -2,6 +2,7 @@ use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, Tool
 use crate::configs::{env::Env, ConfigFile};
 use crate::core::{context_menu, startup}; // Add import for context_menu and startup modules
 use std::error::Error;
+use std::path::PathBuf;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread;
@@ -14,8 +15,11 @@ static THEME_MONITORING_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 #[async_trait::async_trait]
 impl ConfigFile for Settings {
-    fn get_filename() -> &'static str {
-        "Settings.json"
+    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+        Ok(dirs::config_dir()
+            .ok_or("Failed to get config directory")?
+            .join("AppPorter")
+            .join("Settings.json"))
     }
 }
 
