@@ -68,16 +68,19 @@ pub fn check_and_fix_context_menu() -> Result<bool, Box<dyn Error + Send + Sync>
 
             // Check command
             let command_path = format!("{}\\command", base_path);
-            if let Ok(command_key) = CURRENT_USER.open(&command_path) {
-                let current_command = command_key.get_string("").unwrap_or_default();
-                if current_command != expected_command {
+            match CURRENT_USER.open(&command_path) {
+                Ok(command_key) => {
+                    let current_command = command_key.get_string("").unwrap_or_default();
+                    if current_command != expected_command {
+                        needs_fix = true;
+                        break;
+                    }
+                }
+                _ => {
+                    // Command key doesn't exist
                     needs_fix = true;
                     break;
                 }
-            } else {
-                // Command key doesn't exist
-                needs_fix = true;
-                break;
             }
         }
     }

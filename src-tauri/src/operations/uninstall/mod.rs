@@ -4,8 +4,8 @@ pub mod uninstall_tool;
 pub use uninstall_app::*;
 pub use uninstall_tool::*;
 
-use crate::configs::library::Library;
 use crate::configs::ConfigFile;
+use crate::configs::library::Library;
 use std::error::Error;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 

@@ -1,9 +1,9 @@
 use crate::{configs::*, core::*, operations::*, utils::*};
+use Command::*;
 use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use std::error::Error;
 use tauri::AppHandle;
-use Command::*;
 
 // Available frontend-to-backend commands
 #[derive(Deserialize, Clone)]

@@ -1,4 +1,4 @@
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use dirs;
 use std::{error::Error, path::Path};
 use systemicons::get_icon;

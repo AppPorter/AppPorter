@@ -1,6 +1,6 @@
 use super::get_7z_path;
 use super::sanitize_path;
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::error::Error;

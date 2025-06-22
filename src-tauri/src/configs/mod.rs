@@ -6,7 +6,7 @@ pub mod settings;
 pub use env::*;
 #[allow(ambiguous_glob_reexports)]
 pub use library::*;
-use serde::{de::DeserializeOwned, Serialize};
+use serde::{Serialize, de::DeserializeOwned};
 #[allow(ambiguous_glob_reexports)]
 pub use settings::*;
 use std::{error::Error, path::PathBuf};

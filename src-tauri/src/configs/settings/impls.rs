@@ -1,10 +1,10 @@
 use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
-use crate::configs::{env::Env, ConfigFile};
+use crate::configs::{ConfigFile, env::Env};
 use crate::core::{context_menu, startup}; // Add import for context_menu and startup modules
 use std::error::Error;
 use std::path::PathBuf;
-use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::thread;
 use std::time::Duration;
 use tauri::{AppHandle, Emitter};

@@ -1,5 +1,5 @@
 use crate::{
-    configs::{library::*, ConfigFile},
+    configs::{ConfigFile, library::*},
     operations::{extract_archive_files, flatten_nested_folders},
 };
 use serde::{Deserialize, Serialize};

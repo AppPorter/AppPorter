@@ -3,7 +3,7 @@
         "u316",
     ]
     description = "AppPorter"
-    edition = "2021"
+    edition = "2024"
     license = "MPL-2.0"
     name = "app-porter"
     version = "0.2.0"

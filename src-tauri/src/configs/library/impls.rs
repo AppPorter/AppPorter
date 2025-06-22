@@ -1,8 +1,8 @@
 use super::{AppValidationStatus, Library, ToolValidationStatus};
-use crate::configs::library::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::ConfigFile;
+use crate::configs::library::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::{library::AppDetails, settings::Settings};
-use base64::{engine::general_purpose::STANDARD, Engine};
+use base64::{Engine, engine::general_purpose::STANDARD};
 use std::path::PathBuf;
 use std::{error::Error, path::Path};
 use systemicons::get_icon;
@@ -70,25 +70,23 @@ impl Library {
                 let path_to_check = &app.details.config.full_path_directory;
 
                 if app.details.config.current_user_only {
-                    if let Ok(key) = CURRENT_USER.open("Environment") {
-                        if let Ok(path) = key.get_string("Path") {
-                            path.split(';').any(|p| p.trim() == path_to_check.trim())
-                        } else {
-                            false
-                        }
-                    } else {
-                        false
-                    }
-                } else if let Ok(key) = LOCAL_MACHINE
-                    .open(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
-                {
-                    if let Ok(path) = key.get_string("path") {
-                        path.split(';').any(|p| p.trim() == path_to_check.trim())
-                    } else {
-                        false
+                    match CURRENT_USER.open("Environment") {
+                        Ok(key) => match key.get_string("Path") {
+                            Ok(path) => path.split(';').any(|p| p.trim() == path_to_check.trim()),
+                            _ => false,
+                        },
+                        _ => false,
                     }
                 } else {
-                    false
+                    match LOCAL_MACHINE
+                        .open(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+                    {
+                        Ok(key) => match key.get_string("path") {
+                            Ok(path) => path.split(';').any(|p| p.trim() == path_to_check.trim()),
+                            _ => false,
+                        },
+                        _ => false,
+                    }
                 }
             } else {
                 true
@@ -116,14 +114,12 @@ impl Library {
                 let path_to_check = &tool.details.config.full_path_directory;
 
                 // tools are always added to CURRENT_USER environment
-                if let Ok(key) = CURRENT_USER.open("Environment") {
-                    if let Ok(path) = key.get_string("Path") {
-                        path.split(';').any(|p| p.trim() == path_to_check.trim())
-                    } else {
-                        false
-                    }
-                } else {
-                    false
+                match CURRENT_USER.open("Environment") {
+                    Ok(key) => match key.get_string("Path") {
+                        Ok(path) => path.split(';').any(|p| p.trim() == path_to_check.trim()),
+                        _ => false,
+                    },
+                    _ => false,
                 }
             } else {
                 true

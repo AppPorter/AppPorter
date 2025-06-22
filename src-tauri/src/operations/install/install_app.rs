@@ -1,6 +1,6 @@
+use crate::configs::ConfigFile;
 use crate::configs::env::Env;
 use crate::configs::library::*;
-use crate::configs::ConfigFile;
 use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
 use crate::operations::install::flatten_nested_folders;

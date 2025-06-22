@@ -1,5 +1,5 @@
-use crate::configs::library::Library;
 use crate::configs::ConfigFile;
+use crate::configs::library::Library;
 use crate::operations::uninstall::{remove_from_path, update_tool_list_after_uninstall};
 use std::error::Error;
 use std::path::Path;

@@ -1,11 +1,11 @@
 use crate::utils::crypto::{
-    decrypt_data_with_key, encrypt_data_with_key, generate_session_id, generate_session_key,
-    SESSIONS,
+    SESSIONS, decrypt_data_with_key, encrypt_data_with_key, generate_session_id,
+    generate_session_key,
 };
 use crate::utils::download_file;
-use base64::{engine::general_purpose, Engine as _};
+use base64::{Engine as _, engine::general_purpose};
 use futures_util::{SinkExt, StreamExt};
-use serde_json::{json, Value};
+use serde_json::{Value, json};
 use std::error::Error;
 use tauri::AppHandle;
 use tauri::Emitter;
