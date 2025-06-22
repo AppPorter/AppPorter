@@ -1,7 +1,10 @@
 use super::Env;
 use check_elevation::is_elevated;
 use std::error::Error;
+use std::sync::OnceLock;
 use tokio::process::Command;
+
+static CACHED_ENV: OnceLock<Env> = OnceLock::new();
 
 impl Default for Env {
     fn default() -> Self {
@@ -19,8 +22,16 @@ impl Default for Env {
 
 impl Env {
     pub async fn read() -> Result<Env, Box<dyn Error + Send + Sync>> {
+        if let Some(cached) = CACHED_ENV.get() {
+            return Ok(cached.clone());
+        }
+
         let mut env = Env::default();
         env.user_sid = env.get_user_sid().await?;
+
+        // Try to cache the result, ignore if another thread already cached it
+        let _ = CACHED_ENV.set(env.clone());
+
         Ok(env)
     }
 

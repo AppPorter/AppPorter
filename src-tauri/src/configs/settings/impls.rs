@@ -69,7 +69,7 @@ impl Default for Settings {
 }
 
 impl Settings {
-    pub async fn initialization() -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn initialize() -> Result<(), Box<dyn Error + Send + Sync>> {
         let mut settings = Settings::read().await?;
         let env = Env::read().await?;
 
