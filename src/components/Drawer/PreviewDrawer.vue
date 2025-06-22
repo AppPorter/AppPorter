@@ -241,7 +241,7 @@ async function GetArchiveContent(password: string) {
                         {{ (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path).split(/[/\\]/).pop()
                         }}
                     </h3>
-                    <p class="text-sm text-slate-500 dark:text-slate-400">{{ (isTemporaryMode ? installConfig.temp.url :
+                    <p class="text-sm">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
                     }}
@@ -258,13 +258,12 @@ async function GetArchiveContent(password: string) {
             <!-- ExecutableSelector embedded directly -->
             <div class="relative min-h-0 flex-1">
                 <!-- Loading Overlay -->
-                <div v-if="isLoading"
-                    class="absolute inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm dark:bg-gray-900/80">
+                <div v-if="isLoading" class="absolute inset-0 z-50 flex items-center justify-center">
                     <div class="flex flex-col items-center gap-3">
                         <div class="flex items-center gap-2">
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
-                            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">{{ t('g.loading')
+                            <span class="text-sm font-medium">{{ t('g.loading')
                                 }}</span>
                         </div>
                     </div>

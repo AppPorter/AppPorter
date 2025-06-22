@@ -186,7 +186,7 @@ const flattenedTree = computed(() => {
 <template>
   <div class="flex h-full min-h-0 flex-col">
     <!-- File Tree Container -->
-    <div class="relative min-h-0 flex-1 overflow-hidden rounded border">
+    <div class="relative min-h-0 flex-1 overflow-hidden rounded-md border border-surface-200 dark:border-surface-700">
       <!-- Scrollable Tree Content -->
       <div v-if="hasData && !isEmpty" class="h-full overflow-auto px-3 py-2">
         <!-- Render flattened tree with proper indentation -->
