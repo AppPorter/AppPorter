@@ -337,6 +337,7 @@ impl Library {
                     create_desktop_shortcut,
                     create_start_menu_shortcut,
                     create_registry_key,
+                    custom_icon: false,
                     add_to_path,
                     archive_path_directory: String::new(),
                     full_path_directory: install_path.clone(),

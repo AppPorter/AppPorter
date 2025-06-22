@@ -61,6 +61,7 @@ export const InstallConfigStore = defineStore('install_config', {
         create_desktop_shortcut: false,
         create_start_menu_shortcut: true,
         create_registry_key: false,
+        custom_icon: false,
         add_to_path: false,
         path_directory: '',
       },

@@ -36,6 +36,7 @@ export interface AppConfig {
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
+  custom_icon: boolean
   add_to_path: boolean
   path_directory: string
 }

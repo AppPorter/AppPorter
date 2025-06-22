@@ -66,6 +66,9 @@ pub enum Command {
     RunInstaller {
         path: ExePath,
     },
+    ConvertIconToBase64 {
+        path: String,
+    },
     ValidatePath {
         path: String,
     },
@@ -145,6 +148,7 @@ impl Command {
             RunInstaller { path } => Self::ser(
                 run_installer(path.zip_path, path.executable_path, path.password, app).await?,
             ),
+            ConvertIconToBase64 { path } => Self::ser(convert_icon_to_base64(path).await?),
             ValidatePath { path } => Self::ser(validate_path(path).await?),
             GetArchiveContent { path, password } => {
                 Self::ser(get_archive_content(path, password).await?)

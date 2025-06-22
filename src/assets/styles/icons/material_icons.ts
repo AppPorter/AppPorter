@@ -48,6 +48,7 @@ const USED_ICONS = [
   'library_books',
   'star',
   'rule',
+  'reset_image',
 ] as const
 
 /**

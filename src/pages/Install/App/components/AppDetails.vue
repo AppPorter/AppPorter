@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config';
+import { invoke } from '@tauri-apps/api/core';
+import { open } from '@tauri-apps/plugin-dialog';
 import { storeToRefs } from 'pinia';
 import { toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
@@ -14,16 +16,57 @@ defineProps<{
 const installConfig = InstallConfigStore()
 const { zip_path, app_details } = storeToRefs(installConfig)
 
+// Store original icon for restoration
+let originalIcon = ''
+
 // Direct refs to nested properties for v-model binding
 const name = toRef(app_details.value.info, 'name')
 const icon = toRef(app_details.value.info, 'icon')
 const publisher = toRef(app_details.value.info, 'publisher')
 const version = toRef(app_details.value.info, 'version')
+const custom_icon = toRef(app_details.value.config, 'custom_icon')
+
+// Store original icon when component initializes
+if (!custom_icon.value) {
+  originalIcon = icon.value
+}
 
 const { t } = useI18n()
 
-function clearIcon() {
-  icon.value = ''
+async function selectIcon() {
+  try {
+    const selected = await open({
+      multiple: false,
+      filters: [{
+        name: 'Icon Files',
+        extensions: ['ico', 'png', 'exe']
+      }]
+    })
+    if (selected) {
+      // Store original icon before changing
+      if (!custom_icon.value) {
+        originalIcon = icon.value
+      }
+
+      // Convert icon to base64 using Rust backend
+      const base64Icon = await invoke('execute_command', {
+        command: {
+          name: 'ConvertIconToBase64',
+          path: String(selected)
+        }
+      }) as string
+
+      icon.value = base64Icon
+      custom_icon.value = true
+    }
+  } catch (error) {
+    console.error('Failed to select or convert icon:', error)
+  }
+}
+
+function restoreOriginalIcon() {
+  icon.value = originalIcon
+  custom_icon.value = false
 }
 </script>
 
@@ -55,17 +98,16 @@ function clearIcon() {
         </label>
         <div class="w-full">
           <div class="flex items-center gap-2">
-            <div class="group relative">
-              <div
-                class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
-                <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
-                <span v-else class="mir-apps text-2xl" />
-              </div>
-              <Button v-show="icon" type="button" severity="danger" text raised
-                class="!absolute !-right-1.5 !-top-1.5 !h-5 !w-5 !min-w-0 scale-75 !p-0 opacity-0 transition-all duration-200 ease-out hover:scale-110 group-hover:scale-100 group-hover:opacity-100"
-                @click="clearIcon">
-                <span class="mir-close !text-xs" />
-              </Button>
+            <div
+              class="flex size-12 items-center justify-center overflow-hidden rounded-lg border border-slate-200 shadow-sm dark:border-zinc-600">
+              <img v-if="icon" :src="icon" class="size-12 object-contain" alt="App Icon" />
+              <span v-else class="mir-apps text-2xl" />
+            </div>
+            <div class="flex gap-2">
+              <Button type="button" severity="secondary" class="h-8 w-24" @click="selectIcon" icon="mir-folder_open"
+                :label="t('g.browse')" />
+              <Button v-if="custom_icon" type="button" severity="secondary" class="h-8 w-24"
+                @click="restoreOriginalIcon" icon="mir-reset_image" :label="t('g.restore')" />
             </div>
             <span v-show="!icon" class="text-xs">
               {{ t('ui.install.app_details.icon_extract_hint') }}
