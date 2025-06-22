@@ -67,7 +67,6 @@ pub async fn get_archive_content(
     }
 
     let output_str = String::from_utf8_lossy(&output.stdout);
-    println!("{}", output_str);
     Ok(parse_7z_list_output(&output_str))
 }
 
