@@ -6,14 +6,11 @@ pub use uninstall_tool::*;
 
 use crate::configs::ConfigFile;
 use crate::configs::library::Library;
-use std::error::Error;
+use anyhow::Result;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 /// Remove a path from the system PATH environment variable
-pub async fn remove_from_path(
-    path_to_remove: &str,
-    current_user_only: bool,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn remove_from_path(path_to_remove: &str, current_user_only: bool) -> Result<()> {
     if current_user_only {
         let key = CURRENT_USER.create("Environment")?;
         if let Ok(current_path) = key.get_string("Path") {
@@ -44,9 +41,7 @@ pub async fn remove_from_path(
 }
 
 /// Update app list by either marking as uninstalled or removing completely
-pub async fn update_app_list_after_uninstall(
-    timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn update_app_list_after_uninstall(timestamp: i64) -> Result<()> {
     let mut library = Library::read().await?;
 
     // Find the app to be uninstalled
@@ -70,9 +65,7 @@ pub async fn update_app_list_after_uninstall(
 }
 
 /// Update tool list by either marking as uninstalled or removing completely
-pub async fn update_tool_list_after_uninstall(
-    timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn update_tool_list_after_uninstall(timestamp: i64) -> Result<()> {
     let mut library = Library::read().await?;
 
     // Find the tool to be uninstalled

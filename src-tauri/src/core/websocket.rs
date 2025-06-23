@@ -3,10 +3,10 @@ use crate::utils::crypto::{
     generate_session_key,
 };
 use crate::utils::download_file;
+use anyhow::{Result, anyhow};
 use base64::{Engine as _, engine::general_purpose};
 use futures_util::{SinkExt, StreamExt};
 use serde_json::{Value, json};
-use std::error::Error;
 use tauri::AppHandle;
 use tauri::Emitter;
 use tokio::net::{TcpListener, TcpStream};
@@ -16,7 +16,7 @@ use tokio_tungstenite::{
 };
 
 // Starts WebSocket server on port 7535 for browser extension communication
-pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn start_websocket_server(app: AppHandle) -> Result<()> {
     let addr = "127.0.0.1:7535";
     let listener = TcpListener::bind(&addr).await?;
 
@@ -41,10 +41,7 @@ pub async fn start_websocket_server(app: AppHandle) -> Result<(), Box<dyn Error 
 }
 
 // Handles WebSocket connection and processes incoming messages in a loop
-async fn handle_connection(
-    app: AppHandle,
-    stream: TcpStream,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn handle_connection(app: AppHandle, stream: TcpStream) -> Result<()> {
     let ws_stream = accept_async(stream).await?;
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
 
@@ -63,10 +60,7 @@ async fn handle_connection(
 }
 
 // Processes incoming browser extension messages and manages app list updates
-async fn handle_extension_message(
-    app: AppHandle,
-    msg: Message,
-) -> Result<Message, Box<dyn Error + Send + Sync>> {
+async fn handle_extension_message(app: AppHandle, msg: Message) -> Result<Message> {
     if let Message::Text(message_data) = &msg {
         // Parse the incoming JSON message
         let parsed: Value = serde_json::from_str(message_data)?;
@@ -78,7 +72,9 @@ async fn handle_extension_message(
 
             // Store session key
             {
-                let mut sessions = SESSIONS.lock().unwrap();
+                let mut sessions = SESSIONS
+                    .lock()
+                    .map_err(|e| anyhow!("Failed to lock sessions: {}", e))?;
                 sessions.insert(session_id.clone(), session_key);
             }
 
@@ -97,17 +93,23 @@ async fn handle_extension_message(
         }
 
         if parsed["type"] == "encrypted_url" {
-            let session_id = parsed["session_id"].as_str().ok_or("Missing session ID")?;
-            let encrypted_data = parsed["data"].as_str().ok_or("Missing encrypted data")?;
-            let nonce_str = parsed["nonce"].as_str().ok_or("Missing nonce")?;
+            let session_id = parsed["session_id"]
+                .as_str()
+                .ok_or(anyhow!("Missing session ID"))?;
+            let encrypted_data = parsed["data"]
+                .as_str()
+                .ok_or(anyhow!("Missing encrypted data"))?;
+            let nonce_str = parsed["nonce"].as_str().ok_or(anyhow!("Missing nonce"))?;
 
             // Get session key
             let session_key = {
-                let sessions = SESSIONS.lock().unwrap();
+                let sessions = SESSIONS
+                    .lock()
+                    .map_err(|e| anyhow!("Failed to lock sessions: {}", e))?;
                 sessions
                     .get(session_id)
                     .copied()
-                    .ok_or("Invalid session ID")?
+                    .ok_or(anyhow!("Invalid session ID"))?
             };
 
             // Decrypt the URL using session key
@@ -115,7 +117,7 @@ async fn handle_extension_message(
                 decrypt_data_with_key(encrypted_data, nonce_str, &session_key)
             {
                 let timestamp = chrono::Utc::now().timestamp();
-                let downloaded = download_file(&decrypted_url).await.unwrap_or_default();
+                let downloaded = download_file(&decrypted_url).await?;
                 app.emit("preview_url", (downloaded, timestamp, decrypted_url))?;
 
                 // Return encrypted success response using session key
@@ -138,7 +140,7 @@ async fn handle_extension_message(
         // Handle legacy unencrypted messages for backward compatibility
         let url = message_data.to_string();
         let timestamp = chrono::Utc::now().timestamp();
-        let downloaded = download_file(&url).await.unwrap_or_default();
+        let downloaded = download_file(&url).await?;
         app.emit("preview_url", (downloaded, timestamp, url))?;
 
         Ok(Message::text("Success"))

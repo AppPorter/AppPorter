@@ -1,15 +1,18 @@
+use anyhow::{Result, anyhow};
 use futures_util::StreamExt;
 use std::cmp::min;
-use std::error::Error;
 use std::io::Write;
 
-pub async fn download_file(url: &String) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn download_file(url: &String) -> Result<String> {
     // Get the same temp directory path as used for 7z
     let temp_dir = std::env::temp_dir().join("AppPorter").join("downloads");
     std::fs::create_dir_all(&temp_dir)?;
 
     // Generate a filename from the URL
-    let url_path = url.split('/').next_back().unwrap_or("downloaded_file");
+    let url_path = url
+        .split('/')
+        .next_back()
+        .ok_or(anyhow!("Failed to extract filename"))?;
     let file_path = temp_dir.join(url_path);
     let file_path_str = file_path.to_string_lossy().to_string();
 
@@ -19,7 +22,7 @@ pub async fn download_file(url: &String) -> Result<String, Box<dyn Error + Send 
     let res = client.get(url).send().await?;
     let total_size = res
         .content_length()
-        .ok_or(format!("Failed to get content length from '{}'", url))?;
+        .ok_or(anyhow!("Failed to get content length"))?;
 
     // Open file for writing
     let mut file = std::fs::File::create(&file_path)?;

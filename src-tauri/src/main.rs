@@ -1,28 +1,29 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use anyhow::Result;
 use app_porter_lib::{command, configs::*, core::*, operations::*};
-use std::error::Error;
 use tauri::Manager;
 
 #[tokio::main]
-async fn main() {
+async fn main() -> Result<()> {
     if let Err(e) = run().await {
         eprintln!("Application error: {}", e);
-        std::process::exit(1);
+        exit(1).await?;
     }
+    Ok(())
 }
 
-async fn run() -> Result<(), Box<dyn Error + Send + Sync>> {
+async fn run() -> Result<()> {
     Env::read().await?;
     Settings::initialize().await?;
 
-    if let Err(e) = get_7z_path() {
-        eprintln!("Failed to extract 7z.exe: {}", e);
-    }
+    get_7z_path()?;
 
     tauri::Builder::default()
         .setup(|app| {
-            let window = app.get_webview_window("main").expect("no main window");
+            let window = app
+                .get_webview_window("main")
+                .ok_or("Failed to get main window")?;
 
             let args: Vec<String> = std::env::args().collect();
             if !args.contains(&"--silent".to_owned()) {

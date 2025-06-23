@@ -1,16 +1,17 @@
+use anyhow::{Result, anyhow};
 use base64::{Engine, engine::general_purpose::STANDARD};
 use dirs;
-use std::{error::Error, path::Path};
+use std::path::Path;
 use systemicons::get_icon;
 use tokio::fs;
 
 // Converts an icon file to base64 data URL
-pub async fn convert_icon_to_base64(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn convert_icon_to_base64(path: String) -> Result<String> {
     let path = Path::new(&path);
 
     // Check if file exists
     if !path.exists() {
-        return Err("Icon file does not exist".into());
+        return Err(anyhow!("Icon file does not exist"));
     }
 
     // Check file extension
@@ -18,15 +19,13 @@ pub async fn convert_icon_to_base64(path: String) -> Result<String, Box<dyn Erro
         .extension()
         .and_then(|ext| ext.to_str())
         .map(|ext| ext.to_lowercase())
-        .unwrap_or_default();
+        .ok_or(anyhow!("Failed to get file extension"))?;
 
     match extension.as_str() {
         "exe" => {
             // For EXE files, extract icon using systemicons
-            let raw_icon = get_icon(&path.to_string_lossy(), 64).unwrap_or_default();
-            if raw_icon.is_empty() {
-                return Err("Failed to extract icon from EXE file".into());
-            }
+            let raw_icon = get_icon(&path.to_string_lossy(), 64)
+                .map_err(|e| anyhow!("Failed to extract icon from exe: {:?}", e))?;
             Ok(format!(
                 "data:image/png;base64,{}",
                 STANDARD.encode(&raw_icon)
@@ -48,18 +47,17 @@ pub async fn convert_icon_to_base64(path: String) -> Result<String, Box<dyn Erro
                 STANDARD.encode(&icon_data)
             ))
         }
-        _ => Err("Unsupported icon format. Only .ico, .png, and .exe files are supported".into()),
+        _ => Err(anyhow!(
+            "Unsupported icon format. Only .ico, .png, and .exe files are supported"
+        )),
     }
 }
 
 // Converts base64 icon data to physical ico file
-pub async fn convert_base64_to_ico(
-    base64_data: String,
-    filename: String,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn convert_base64_to_ico(base64_data: String, filename: String) -> Result<String> {
     // Create the icons directory path
     let icons_dir = dirs::config_local_dir()
-        .ok_or("Failed to get local config directory")?
+        .ok_or(anyhow!("Failed to get local config directory"))?
         .join("AppPorter")
         .join("icons");
 
@@ -71,8 +69,8 @@ pub async fn convert_base64_to_ico(
         base64_data
             .split(',')
             .nth(1)
-            .ok_or("Invalid base64 data URL format")?
-            .to_string()
+            .ok_or(anyhow!("Invalid base64 data URL format"))?
+            .to_owned()
     } else {
         base64_data
     };
@@ -80,7 +78,7 @@ pub async fn convert_base64_to_ico(
     // Decode base64 data
     let image_data = STANDARD
         .decode(&base64_clean)
-        .map_err(|e| format!("Failed to decode base64 data: {}", e))?;
+        .map_err(|e| anyhow!("Failed to decode base64 data: {}", e))?;
 
     // Determine output file path
     let output_filename = if filename.ends_with(".ico") {
@@ -94,7 +92,7 @@ pub async fn convert_base64_to_ico(
     tokio::task::spawn_blocking({
         let image_data = image_data.clone();
         let output_path = output_path.clone();
-        move || -> Result<(), Box<dyn Error + Send + Sync>> {
+        move || -> Result<()> {
             // Try to load the image using the image crate
             let img = image::load_from_memory(&image_data)?;
 

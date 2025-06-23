@@ -1,6 +1,6 @@
 use super::Env;
+use anyhow::{Result, anyhow};
 use check_elevation::is_elevated;
-use std::error::Error;
 use std::sync::OnceLock;
 use tokio::process::Command;
 
@@ -12,16 +12,16 @@ impl Default for Env {
             debug: cfg!(debug_assertions),
             elevated: is_elevated().unwrap_or(false),
             system_drive_letter: std::env::var("windir")
-                .map(|s| s[..1].to_string())
-                .unwrap_or_else(|_| "C".to_string()),
+                .map(|s| s[..1].to_owned())
+                .unwrap_or("C".to_owned()),
             user_sid: String::new(),
-            username: std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string()),
+            username: std::env::var("USERNAME").unwrap_or("user".to_owned()),
         }
     }
 }
 
 impl Env {
-    pub async fn read() -> Result<Env, Box<dyn Error + Send + Sync>> {
+    pub async fn read() -> Result<Env> {
         if let Some(cached) = CACHED_ENV.get() {
             return Ok(cached.clone());
         }
@@ -35,7 +35,7 @@ impl Env {
         Ok(env)
     }
 
-    async fn get_user_sid(&self) -> Result<String, Box<dyn Error + Send + Sync>> {
+    async fn get_user_sid(&self) -> Result<String> {
         let output = Command::new("powershell")
             .args([
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
@@ -47,8 +47,8 @@ impl Env {
             .await?;
 
         if !output.status.success() {
-            return Err(String::from_utf8_lossy(&output.stderr).into());
+            return Err(anyhow!("{}", String::from_utf8_lossy(&output.stderr)));
         }
-        Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).trim().to_owned())
     }
 }

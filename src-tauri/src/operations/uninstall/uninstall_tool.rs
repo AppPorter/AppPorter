@@ -1,15 +1,12 @@
 use crate::configs::ConfigFile;
 use crate::configs::library::Library;
 use crate::operations::uninstall::{remove_from_path, update_tool_list_after_uninstall};
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
 
-pub async fn uninstall_tool(
-    timestamp: i64,
-    app: AppHandle,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn uninstall_tool(timestamp: i64, app: AppHandle) -> Result<()> {
     app.emit("tool_uninstall_progress", 0)?;
 
     // Get tool configuration from library
@@ -18,7 +15,7 @@ pub async fn uninstall_tool(
         .tools
         .iter()
         .find(|tool| tool.timestamp == timestamp)
-        .ok_or("Tool not found in library")?;
+        .ok_or(anyhow!("Tool not found in library"))?;
 
     // Remove tool directory
     let tool_path = &tool_config.details.paths.install_path;

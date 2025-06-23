@@ -1,26 +1,31 @@
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use windows_registry::CURRENT_USER;
 
-pub fn set_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
+pub fn set_startup() -> Result<()> {
     let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
     shell_key.set_string(
         "AppPorter",
         format!(
             "\"{}\" --silent",
-            std::env::current_exe()?.to_str().unwrap_or("")
+            std::env::current_exe()?
+                .to_str()
+                .ok_or(anyhow!("Failed to get current exe path"))?
         ),
     )?;
     Ok(())
 }
 
-pub fn remove_startup() -> Result<(), Box<dyn Error + Send + Sync>> {
+pub fn remove_startup() -> Result<()> {
     let shell_key = CURRENT_USER.create(r"Software\Microsoft\Windows\CurrentVersion\Run")?;
     shell_key.remove_value("AppPorter")?;
     Ok(())
 }
 
-pub fn check_and_fix_startup() -> Result<bool, Box<dyn Error + Send + Sync>> {
-    let app_path = std::env::current_exe()?.to_str().unwrap_or("").to_owned();
+pub fn check_and_fix_startup() -> Result<bool> {
+    let current_exe = std::env::current_exe()?;
+    let app_path = current_exe
+        .to_str()
+        .ok_or(anyhow!("Failed to get current exe path"))?;
     let expected_value = format!("\"{}\" --silent", app_path);
 
     if let Ok(shell_key) = CURRENT_USER.open(r"Software\Microsoft\Windows\CurrentVersion\Run") {

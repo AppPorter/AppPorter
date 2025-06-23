@@ -2,6 +2,7 @@ pub mod env;
 pub mod library;
 pub mod settings;
 
+use anyhow::Result;
 #[allow(ambiguous_glob_reexports)]
 pub use env::*;
 #[allow(ambiguous_glob_reexports)]
@@ -9,13 +10,13 @@ pub use library::*;
 use serde::{Serialize, de::DeserializeOwned};
 #[allow(ambiguous_glob_reexports)]
 pub use settings::*;
-use std::{error::Error, path::PathBuf};
+use std::path::PathBuf;
 
 #[async_trait::async_trait]
 pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 'static {
-    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>>;
+    fn get_file_path() -> Result<PathBuf>;
 
-    async fn create_default() -> Result<Self, Box<dyn Error + Send + Sync>> {
+    async fn create_default() -> Result<Self> {
         let default_config = Self::default();
         let config_path = Self::get_file_path()?;
 
@@ -27,7 +28,7 @@ pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 's
         Ok(default_config)
     }
 
-    async fn read() -> Result<Self, Box<dyn Error + Send + Sync>> {
+    async fn read() -> Result<Self> {
         let config_path = Self::get_file_path()?;
 
         if !tokio::fs::try_exists(&config_path).await? {
@@ -38,7 +39,7 @@ pub trait ConfigFile: DeserializeOwned + Serialize + Default + Clone + Send + 's
         Ok(serde_json::from_str(&content)?)
     }
 
-    async fn save(&self) -> Result<(), Box<dyn Error + Send + Sync>> {
+    async fn save(&self) -> Result<()> {
         let config_path = Self::get_file_path()?;
         tokio::fs::write(&config_path, serde_json::to_string_pretty(&self)?).await?;
         Ok(())

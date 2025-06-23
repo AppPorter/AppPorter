@@ -1,7 +1,7 @@
 use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
 use crate::configs::{ConfigFile, env::Env};
 use crate::core::{context_menu, startup}; // Add import for context_menu and startup modules
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::{AtomicBool, Ordering};
@@ -15,9 +15,9 @@ static THEME_MONITORING_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 #[async_trait::async_trait]
 impl ConfigFile for Settings {
-    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+    fn get_file_path() -> Result<PathBuf> {
         Ok(dirs::config_dir()
-            .ok_or("Failed to get config directory")?
+            .ok_or_else(|| anyhow!("Failed to get config directory"))?
             .join("AppPorter")
             .join("Settings.json"))
     }
@@ -26,9 +26,9 @@ impl ConfigFile for Settings {
 impl Default for Settings {
     fn default() -> Self {
         let system_drive = std::env::var("windir")
-            .map(|s| s[..1].to_string())
-            .unwrap_or_else(|_| "C".to_string());
-        let username = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
+            .map(|s| s[..1].to_owned())
+            .unwrap_or("C".to_owned());
+        let username = std::env::var("USERNAME").unwrap_or("user".to_owned());
         Self {
             first_run: true,
             language: LanguageType::En,
@@ -61,7 +61,7 @@ impl Default for Settings {
             tool_install: ToolInstall {
                 install_path: dirs::home_dir()
                     .map(|p| p.to_string_lossy().to_string())
-                    .unwrap_or_else(|| String::from("C:\\")),
+                    .unwrap_or("C:\\".to_owned()),
                 add_to_path: true,
             },
         }
@@ -69,12 +69,12 @@ impl Default for Settings {
 }
 
 impl Settings {
-    pub async fn initialize() -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn initialize() -> Result<()> {
         let mut settings = Settings::read().await?;
         let env = Env::read().await?;
 
         settings.run_as_admin = settings.check_run_as_admin(env.user_sid)?;
-        settings.color = Self::get_system_accent_color().unwrap_or_default();
+        settings.color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
         settings.update_install_paths(env.system_drive_letter, env.username);
         settings.context_menu = context_menu::check_and_fix_context_menu()?;
         settings.auto_startup = startup::check_and_fix_startup()?;
@@ -91,7 +91,7 @@ impl Settings {
 
         let app_handle = Arc::new(app_handle);
         thread::spawn(move || {
-            let mut last_color = Self::get_system_accent_color().unwrap_or_default();
+            let mut last_color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
 
             while THEME_MONITORING_ACTIVE.load(Ordering::SeqCst) {
                 thread::sleep(Duration::from_secs(1));
@@ -114,7 +114,7 @@ impl Settings {
     }
 
     // Get current system accent color from registry
-    pub fn get_system_accent_color() -> Result<String, Box<dyn Error + Send + Sync>> {
+    pub fn get_system_accent_color() -> Result<String> {
         let accent_color = CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
             .get_u32("AccentColorMenu")?;
@@ -129,7 +129,7 @@ impl Settings {
         Ok(format!("#{}{}{}", r, g, b))
     }
 
-    fn check_run_as_admin(&self, user_sid: String) -> Result<bool, Box<dyn Error + Send + Sync>> {
+    fn check_run_as_admin(&self, user_sid: String) -> Result<bool> {
         let registry_path = format!(
             r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
             user_sid

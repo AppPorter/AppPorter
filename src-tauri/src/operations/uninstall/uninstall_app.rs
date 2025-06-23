@@ -1,16 +1,13 @@
 use crate::configs::ConfigFile;
 use crate::configs::{env::Env, library::Library};
 use crate::operations::uninstall::{remove_from_path, update_app_list_after_uninstall};
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
-pub async fn uninstall_app(
-    timestamp: i64,
-    app: AppHandle,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn uninstall_app(timestamp: i64, app: AppHandle) -> Result<()> {
     app.emit("app_uninstall_progress", 0)?;
 
     // Get app configuration from library
@@ -19,7 +16,7 @@ pub async fn uninstall_app(
         .apps
         .iter()
         .find(|app| app.timestamp == timestamp)
-        .ok_or("App not found in library")?;
+        .ok_or(anyhow!("App not found in library"))?;
 
     // Remove application directory - use the install_path directly
     let app_path = &app_config.details.paths.install_path;
@@ -67,7 +64,7 @@ pub async fn uninstall_app(
     // Remove custom icon file if it was used
     if app_config.details.config.custom_icon {
         let icons_dir = dirs::config_local_dir()
-            .ok_or("Failed to get local config directory")?
+            .ok_or(anyhow!("Failed to get local config directory"))?
             .join("AppPorter")
             .join("icons");
 

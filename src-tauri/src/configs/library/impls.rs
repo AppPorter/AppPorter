@@ -2,17 +2,18 @@ use super::{AppValidationStatus, Library, ToolValidationStatus};
 use crate::configs::ConfigFile;
 use crate::configs::library::{AppBasicInformation, AppConfig, AppPaths};
 use crate::configs::{library::AppDetails, settings::Settings};
+use anyhow::{Result, anyhow};
 use base64::{Engine, engine::general_purpose::STANDARD};
+use std::path::Path;
 use std::path::PathBuf;
-use std::{error::Error, path::Path};
 use systemicons::get_icon;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[async_trait::async_trait]
 impl ConfigFile for Library {
-    fn get_file_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+    fn get_file_path() -> Result<PathBuf> {
         Ok(dirs::config_local_dir()
-            .ok_or("Failed to get local config directory")?
+            .ok_or_else(|| anyhow!("Failed to get local config directory"))?
             .join("AppPorter")
             .join("Library.json"))
     }
@@ -27,7 +28,7 @@ impl Library {
                 .any(|tool| tool.url == url && tool.installed)
     }
 
-    pub async fn validate_installs(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn validate_installs(&mut self) -> Result<()> {
         for app in &mut self.apps {
             if !app.installed {
                 continue;
@@ -201,7 +202,7 @@ impl Library {
         }
     }
 
-    pub async fn sync_from_registry(&mut self) -> Result<(), Box<dyn Error + Send + Sync>> {
+    pub async fn sync_from_registry(&mut self) -> Result<()> {
         // Get list of installed apps from registry
         let registry_apps = find_registry_apps()?;
 
@@ -225,7 +226,7 @@ impl Library {
             }
         }
 
-        fn find_registry_apps() -> Result<Vec<AppDetails>, Box<dyn Error + Send + Sync>> {
+        fn find_registry_apps() -> Result<Vec<AppDetails>> {
             let mut result = Vec::new();
 
             // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
@@ -250,7 +251,7 @@ impl Library {
             hkey: &windows_registry::Key,
             path: &str,
             current_user_only: bool,
-        ) -> Result<(), Box<dyn Error + Send + Sync>> {
+        ) -> Result<()> {
             if let Ok(uninstall_key) = hkey.open(path) {
                 if let Ok(keys) = uninstall_key.keys() {
                     for key_result in keys {
@@ -276,7 +277,7 @@ impl Library {
         async fn extract_app_info(
             app_key: &windows_registry::Key,
             current_user_only: bool,
-        ) -> Result<Option<AppDetails>, Box<dyn Error + Send + Sync>> {
+        ) -> Result<Option<AppDetails>> {
             // Extract required values
             let name = match app_key.get_string("DisplayName") {
                 Ok(name) => name,
@@ -291,18 +292,16 @@ impl Library {
             // Extract optional values with defaults
             let version = app_key.get_string("DisplayVersion").unwrap_or_default();
             let publisher = app_key.get_string("Publisher").unwrap_or_default();
-            let install_path = app_key
-                .get_string("InstallLocation")
-                .map(|path| {
-                    Path::new(&path)
-                        .parent()
-                        .and_then(|p| p.to_str())
-                        .unwrap_or(&path)
-                        .to_string()
-                })
-                .unwrap_or_default();
+            let install_path = app_key.get_string("InstallLocation").map(|path| {
+                Path::new(&path)
+                    .parent()
+                    .and_then(|p| p.to_str())
+                    .unwrap_or(&path)
+                    .to_string()
+            })?;
 
-            let raw_icon = get_icon(&full_path, 64).unwrap_or_default();
+            let raw_icon =
+                get_icon(&full_path, 64).map_err(|e| anyhow!("Failed to get icon: {:?}", e))?;
             let icon = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
             let settings = Settings::read().await?;
@@ -357,7 +356,7 @@ impl Library {
     }
 }
 
-pub async fn load_library() -> Result<Library, Box<dyn Error + Send + Sync>> {
+pub async fn load_library() -> Result<Library> {
     let mut library = Library::read().await?;
     library.sync_from_registry().await?;
     library.remove_duplicates();

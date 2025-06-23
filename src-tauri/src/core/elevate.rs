@@ -1,9 +1,9 @@
 use crate::configs::env::Env;
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use tokio::process::Command;
 
 // Modifies Windows registry to enable/disable application elevation privileges
-pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn elevate(revert: bool) -> Result<()> {
     let env = Env::read().await?;
 
     let operation = if !revert {
@@ -38,7 +38,7 @@ pub async fn elevate(revert: bool) -> Result<(), Box<dyn Error + Send + Sync>> {
         .await?;
 
     if !output.status.success() {
-        return Err(String::from_utf8_lossy(&output.stderr).into());
+        return Err(anyhow!("{}", String::from_utf8_lossy(&output.stderr)));
     }
     Ok(())
 }

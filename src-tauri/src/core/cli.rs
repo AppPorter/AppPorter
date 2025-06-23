@@ -1,6 +1,6 @@
 use crate::SUPPORTED_EXTENSIONS;
+use anyhow::Result;
 use lazy_static::lazy_static;
-use std::error::Error;
 use tauri::{AppHandle, Emitter};
 use tokio::sync::broadcast;
 
@@ -11,7 +11,7 @@ lazy_static! {
     ) = broadcast::channel(1);
 }
 
-pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn cli(app: AppHandle) -> Result<String> {
     let init_args: Vec<String> = std::env::args().collect();
     let args: Vec<String> = init_args
         .into_iter()
@@ -30,7 +30,7 @@ pub async fn cli(app: AppHandle) -> Result<String, Box<dyn Error + Send + Sync>>
         }
     }
 
-    async fn cases(app: AppHandle, args: Vec<String>) -> Result<(), Box<dyn Error + Send + Sync>> {
+    async fn cases(app: AppHandle, args: Vec<String>) -> Result<()> {
         match args[1].as_str() {
             "preview" => {
                 let value = args[2].clone();

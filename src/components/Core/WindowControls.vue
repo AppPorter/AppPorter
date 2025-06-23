@@ -11,7 +11,7 @@ function handleClose() {
     tauriWindow.hide()
   } else {
     invoke('execute_command', {
-      command: { name: 'Exit' },
+      command: { name: 'Exit', code: '0' },
     })
   }
 }

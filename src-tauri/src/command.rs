@@ -1,8 +1,8 @@
 use crate::{configs::*, core::*, operations::*, utils::*};
 use Command::*;
+use anyhow::Result;
 use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
-use std::error::Error;
 use tauri::AppHandle;
 
 // Available frontend-to-backend commands
@@ -29,7 +29,9 @@ pub enum Command {
     Elevate {
         revert: bool,
     },
-    Exit,
+    Exit {
+        code: i32,
+    },
     SetStartup,
     RemoveStartup,
 
@@ -88,9 +90,7 @@ pub enum Command {
 
 impl Command {
     // Helper function to wrap serializable results
-    fn ser<T: ErasedSerialize + Send + 'static>(
-        v: T,
-    ) -> Result<CommandResult, Box<dyn Error + Send + Sync>> {
+    fn ser<T: ErasedSerialize + Send + 'static>(v: T) -> Result<CommandResult> {
         // If the value is String, return CommandResult::String directly
         if let Some(s) = (&v as &dyn std::any::Any).downcast_ref::<String>() {
             return Ok(CommandResult::String(s.clone()));
@@ -100,7 +100,7 @@ impl Command {
 
     // Routes command to appropriate handler function
     // Returns JSON-formatted response string or error message
-    async fn execute(self, app: AppHandle) -> Result<CommandResult, Box<dyn Error + Send + Sync>> {
+    async fn execute(self, app: AppHandle) -> Result<CommandResult> {
         match self {
             // Configs
             LoadEnv => Self::ser(Env::read().await?),
@@ -122,10 +122,7 @@ impl Command {
             RegisterContextMenu => Self::ser(register_context_menu()?),
             UnregisterContextMenu => Self::ser(unregister_context_menu()?),
             Elevate { revert } => Self::ser(elevate(revert).await?),
-            Exit => {
-                exit().await;
-                Self::ser(())
-            }
+            Exit { code } => Self::ser(exit(code).await?),
             SetStartup => Self::ser(set_startup()?),
             RemoveStartup => Self::ser(remove_startup()?),
 
@@ -155,7 +152,7 @@ impl Command {
             }
             CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
             GetArchiveTree { path, password } => Self::ser(get_archive_tree(path, password).await?),
-            GetTimestamp => Self::ser(get_timestamp()),
+            GetTimestamp => Self::ser(get_timestamp()?),
         }
     }
 }

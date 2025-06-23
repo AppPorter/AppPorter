@@ -1,9 +1,9 @@
 use super::get_7z_path;
 use super::sanitize_path;
+use anyhow::{Result, anyhow};
 use base64::{Engine, engine::general_purpose::STANDARD};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::error::Error;
 use std::path::Path;
 use systemicons::get_icon;
 use tempfile::tempdir;
@@ -25,7 +25,7 @@ pub struct ExeDetails {
 }
 
 // Extracts metadata from an executable file within a zip archive
-pub async fn get_details(input: ExePath) -> Result<ExeDetails, Box<dyn Error + Send + Sync>> {
+pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
     let temp_dir = tempdir()?;
 
     // Sanitize the executable path to prevent directory traversal
@@ -47,17 +47,22 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails, Box<dyn Error + S
     // Ensure path is within temp directory
     if let Some(parent_path) = parent_canonical {
         if !parent_path.starts_with(&temp_dir_canonical) {
-            return Err(format!(
+            return Err(anyhow!(
                 "Security violation: Path traversal detected in executable path: {}",
                 input.executable_path
-            )
-            .into());
+            ));
         }
     }
 
     // Extract specific file using 7z.exe
 
-    let dir = format!("-o{}", temp_dir.path().to_str().unwrap_or_default());
+    let dir = format!(
+        "-o{}",
+        temp_dir
+            .path()
+            .to_str()
+            .ok_or(anyhow!("Failed to convert temp dir to str"))?
+    );
 
     let mut args = vec![
         "e", // Extract without full paths
@@ -83,26 +88,28 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails, Box<dyn Error + S
     if !output1.status.success() {
         let error_str = String::from_utf8_lossy(&output1.stderr).to_string();
         if error_str.contains("Cannot open encrypted archive. Wrong password?") {
-            return Err("Wrong password".into());
+            return Err(anyhow!("Wrong password"));
         }
-        return Err(String::from_utf8_lossy(&output1.stderr).into());
+        return Err(anyhow!("{}", String::from_utf8_lossy(&output1.stderr)));
     }
 
     // Check if file was extracted
-    let file_name = Path::new(&sanitized_path).file_name().unwrap_or_default();
+    let file_name = Path::new(&sanitized_path)
+        .file_name()
+        .ok_or(anyhow!("Failed to get file name"))?;
 
     let extracted_file = temp_dir.path().join(file_name);
 
     if !extracted_file.exists() {
-        return Err(format!(
+        return Err(anyhow!(
             "Failed to find executable '{}' in archive",
             input.executable_path
-        )
-        .into());
+        ));
     }
 
     // Extract icon as data URL
-    let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64).unwrap_or_default();
+    let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64)
+        .map_err(|e| anyhow!("Failed to extract icon from extracted file: {:?}", e))?;
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
     // Build PowerShell command for file metadata extraction with path sanitization
@@ -146,7 +153,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails, Box<dyn Error + S
         .await?;
 
     if !output2.status.success() {
-        return Err(String::from_utf8_lossy(&output2.stderr).into());
+        return Err(anyhow!("{}", String::from_utf8_lossy(&output2.stderr)));
     }
 
     let output_str = String::from_utf8_lossy(&output2.stdout);

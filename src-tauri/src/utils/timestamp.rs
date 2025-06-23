@@ -1,3 +1,5 @@
-pub fn get_timestamp() -> i64 {
-    chrono::Utc::now().timestamp()
+use anyhow::Result;
+
+pub fn get_timestamp() -> Result<i64> {
+    Ok(chrono::Utc::now().timestamp())
 }

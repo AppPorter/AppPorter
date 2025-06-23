@@ -1,6 +1,5 @@
 use crate::operations::extract_archive_files;
-use std::error::Error;
-use std::path::Path;
+use anyhow::{Result, anyhow};
 use std::process::{Command, Stdio};
 use tauri::AppHandle;
 
@@ -9,7 +8,7 @@ pub async fn run_installer(
     executable_path: String,
     password: Option<String>,
     app: AppHandle,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+) -> Result<String> {
     // Create temporary directory for extraction using timestamp
     let timestamp = chrono::Utc::now().timestamp_millis();
     let temp_dir = std::env::temp_dir()
@@ -31,12 +30,16 @@ pub async fn run_installer(
     let exe_full_path = temp_dir.join(executable_path.replace("/", "\\"));
 
     if !exe_full_path.exists() {
-        return Err(format!("Executable not found: {}", exe_full_path.display()).into());
+        return Err(anyhow!("Executable not found: {}", exe_full_path.display()));
     }
 
     // Run the installer executable
     let output = Command::new(&exe_full_path)
-        .current_dir(exe_full_path.parent().unwrap_or(Path::new(".")))
+        .current_dir(
+            exe_full_path
+                .parent()
+                .ok_or(anyhow!("Failed to get parent directory"))?,
+        )
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()?
@@ -46,9 +49,9 @@ pub async fn run_installer(
     std::fs::remove_dir_all(&temp_dir)?;
 
     if output.stderr.is_empty() {
-        Ok("Installer completed successfully".to_string())
+        Ok("Installer completed successfully".to_owned())
     } else {
         let error_msg = String::from_utf8_lossy(&output.stderr);
-        Err(format!("Installer failed: {}", error_msg).into())
+        Err(anyhow!("Installer failed: {}", error_msg))
     }
 }

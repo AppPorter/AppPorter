@@ -2,8 +2,8 @@ use crate::{
     configs::{ConfigFile, library::*},
     operations::{extract_archive_files, flatten_nested_folders},
 };
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
-use std::error::Error;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 
@@ -16,10 +16,7 @@ pub struct ToolInstallConfig {
     parent_install_path: String,
 }
 
-pub async fn install_tool(
-    config: ToolInstallConfig,
-    app: AppHandle,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn install_tool(config: ToolInstallConfig, app: AppHandle) -> Result<String> {
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send install start event
@@ -52,9 +49,7 @@ pub async fn install_tool(
     Ok(install_path)
 }
 
-async fn setup_installation_directory(
-    config: &ToolInstallConfig,
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+async fn setup_installation_directory(config: &ToolInstallConfig) -> Result<String> {
     // Ensure extract directory exists
     if !Path::new(&config.parent_install_path).exists() {
         tokio::fs::create_dir_all(&config.parent_install_path).await?;
@@ -75,7 +70,7 @@ async fn update_tool_list(
     config: ToolInstallConfig,
     install_path: String,
     timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<()> {
     let mut app_list = Library::read().await?;
     let tool_timestamp = if config.timestamp != 0 {
         config.timestamp

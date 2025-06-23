@@ -1,7 +1,7 @@
-pub async fn exit() {
+use anyhow::Result;
+
+pub async fn exit(code: i32) -> Result<()> {
     let temp_dir = std::env::temp_dir().join("AppPorter");
-    tokio::fs::remove_dir_all(temp_dir)
-        .await
-        .unwrap_or_default();
-    std::process::exit(0);
+    tokio::fs::remove_dir_all(temp_dir).await?;
+    std::process::exit(code);
 }

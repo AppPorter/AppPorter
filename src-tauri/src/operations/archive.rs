@@ -1,4 +1,4 @@
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use std::io::Read;
 use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
@@ -9,9 +9,11 @@ use tokio::process::Command;
 
 // Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
 // The files will be stored in the temp directory: %TEMP%\AppPorter\
-pub fn get_7z_path() -> Result<PathBuf, Box<dyn Error + Send + Sync>> {
+pub fn get_7z_path() -> Result<PathBuf> {
     let current_exe = env::current_exe()?;
-    let current_dir = current_exe.parent().ok_or("Failed to get exe directory")?;
+    let current_dir = current_exe
+        .parent()
+        .ok_or_else(|| anyhow!("Failed to get exe directory"))?;
 
     let files = vec![
         (
@@ -43,16 +45,13 @@ pub fn sanitize_path(path: &str) -> String {
 }
 
 // Lists contents of archive file using 7z
-pub async fn get_archive_content(
-    path: String,
-    password: Option<String>,
-) -> Result<Vec<String>, Box<dyn Error + Send + Sync>> {
+pub async fn get_archive_content(path: String, password: Option<String>) -> Result<Vec<String>> {
     let output = Command::new(get_7z_path()?)
         .args([
             "l", // List contents command
             &path,
             "-y", // Yes to all prompts
-            &format!("-p{}", password.unwrap_or_default()),
+            &format!("-p{}", password.ok_or(anyhow!("Failed to get password"))?),
         ])
         .creation_flags(0x08000000) // CREATE_NO_WINDOW
         .output()
@@ -61,9 +60,9 @@ pub async fn get_archive_content(
     if !output.status.success() {
         let error_str = String::from_utf8_lossy(&output.stderr);
         if error_str.contains("Cannot open encrypted archive. Wrong password?") {
-            return Err("Wrong password".into());
+            return Err(anyhow!("Wrong password"));
         }
-        return Err(error_str.into());
+        return Err(anyhow!("{}", error_str));
     }
 
     let output_str = String::from_utf8_lossy(&output.stdout);
@@ -77,9 +76,11 @@ pub async fn extract_archive_files(
     app: AppHandle,
     password: Option<&str>,
     event_name: &str,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<()> {
     let path_7z = get_7z_path()?;
-    let password_arg = password.map(|p| format!("-p{}", p)).unwrap_or_default();
+    let password_arg = password
+        .map(|p| format!("-p{}", p))
+        .ok_or(anyhow!("Failed to get password"))?;
 
     // Validate archive first
     let output = Command::new(&path_7z)
@@ -92,9 +93,9 @@ pub async fn extract_archive_files(
         let error_str = String::from_utf8_lossy(&output.stderr);
         return Err(
             if error_str.contains("Cannot open encrypted archive. Wrong password?") {
-                "Wrong password".into()
+                anyhow!("Wrong password")
             } else {
-                "Failed to list archive contents".into()
+                anyhow!("Failed to list archive contents")
             },
         );
     }
@@ -109,11 +110,10 @@ pub async fn extract_archive_files(
             fs::canonicalize(target_path.parent().unwrap_or(Path::new(install_path)))
         {
             if !canonical_path.starts_with(&canonical_install_path) {
-                return Err(format!(
+                return Err(anyhow!(
                     "Security violation: Path traversal detected in archive: {}",
                     path
-                )
-                .into());
+                ));
             }
         }
     }
@@ -137,10 +137,13 @@ pub async fn extract_archive_files(
         .stderr(Stdio::piped())
         .spawn()?;
 
-    let mut stderr = child.stderr.take().unwrap();
+    let mut stderr = child
+        .stderr
+        .take()
+        .ok_or(anyhow!("Failed to capture stderr"))?;
     let mut buffer = [0; 1024];
     let app_clone = app.clone();
-    let event_name = event_name.to_string();
+    let event_name = event_name.to_owned();
 
     let handle = std::thread::spawn(move || {
         while let Ok(n) = stderr.read(&mut buffer) {
@@ -159,9 +162,9 @@ pub async fn extract_archive_files(
 
     let status = child.wait()?;
     if !status.success() {
-        return Err("7-Zip extraction failed".into());
+        return Err(anyhow!("7-Zip extraction failed"));
     }
-    handle.join().unwrap();
+    handle.join().map_err(|_| anyhow!("Thread join failed"))?;
 
     Ok(())
 }
@@ -187,7 +190,7 @@ pub fn parse_7z_list_output(output: &str) -> Vec<String> {
                 if !filename.is_empty() {
                     // Check if it's a directory by looking at the attr column
                     // Attr starts at column 20 and is 5 characters long
-                    let mut final_filename = filename.to_string();
+                    let mut final_filename = filename.to_owned();
                     if line.len() >= 25 {
                         let attr = &line[20..25];
                         // If attr starts with 'D', it's a directory

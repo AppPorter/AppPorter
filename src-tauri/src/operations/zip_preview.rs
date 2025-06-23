@@ -1,8 +1,7 @@
+use crate::operations::get_archive_content;
+use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
-use std::error::Error;
-
-use crate::operations::get_archive_content;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct FileTreeNode {
@@ -67,9 +66,9 @@ pub fn build_file_tree(paths: Vec<String>) -> Vec<FileTreeNode> {
                     name: part.to_string(),
                     path: current_path.clone(),
                     node_type: if is_file {
-                        "file".to_string()
+                        "file".to_owned()
                     } else {
-                        "directory".to_string()
+                        "directory".to_owned()
                     },
                     level: index as u32,
                     children: if is_file { None } else { Some(Vec::new()) },
@@ -211,10 +210,7 @@ fn sort_nodes(nodes: &mut Vec<FileTreeNode>) {
 }
 
 // Get archive content with built file tree
-pub async fn get_archive_tree(
-    path: String,
-    password: Option<String>,
-) -> Result<Vec<FileTreeNode>, Box<dyn Error + Send + Sync>> {
+pub async fn get_archive_tree(path: String, password: Option<String>) -> Result<Vec<FileTreeNode>> {
     let file_paths = get_archive_content(path, password).await?;
     Ok(build_file_tree(file_paths))
 }

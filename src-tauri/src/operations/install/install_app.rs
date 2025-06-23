@@ -4,9 +4,10 @@ use crate::configs::library::*;
 use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
 use crate::operations::install::flatten_nested_folders;
+use anyhow::{Result, anyhow};
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
-use std::{error::Error, path::Path};
+use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
@@ -18,10 +19,7 @@ pub struct AppInstallConfig {
     details: AppDetails,
 }
 
-pub async fn install_app(
-    config: AppInstallConfig,
-    app: AppHandle,
-) -> Result<(String, String), Box<dyn Error + Send + Sync>> {
+pub async fn install_app(config: AppInstallConfig, app: AppHandle) -> Result<(String, String)> {
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send initial install progress event
@@ -45,7 +43,8 @@ pub async fn install_app(
 
     // Flatten nested single folders to avoid deep nesting and get actual executable path
     let full_path =
-        flatten_nested_folders(&install_path, Some(&config.details.config.archive_exe_path)).await?;
+        flatten_nested_folders(&install_path, Some(&config.details.config.archive_exe_path))
+            .await?;
 
     let full_path_directory = if config.details.config.archive_path_directory.is_empty() {
         Path::new(&full_path)
@@ -108,14 +107,11 @@ pub async fn install_app(
     Ok((install_path, full_path))
 }
 
-fn create_desktop_shortcut(
-    shell_link: &ShellLink,
-    app_name: &str,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+fn create_desktop_shortcut(shell_link: &ShellLink, app_name: &str) -> Result<()> {
     shell_link.create_lnk(format!(
         r"{}\{}.lnk",
         dirs::desktop_dir()
-            .ok_or("Failed to get desktop directory")?
+            .ok_or(anyhow!("Failed to get desktop directory"))?
             .to_string_lossy(),
         app_name
     ))?;
@@ -126,7 +122,7 @@ async fn create_start_menu_shortcut(
     shell_link: &ShellLink,
     current_user_only: bool,
     app_name: &str,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<()> {
     let env = Env::read().await?;
     let lnk_path = if current_user_only {
         format!(
@@ -148,7 +144,7 @@ fn create_registry_entries(
     full_path: &str,
     install_path: &str,
     timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<()> {
     let key = if config.details.config.current_user_only {
         CURRENT_USER.create(format!(
             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
@@ -181,10 +177,7 @@ fn create_registry_entries(
     Ok(())
 }
 
-fn add_to_path(
-    path_directory: &str,
-    current_user_only: bool,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+fn add_to_path(path_directory: &str, current_user_only: bool) -> Result<()> {
     let (key, path_key) = if current_user_only {
         (CURRENT_USER.create("Environment")?, "Path")
     } else {
@@ -213,7 +206,7 @@ async fn update_app_list(
     full_path: String,
     full_path_directory: String,
     timestamp: i64,
-) -> Result<(), Box<dyn Error + Send + Sync>> {
+) -> Result<()> {
     let mut app_list = Library::read().await?;
     let mut updated_details = config.details.clone();
     updated_details.paths.full_path = full_path;

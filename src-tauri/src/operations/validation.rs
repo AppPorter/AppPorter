@@ -1,6 +1,6 @@
-use std::error::Error;
+use anyhow::{Result, anyhow};
 
-pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send + Sync>> {
+pub async fn validate_path(path: String) -> Result<String> {
     fn is_valid_path_format(path: &str) -> bool {
         let chars: Vec<char> = path.chars().collect();
         chars.first().is_some_and(|c| c.is_ascii_alphabetic())
@@ -9,7 +9,7 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send 
     }
 
     if !is_valid_path_format(&path) {
-        return Err("Invalid drive letter or path format".into());
+        return Err(anyhow!("Invalid drive letter or path format"));
     }
 
     let normalized_path = path
@@ -25,21 +25,21 @@ pub async fn validate_path(path: String) -> Result<String, Box<dyn Error + Send 
             acc
         })
         .trim_end_matches('\\')
-        .to_string();
+        .to_owned();
 
     match tokio::fs::metadata(&normalized_path).await {
         Ok(metadata) if metadata.is_dir() => Ok(normalized_path),
-        Ok(_) => Err("Path exists but is not a directory".into()),
-        Err(e) => Err(format!("Directory does not exist: {}", e).into()),
+        Ok(_) => Err(anyhow!("Path exists but is not a directory")),
+        Err(e) => Err(anyhow!("Directory does not exist: {}", e)),
     }
 }
 
-pub async fn check_path_empty(path: &str) -> Result<(), Box<dyn Error + Send + Sync>> {
+pub async fn check_path_empty(path: &str) -> Result<()> {
     // Check if directory exists
     if let Ok(mut entries) = tokio::fs::read_dir(path).await {
         // Check if directory has any contents
         if entries.next_entry().await?.is_some() {
-            return Err("Directory is not empty".into());
+            return Err(anyhow!("Directory is not empty"));
         }
     }
 

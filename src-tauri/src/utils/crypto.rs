@@ -2,10 +2,10 @@ use aes_gcm::{
     Aes256Gcm, Key, Nonce,
     aead::{Aead, KeyInit},
 };
+use anyhow::{Result, anyhow};
 use base64::{Engine as _, engine::general_purpose};
 use rand::Rng;
 use std::collections::HashMap;
-use std::error::Error;
 use std::sync::{Arc, Mutex};
 
 // Session storage for dynamic keys
@@ -33,10 +33,7 @@ pub fn generate_session_key() -> [u8; 32] {
 }
 
 // Encrypts data using AES-GCM with provided key
-pub fn encrypt_data_with_key(
-    data: &str,
-    key: &[u8; 32],
-) -> Result<(String, String), Box<dyn Error + Send + Sync>> {
+pub fn encrypt_data_with_key(data: &str, key: &[u8; 32]) -> Result<(String, String)> {
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
 
     // Generate random nonce (12 bytes for GCM)
@@ -48,7 +45,7 @@ pub fn encrypt_data_with_key(
     // Encrypt the data
     let ciphertext = cipher
         .encrypt(nonce, data.as_bytes())
-        .map_err(|e| format!("Encryption failed: {}", e))?;
+        .map_err(|e| anyhow!("Encryption failed: {}", e))?;
 
     // Encode to base64 for transmission
     let encrypted_b64 = general_purpose::STANDARD.encode(&ciphertext);
@@ -62,18 +59,17 @@ pub fn decrypt_data_with_key(
     encrypted_b64: &str,
     nonce_b64: &str,
     key: &[u8; 32],
-) -> Result<String, Box<dyn Error + Send + Sync>> {
+) -> Result<String> {
     let cipher = Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(key));
 
     // Decode from base64
     let ciphertext = general_purpose::STANDARD.decode(encrypted_b64)?;
     let nonce_bytes = general_purpose::STANDARD.decode(nonce_b64)?;
     let nonce = Nonce::from_slice(&nonce_bytes);
-
     // Decrypt the data
     let plaintext = cipher
         .decrypt(nonce, ciphertext.as_ref())
-        .map_err(|e| format!("Decryption failed: {}", e))?;
+        .map_err(|e| anyhow!("Decryption failed: {}", e))?;
 
     Ok(String::from_utf8(plaintext)?)
 }

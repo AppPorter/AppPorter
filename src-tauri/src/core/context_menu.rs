@@ -1,9 +1,12 @@
 use crate::SUPPORTED_EXTENSIONS;
-use std::error::Error;
+use anyhow::{Result, anyhow};
 use windows_registry::CURRENT_USER;
 
-pub fn register_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
-    let app_path = std::env::current_exe()?.to_str().unwrap_or("").to_owned();
+pub fn register_context_menu() -> Result<()> {
+    let app_path = std::env::current_exe()?
+        .to_str()
+        .ok_or(anyhow!("Failed to get current exe path"))?
+        .to_owned();
 
     for ext in SUPPORTED_EXTENSIONS {
         let base_path = format!(
@@ -23,7 +26,7 @@ pub fn register_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-pub fn unregister_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
+pub fn unregister_context_menu() -> Result<()> {
     for ext in SUPPORTED_EXTENSIONS {
         let base_path = format!(
             "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
@@ -34,8 +37,11 @@ pub fn unregister_context_menu() -> Result<(), Box<dyn Error + Send + Sync>> {
     Ok(())
 }
 
-pub fn check_and_fix_context_menu() -> Result<bool, Box<dyn Error + Send + Sync>> {
-    let app_path = std::env::current_exe()?.to_str().unwrap_or("").to_owned();
+pub fn check_and_fix_context_menu() -> Result<bool> {
+    let app_path = std::env::current_exe()?
+        .to_str()
+        .ok_or(anyhow!("Failed to get current exe path"))?
+        .to_owned();
     let expected_command = format!(r#""{}" preview "%1""#, app_path);
     let expected_display_name = "Install using AppPorter";
 
