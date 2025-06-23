@@ -58,7 +58,7 @@ onMounted(async () => {
       },
       reject: () => {
         invoke('execute_command', {
-          command: { name: 'Exit', code: '0' },
+          command: { name: 'Exit', code: 0 },
         })
       },
     })
