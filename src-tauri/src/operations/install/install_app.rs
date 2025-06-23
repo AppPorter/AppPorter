@@ -43,15 +43,9 @@ pub async fn install_app(
     )
     .await?;
 
-    // Flatten nested single folders to avoid deep nesting
-    flatten_nested_folders(&install_path).await?;
-
-    // Determine executable paths
-    let full_path = format!(
-        r"{}\{}",
-        install_path,
-        config.details.config.archive_exe_path.replace("/", r"\")
-    );
+    // Flatten nested single folders to avoid deep nesting and get actual executable path
+    let full_path =
+        flatten_nested_folders(&install_path, Some(&config.details.config.archive_exe_path)).await?;
 
     let full_path_directory = if config.details.config.archive_path_directory.is_empty() {
         Path::new(&full_path)

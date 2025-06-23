@@ -37,7 +37,8 @@ pub async fn install_tool(
     .await?;
 
     // Flatten nested single folders to avoid deep nesting
-    flatten_nested_folders(&install_path).await?;
+    // For tools, we don't need to find a specific executable, so we pass None
+    let _ = flatten_nested_folders(&install_path, None).await?;
 
     // Store extract path before moving config
     let final_install_path = install_path.clone();
