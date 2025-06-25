@@ -5,7 +5,6 @@ import { invoke } from '@tauri-apps/api/core'
 
 const settingsStore = SettingsStore()
 
-// Window control handlers
 function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     tauriWindow.hide()

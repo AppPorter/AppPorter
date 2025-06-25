@@ -69,7 +69,6 @@ const emit = defineEmits<LibraryContextMenuEmits>()
 const contextMenu = ref()
 
 const menuItems = computed(() => {
-    // Special menu for URL type items - only install and remove
     if (props.selectedApp?.type === 'url') {
         return [
             {
@@ -87,7 +86,6 @@ const menuItems = computed(() => {
         ]
     }
 
-    // Regular menu for app and tool types
     return [
         {
             label: t('cls.install.self'),
@@ -171,7 +169,6 @@ async function openRegistry() {
 async function removeUrl() {
     if (!props.selectedApp || props.selectedApp.type !== 'url') return
 
-    // Remove the URL from the subscribed URLs
     libraryStore.urls = libraryStore.urls.filter(urlObj => urlObj.timestamp !== props.selectedApp!.timestamp)
     await libraryStore.saveLibrary()
     emit('loadLibrary')

@@ -13,24 +13,19 @@ const { t } = useI18n()
 const installConfig = InstallConfigStore()
 const confirm = useConfirm()
 
-// Set the install config page
 installConfig.page = 'Install_App_Config'
 
-// Validation states
 const pathError = ref(false)
 const nameError = ref(false)
 
-// UI state management
 const detailsLoading = ref(false)
 const detailsLoadingProgress = ref(0)
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 
-// Handle back button click
 function handleBackClick() {
   goTo('/Home')
 }
 
-// Handle install process
 async function handleInstallClick() {
   nameError.value = !installConfig.app_details.info.name
 
@@ -51,7 +46,6 @@ async function handleInstallClick() {
     globalThis.$errorHandler.showError(error)
   }
 
-  // If any validation failed, return early
   if (nameError.value || pathError.value) {
     return
   }
@@ -124,9 +118,7 @@ async function handleInstallClick() {
 
 <template>
   <div class="flex size-full flex-col overflow-hidden">
-    <!-- Main scrollable container -->
     <div class="flex-1 overflow-auto">
-      <!-- Content wrapper -->
       <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
         <div class="min-w-72 flex-1 space-y-2">
           <AppDetails :name-error="nameError" :details-loading="detailsLoading"
@@ -136,7 +128,6 @@ async function handleInstallClick() {
       </div>
     </div>
 
-    <!-- Bottom bar with buttons -->
     <div class="flex items-center justify-between px-4 py-3">
       <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
         icon="mir-arrow_back" :label="t('g.back')" outlined />

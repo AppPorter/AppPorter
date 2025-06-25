@@ -8,7 +8,6 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 const contextMenu = ref()
 
-// Context menu setup
 const editMenuItems = ref<MenuItem[]>([
   {
     label: t('cls.edit.cut'),
@@ -37,7 +36,6 @@ const editMenuItems = ref<MenuItem[]>([
   },
 ])
 
-// Show context menu only for text input elements
 function handleContextMenu(event: MouseEvent) {
   const target = event.target as HTMLElement
   if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {

@@ -43,7 +43,6 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
 
     appToValidate.value = app
 
-    // Skip validation for tools as they don't need registry validation
     if (app.type === 'tool') {
         return;
     }

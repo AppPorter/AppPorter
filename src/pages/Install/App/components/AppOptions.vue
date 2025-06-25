@@ -20,17 +20,14 @@ const settingsStore = SettingsStore()
 const installConfig = InstallConfigStore()
 const { t } = useI18n()
 
-// Extract settings for better readability
 const {
   current_user_only: settings_current_user_only,
   all_users,
   current_user
 } = settingsStore.app_install
 
-// Use storeToRefs pattern like AppDetails
 const { zip_path, app_details } = storeToRefs(installConfig)
 
-// Direct refs to nested properties for v-model binding
 const current_user_only = toRef(app_details.value.config, 'current_user_only')
 const create_desktop_shortcut = toRef(app_details.value.config, 'create_desktop_shortcut')
 const create_registry_key = toRef(app_details.value.config, 'create_registry_key')
@@ -39,16 +36,13 @@ const add_to_path = toRef(app_details.value.config, 'add_to_path')
 const path_directory = toRef(app_details.value.config, 'path_directory')
 const install_path = toRef(app_details.value.paths, 'parent_install_path')
 
-// UI state
 const directoryDrawerVisible = ref(false)
 
-// Add install mode options for SelectButton
 const installModeOptions = [
   { label: t('cls.install.modes.current_user'), value: true },
   { label: t('cls.install.modes.all_users'), value: false },
 ]
 
-// Optimized formatted app path with null safety
 const formatted_app_path = computed(() => {
   const installPath = install_path.value
   const appName = app_details.value.info.name
@@ -58,24 +52,20 @@ const formatted_app_path = computed(() => {
   return `${installPath}\\${appName}`
 })
 
-// Optimized config update function
 function updateConfig(isCurrentUser: boolean) {
   const sourceConfig = isCurrentUser ? current_user : all_users
 
-  // Update config values using the toRef references
   create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
   create_registry_key.value = sourceConfig.create_registry_key
   create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
   add_to_path.value = sourceConfig.add_to_path
-  path_directory.value = '' // Reset path directory when switching modes
+  path_directory.value = ''
   install_path.value = sourceConfig.install_path
 }
 
-// Initialize with settings
 current_user_only.value = settings_current_user_only
 updateConfig(current_user_only.value)
 
-// Optimized file selection
 async function select_install_path() {
   const selected = await open({
     directory: true,
@@ -86,7 +76,6 @@ async function select_install_path() {
   }
 }
 
-// Simplified event handler for SelectButton
 function handleInstallModeChange(event: { value: boolean }) {
   const checked = event.value
   current_user_only.value = checked
@@ -108,7 +97,6 @@ function handleInstallModeChange(event: { value: boolean }) {
     </template>
 
     <div class="space-y-2 p-1">
-      <!-- Install Mode -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('cls.install.modes.self') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
@@ -117,7 +105,6 @@ function handleInstallModeChange(event: { value: boolean }) {
         </div>
       </div>
 
-      <!-- Install Path -->
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path') }}</label>
         <div class="w-full">
@@ -128,14 +115,12 @@ function handleInstallModeChange(event: { value: boolean }) {
               :label="t('g.browse')" />
           </div>
 
-          <!-- Formatted App Path -->
           <div v-if="install_path && app_details.info.name" class="mt-1 text-xs text-gray-500">
             {{ t('ui.install.final_path') }}: {{ formatted_app_path }}
           </div>
         </div>
       </div>
 
-      <!-- Shortcuts Section -->
       <div class="flex items-start gap-2">
         <label class="mt-1 w-24 text-sm font-medium">{{ t('g.option') }}</label>
         <div class="w-full">
@@ -159,7 +144,6 @@ function handleInstallModeChange(event: { value: boolean }) {
                 <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
                 <label for="add_to_path" class="text-sm">{{ t('cls.install.shortcuts.add_to_path') }}</label>
               </div>
-              <!-- PATH Directory Input - only shown when add_to_path is true -->
               <div v-if="add_to_path" class="ml-6 mt-1">
                 <div class="flex gap-2">
                   <InputText v-model="path_directory" :placeholder="t('ui.select_placeholder.path_directory')"
@@ -175,7 +159,6 @@ function handleInstallModeChange(event: { value: boolean }) {
     </div>
   </Panel>
 
-  <!-- Directory Selector Drawer -->
   <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="zip_path"
     @directory-select="path_directory = $event" />
 </template>

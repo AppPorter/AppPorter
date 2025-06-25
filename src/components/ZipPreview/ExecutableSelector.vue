@@ -11,7 +11,6 @@ import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
 const store = InstallConfigStore()
 const { t } = useI18n()
 
-// Props
 const props = defineProps<{
   zipPath: string
   password?: string
@@ -26,22 +25,18 @@ const emit = defineEmits<{
   (e: 'update-file-tree', fileTree: FileTreeNode[]): void
 }>()
 
-// State
 const filterMode = ref<'exe' | 'executable' | 'all'>('exe')
 const selectedPath = ref('')
 const isSelecting = ref(false)
 
-// File node interface
 interface FileNode {
   path?: string
   name: string
   type: string
 }
 
-// Executable file extensions
 const EXECUTABLE_EXTENSIONS = ['.exe', '.bat', '.cmd', '.ps1', '.sh', '.jar']
 
-// Filter modes
 const FILTER_MODES = [
   {
     value: 'exe',
@@ -60,44 +55,34 @@ const FILTER_MODES = [
   },
 ]
 
-// File filter function based on selected filter mode
 const fileFilter = computed(() => {
   return (node: FileNode) => {
-    // Always show directories for navigation
     if (node.type === 'directory') return true
 
-    // Filter files based on selected mode
     switch (filterMode.value) {
       case 'exe':
-        // Show only .exe files
         return node.name.toLowerCase().endsWith('.exe')
       case 'executable':
-        // Show all executable file types
         return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
       case 'all':
       default:
-        // Show all files
         return true
     }
   }
 })
 
-// Determine if a file is selectable - only executable files are selectable
 const isSelectableFile = (node: FileNode): boolean => {
   if (node.type !== 'file') return false
 
   return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
 }
 
-// Check if file tree contains any executable files
 const hasExecutableFiles = computed(() => {
   const checkNode = (node: FileTreeNode): boolean => {
-    // Check if current node is an executable file
     if (node.node_type === 'file') {
       return EXECUTABLE_EXTENSIONS.some((ext) => node.name.toLowerCase().endsWith(ext))
     }
 
-    // Recursively check children if it's a directory
     if (node.node_type === 'directory' && node.children) {
       return node.children.some((child) => checkNode(child))
     }
@@ -110,9 +95,7 @@ const hasExecutableFiles = computed(() => {
 
 
 
-// Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
-  // Only allow selecting executable files, not directories
   if (node?.path && isSelectableFile(node)) {
     selectedPath.value = node.path
   }
@@ -149,7 +132,6 @@ function handleNoExecutable() {
   emit('no-executable')
 }
 
-// Handle installer mode selection
 async function handleInstallerMode() {
   if (isSelecting.value) return
   isSelecting.value = true
@@ -171,7 +153,6 @@ async function handleInstallerMode() {
   store.show_preview_drawer = false
 }
 
-// Split button menu items
 const menuItems = ref([
   {
     label: t('cls.install.installer_mode'),
@@ -180,7 +161,6 @@ const menuItems = ref([
   }
 ])
 
-// Auto-select exe logic
 function findExeFilesInDirectory(nodes: FileTreeNode[], maxDepth: number = 3, currentDepth: number = 0): string[] {
   if (currentDepth >= maxDepth) return []
 
@@ -206,23 +186,18 @@ async function autoSelectExe() {
   const maxDepth = 3
 
   while (searchDepth < maxDepth) {
-    // Search for exe files in current level
     const exeFiles = findExeFilesInDirectory(currentNodes, 1, 0)
 
     if (exeFiles.length === 1) {
-      // Found exactly one exe file, auto-select it
       selectedPath.value = exeFiles[0]
       return
     } else if (exeFiles.length > 1) {
-      // Found multiple exe files, don't auto-select
       return
     }
 
-    // No exe files found, check if there's only one directory to dive into
     if (searchDepth < maxDepth - 1) {
       const singleDirPath = findSingleDirectoryPath(currentNodes)
       if (singleDirPath) {
-        // Expand the directory and search its children
         const dirNode = currentNodes.find(node => node.path === singleDirPath)
         if (dirNode && dirNode.children && dirNode.children.length > 0) {
           currentNodes = dirNode.children
@@ -232,12 +207,10 @@ async function autoSelectExe() {
       }
     }
 
-    // No single directory found or reached max depth
     break
   }
 }
 
-// Watch for file tree changes to trigger auto-select
 watch(() => props.fileTree, (newTree) => {
   if (newTree && newTree.length > 0 && !selectedPath.value) {
     autoSelectExe()
@@ -247,20 +220,17 @@ watch(() => props.fileTree, (newTree) => {
 
 <template>
   <div class="flex h-full flex-col">
-    <!-- Filter Options -->
     <div class="mb-2">
       <SelectButton v-model="filterMode" :options="FILTER_MODES" optionLabel="label" optionValue="value"
         :allowEmpty="false" size="small" class="w-full" />
     </div>
 
-    <!-- Main content area -->
     <div class="min-h-0 flex-1 overflow-hidden">
       <ZipPreview :zip-path="zipPath" :password="password" :file-tree="fileTree" :filter-function="fileFilter"
         :selected-path="selectedPath" :is-selectable-function="isSelectableFile" @node-click="handleNodeSelect"
         @update-file-tree="emit('update-file-tree', $event)" />
     </div>
 
-    <!-- Bottom status and buttons -->
     <div class="mt-2 flex items-center justify-between gap-4">
       <div class="flex flex-1 items-center gap-2 text-sm">
         <span :class="[

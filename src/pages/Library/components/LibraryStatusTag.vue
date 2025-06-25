@@ -62,7 +62,6 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
 
     const validation = data.details.validation_status
 
-    // For apps, check both file existence and registry validity
     if (data.type === 'app') {
         const isValid = validation.file_exists && validation.registry_valid && validation.path_exists
 
@@ -81,7 +80,6 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         }
     }
 
-    // For tools, only check file and path existence
     const isToolValid = validation.file_exists && validation.path_exists
 
     if (isToolValid) {

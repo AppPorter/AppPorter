@@ -15,7 +15,6 @@ const env = EnvStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 
-// Admin privileges warning handler
 const handleAdminPrompt = (event) => {
   confirm.require({
     target: event.currentTarget,

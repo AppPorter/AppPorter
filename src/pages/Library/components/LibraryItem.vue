@@ -93,10 +93,8 @@ function handleStatusClick(app: LibraryItemProps['item']) {
             <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="$emit('contextMenu', { originalEvent: $event, data: item })" />
         </div>
-        <!-- Hidden validation component -->
         <LibraryValidation ref="validationRef" :app="item" @load-library="$emit('loadLibrary')" />
 
-        <!-- Confirmation dialog -->
         <ConfirmDialog />
     </div>
 </template>

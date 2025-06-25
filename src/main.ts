@@ -19,13 +19,11 @@ import { EnvStore } from './stores/env'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
-// Initialize window and app core components
 export const window = await getCurrentWindow()
 const icon = (await defaultWindowIcon()) || 'src-tauri\\icons\\icon.ico'
 
 export let trayIcon: void | TrayIcon
 
-// Configure tray menu with basic actions
 const createTrayMenu = (t: (key: string) => string) => {
   return Menu.new({
     items: [
@@ -55,7 +53,6 @@ const app = createApp(Main)
 
 app.use(pinia)
 
-// Initialize settings first
 const envStore = EnvStore()
 await envStore.loadEnv()
 
@@ -64,12 +61,10 @@ await settingsStore.loadSettings()
 
 await envStore.setInitialSettings()
 
-// Then initialize i18n with the loaded language
 const i18n = setupI18n(settingsStore.language)
 app.use(router).use(ToastService).use(ConfirmationService).use(i18n)
 setupRouterGuards(router)
 
-// Initialize theme using settings store
 const UserColor = definePreset(Aura, {
   semantic: {
     primary: settingsStore.generateColorPalette(),
@@ -89,7 +84,6 @@ app.use(PrimeVue, {
   },
 })
 
-// Initialize tray if needed
 if (settingsStore.minimize_to_tray_on_close) {
   const { t } = i18n.global
   const menu = await createTrayMenu(t)

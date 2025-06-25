@@ -7,23 +7,19 @@ const confirm = useConfirm()
 const { t } = useI18n()
 const libraryStore = LibraryStore()
 
-// The actual implementation of confirmAndUninstall
 const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Promise<void> => {
     const app = apptype === 'app' ? libraryStore.getAppByTimestamp(timestamp) : libraryStore.getToolByTimestamp(timestamp)
     if (!app) return
 
     return new Promise<void>((resolve, reject) => {
-        // Determine the appropriate message and action based on apptype and installed status
         let message: string
         let header: string
         let acceptLabel: string
         let action: () => Promise<void>
 
         if (app.installed) {
-            // For installed items, handle based on type
             switch (apptype) {
                 case 'tool':
-                    // For installed tools, delete (remove from filesystem)
                     message = t('ui.library.confirm_delete_message', {
                         name: app.details.name,
                     })
@@ -32,7 +28,6 @@ const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Pr
                     action = () => libraryStore.executeUninstall(apptype, timestamp)
                     break
                 case 'app':
-                    // For installed apps, uninstall
                     message = t('ui.library.confirm_uninstall_message', {
                         name: app.details.info.name,
                     })
@@ -44,7 +39,6 @@ const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Pr
                     break
             }
         } else {
-            // For non-installed items, remove from library
             header = t('ui.library.confirm_remove_header')
             acceptLabel = t('g.remove')
 

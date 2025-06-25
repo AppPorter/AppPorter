@@ -12,7 +12,6 @@ const store = InstallConfigStore()
 
 const { t } = useI18n()
 
-// Props
 const props = defineProps<{
     zipPath: string
     password?: string
@@ -26,14 +25,12 @@ const emit = defineEmits<{
     (e: 'update-file-tree', fileTree: FileTreeNode[]): void
 }>()
 
-// State
 const filterMode = ref<'directory' | 'all'>('directory')
 const selectedPath = ref('')
 const isSelecting = ref(false)
 const fileTree = ref<FileTreeNode[]>([])
 const loading = ref(false)
 
-// Load file tree when component mounts
 onMounted(async () => {
     await loadFileTree()
 })
@@ -59,14 +56,12 @@ async function loadFileTree() {
     emit('loading', false)
 }
 
-// Define the FileNode interface explicitly
 interface FileNode {
     path?: string
     name: string
     type: string
 }
 
-// Filter modes
 const FILTER_MODES = [
     {
         value: 'directory',
@@ -80,25 +75,19 @@ const FILTER_MODES = [
     },
 ]
 
-// File filter function based on selected filter mode
 const fileFilter = computed(() => {
     return (node: FileNode) => {
-        // Always show directories for navigation
         if (node.type === 'directory') return true
 
-        // For files, only show them if filter mode is 'all'
         return filterMode.value === 'all'
     }
 })
 
-// Determine if a node is selectable - only directories are selectable
 const isSelectableNode = (node: FileNode): boolean => {
     return node.type === 'directory'
 }
 
-// Handle node selection with proper typing
 function handleNodeSelect(node: FileNode) {
-    // For directories, set as selected path
     if (node?.path && isSelectableNode(node)) {
         selectedPath.value = node.path
     }
@@ -110,17 +99,14 @@ async function handleSelect() {
         isSelecting.value = true
         emit('loading', true)
 
-        // Set the path_directory value in the store
         if (store.page.includes('App')) {
             store.app_details.config.path_directory = selectedPath.value
         } else {
             store.tool_details.config.path_directory = selectedPath.value
         }
 
-        // Emit selected directory
         emit('directory-select', selectedPath.value)
 
-        // Close the drawer
         emit('close')
     } finally {
         isSelecting.value = false
@@ -131,20 +117,17 @@ async function handleSelect() {
 
 <template>
     <div class="flex h-full flex-col">
-        <!-- Filter Options -->
         <div class="mb-2">
             <SelectButton v-model="filterMode" :options="FILTER_MODES" optionLabel="label" optionValue="value"
                 :allowEmpty="false" size="small" class="w-full" />
         </div>
 
-        <!-- Main content area -->
         <div class="min-h-0 flex-1 overflow-hidden">
             <ZipPreview :zip-path="zipPath" :password="password" :file-tree="fileTree" :filter-function="fileFilter"
                 :selected-path="selectedPath" :is-selectable-function="isSelectableNode" @node-click="handleNodeSelect"
                 @update-file-tree="fileTree = $event" />
         </div>
 
-        <!-- Bottom status and buttons -->
         <div class="mt-2 flex items-center justify-between gap-4">
             <div class="flex flex-1 items-center gap-2 text-sm">
                 <span :class="[

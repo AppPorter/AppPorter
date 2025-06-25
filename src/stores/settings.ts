@@ -38,7 +38,6 @@ interface ToolInstall {
   add_to_path: boolean
 }
 
-// Store definition
 export const SettingsStore = defineStore('settings', {
   state: (): Settings & { unlistenThemeColor?: (() => void) | null } => ({
     first_run: true,
@@ -92,13 +91,11 @@ export const SettingsStore = defineStore('settings', {
       })
     },
 
-    // Initialize theme system with color palette and monitoring
     async initializeTheme() {
       await this.updateThemeMode()
       await this.startThemeColorMonitoring()
     },
 
-    // Generate color palette for PrimeVue theme
     generateColorPalette(): Record<string, string> {
       const baseColor = Color(this.color)
       return {
@@ -137,17 +134,14 @@ export const SettingsStore = defineStore('settings', {
       }
     },
 
-    // Update theme mode and apply changes to DOM based on current theme setting
     async updateThemeMode() {
       const { EnvStore } = await import('./env')
       const env = EnvStore()
 
-      // Get dark mode status based on current theme setting
       const isDarkMode =
         this.theme === 'dark' ||
         (this.theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
 
-      // Update DOM
       if (isDarkMode) {
         document.documentElement.classList.add('dark')
       } else {
@@ -156,10 +150,8 @@ export const SettingsStore = defineStore('settings', {
 
       env.isDarkMode = isDarkMode
 
-      // Setup system theme change listener
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
-      // Only add listener when theme is set to 'system'
       if (this.theme === 'system') {
         mediaQuery.addEventListener('change', (event: MediaQueryListEvent) => {
           env.isDarkMode = event.matches
@@ -173,7 +165,6 @@ export const SettingsStore = defineStore('settings', {
       }
     },
 
-    // Start listening for system color changes
     async startThemeColorMonitoring() {
       await invoke('execute_command', {
         command: { name: 'StartThemeMonitoring' },
@@ -181,7 +172,6 @@ export const SettingsStore = defineStore('settings', {
 
       const unlisten = await listen<string>('theme-color-changed', (event) => {
         this.color = event.payload
-        // Update CSS custom properties when color changes
         const colorPalette = this.generateColorPalette()
         const root = document.documentElement
         Object.entries(colorPalette).forEach(([shade, colorValue]) => {
@@ -192,7 +182,6 @@ export const SettingsStore = defineStore('settings', {
       this.unlistenThemeColor = unlisten
     },
 
-    // Stop listening for system color changes
     async stopThemeColorMonitoring() {
       await invoke('execute_command', {
         command: { name: 'StopThemeMonitoring' },

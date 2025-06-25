@@ -20,7 +20,6 @@ const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
 
-// Combine apps, tools, and urls into a unified list
 const links = computed(() => {
   const apps = libraryStore.apps.map(app => ({ ...app, type: 'app' }))
   const tools = libraryStore.tools.map(tool => ({
@@ -182,11 +181,9 @@ onMounted(() => {
       </DataView>
     </Panel>
 
-    <!-- Context Menu -->
     <LibraryContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
       @load-library="loadLibrary" />
 
-    <!-- Validation Handler -->
     <LibraryValidation ref="validation" @load-library="loadLibrary" />
   </div>
 </template>

@@ -47,7 +47,6 @@ const installModeOptions = [
   { label: t('cls.install.modes.all_users'), value: false },
 ]
 
-// Save settings and reload app when changes are detected
 watch(
   () => settings.$state,
   async () => {
@@ -86,7 +85,6 @@ async function selectToolInstallPath() {
   }
 }
 
-// Watch for context_menu changes and register/unregister accordingly
 watch(
   () => settings.context_menu,
   async (newValue, oldValue) => {
@@ -104,7 +102,6 @@ watch(
   }
 )
 
-// Watch for auto_startup changes and set/remove startup accordingly
 watch(
   () => settings.auto_startup,
   async (newValue, oldValue) => {
@@ -122,12 +119,9 @@ watch(
   }
 )
 
-// Add computed property to check if reload button should be disabled
 const isReloadDisabled = computed(() => installConfig.page === 'Install_App_Progress' || installConfig.page === 'Install_Tool_Progress')
 
-// Get GitHub icon based on current theme and isDarkMode from settings store
 const githubIcon = computed(() => {
-  // Use import.meta.url to ensure proper path resolution
   return env.isDarkMode
     ? new URL('../assets/github-white.svg', import.meta.url).href
     : new URL('../assets/github-black.svg', import.meta.url).href
@@ -137,7 +131,6 @@ const githubIcon = computed(() => {
 <template>
   <div class="flex size-full flex-col">
     <div class="mx-auto w-full max-w-5xl space-y-2 overflow-y-auto px-4 pt-2">
-      <!-- Basic Settings -->
       <Panel class="w-full">
         <template #header>
           <div class="flex items-center gap-2">
@@ -175,7 +168,6 @@ const githubIcon = computed(() => {
         </div>
       </Panel>
 
-      <!-- App Install Settings -->
       <Panel class="w-full">
         <template #header>
           <div class="flex items-center gap-2">
@@ -191,7 +183,6 @@ const githubIcon = computed(() => {
           </div>
 
           <div class="flex min-w-0 flex-col gap-4 lg:flex-row">
-            <!-- Current User Settings -->
             <Panel class="min-w-0 flex-1">
               <template #header>
                 <div class="flex items-center gap-2">
@@ -214,7 +205,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                  }}</label>
+                    }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.current_user.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -225,7 +216,6 @@ const githubIcon = computed(() => {
               </div>
             </Panel>
 
-            <!-- All Users Settings -->
             <Panel class="min-w-0 flex-1">
               <template #header>
                 <div class="flex items-center gap-2">
@@ -248,7 +238,7 @@ const githubIcon = computed(() => {
                 </div>
                 <div>
                   <label class="flex h-9 items-center justify-between">{{ t('cls.install.config.install_path')
-                    }}</label>
+                  }}</label>
                   <div class="flex min-w-0 items-center gap-2">
                     <InputText v-model="settings.app_install.all_users.install_path"
                       :placeholder="t('cls.install.config.install_path')" class="h-9 min-w-0 flex-1 text-sm" />
@@ -262,7 +252,6 @@ const githubIcon = computed(() => {
         </div>
       </Panel>
 
-      <!-- Lib Install Settings -->
       <Panel class="w-full">
         <template #header>
           <div class="flex items-center gap-2">
@@ -302,7 +291,6 @@ const githubIcon = computed(() => {
     </div>
   </div>
 
-  <!-- Fixed position reload button -->
   <div class="fixed bottom-4 right-10 z-40">
     <Button v-if="env.isBasicSettingsChanged" @click="reloadApp" class="h-8 w-28 text-sm transition-all duration-200"
       severity="primary" :label="t('g.reload')" icon="mir-refresh" :disabled="isReloadDisabled"

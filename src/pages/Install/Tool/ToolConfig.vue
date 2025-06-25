@@ -19,17 +19,13 @@ const settingsStore = SettingsStore()
 const { tool_install } = settingsStore
 const confirm = useConfirm()
 
-// Set the install config page
 installConfig.page = 'Install_Tool_Config'
 
-// Validation states
 const pathError = ref(false)
 const nameError = ref(false)
 
-// UI state management
 const directoryDrawerVisible = ref(false)
 
-// Computed property for formatted final path
 const formatted_final_path = computed(() => {
     const parentPath = installConfig.tool_details.paths.parent_install_path
     const toolName = installConfig.tool_details.name
@@ -39,14 +35,11 @@ const formatted_final_path = computed(() => {
     return `${parentPath}\\${toolName}`
 })
 
-// Load archive content when component is mounted
 onMounted(async () => {
-    // Initialize config from settings
     installConfig.tool_details.paths.parent_install_path = tool_install.install_path
     installConfig.tool_details.config.add_to_path = tool_install.add_to_path
     installConfig.tool_details.config.path_directory = ''
 
-    // Extract filename from path and remove extension for default name
     if (installConfig.zip_path) {
         const pathParts = installConfig.zip_path.split('\\')
         const filename = pathParts[pathParts.length - 1]
@@ -54,12 +47,10 @@ onMounted(async () => {
     }
 })
 
-// Handle back button click
 function handleBackClick() {
     goTo('/Home')
 }
 
-// Select extraction directory using file dialog
 async function select_extract_path() {
     const selected = await open({
         directory: true,
@@ -71,13 +62,10 @@ async function select_extract_path() {
     }
 }
 
-// Handle install process
 async function handleInstallClick() {
-    // Reset validation errors
     pathError.value = false
     nameError.value = false
 
-    // Validate required fields
     nameError.value = !installConfig.tool_details.name
     pathError.value = !installConfig.tool_details.paths.parent_install_path
 
@@ -96,7 +84,6 @@ async function handleInstallClick() {
         pathError.value = true
     }
 
-    // If any validation failed, return early
     if (nameError.value || pathError.value) {
         return
     }
@@ -166,12 +153,9 @@ async function handleInstallClick() {
 
 <template>
     <div class="flex size-full flex-col overflow-hidden">
-        <!-- Main scrollable container -->
         <div class="flex-1 overflow-auto">
-            <!-- Content wrapper -->
             <div class="flex flex-wrap gap-4 px-1 md:flex-nowrap">
                 <div class="min-w-72 flex-1 space-y-2">
-                    <!-- Combined extraction panel -->
                     <Panel class="shadow-sm">
                         <template #header>
                             <div class="flex flex-col">
@@ -189,7 +173,6 @@ async function handleInstallClick() {
                         </template>
 
                         <div class="space-y-4 p-1">
-                            <!-- Name input (required) -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">
                                     {{ t('cls.app.name') }}
@@ -201,10 +184,9 @@ async function handleInstallClick() {
                                 </div>
                             </div>
 
-                            <!-- Install Path -->
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -214,14 +196,12 @@ async function handleInstallClick() {
                                             icon="mir-folder_open" :label="t('g.browse')" />
                                     </div>
 
-                                    <!-- Formatted Final Path -->
                                     <div v-if="formatted_final_path" class="mt-1 text-xs text-gray-500">
                                         {{ t('ui.install.final_path') }}: {{ formatted_final_path }}
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Add to PATH option -->
                             <div class="mt-2 flex items-start gap-2">
                                 <label class="mt-1 w-24 text-sm font-medium">{{ t('ui.install.environment') }}</label>
                                 <div class="w-full">
@@ -232,9 +212,8 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
-                                            <!-- PATH Directory Input - only shown when add_to_path is true -->
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
                                                     <InputText
@@ -255,12 +234,10 @@ async function handleInstallClick() {
                 </div>
             </div>
 
-            <!-- Button container -->
             <div class="mt-4 flex justify-end px-1 pb-2">
             </div>
         </div>
 
-        <!-- Bottom bar with buttons -->
         <div class="flex items-center justify-between px-4 py-3">
             <Button severity="secondary" class="h-8 w-28 text-sm transition-all duration-200" @click="handleBackClick"
                 icon="mir-arrow_back" :label="t('g.back')" outlined />
@@ -269,7 +246,6 @@ async function handleInstallClick() {
                 icon="mir-install_desktop" :label="t('cls.install.self')" />
         </div>
 
-        <!-- Directory Selector Drawer -->
         <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="installConfig.zip_path"
             @directory-select="installConfig.tool_details.config.path_directory = $event" />
     </div>

@@ -8,10 +8,8 @@ import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
 
-// Empty component for route redirection
 const Dummy = { render: () => null }
 
-// Route configuration with metadata
 const routes = [
   { path: '/', redirect: '/Install' },
   { path: '/Install', component: Dummy },
@@ -66,7 +64,6 @@ const routes = [
   },
 ] as unknown as RouteRecordRaw[]
 
-// Create router instance with in-memory history mode
 const router = createRouter({
   history: createMemoryHistory(),
   routes,
@@ -78,9 +75,7 @@ export function setupRouterGuards(router: Router) {
       return true
     }
 
-    // Handle installation wizard navigation based on current page state
     if (to.path === '/Install') {
-      // Import store here to avoid accessing it before Pinia is initialized
       const { InstallConfigStore } = await import('./stores/install_config')
       const installConfig = InstallConfigStore()
 
@@ -105,9 +100,7 @@ export function setupRouterGuards(router: Router) {
       return { path }
     }
 
-    // Reset installation state when returning to home page
     if (to.path === '/Home') {
-      // Import store here to avoid accessing it before Pinia is initialized
       const { InstallConfigStore } = await import('./stores/install_config')
       const installConfig = InstallConfigStore()
       installConfig.$reset()

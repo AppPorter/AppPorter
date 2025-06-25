@@ -7,33 +7,27 @@ import { useI18n } from 'vue-i18n'
 const toast = useToast()
 const { t } = useI18n()
 
-// Global error handling toast service
 const errorToast = {
   showError: (error: unknown) => {
     toast.add({
       severity: 'error',
       summary: t('g.error'),
       detail: String(error),
-      life: 0, // Persist until user dismisses
+      life: 0,
     })
   },
 }
 
-// Make error handler globally available
 globalThis.$errorHandler = errorToast
 
-// Expose error handling for parent components
 defineExpose({ errorToast })
 
-// Global error handling setup
 onMounted(() => {
-  // Capture uncaught window errors
   globalThis.window.addEventListener('error', (event) => {
     errorToast.showError(event.error || event.message)
     return false
   })
 
-  // Capture unhandled promise rejections
   globalThis.window.addEventListener('unhandledrejection', (event) => {
     errorToast.showError(event.reason)
   })

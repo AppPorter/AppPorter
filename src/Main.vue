@@ -26,16 +26,13 @@ const settings = SettingsStore()
 const contextMenuManager = ref()
 const uninstallComponent = ref()
 
-// Provide uninstall function to child components
 const triggerUninstall = async (apptype: InstallTypes, timestamp: number) => {
   await uninstallComponent.value?.confirmAndUninstall(apptype, timestamp)
 }
 
 provide('triggerUninstall', triggerUninstall)
 
-// Setup event listeners after component is mounted
 onMounted(async () => {
-  // First run check
   if (settings.first_run) {
     confirm.require({
       group: 'disclaimer',
@@ -65,7 +62,6 @@ onMounted(async () => {
   }
 })
 
-// Route caching control
 const route = useRoute()
 const cachedComponents = computed(() => {
   return route.path !== '/Home'
@@ -88,25 +84,20 @@ onBeforeMount(() => {
 
 <template>
   <div class="h-screen w-screen select-none" @contextmenu="contextMenuManager.handleContextMenu">
-    <!-- Event Listeners -->
     <Listener />
 
-    <!-- System Dialogs and Notifications -->
     <ErrorHandler ref="errorHandler" />
     <ConfirmDialog group="dialog" class="w-[32rem] max-w-[90vw]" />
     <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false" />
 
-    <!-- Window Controls -->
     <WindowControls />
 
-    <!-- Title Bar & Navigation -->
     <NavigationBar>
       <template #admin-warning>
         <AdminWarning :dismissWarning="dismissWarning" @dismiss="dismissWarning = true" />
       </template>
     </NavigationBar>
 
-    <!-- Main Content Area -->
     <div class="z-30 flex h-full gap-2 overflow-hidden px-4 pb-2 pt-[6.5rem]">
       <Suspense>
         <template #default>
@@ -124,13 +115,10 @@ onBeforeMount(() => {
       </Suspense>
     </div>
 
-    <!-- Context Menu -->
     <ContextMenuManager ref="contextMenuManager" />
 
-    <!-- Preview Drawer -->
     <PreviewDrawer />
 
-    <!-- Uninstall Component -->
     <Uninstall ref="uninstallComponent" />
   </div>
 </template>

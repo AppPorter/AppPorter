@@ -8,7 +8,6 @@ import { useRoute } from 'vue-router'
 const { t } = useI18n()
 const route = useRoute()
 
-// Navigation menu configuration
 const leftMenuItems = [
   {
     label: t('cls.install.self'),
@@ -35,12 +34,10 @@ const rightMenuItems = [
 
 const currentPath = ref(route.path)
 
-// Update current path when route changes
 watch(route, (newRoute) => {
   currentPath.value = newRoute.path
 })
 
-// Navigation styles
 const navButtonClass = computed(() => [
   'relative flex min-w-[120px] items-center justify-center gap-2 px-4 py-3 text-[0.95rem] font-medium',
   'text-gray-600 dark:text-gray-300',
@@ -59,18 +56,15 @@ const activeIndicatorClass = computed(
 <template>
   <div class="fixed z-30 w-full backdrop-blur-md">
     <div class="flex w-full items-center justify-between pr-24" style="-webkit-app-region: drag">
-      <!-- Left Side with Logo -->
       <span class="flex items-center whitespace-nowrap px-6 py-3 text-lg font-semibold">
         <img src="@/assets/appporter.svg" class="mr-1" />AppPorter
       </span>
 
-      <!-- Admin Warning -->
       <div class="flex flex-1 justify-center">
         <slot name="admin-warning"></slot>
       </div>
     </div>
 
-    <!-- Navigation Menu -->
     <div class="flex px-4">
       <div class="flex w-full items-center justify-between gap-1 border-b border-gray-200 dark:border-gray-700">
         <div class="flex items-center gap-1">

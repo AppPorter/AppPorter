@@ -85,7 +85,6 @@ export const InstallConfigStore = defineStore('install_config', {
   }),
 
   actions: {
-    // Set temp data for new incoming app
     setTempData(data: {
       zip_path?: string
       timestamp?: number
@@ -100,7 +99,6 @@ export const InstallConfigStore = defineStore('install_config', {
       if (data.file_tree !== undefined) this.temp.file_tree = data.file_tree
     },
 
-    // Clear temp data
     clearTempData() {
       this.temp = {
         zip_path: '',
@@ -111,7 +109,6 @@ export const InstallConfigStore = defineStore('install_config', {
       }
     },
 
-    // Move temp data to main data (confirm installation)
     confirmTempData() {
       this.zip_path = this.temp.zip_path
       this.timestamp = this.temp.timestamp

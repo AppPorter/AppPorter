@@ -17,7 +17,6 @@ function showWindow() {
     tauriWindow.setFocus()
 }
 
-// Setup event listeners after component is mounted
 onMounted(async () => {
     await listen('preview', (event) => {
         const payload = event.payload as { zip_path: string; timestamp: number }
@@ -47,7 +46,6 @@ onMounted(async () => {
         showWindow()
     })
 
-    // Execute initial command
     invoke('execute_command', {
         command: {
             name: 'Cli',

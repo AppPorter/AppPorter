@@ -16,17 +16,14 @@ defineProps<{
 const installConfig = InstallConfigStore()
 const { zip_path, app_details } = storeToRefs(installConfig)
 
-// Store original icon for restoration
 let originalIcon = ''
 
-// Direct refs to nested properties for v-model binding
 const name = toRef(app_details.value.info, 'name')
 const icon = toRef(app_details.value.info, 'icon')
 const publisher = toRef(app_details.value.info, 'publisher')
 const version = toRef(app_details.value.info, 'version')
 const custom_icon = toRef(app_details.value.config, 'custom_icon')
 
-// Store original icon when component initializes
 if (!custom_icon.value) {
   originalIcon = icon.value
 }
@@ -42,12 +39,10 @@ async function selectIcon() {
     }]
   })
   if (selected) {
-    // Store original icon before changing
     if (!custom_icon.value) {
       originalIcon = icon.value
     }
 
-    // Convert icon to base64 using Rust backend
     const base64Icon = await invoke('execute_command', {
       command: {
         name: 'ConvertIconToBase64',

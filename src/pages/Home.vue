@@ -49,9 +49,7 @@ async function handleContinueClick() {
         </div>
       </template>
 
-      <!-- Content Section -->
       <div class="space-y-6">
-        <!-- File Selection Input -->
         <div class="flex items-center gap-2">
           <InputText v-model="installConfig.zip_path" :placeholder="t('ui.select_placeholder.archive')"
             class="h-9 flex-1 text-sm" />
@@ -59,7 +57,6 @@ async function handleContinueClick() {
             :label="t('g.browse')" />
         </div>
 
-        <!-- Navigation Button -->
         <div class="flex justify-end gap-x-2">
           <Button @click="handleContinueClick" :disabled="!installConfig.zip_path" severity="primary" class="h-9 px-6"
             icon="mir-install_desktop" :label="t('g.continue')" />

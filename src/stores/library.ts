@@ -166,13 +166,11 @@ export const LibraryStore = defineStore('library', {
     },
 
     async removeApp(timestamp: number) {
-      // Remove the app from the list (without uninstalling)
       this.apps = this.apps.filter((app) => app.timestamp !== timestamp)
       await this.saveLibrary()
     },
 
     async removeTool(timestamp: number) {
-      // Remove the tool from the list (without uninstalling)
       this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
       await this.saveLibrary()
     },
