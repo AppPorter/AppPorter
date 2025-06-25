@@ -7,8 +7,6 @@ use std::{env, fs};
 use tauri::{AppHandle, Emitter};
 use tokio::process::Command;
 
-// Returns path to 7z.exe, extracts both 7z.exe and 7z.dll from resources if needed
-// The files will be stored in the temp directory: %TEMP%\AppPorter\
 pub fn get_7z_path() -> Result<PathBuf> {
     let current_exe = env::current_exe()?;
     let current_dir = current_exe
@@ -44,16 +42,15 @@ pub fn sanitize_path(path: &str) -> String {
         .join("\\")
 }
 
-// Lists contents of archive file using 7z
 pub async fn get_archive_content(path: String, password: Option<String>) -> Result<Vec<String>> {
     let output = Command::new(get_7z_path()?)
         .args([
-            "l", // List contents command
+            "l",
             &path,
-            "-y", // Yes to all prompts
+            "-y",
             &format!("-p{}", password.ok_or(anyhow!("Failed to get password"))?),
         ])
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .creation_flags(0x08000000)
         .output()
         .await?;
 
@@ -69,7 +66,6 @@ pub async fn get_archive_content(path: String, password: Option<String>) -> Resu
     Ok(parse_7z_list_output(&output_str))
 }
 
-// Common file extraction function for both apps and tools
 pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,
@@ -82,7 +78,6 @@ pub async fn extract_archive_files(
         .map(|p| format!("-p{}", p))
         .ok_or(anyhow!("Failed to get password"))?;
 
-    // Validate archive first
     let output = Command::new(&path_7z)
         .args(["l", zip_path, "-y", &password_arg])
         .creation_flags(0x08000000)
@@ -100,7 +95,6 @@ pub async fn extract_archive_files(
         );
     }
 
-    // Validate paths for security
     let paths = parse_7z_list_output(&String::from_utf8_lossy(&output.stdout));
     let canonical_install_path = fs::canonicalize(install_path)?;
 
@@ -118,17 +112,8 @@ pub async fn extract_archive_files(
         }
     }
 
-    // Extract archive
     let output_dir = format!("-o{}", install_path);
-    let mut extract_args = vec![
-        "-bsp2", // set output stream
-        "x",     // Extract files with full paths
-        zip_path,
-        &output_dir,
-        "-y",   // Yes to all prompts
-        "-aoa", // Overwrite all existing files without prompt
-        "-snl", // Disable symbolic links
-    ];
+    let mut extract_args = vec!["-bsp2", "x", zip_path, &output_dir, "-y", "-aoa", "-snl"];
     extract_args.push(&password_arg);
 
     let mut child = std::process::Command::new(&path_7z)
@@ -169,31 +154,24 @@ pub async fn extract_archive_files(
     Ok(())
 }
 
-// Common function to parse 7z list output
 pub fn parse_7z_list_output(output: &str) -> Vec<String> {
     let mut result = Vec::new();
     let mut is_output_section = false;
 
     for line in output.lines() {
         if line.contains("------------------------") {
-            // Toggle output section when separator line is found
             is_output_section = !is_output_section;
             continue;
         }
 
-        // Only process lines between separators
         if is_output_section {
-            // 7z output format: date time attr size compressed_size filename
-            // The filename starts at column 53 (0-indexed)
             if line.len() >= 53 {
                 let filename = line[53..].trim();
                 if !filename.is_empty() {
-                    // Check if it's a directory by looking at the attr column
-                    // Attr starts at column 20 and is 5 characters long
                     let mut final_filename = filename.to_owned();
                     if line.len() >= 25 {
                         let attr = &line[20..25];
-                        // If attr starts with 'D', it's a directory
+
                         if attr.starts_with('D') && !final_filename.ends_with('\\') {
                             final_filename.push('\\');
                         }

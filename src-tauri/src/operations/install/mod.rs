@@ -11,7 +11,6 @@ pub use installer_mode::*;
 use std::path::Path;
 use tokio::fs;
 
-// Function to flatten nested single folders up to 3 levels deep and find executable
 pub async fn flatten_nested_folders(
     install_path: &str,
     original_exe_path: Option<&str>,
@@ -24,17 +23,14 @@ pub async fn flatten_nested_folders(
             items.push(entry.file_name().to_string_lossy().to_string());
         }
 
-        // If there's only one item and it's a directory, move its contents up
         if items.len() == 1 {
             let single_item = &items[0];
             let single_item_path = Path::new(install_path).join(single_item);
 
             if fs::metadata(&single_item_path).await?.is_dir() {
-                // Create a temporary directory to avoid conflicts
                 let temp_dir = Path::new(install_path).join("__temp_flatten__");
                 fs::rename(&single_item_path, &temp_dir).await?;
 
-                // Move all contents from temp directory to install path
                 let mut temp_entries = fs::read_dir(&temp_dir).await?;
                 while let Some(entry) = temp_entries.next_entry().await? {
                     let source = entry.path();
@@ -42,19 +38,15 @@ pub async fn flatten_nested_folders(
                     fs::rename(source, target).await?;
                 }
 
-                // Remove the now empty temp directory
                 fs::remove_dir(&temp_dir).await?;
             } else {
-                // If it's not a directory, stop flattening
                 break;
             }
         } else {
-            // If there's more than one item, stop flattening
             break;
         }
     }
 
-    // Find the executable file after flattening
     if let Some(exe_path) = original_exe_path {
         let exe_name = Path::new(exe_path)
             .file_name()
@@ -68,12 +60,10 @@ pub async fn flatten_nested_folders(
 
         Ok(actual_exe_path)
     } else {
-        // For tools that don't specify an executable, just return the install path
         Ok(install_path.to_owned())
     }
 }
 
-// Helper function to recursively find executable file
 fn find_executable_in_directory<'a>(
     dir_path: &'a str,
     exe_name: &'a str,

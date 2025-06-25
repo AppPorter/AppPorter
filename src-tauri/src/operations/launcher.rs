@@ -3,7 +3,7 @@ use tokio::process::Command;
 
 pub async fn open_app(path: &str) -> Result<()> {
     let output = Command::new(path)
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .creation_flags(0x08000000)
         .output()
         .await?;
     if !output.stderr.is_empty() {
@@ -54,7 +54,7 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<()> {
             "-Command",
             &ps_command,
         ])
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .creation_flags(0x08000000)
         .output()
         .await?;
 

@@ -5,11 +5,9 @@ use erased_serde::Serialize as ErasedSerialize;
 use serde::Deserialize;
 use tauri::AppHandle;
 
-// Available frontend-to-backend commands
 #[derive(Deserialize, Clone)]
 #[serde(tag = "name")]
 pub enum Command {
-    // Configs
     LoadEnv,
     LoadSettings,
     SaveSettings {
@@ -22,7 +20,6 @@ pub enum Command {
         library: Box<Library>,
     },
 
-    // Core
     Cli,
     RegisterContextMenu,
     UnregisterContextMenu,
@@ -35,7 +32,6 @@ pub enum Command {
     SetStartup,
     RemoveStartup,
 
-    // Operations - Install/Uninstall
     PreviewUrl {
         url: String,
     },
@@ -52,7 +48,6 @@ pub enum Command {
         timestamp: i64,
     },
 
-    // Operations - Launcher
     OpenApp {
         path: String,
     },
@@ -64,7 +59,6 @@ pub enum Command {
         current_user_only: bool,
     },
 
-    // Operations - Misc
     GetDetails {
         path: ExePath,
     },
@@ -92,20 +86,15 @@ pub enum Command {
 }
 
 impl Command {
-    // Helper function to wrap serializable results
     fn ser<T: ErasedSerialize + Send + 'static>(v: T) -> Result<CommandResult> {
-        // If the value is String, return CommandResult::String directly
         if let Some(s) = (&v as &dyn std::any::Any).downcast_ref::<String>() {
             return Ok(CommandResult::String(s.clone()));
         }
         Ok(CommandResult::Serializable(Box::new(v)))
     }
 
-    // Routes command to appropriate handler function
-    // Returns JSON-formatted response string or error message
     async fn execute(self, app: AppHandle) -> Result<CommandResult> {
         match self {
-            // Configs
             LoadEnv => Self::ser(Env::read().await?),
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser((*settings).save().await?),
@@ -120,7 +109,6 @@ impl Command {
             LoadLibrary => Self::ser(Library::load().await?),
             SaveLibrary { library } => Self::ser((*library).save().await?),
 
-            // Core
             Cli => Self::ser(cli(&app).await?),
             RegisterContextMenu => Self::ser(register_context_menu()?),
             UnregisterContextMenu => Self::ser(unregister_context_menu()?),
@@ -129,14 +117,12 @@ impl Command {
             SetStartup => Self::ser(set_startup()?),
             RemoveStartup => Self::ser(remove_startup()?),
 
-            // Operations - Install/Uninstall
             PreviewUrl { url } => Self::ser(preview_url(&app, url).await?),
             InstallApp { config } => Self::ser(install_app(*config, &app).await?),
             InstallTool { config } => Self::ser(install_tool(*config, &app).await?),
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, &app).await?),
             UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, &app).await?),
 
-            // Operations - Launcher
             OpenApp { path } => Self::ser(open_app(&path).await?),
             OpenFolder { path } => Self::ser(open_folder(&path).await?),
             OpenRegistry {
@@ -144,7 +130,6 @@ impl Command {
                 current_user_only,
             } => Self::ser(open_registry(&app_name, current_user_only).await?),
 
-            // Operations - Misc
             GetDetails { path } => Self::ser(get_details(path).await?),
             RunInstaller { path } => Self::ser(
                 run_installer(path.zip_path, path.executable_path, path.password, &app).await?,
@@ -176,7 +161,6 @@ impl CommandResult {
     }
 }
 
-// Frontend-to-backend command bridge
 #[tauri::command(async)]
 pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
     match command.execute(app).await {

@@ -24,11 +24,9 @@ pub struct ExeDetails {
     pub icon_data_url: String,
 }
 
-// Extracts metadata from an executable file within a zip archive
 pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
     let temp_dir = tempdir()?;
 
-    // Sanitize the executable path to prevent directory traversal
     let sanitized_path = sanitize_path(&input.executable_path);
     let temp_exe_path = temp_dir.path().join(&sanitized_path);
 
@@ -36,7 +34,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         tokio::fs::create_dir_all(parent).await?;
     };
 
-    // Validate that the path doesn't escape the temp directory
     let temp_dir_canonical = std::fs::canonicalize(temp_dir.path())?;
     let parent_canonical = if let Some(parent) = temp_exe_path.parent() {
         std::fs::canonicalize(parent).ok()
@@ -44,7 +41,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         Some(temp_dir_canonical.clone())
     };
 
-    // Ensure path is within temp directory
     if let Some(parent_path) = parent_canonical {
         if !parent_path.starts_with(&temp_dir_canonical) {
             return Err(anyhow!(
@@ -53,8 +49,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
             ));
         }
     }
-
-    // Extract specific file using 7z.exe
 
     let dir = format!(
         "-o{}",
@@ -65,14 +59,14 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
     );
 
     let mut args = vec![
-        "e", // Extract without full paths
+        "e",
         &input.zip_path,
         &input.executable_path,
-        &dir,   // Output directory flag
-        "-y",   // Auto yes to all prompts
-        "-aoa", // Overwrite all existing files without prompt
-        "-snl", // Disable symbolic links
-    ]; // Add password if provided
+        &dir,
+        "-y",
+        "-aoa",
+        "-snl",
+    ];
 
     let mut pw = String::new();
     if let Some(password) = &input.password {
@@ -82,7 +76,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
 
     let output1 = Command::new(get_7z_path()?)
         .args(args)
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .creation_flags(0x08000000)
         .output()
         .await?;
     if !output1.status.success() {
@@ -93,7 +87,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         return Err(anyhow!("{}", String::from_utf8_lossy(&output1.stderr)));
     }
 
-    // Check if file was extracted
     let file_name = Path::new(&sanitized_path)
         .file_name()
         .ok_or(anyhow!("Failed to get file name"))?;
@@ -107,12 +100,10 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         ));
     }
 
-    // Extract icon as data URL
     let raw_icon = get_icon(&extracted_file.to_string_lossy(), 64)
         .map_err(|e| anyhow!("Failed to extract icon from extracted file: {:?}", e))?;
     let icon_data_url = format!("data:image/png;base64,{}", STANDARD.encode(&raw_icon));
 
-    // Build PowerShell command for file metadata extraction with path sanitization
     let extracted_file_str = extracted_file.to_string_lossy();
     let safe_path_for_ps = extracted_file_str.replace("'", "''");
     let ps_command = format!(
@@ -138,7 +129,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         safe_path_for_ps
     );
 
-    // Execute PowerShell to get file metadata
     let output2 = Command::new("powershell")
         .args([
             "-NoProfile",
@@ -148,7 +138,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
             "-Command",
             &ps_command,
         ])
-        .creation_flags(0x08000000) // CREATE_NO_WINDOW
+        .creation_flags(0x08000000)
         .output()
         .await?;
 
@@ -159,7 +149,6 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
     let output_str = String::from_utf8_lossy(&output2.stdout);
     let details: Value = serde_json::from_str(&output_str)?;
 
-    // Get valid non-empty string value with fallbacks
     let product_name = get_valid_str(&details["product_name"])
         .or_else(|| get_valid_str(&details["file_description"]))
         .or_else(|| {

@@ -13,7 +13,6 @@ use tokio::fs;
 pub async fn uninstall_app(timestamp: i64, app: &AppHandle) -> Result<()> {
     app.emit("app_uninstall_progress", 0)?;
 
-    // Get app configuration from library
     let library = Library::read().await?;
     let app_config = library
         .apps
@@ -21,7 +20,6 @@ pub async fn uninstall_app(timestamp: i64, app: &AppHandle) -> Result<()> {
         .find(|app| app.timestamp == timestamp)
         .ok_or(anyhow!("App not found in library"))?;
 
-    // Remove application directory - use the install_path directly
     let app_path = &app_config.details.paths.install_path;
     if Path::new(app_path).exists() {
         fs::remove_dir_all(app_path).await?;
@@ -29,7 +27,6 @@ pub async fn uninstall_app(timestamp: i64, app: &AppHandle) -> Result<()> {
 
     app.emit("app_uninstall_progress", 25)?;
 
-    // Remove shortcuts
     if app_config.details.config.create_start_menu_shortcut {
         remove_start_menu_shortcut(
             app_config.details.config.current_user_only,
@@ -46,19 +43,15 @@ pub async fn uninstall_app(timestamp: i64, app: &AppHandle) -> Result<()> {
 
     app.emit("app_uninstall_progress", 75)?;
 
-    // Remove custom icon file if it was used
     if app_config.details.config.custom_icon {
         remove_custom_icon(&app_config.details.info.name, timestamp).await?;
     }
 
-    // Remove from PATH if it was added
     if app_config.details.config.add_to_path {
-        // Use the pre-calculated full_path_directory
         let path_to_remove = &app_config.details.config.full_path_directory;
         remove_from_path(path_to_remove, app_config.details.config.current_user_only)?;
     }
 
-    // Remove registry entries
     if app_config.details.config.create_registry_key {
         remove_registry_entries(
             &app_config.details.info.name,
@@ -66,7 +59,6 @@ pub async fn uninstall_app(timestamp: i64, app: &AppHandle) -> Result<()> {
         )?;
     }
 
-    // Update app list
     let mut library = Library::read().await?;
     library.update_app_list_after_uninstall(timestamp).await?;
 

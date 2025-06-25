@@ -24,7 +24,6 @@ pub struct AppInstallConfig {
 pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(String, String)> {
     let timestamp = chrono::Utc::now().timestamp();
 
-    // Send initial install progress event
     app.emit("app_install_progress", 0)?;
 
     let install_path = format!(
@@ -32,7 +31,6 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
         config.details.paths.parent_install_path, config.details.info.name
     );
 
-    // Setup installation directory and extract files
     tokio::fs::create_dir_all(&install_path).await?;
     extract_archive_files(
         &config.zip_path,
@@ -43,12 +41,10 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     )
     .await?;
 
-    // Flatten nested single folders to avoid deep nesting and get actual executable path
     let full_path =
         flatten_nested_folders(&install_path, Some(&config.details.config.archive_exe_path))
             .await?;
 
-    // Create shortcuts
     let mut shell_link = ShellLink::new(&full_path)?;
     if config.details.config.custom_icon {
         let icon_path = convert_base64_to_ico(
@@ -72,13 +68,12 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
         .await?;
     }
 
-    // Create registry entries if requested
     if config.details.config.create_registry_key {
         create_registry_entries(&config, &full_path, &install_path, timestamp)?;
     }
 
     let mut full_path_directory = String::new();
-    // Add to PATH if requested
+
     if config.details.config.add_to_path {
         full_path_directory = if config.details.config.archive_path_directory.is_empty() {
             Path::new(&full_path)
@@ -102,7 +97,6 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
         )?;
     }
 
-    // Update app list
     let mut app_list = Library::read().await?;
     app_list
         .update_app_list_from_config(config, full_path.clone(), full_path_directory, timestamp)
