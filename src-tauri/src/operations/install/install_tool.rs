@@ -14,6 +14,7 @@ pub struct ToolInstallConfig {
     timestamp: i64,
     name: String,
     parent_install_path: String,
+    url: Option<String>,
 }
 
 pub async fn install_tool(config: ToolInstallConfig, app: AppHandle) -> Result<String> {
@@ -100,7 +101,7 @@ async fn update_tool_list(
         timestamp: tool_timestamp,
         installed: true,
         details,
-        url: String::new(),
+        url: config.url.unwrap_or_default(),
     };
 
     if config.timestamp != 0 {

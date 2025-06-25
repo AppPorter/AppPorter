@@ -93,6 +93,7 @@ onMounted(async () => {
           password: installConfig.archive_password,
           details: installConfig.app_details,
           timestamp: installConfig.timestamp,
+          url: installConfig.url,
         },
       },
     })

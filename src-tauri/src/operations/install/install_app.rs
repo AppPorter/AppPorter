@@ -17,6 +17,7 @@ pub struct AppInstallConfig {
     password: Option<String>,
     timestamp: i64,
     details: AppDetails,
+    url: Option<String>,
 }
 
 pub async fn install_app(config: AppInstallConfig, app: AppHandle) -> Result<(String, String)> {
@@ -225,7 +226,7 @@ async fn update_app_list(
         },
         installed: true,
         details: updated_details,
-        url: "".to_owned(),
+        url: config.url.unwrap_or_default(),
     };
 
     if config.timestamp != 0 {
