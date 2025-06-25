@@ -13,13 +13,13 @@ pub enum Command {
     LoadEnv,
     LoadSettings,
     SaveSettings {
-        settings: Settings,
+        settings: Box<Settings>,
     },
     StartThemeMonitoring,
     StopThemeMonitoring,
     LoadLibrary,
     SaveLibrary {
-        library: Library,
+        library: Box<Library>,
     },
 
     // Core
@@ -37,10 +37,10 @@ pub enum Command {
 
     // Operations - Install/Uninstall
     InstallApp {
-        config: AppInstallConfig,
+        config: Box<AppInstallConfig>,
     },
     InstallTool {
-        config: ToolInstallConfig,
+        config: Box<ToolInstallConfig>,
     },
     UninstallApp {
         timestamp: i64,
@@ -105,7 +105,7 @@ impl Command {
             // Configs
             LoadEnv => Self::ser(Env::read().await?),
             LoadSettings => Self::ser(Settings::read().await?),
-            SaveSettings { settings } => Self::ser(settings.save().await?),
+            SaveSettings { settings } => Self::ser((*settings).save().await?),
             StartThemeMonitoring => {
                 Settings::start_theme_monitoring(app.clone());
                 Self::ser(())
@@ -115,7 +115,7 @@ impl Command {
                 Self::ser(())
             }
             LoadLibrary => Self::ser(load_library().await?),
-            SaveLibrary { library } => Self::ser(library.save().await?),
+            SaveLibrary { library } => Self::ser((*library).save().await?),
 
             // Core
             Cli => Self::ser(cli(app).await?),
@@ -127,8 +127,8 @@ impl Command {
             RemoveStartup => Self::ser(remove_startup()?),
 
             // Operations - Install/Uninstall
-            InstallApp { config } => Self::ser(install_app(config, app).await?),
-            InstallTool { config } => Self::ser(install_tool(config, app).await?),
+            InstallApp { config } => Self::ser(install_app(*config, app).await?),
+            InstallTool { config } => Self::ser(install_tool(*config, app).await?),
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
             UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, app).await?),
 
