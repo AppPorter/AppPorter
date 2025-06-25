@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AppDetails, ToolDetails } from '@/stores/library'
 import { type AppTypes } from '@/stores/library'
 import { invoke } from '@tauri-apps/api/core'
 import Menu from 'primevue/menu'
@@ -9,26 +10,20 @@ const { t } = useI18n()
 const triggerUninstall = inject('triggerUninstall') as (apptype: AppTypes, timestamp: number) => Promise<void>
 
 interface LibraryContextMenuProps {
-    selectedApp?: {
+    selectedApp?:
+    | {
         timestamp: number
         url: string
-        type: AppTypes
+        type: 'app'
         installed: boolean
-        details: {
-            info: {
-                name: string
-                icon: string
-                publisher: string
-                version: string
-            }
-            config: {
-                current_user_only: boolean
-            }
-            paths: {
-                install_path: string
-                full_path: string
-            }
-        }
+        details: AppDetails
+    }
+    | {
+        timestamp: number
+        url: string
+        type: 'tool'
+        installed: boolean
+        details: ToolDetails
     }
 }
 
@@ -65,7 +60,7 @@ const menuItems = computed(() => [
         label: t('ui.library.open_registry'),
         icon: 'mir-app_registration',
         command: () => openRegistry(),
-        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
+        visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app' && props.selectedApp.details.config.create_registry_key,
     },
     {
         label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
@@ -77,18 +72,18 @@ const menuItems = computed(() => [
 
 async function openApp() {
     if (!props.selectedApp) return
-
-    await invoke('execute_command', {
-        command: {
-            name: 'OpenApp',
-            path: props.selectedApp.details.paths.full_path,
-        },
-    })
+    if (props.selectedApp.type === 'app') {
+        await invoke('execute_command', {
+            command: {
+                name: 'OpenApp',
+                path: props.selectedApp.details.paths.full_path,
+            },
+        })
+    }
 }
 
 async function openInstallFolder() {
     if (!props.selectedApp) return
-
     await invoke('execute_command', {
         command: {
             name: 'OpenFolder',
@@ -99,14 +94,15 @@ async function openInstallFolder() {
 
 async function openRegistry() {
     if (!props.selectedApp) return
-
-    await invoke('execute_command', {
-        command: {
-            name: 'OpenRegistry',
-            app_name: props.selectedApp.details.info.name,
-            current_user_only: props.selectedApp.details.config.current_user_only,
-        },
-    })
+    if (props.selectedApp.type === 'app') {
+        await invoke('execute_command', {
+            command: {
+                name: 'OpenRegistry',
+                app_name: props.selectedApp.details.info.name,
+                current_user_only: props.selectedApp.details.config.current_user_only,
+            },
+        })
+    }
 }
 
 function show(event: Event) {
