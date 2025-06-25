@@ -13,8 +13,7 @@ pub struct ToolInstallConfig {
     pub zip_path: String,
     pub password: Option<String>,
     pub timestamp: i64,
-    pub name: String,
-    pub parent_install_path: String,
+    pub details: ToolDetails,
     pub url: Option<String>,
 }
 
@@ -39,30 +38,17 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
     // For tools, we don't need to find a specific executable, so we pass None
     flatten_nested_folders(&install_path, None).await?;
 
-    // Determine the final path directory for adding to PATH
-    let final_path_directory = install_path.clone();
-
-    // Store extract path before moving config
-    let final_install_path = install_path.clone();
+    if config.details.config.add_to_path {
+        add_to_path(&install_path, false)?; // Tools are typically added system-wide
+    }
 
     // Read the tool configuration to check if we need to add to PATH
     let mut app_list = Library::read().await?;
 
     // Update tool list first to get the configuration
     app_list
-        .update_tool_list_from_config(config.clone(), final_install_path.clone(), timestamp)
+        .update_tool_list_from_config(config.clone(), install_path.clone(), timestamp)
         .await?;
-
-    // Find the tool in the list to access its configuration
-    if let Some(tool) = app_list
-        .tools
-        .iter()
-        .find(|t| t.details.name == config.name)
-    {
-        if tool.details.config.add_to_path {
-            add_to_path(&final_path_directory, false)?; // Tools are typically added system-wide
-        }
-    }
 
     // Send completion event
     app.emit("tool_install_progress", 101)?;
@@ -72,12 +58,15 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
 
 async fn setup_installation_directory(config: &ToolInstallConfig) -> Result<String> {
     // Ensure extract directory exists
-    if !Path::new(&config.parent_install_path).exists() {
-        tokio::fs::create_dir_all(&config.parent_install_path).await?;
+    if !Path::new(&config.details.paths.parent_install_path).exists() {
+        tokio::fs::create_dir_all(&config.details.paths.parent_install_path).await?;
     }
 
     // Create full path by combining parent_install_path and tool name
-    let install_path = format!("{}\\{}", config.parent_install_path, config.name);
+    let install_path = format!(
+        "{}\\{}",
+        config.details.paths.parent_install_path, config.details.name
+    );
 
     let target_path = Path::new(&install_path);
     if !target_path.exists() {

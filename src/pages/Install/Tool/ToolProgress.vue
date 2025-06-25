@@ -64,9 +64,8 @@ onMounted(async () => {
                 config: {
                     zip_path: installConfig.zip_path,
                     password: installConfig.archive_password,
-                    parent_install_path: installConfig.tool_details.paths.parent_install_path,
-                    name: installConfig.tool_details.name,
                     timestamp: installConfig.timestamp,
+                    details: installConfig.tool_details,
                     url: installConfig.url,
                 },
             },
@@ -153,7 +152,7 @@ async function handleCopyInstallPath() {
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"

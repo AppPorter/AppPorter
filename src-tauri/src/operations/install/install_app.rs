@@ -48,22 +48,6 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
         flatten_nested_folders(&install_path, Some(&config.details.config.archive_exe_path))
             .await?;
 
-    let full_path_directory = if config.details.config.archive_path_directory.is_empty() {
-        Path::new(&full_path)
-            .parent()
-            .expect("Failed to get parent directory")
-            .to_string_lossy()
-            .to_string()
-    } else {
-        let normalized_path = config
-            .details
-            .config
-            .archive_path_directory
-            .trim_start_matches(['/', '\\'])
-            .replace("/", "\\");
-        format!("{}\\{}", install_path, normalized_path)
-    };
-
     // Create shortcuts
     let mut shell_link = ShellLink::new(&full_path)?;
     if config.details.config.custom_icon {
@@ -93,8 +77,25 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
         create_registry_entries(&config, &full_path, &install_path, timestamp)?;
     }
 
+    let mut full_path_directory = String::new();
     // Add to PATH if requested
     if config.details.config.add_to_path {
+        full_path_directory = if config.details.config.archive_path_directory.is_empty() {
+            Path::new(&full_path)
+                .parent()
+                .expect("Failed to get parent directory")
+                .to_string_lossy()
+                .to_string()
+        } else {
+            let normalized_path = config
+                .details
+                .config
+                .archive_path_directory
+                .trim_start_matches(['/', '\\'])
+                .replace("/", "\\");
+            format!("{}\\{}", install_path, normalized_path)
+        };
+
         add_to_path(
             &full_path_directory,
             config.details.config.current_user_only,
@@ -102,12 +103,10 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     }
 
     // Update app list
-    {
-        let mut app_list = Library::read().await?;
-        app_list
-            .update_app_list_from_config(config, full_path.clone(), full_path_directory, timestamp)
-            .await?;
-    }
+    let mut app_list = Library::read().await?;
+    app_list
+        .update_app_list_from_config(config, full_path.clone(), full_path_directory, timestamp)
+        .await?;
 
     app.emit("app_install_progress", 101)?;
 

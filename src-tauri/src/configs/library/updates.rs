@@ -74,7 +74,7 @@ impl Library {
         };
 
         let details = ToolDetails {
-            name: config.name,
+            name: config.details.name,
             config: ToolConfig {
                 archive_password: config.password.unwrap_or_default(),
                 add_to_path: false,
@@ -82,7 +82,7 @@ impl Library {
                 full_path_directory: String::new(),
             },
             paths: ToolPaths {
-                parent_install_path: config.parent_install_path.clone(),
+                parent_install_path: config.details.paths.parent_install_path.clone(),
                 install_path: install_path.clone(),
             },
             validation_status: ToolValidationStatus {
