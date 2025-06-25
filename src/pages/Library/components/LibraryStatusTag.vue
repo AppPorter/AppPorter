@@ -94,7 +94,15 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
 
 <template>
     <Tag v-if="tagType === 'type'" :value="getLibraryType(item).value" :severity="getLibraryType(item).severity"
-        :icon="getLibraryType(item).icon" class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
+        class="flex cursor-pointer items-center gap-1 text-xs" @click="$emit('click', item)">
+        <template #icon>
+            <span :class="getLibraryType(item).icon + ' align-middle leading-none text-base'" />
+        </template>
+    </Tag>
     <Tag v-else :value="getLibraryStatus(item).value" :severity="getLibraryStatus(item).severity"
-        :icon="getLibraryStatus(item).icon" class="cursor-pointer text-center text-xs" @click="$emit('click', item)" />
+        class="flex cursor-pointer items-center gap-1 text-xs" @click="$emit('click', item)">
+        <template #icon>
+            <span :class="getLibraryStatus(item).icon + ' align-middle leading-none text-base'" />
+        </template>
+    </Tag>
 </template>
