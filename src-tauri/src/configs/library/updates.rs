@@ -126,4 +126,48 @@ impl Library {
         self.save().await?;
         Ok(())
     }
+
+    /// Update app list by either marking as uninstalled or removing completely
+    pub async fn update_app_list_after_uninstall(&mut self, timestamp: i64) -> Result<()> {
+        // Find the app to be uninstalled
+        let app_index = self
+            .apps
+            .iter()
+            .position(|existing_app| existing_app.timestamp == timestamp);
+
+        if let Some(index) = app_index {
+            // If the app has a URL, just mark it as not installed
+            // Otherwise, remove it completely from the list
+            if !self.apps[index].url.is_empty() {
+                self.apps[index].installed = false;
+            } else {
+                self.apps.remove(index);
+            }
+        }
+
+        self.save().await?;
+        Ok(())
+    }
+
+    /// Update tool list by either marking as uninstalled or removing completely
+    pub async fn update_tool_list_after_uninstall(&mut self, timestamp: i64) -> Result<()> {
+        // Find the tool to be uninstalled
+        let tool_index = self
+            .tools
+            .iter()
+            .position(|existing_tool| existing_tool.timestamp == timestamp);
+
+        if let Some(index) = tool_index {
+            // If the tool has a URL, just mark it as not installed
+            // Otherwise, remove it completely from the list
+            if !self.tools[index].url.is_empty() {
+                self.tools[index].installed = false;
+            } else {
+                self.tools.remove(index);
+            }
+        }
+
+        self.save().await?;
+        Ok(())
+    }
 }

@@ -1,6 +1,7 @@
 use crate::{
     configs::{ConfigFile, library::*},
     operations::{extract_archive_files, flatten_nested_folders},
+    utils::path::add_to_path,
 };
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
@@ -36,17 +37,31 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
 
     // Flatten nested single folders to avoid deep nesting
     // For tools, we don't need to find a specific executable, so we pass None
-    let _ = flatten_nested_folders(&install_path, None).await?;
+    flatten_nested_folders(&install_path, None).await?;
+
+    // Determine the final path directory for adding to PATH
+    let final_path_directory = install_path.clone();
 
     // Store extract path before moving config
     let final_install_path = install_path.clone();
 
-    // Update tool list
+    // Read the tool configuration to check if we need to add to PATH
+    let mut app_list = Library::read().await?;
+
+    // Update tool list first to get the configuration
+    app_list
+        .update_tool_list_from_config(config.clone(), final_install_path.clone(), timestamp)
+        .await?;
+
+    // Find the tool in the list to access its configuration
+    if let Some(tool) = app_list
+        .tools
+        .iter()
+        .find(|t| t.details.name == config.name)
     {
-        let mut app_list = Library::read().await?;
-        app_list
-            .update_tool_list_from_config(config, final_install_path.clone(), timestamp)
-            .await?;
+        if tool.details.config.add_to_path {
+            add_to_path(&final_path_directory, false)?; // Tools are typically added system-wide
+        }
     }
 
     // Send completion event

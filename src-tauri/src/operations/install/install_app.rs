@@ -1,15 +1,16 @@
 use crate::configs::ConfigFile;
-use crate::configs::env::Env;
 use crate::configs::library::*;
 use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
 use crate::operations::install::flatten_nested_folders;
-use anyhow::{Result, anyhow};
+use crate::utils::path::add_to_path;
+use crate::utils::registry::create_registry_entries;
+use crate::utils::shortcuts::{create_desktop_shortcut, create_start_menu_shortcut};
+use anyhow::Result;
 use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
-use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AppInstallConfig {
@@ -111,98 +112,4 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     app.emit("app_install_progress", 101)?;
 
     Ok((install_path, full_path))
-}
-
-fn create_desktop_shortcut(shell_link: &ShellLink, app_name: &str) -> Result<()> {
-    shell_link.create_lnk(format!(
-        r"{}\{}.lnk",
-        dirs::desktop_dir()
-            .ok_or(anyhow!("Failed to get desktop directory"))?
-            .to_string_lossy(),
-        app_name
-    ))?;
-    Ok(())
-}
-
-async fn create_start_menu_shortcut(
-    shell_link: &ShellLink,
-    current_user_only: bool,
-    app_name: &str,
-) -> Result<()> {
-    let env = Env::read().await?;
-    let lnk_path = if current_user_only {
-        format!(
-            r"{}:\Users\{}\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            env.system_drive_letter, env.username, app_name
-        )
-    } else {
-        format!(
-            r"{}:\ProgramData\Microsoft\Windows\Start Menu\Programs\{}.lnk",
-            env.system_drive_letter, app_name
-        )
-    };
-    shell_link.create_lnk(lnk_path)?;
-    Ok(())
-}
-
-fn create_registry_entries(
-    config: &AppInstallConfig,
-    full_path: &str,
-    install_path: &str,
-    timestamp: i64,
-) -> Result<()> {
-    let key = if config.details.config.current_user_only {
-        CURRENT_USER.create(format!(
-            r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.info.name
-        ))?
-    } else {
-        LOCAL_MACHINE.create(format!(
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            config.details.info.name
-        ))?
-    };
-
-    key.set_string("Comments", "Installed with AppPorter")?;
-    key.set_string("DisplayIcon", full_path)?;
-    key.set_string("DisplayName", &config.details.info.name)?;
-    key.set_string("DisplayVersion", &config.details.info.version)?;
-    key.set_string("InstallLocation", install_path)?;
-    key.set_u32("NoModify", 1)?;
-    key.set_u32("NoRemove", 0)?;
-    key.set_u32("NoRepair", 1)?;
-    key.set_string("Publisher", &config.details.info.publisher)?;
-    key.set_string(
-        "UninstallString",
-        format!(
-            "\"{}\" uninstall {}",
-            std::env::current_exe()?.to_string_lossy(),
-            timestamp
-        ),
-    )?;
-    Ok(())
-}
-
-fn add_to_path(path_directory: &str, current_user_only: bool) -> Result<()> {
-    let (key, path_key) = if current_user_only {
-        (CURRENT_USER.create("Environment")?, "Path")
-    } else {
-        (
-            LOCAL_MACHINE
-                .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?,
-            "path",
-        )
-    };
-
-    let current_path = key.get_string(path_key)?;
-
-    if !current_path
-        .split(';')
-        .any(|p| p.trim() == path_directory.trim())
-    {
-        let new_path = format!("{};{}", current_path, path_directory);
-        key.set_expand_string(path_key, new_path)?;
-    }
-
-    Ok(())
 }
