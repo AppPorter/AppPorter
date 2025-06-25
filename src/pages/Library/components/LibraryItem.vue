@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppTypes } from '@/stores/library'
+import { InstallTypes } from '@/stores/library'
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { ref } from 'vue'
@@ -14,7 +14,7 @@ interface LibraryItemProps {
     item: {
         timestamp: number
         url: string
-        type: AppTypes
+        type: InstallTypes
         installed: boolean
         details: {
             info: {
@@ -63,6 +63,7 @@ function handleStatusClick(app: LibraryItemProps['item']) {
                     class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
                     <img v-if="item.details.info.icon" :src="item.details.info.icon" class="size-8 object-contain"
                         alt="App Icon" />
+                    <span v-else-if="item.type === 'url'" class="mir-link text-2xl"></span>
                     <span v-else-if="item.type === 'tool'" class="mir-folder_zip text-2xl"></span>
                     <span v-else class="mir-apps text-2xl"></span>
                 </div>

@@ -66,47 +66,14 @@ async function handleSubscribe() {
     const url = isTemporaryMode.value ? installConfig.temp.url : installConfig.url
     if (!url) return
 
-    // Check if already subscribed
-    if (libraryStore.hasApp(url)) {
-        return
-    }
-
     subscribeSuccess.value = false
 
-    // Create new app entry
-    const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
-    const newApp = {
-        timestamp: await invoke('command', {
-            command: { name: 'GetCurrentTimestamp' },
-        }) as number,
-        installed: false,
-        url: url,
-        details: {
-            info: {
-                name: zipPath.split(/[/\\]/).pop()?.replace(/\.[^/.]+$/, '') || 'Unknown App',
-                icon: '',
-                publisher: '',
-                version: '',
-            },
-            config: {
-                archive_exe_path: '',
-                current_user_only: false,
-                create_desktop_shortcut: false,
-                create_start_menu_shortcut: true,
-                create_registry_key: false,
-                custom_icon: false,
-                add_to_path: false,
-                path_directory: '',
-            },
-            paths: {
-                parent_install_path: '',
-                install_path: '',
-                full_path: '',
-            },
-        },
-    }
+    // Add URL to subscribed URLs
+    const timestamp = await invoke('execute_command', {
+        command: { name: 'GetTimestamp' },
+    }) as string
 
-    libraryStore.apps.push(newApp)
+    libraryStore.urls.push({ url, timestamp: parseInt(timestamp) })
     await libraryStore.saveLibrary()
 
     subscribeSuccess.value = true
@@ -122,7 +89,7 @@ watch(drawerVisible, async (visible) => {
         // Check if URL is already subscribed when drawer opens
         const url = isTemporaryMode.value ? installConfig.temp.url : installConfig.url
         if (url) {
-            subscribeSuccess.value = libraryStore.hasApp(url)
+            subscribeSuccess.value = libraryStore.urls.some(urlObj => urlObj.url === url)
         }
 
         const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
@@ -233,7 +200,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -253,7 +220,7 @@ async function GetArchiveContent(password: string) {
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
                             <span class="text-sm font-medium">{{ t('g.loading')
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AppTypes } from '@/stores/library'
+import { InstallTypes } from '@/stores/library'
 import Tag from 'primevue/tag'
 import { useI18n } from 'vue-i18n'
 
@@ -7,7 +7,7 @@ const { t } = useI18n()
 
 interface LibraryStatusTagProps {
     item: {
-        type: AppTypes
+        type: InstallTypes
         installed: boolean
         details: {
             validation_status: {
@@ -33,6 +33,14 @@ function getLibraryType(data: LibraryStatusTagProps['item']) {
             icon: 'mir-apps',
             severity: 'info',
             value: t('cls.install.types.app'),
+        }
+    }
+
+    if (data.type === 'url') {
+        return {
+            icon: 'mir-link',
+            severity: 'warn',
+            value: t('cls.install.types.url'),
         }
     }
 

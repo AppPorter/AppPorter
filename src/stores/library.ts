@@ -1,11 +1,12 @@
 import { invoke } from '@tauri-apps/api/core'
 import { defineStore } from 'pinia'
 
-export type AppTypes = 'app' | 'tool'
+export type InstallTypes = 'app' | 'tool' | 'url'
 
 interface Library {
   apps: App[]
   tools: Tool[]
+  urls: Url[]
 }
 
 export interface App {
@@ -83,10 +84,16 @@ export interface ToolValidationStatus {
   path_exists: boolean
 }
 
+export interface Url {
+  url: string
+  timestamp: number
+}
+
 export const LibraryStore = defineStore('library', {
   state: (): Library => ({
     apps: [],
     tools: [],
+    urls: [],
   }),
 
   getters: {
@@ -135,7 +142,7 @@ export const LibraryStore = defineStore('library', {
       return this.installedTools.find((tool) => tool.timestamp === timestamp)
     },
 
-    async executeUninstall(apptype: AppTypes, timestamp: number) {
+    async executeUninstall(apptype: InstallTypes, timestamp: number) {
       switch (apptype) {
         case 'app':
           await invoke('execute_command', {

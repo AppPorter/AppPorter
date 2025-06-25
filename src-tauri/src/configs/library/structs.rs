@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub struct Library {
     pub apps: Vec<App>,
     pub tools: Vec<Tool>,
+    pub urls: Vec<Url>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
@@ -104,4 +105,11 @@ pub struct ToolPaths {
 pub struct ToolValidationStatus {
     pub file_exists: bool,
     pub path_exists: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[serde(default)]
+pub struct Url {
+    pub url: String,
+    pub timestamp: i64,
 }

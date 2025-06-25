@@ -20,7 +20,7 @@ const filters = ref({ global: { value: null, matchMode: 'contains' } })
 const loading = ref(false)
 const route = useRoute()
 
-// Combine apps and tools into a unified list
+// Combine apps, tools, and urls into a unified list
 const links = computed(() => {
   const apps = libraryStore.apps.map(app => ({ ...app, type: 'app' }))
   const tools = libraryStore.tools.map(tool => ({
@@ -53,7 +53,37 @@ const links = computed(() => {
       }
     }
   }))
-  return [...apps, ...tools]
+  const urls = libraryStore.urls.map(urlItem => ({
+    ...urlItem,
+    type: 'url',
+    installed: false,
+    details: {
+      info: {
+        name: urlItem.url,
+        icon: '',
+        publisher: '',
+        version: ''
+      },
+      config: {
+        current_user_only: false,
+        create_desktop_shortcut: false,
+        create_start_menu_shortcut: false,
+        create_registry_key: false,
+        archive_exe_path: '',
+      },
+      paths: {
+        parent_install_path: '',
+        install_path: '',
+        full_path: '',
+      },
+      validation_status: {
+        file_exists: false,
+        registry_valid: false,
+        path_exists: false,
+      }
+    }
+  }))
+  return [...apps, ...tools, ...urls]
 })
 
 const sortKey = ref('name')
