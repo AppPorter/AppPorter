@@ -117,7 +117,7 @@ impl Command {
                 Settings::stop_theme_monitoring();
                 Self::ser(())
             }
-            LoadLibrary => Self::ser(load_library().await?),
+            LoadLibrary => Self::ser(Library::load().await?),
             SaveLibrary { library } => Self::ser((*library).save().await?),
 
             // Core

@@ -13,11 +13,11 @@ use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct AppInstallConfig {
-    zip_path: String,
-    password: Option<String>,
-    timestamp: i64,
-    details: AppDetails,
-    url: Option<String>,
+    pub zip_path: String,
+    pub password: Option<String>,
+    pub timestamp: i64,
+    pub details: AppDetails,
+    pub url: Option<String>,
 }
 
 pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(String, String)> {
@@ -101,7 +101,12 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     }
 
     // Update app list
-    update_app_list(config, full_path.clone(), full_path_directory, timestamp).await?;
+    {
+        let mut app_list = Library::read().await?;
+        app_list
+            .update_app_list_from_config(config, full_path.clone(), full_path_directory, timestamp)
+            .await?;
+    }
 
     app.emit("app_install_progress", 101)?;
 
@@ -199,60 +204,5 @@ fn add_to_path(path_directory: &str, current_user_only: bool) -> Result<()> {
         key.set_expand_string(path_key, new_path)?;
     }
 
-    Ok(())
-}
-
-async fn update_app_list(
-    config: AppInstallConfig,
-    full_path: String,
-    full_path_directory: String,
-    timestamp: i64,
-) -> Result<()> {
-    let mut app_list = Library::read().await?;
-    let mut updated_details = config.details.clone();
-    updated_details.paths.full_path = full_path;
-    updated_details.config.full_path_directory = full_path_directory;
-    updated_details.validation_status = AppValidationStatus {
-        file_exists: true,
-        registry_valid: true,
-        path_exists: true,
-    };
-
-    let new_app = App {
-        timestamp: if config.timestamp != 0 {
-            config.timestamp
-        } else {
-            timestamp
-        },
-        installed: true,
-        details: updated_details,
-        url: config.url.unwrap_or_default(),
-    };
-
-    if config.timestamp != 0 {
-        // Update existing app with matching timestamp
-        if let Some(existing_app) = app_list
-            .apps
-            .iter_mut()
-            .find(|app| app.timestamp == config.timestamp)
-        {
-            existing_app.installed = true;
-            existing_app.details = new_app.details;
-        }
-    } else {
-        // Remove existing similar app and add new one
-        app_list.apps.retain(|existing_app| {
-            let mut app1 = existing_app.clone();
-            let mut app2 = new_app.clone();
-            app1.timestamp = 0;
-            app2.timestamp = 0;
-            app1.details.info.version = String::new();
-            app2.details.info.version = String::new();
-            app1 != app2
-        });
-        app_list.apps.push(new_app);
-    }
-
-    app_list.save().await?;
     Ok(())
 }
