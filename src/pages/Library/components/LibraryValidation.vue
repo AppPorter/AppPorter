@@ -36,95 +36,97 @@ const emit = defineEmits<LibraryValidationEmits>()
 
 const appToValidate = ref()
 
-function handleStatusClick(app) {
-    if (app.installed) {
-        appToValidate.value = app
+function handleStatusClick(app: LibraryValidationProps['app']) {
+    if (!app?.installed) {
+        return
+    }
 
-        // Skip validation for tools as they don't need registry validation
-        if (app.type === 'tool') {
-            return;
-        }
+    appToValidate.value = app
 
-        const validation = app.details.validation_status
-        const fileExists = validation.file_exists
-        const registryValid = validation.registry_valid
-        const pathExists = validation.path_exists
+    // Skip validation for tools as they don't need registry validation
+    if (app.type === 'tool') {
+        return;
+    }
 
-        if (!fileExists && !registryValid) {
-            confirm.require({
-                message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_both'),
-                header: t('ui.validation.validation_error'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('cls.uninstall.self'),
-                    icon: 'mir-delete',
-                    severity: 'danger',
-                    variant: 'outlined',
-                },
-                acceptProps: {
-                    label: t('g.reinstall'),
-                    icon: 'mir-refresh',
-                },
-                accept: () => handleValidationAction('reinstall'),
-                reject: () => handleValidationAction('uninstall'),
-            })
-        } else if (!fileExists) {
-            confirm.require({
-                message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_file'),
-                header: t('ui.validation.validation_error'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('cls.uninstall.self'),
-                    icon: 'mir-delete',
-                    severity: 'danger',
-                    variant: 'outlined',
-                },
-                acceptProps: {
-                    label: t('g.reinstall'),
-                    icon: 'mir-refresh',
-                },
-                accept: () => handleValidationAction('reinstall'),
-                reject: () => handleValidationAction('uninstall'),
-            })
-        } else if (!registryValid) {
-            confirm.require({
-                message:
-                    t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_registry'),
-                header: t('ui.validation.validation_error'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('cls.uninstall.self'),
-                    icon: 'mir-delete',
-                    severity: 'danger',
-                    variant: 'outlined',
-                },
-                acceptProps: {
-                    label: t('g.reinstall'),
-                    icon: 'mir-build',
-                },
-                accept: () => handleValidationAction('repair'),
-                reject: () => handleValidationAction('uninstall'),
-            })
-        } else if (!pathExists) {
-            confirm.require({
-                message:
-                    t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_path'),
-                header: t('ui.validation.validation_error'),
-                icon: 'mir-warning',
-                rejectProps: {
-                    label: t('cls.uninstall.self'),
-                    icon: 'mir-delete',
-                    severity: 'danger',
-                    variant: 'outlined',
-                },
-                acceptProps: {
-                    label: t('g.repair'),
-                    icon: 'mir-build',
-                },
-                accept: () => handleValidationAction('repair'),
-                reject: () => handleValidationAction('uninstall'),
-            })
-        }
+    const validation = app.details.validation_status
+    const fileExists = validation.file_exists
+    const registryValid = validation.registry_valid
+    const pathExists = validation.path_exists
+
+    if (!fileExists && !registryValid) {
+        confirm.require({
+            message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_both'),
+            header: t('ui.validation.validation_error'),
+            icon: 'mir-warning',
+            rejectProps: {
+                label: t('cls.uninstall.self'),
+                icon: 'mir-delete',
+                severity: 'danger',
+                variant: 'outlined',
+            },
+            acceptProps: {
+                label: t('g.reinstall'),
+                icon: 'mir-refresh',
+            },
+            accept: () => handleValidationAction('reinstall'),
+            reject: () => handleValidationAction('uninstall'),
+        })
+    } else if (!fileExists) {
+        confirm.require({
+            message: t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_file'),
+            header: t('ui.validation.validation_error'),
+            icon: 'mir-warning',
+            rejectProps: {
+                label: t('cls.uninstall.self'),
+                icon: 'mir-delete',
+                severity: 'danger',
+                variant: 'outlined',
+            },
+            acceptProps: {
+                label: t('g.reinstall'),
+                icon: 'mir-refresh',
+            },
+            accept: () => handleValidationAction('reinstall'),
+            reject: () => handleValidationAction('uninstall'),
+        })
+    } else if (!registryValid) {
+        confirm.require({
+            message:
+                t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_registry'),
+            header: t('ui.validation.validation_error'),
+            icon: 'mir-warning',
+            rejectProps: {
+                label: t('cls.uninstall.self'),
+                icon: 'mir-delete',
+                severity: 'danger',
+                variant: 'outlined',
+            },
+            acceptProps: {
+                label: t('g.reinstall'),
+                icon: 'mir-build',
+            },
+            accept: () => handleValidationAction('repair'),
+            reject: () => handleValidationAction('uninstall'),
+        })
+    } else if (!pathExists) {
+        confirm.require({
+            message:
+                t('ui.validation.issue', { name: app.details.info.name }) + t('ui.validation.missing_path'),
+            header: t('ui.validation.validation_error'),
+            icon: 'mir-warning',
+            rejectProps: {
+                label: t('cls.uninstall.self'),
+                icon: 'mir-delete',
+                severity: 'danger',
+                variant: 'outlined',
+            },
+            acceptProps: {
+                label: t('g.repair'),
+                icon: 'mir-build',
+            },
+            accept: () => handleValidationAction('repair'),
+            reject: () => handleValidationAction('uninstall'),
+        })
     }
 }
 

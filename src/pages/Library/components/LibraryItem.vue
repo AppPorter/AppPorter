@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import { AppTypes } from '@/stores/library'
 import Button from 'primevue/button'
+import ConfirmDialog from 'primevue/confirmdialog'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LibraryStatusTag from './LibraryStatusTag.vue'
+import LibraryValidation from './LibraryValidation.vue'
 
 const { t } = useI18n()
+const validationRef = ref()
 
 interface LibraryItemProps {
     item: {
@@ -33,7 +37,7 @@ interface LibraryItemProps {
 
 interface LibraryItemEmits {
     contextMenu: [event: { originalEvent: Event; data: LibraryItemProps['item'] }]
-    statusClick: [app: LibraryItemProps['item']]
+    loadLibrary: []
 }
 
 defineProps<LibraryItemProps>()
@@ -41,6 +45,12 @@ defineEmits<LibraryItemEmits>()
 
 function formatTimestamp(timestamp) {
     return new Date(timestamp * 1000).toLocaleDateString()
+}
+
+function handleStatusClick(app: LibraryItemProps['item']) {
+    if (validationRef.value) {
+        validationRef.value.handleStatusClick(app)
+    }
 }
 </script>
 
@@ -75,12 +85,17 @@ function formatTimestamp(timestamp) {
             </div>
 
             <div class="mr-2 flex items-center gap-2">
-                <LibraryStatusTag :item="item" tag-type="type" @click="$emit('statusClick', item)" />
-                <LibraryStatusTag :item="item" tag-type="status" @click="$emit('statusClick', item)" />
+                <LibraryStatusTag :item="item" tag-type="type" @click="handleStatusClick(item)" />
+                <LibraryStatusTag :item="item" tag-type="status" @click="handleStatusClick(item)" />
             </div>
 
             <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="$emit('contextMenu', { originalEvent: $event, data: item })" />
         </div>
+        <!-- Hidden validation component -->
+        <LibraryValidation ref="validationRef" :app="item" @load-library="$emit('loadLibrary')" />
+
+        <!-- Confirmation dialog -->
+        <ConfirmDialog />
     </div>
 </template>
