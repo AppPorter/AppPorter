@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type AppTypes, LibraryStore } from '@/stores/library'
+import { type InstallTypes, LibraryStore } from '@/stores/library'
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
 
@@ -8,7 +8,7 @@ const { t } = useI18n()
 const libraryStore = LibraryStore()
 
 // The actual implementation of confirmAndUninstall
-const confirmAndUninstall = async (apptype: AppTypes, timestamp: number): Promise<void> => {
+const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Promise<void> => {
     const app = apptype === 'app' ? libraryStore.getAppByTimestamp(timestamp) : libraryStore.getToolByTimestamp(timestamp)
     if (!app) return
 

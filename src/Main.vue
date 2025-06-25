@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { generateMaterialIconsClasses } from '@/assets/styles/icons/material_icons'
 import AdminWarning from '@/components/Core/AdminWarning.vue'
 import ContextMenuManager from '@/components/Core/ContextMenuManager.vue'
 import ErrorHandler from '@/components/Core/ErrorHandler.vue'
@@ -8,6 +7,7 @@ import NavigationBar from '@/components/Core/NavigationBar.vue'
 import Uninstall from '@/components/Core/Uninstall.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
+import { generateMaterialIconsClasses } from '@/styles/material_icons.ts'
 import { invoke } from '@tauri-apps/api/core'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
@@ -15,7 +15,7 @@ import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
-import { AppTypes } from './stores/library.ts'
+import { InstallTypes } from './stores/library.ts'
 import { SettingsStore } from './stores/settings.ts'
 
 const confirm = useConfirm()
@@ -27,7 +27,7 @@ const contextMenuManager = ref()
 const uninstallComponent = ref()
 
 // Provide uninstall function to child components
-const triggerUninstall = async (apptype: AppTypes, timestamp: number) => {
+const triggerUninstall = async (apptype: InstallTypes, timestamp: number) => {
   await uninstallComponent.value?.confirmAndUninstall(apptype, timestamp)
 }
 
