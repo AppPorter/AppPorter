@@ -17,7 +17,7 @@ pub struct ToolInstallConfig {
     url: Option<String>,
 }
 
-pub async fn install_tool(config: ToolInstallConfig, app: AppHandle) -> Result<String> {
+pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<String> {
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send install start event
@@ -28,7 +28,7 @@ pub async fn install_tool(config: ToolInstallConfig, app: AppHandle) -> Result<S
     extract_archive_files(
         &config.zip_path,
         &install_path,
-        app.clone(),
+        app,
         config.password.as_deref(),
         "tool_install_progress",
     )

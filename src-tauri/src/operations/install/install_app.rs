@@ -20,7 +20,7 @@ pub struct AppInstallConfig {
     url: Option<String>,
 }
 
-pub async fn install_app(config: AppInstallConfig, app: AppHandle) -> Result<(String, String)> {
+pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(String, String)> {
     let timestamp = chrono::Utc::now().timestamp();
 
     // Send initial install progress event
@@ -36,7 +36,7 @@ pub async fn install_app(config: AppInstallConfig, app: AppHandle) -> Result<(St
     extract_archive_files(
         &config.zip_path,
         &install_path,
-        app.clone(),
+        app,
         config.password.as_deref(),
         "app_install_progress",
     )

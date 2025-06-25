@@ -36,6 +36,9 @@ pub enum Command {
     RemoveStartup,
 
     // Operations - Install/Uninstall
+    PreviewUrl {
+        url: String,
+    },
     InstallApp {
         config: Box<AppInstallConfig>,
     },
@@ -107,7 +110,7 @@ impl Command {
             LoadSettings => Self::ser(Settings::read().await?),
             SaveSettings { settings } => Self::ser((*settings).save().await?),
             StartThemeMonitoring => {
-                Settings::start_theme_monitoring(app.clone());
+                Settings::start_theme_monitoring(app);
                 Self::ser(())
             }
             StopThemeMonitoring => {
@@ -118,7 +121,7 @@ impl Command {
             SaveLibrary { library } => Self::ser((*library).save().await?),
 
             // Core
-            Cli => Self::ser(cli(app).await?),
+            Cli => Self::ser(cli(&app).await?),
             RegisterContextMenu => Self::ser(register_context_menu()?),
             UnregisterContextMenu => Self::ser(unregister_context_menu()?),
             Elevate { revert } => Self::ser(elevate(revert).await?),
@@ -127,10 +130,11 @@ impl Command {
             RemoveStartup => Self::ser(remove_startup()?),
 
             // Operations - Install/Uninstall
-            InstallApp { config } => Self::ser(install_app(*config, app).await?),
-            InstallTool { config } => Self::ser(install_tool(*config, app).await?),
-            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, app).await?),
-            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, app).await?),
+            PreviewUrl { url } => Self::ser(preview_url(&app, url).await?),
+            InstallApp { config } => Self::ser(install_app(*config, &app).await?),
+            InstallTool { config } => Self::ser(install_tool(*config, &app).await?),
+            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, &app).await?),
+            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, &app).await?),
 
             // Operations - Launcher
             OpenApp { path } => Self::ser(open_app(&path).await?),
@@ -143,7 +147,7 @@ impl Command {
             // Operations - Misc
             GetDetails { path } => Self::ser(get_details(path).await?),
             RunInstaller { path } => Self::ser(
-                run_installer(path.zip_path, path.executable_path, path.password, app).await?,
+                run_installer(path.zip_path, path.executable_path, path.password, &app).await?,
             ),
             ConvertIconToBase64 { path } => Self::ser(convert_icon_to_base64(path).await?),
             ValidatePath { path } => Self::ser(validate_path(path).await?),

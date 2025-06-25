@@ -6,7 +6,7 @@ use std::path::Path;
 use tauri::{AppHandle, Emitter};
 use tokio::fs;
 
-pub async fn uninstall_tool(timestamp: i64, app: AppHandle) -> Result<()> {
+pub async fn uninstall_tool(timestamp: i64, app: &AppHandle) -> Result<()> {
     app.emit("tool_uninstall_progress", 0)?;
 
     // Get tool configuration from library

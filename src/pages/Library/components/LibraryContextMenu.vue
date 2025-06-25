@@ -60,7 +60,6 @@ interface LibraryContextMenuProps {
 }
 
 interface LibraryContextMenuEmits {
-    installApp: []
     loadLibrary: []
 }
 
@@ -76,7 +75,7 @@ const menuItems = computed(() => {
             {
                 label: t('cls.install.self'),
                 icon: 'mir-install_desktop',
-                command: () => emit('installApp'),
+                command: () => previewUrl(),
                 visible: () => true,
             },
             {
@@ -93,7 +92,7 @@ const menuItems = computed(() => {
         {
             label: t('cls.install.self'),
             icon: 'mir-install_desktop',
-            command: () => emit('installApp'),
+            command: () => previewUrl(),
             visible: () => props.selectedApp && !props.selectedApp.installed,
         },
         {
@@ -122,6 +121,17 @@ const menuItems = computed(() => {
         },
     ]
 })
+
+async function previewUrl() {
+    if (!props.selectedApp) return
+
+    await invoke('execute_command', {
+        command: {
+            name: 'PreviewUrl',
+            url: props.selectedApp.url,
+        },
+    })
+}
 
 async function openApp() {
     if (!props.selectedApp) return

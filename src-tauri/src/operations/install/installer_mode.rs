@@ -7,7 +7,7 @@ pub async fn run_installer(
     zip_path: String,
     executable_path: String,
     password: Option<String>,
-    app: AppHandle,
+    app: &AppHandle,
 ) -> Result<String> {
     // Create temporary directory for extraction using timestamp
     let timestamp = chrono::Utc::now().timestamp_millis();
@@ -20,7 +20,7 @@ pub async fn run_installer(
     extract_archive_files(
         &zip_path,
         &temp_dir.to_string_lossy(),
-        app.clone(),
+        app,
         password.as_deref(),
         "installer_extract_progress",
     )

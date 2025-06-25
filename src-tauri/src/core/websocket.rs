@@ -1,7 +1,5 @@
-use crate::utils::crypto::{
-    SESSIONS, decrypt_data_with_key, encrypt_data_with_key, generate_session_id,
-    generate_session_key,
-};
+use crate::operations::preview_url;
+use crate::utils::crypto::*;
 use crate::utils::download_file;
 use anyhow::{Result, anyhow};
 use base64::{Engine as _, engine::general_purpose};
@@ -16,14 +14,14 @@ use tokio_tungstenite::{
 };
 
 // Starts WebSocket server on port 7535 for browser extension communication
-pub async fn start_websocket_server(app: AppHandle) -> Result<()> {
+pub async fn start_websocket_server(app: &AppHandle) -> Result<()> {
     let addr = "127.0.0.1:7535";
     let listener = TcpListener::bind(&addr).await?;
 
     while let Ok((stream, _)) = listener.accept().await {
         let app = app.clone();
         tokio::spawn(async move {
-            if let Err(e) = handle_connection(app, stream).await {
+            if let Err(e) = handle_connection(&app, stream).await {
                 // Only log unexpected errors
                 if !matches!(
                     e.downcast_ref::<WsError>(),
@@ -41,7 +39,7 @@ pub async fn start_websocket_server(app: AppHandle) -> Result<()> {
 }
 
 // Handles WebSocket connection and processes incoming messages in a loop
-async fn handle_connection(app: AppHandle, stream: TcpStream) -> Result<()> {
+async fn handle_connection(app: &AppHandle, stream: TcpStream) -> Result<()> {
     let ws_stream = accept_async(stream).await?;
     let (mut ws_sender, mut ws_receiver) = ws_stream.split();
 
@@ -52,7 +50,7 @@ async fn handle_connection(app: AppHandle, stream: TcpStream) -> Result<()> {
         }
 
         if msg.is_text() {
-            let response = handle_extension_message(app.clone(), msg).await?;
+            let response = handle_extension_message(app, msg).await?;
             ws_sender.send(response).await?;
         }
     }
@@ -60,7 +58,7 @@ async fn handle_connection(app: AppHandle, stream: TcpStream) -> Result<()> {
 }
 
 // Processes incoming browser extension messages and manages app list updates
-async fn handle_extension_message(app: AppHandle, msg: Message) -> Result<Message> {
+async fn handle_extension_message(app: &AppHandle, msg: Message) -> Result<Message> {
     if let Message::Text(message_data) = &msg {
         // Parse the incoming JSON message
         let parsed: Value = serde_json::from_str(message_data)?;
@@ -138,10 +136,7 @@ async fn handle_extension_message(app: AppHandle, msg: Message) -> Result<Messag
         }
 
         // Handle legacy unencrypted messages for backward compatibility
-        let url = message_data.to_string();
-        let timestamp = chrono::Utc::now().timestamp();
-        let downloaded = download_file(&url).await?;
-        app.emit("preview_url", (downloaded, timestamp, url))?;
+        preview_url(app, message_data.to_string()).await?;
 
         Ok(Message::text("Success"))
     } else {

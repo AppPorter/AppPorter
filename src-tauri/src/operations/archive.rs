@@ -73,7 +73,7 @@ pub async fn get_archive_content(path: String, password: Option<String>) -> Resu
 pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,
-    app: AppHandle,
+    app: &AppHandle,
     password: Option<&str>,
     event_name: &str,
 ) -> Result<()> {

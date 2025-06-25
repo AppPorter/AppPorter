@@ -11,26 +11,26 @@ lazy_static! {
     ) = broadcast::channel(1);
 }
 
-pub async fn cli(app: AppHandle) -> Result<String> {
+pub async fn cli(app: &AppHandle) -> Result<String> {
     let init_args: Vec<String> = std::env::args().collect();
     let args: Vec<String> = init_args
         .into_iter()
         .filter(|arg| arg != "--silent")
         .collect();
     if args.len() == 3 || args.len() == 4 {
-        cases(app.clone(), args).await?;
+        cases(app, args).await?;
     }
 
     let mut receiver = CHANNEL.1.resubscribe();
     loop {
         if let Ok(new_args) = receiver.recv().await {
             if new_args.len() == 3 || new_args.len() == 4 {
-                cases(app.clone(), new_args).await?;
+                cases(app, new_args).await?;
             }
         }
     }
 
-    async fn cases(app: AppHandle, args: Vec<String>) -> Result<()> {
+    async fn cases(app: &AppHandle, args: Vec<String>) -> Result<()> {
         match args[1].as_str() {
             "preview" => {
                 let value = args[2].clone();

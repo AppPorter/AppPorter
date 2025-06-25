@@ -34,7 +34,7 @@ async fn run() -> Result<()> {
 
             let handle = app.handle().clone();
             tokio::spawn(async move {
-                if let Err(e) = start_websocket_server(handle).await {
+                if let Err(e) = start_websocket_server(&handle).await {
                     eprintln!("WebSocket server error: {}", e);
                 }
             });
