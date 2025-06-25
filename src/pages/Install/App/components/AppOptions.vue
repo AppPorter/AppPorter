@@ -4,6 +4,7 @@ import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
+import SelectButton from 'primevue/selectbutton'
 import { computed, ref, toRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -40,6 +41,12 @@ const install_path = toRef(app_details.value.paths, 'parent_install_path')
 
 // UI state
 const directoryDrawerVisible = ref(false)
+
+// Add install mode options for SelectButton
+const installModeOptions = [
+  { label: t('cls.install.modes.current_user'), value: true },
+  { label: t('cls.install.modes.all_users'), value: false },
+]
 
 // Optimized formatted app path with null safety
 const formatted_app_path = computed(() => {
@@ -79,9 +86,9 @@ async function select_install_path() {
   }
 }
 
-// Simplified event handler
-function handleInstallModeChange(event: Event) {
-  const checked = (event.target as HTMLInputElement).checked
+// Simplified event handler for SelectButton
+function handleInstallModeChange(event: { value: boolean }) {
+  const checked = event.value
   current_user_only.value = checked
   updateConfig(checked)
 }
@@ -105,9 +112,8 @@ function handleInstallModeChange(event: Event) {
       <div class="flex items-center gap-2">
         <label class="w-24 text-sm font-medium">{{ t('cls.install.modes.self') }}</label>
         <div class="flex w-full items-center gap-2 rounded-lg px-2 py-1">
-          <span class="text-sm">{{ t('cls.install.modes.all_users') }}</span>
-          <ToggleSwitch v-model="current_user_only" @change="handleInstallModeChange" class="mx-1" />
-          <span class="text-sm">{{ t('cls.install.modes.current_user') }}</span>
+          <SelectButton v-model="current_user_only" :options="installModeOptions" optionLabel="label"
+            optionValue="value" :allowEmpty="false" size="small" @change="handleInstallModeChange" class="w-64" />
         </div>
       </div>
 
@@ -142,7 +148,7 @@ function handleInstallModeChange(event: Event) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-                }}</label>
+              }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
