@@ -164,20 +164,18 @@ pub fn parse_7z_list_output(output: &str) -> Vec<String> {
             continue;
         }
 
-        if is_output_section {
-            if line.len() >= 53 {
-                let filename = line[53..].trim();
-                if !filename.is_empty() {
-                    let mut final_filename = filename.to_owned();
-                    if line.len() >= 25 {
-                        let attr = &line[20..25];
+        if is_output_section && line.len() >= 53 {
+            let filename = line[53..].trim();
+            if !filename.is_empty() {
+                let mut final_filename = filename.to_owned();
+                if line.len() >= 25 {
+                    let attr = &line[20..25];
 
-                        if attr.starts_with('D') && !final_filename.ends_with('\\') {
-                            final_filename.push('\\');
-                        }
+                    if attr.starts_with('D') && !final_filename.ends_with('\\') {
+                        final_filename.push('\\');
                     }
-                    result.push(final_filename);
                 }
+                result.push(final_filename);
             }
         }
     }
