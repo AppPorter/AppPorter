@@ -120,8 +120,8 @@ impl<'a> Command<'a> {
             PreviewUrl { url } => Self::ser(preview_url(&app, url).await?),
             InstallApp { config } => Self::ser(install_app(*config, &app).await?),
             InstallTool { config } => Self::ser(install_tool(*config, &app).await?),
-            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, &app).await?),
-            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, &app).await?),
+            UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp).await?),
+            UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp).await?),
 
             OpenApp { path } => Self::ser(open_app(path).await?),
             OpenFolder { path } => Self::ser(open_folder(path).await?),
