@@ -1,5 +1,5 @@
 use crate::{
-    configs::{ConfigFile, library::*},
+    configs::library::*,
     operations::{extract_archive_files, flatten_nested_folders},
     utils::path::add_to_path,
 };
@@ -55,7 +55,7 @@ pub async fn install_tool<'a>(config: ToolInstallConfig<'a>, app: &AppHandle) ->
         add_to_path(&full_path_directory, false)?;
     }
 
-    let mut app_list = Library::read().await?;
+    let mut app_list = Library::load().await?;
     app_list
         .update_tool_list_from_config(config, &install_path, &full_path_directory, timestamp)
         .await?;
