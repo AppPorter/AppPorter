@@ -147,7 +147,7 @@ impl<'a> Command<'a> {
             }
             CheckPathEmpty { path } => Self::ser(check_path_empty(path).await?),
             GetArchiveTree { path, password } => Self::ser(get_archive_tree(path, password).await?),
-            GetTimestamp => Self::ser(get_timestamp()?),
+            GetTimestamp => Self::ser(chrono::Utc::now().timestamp()),
         }
     }
 }
