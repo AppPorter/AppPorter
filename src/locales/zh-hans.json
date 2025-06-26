@@ -111,7 +111,7 @@
       "missing_both": "文件和注册表项都不存在。",
       "missing_file": "主可执行文件不存在。",
       "missing_registry": "注册表项不存在。",
-      "missing_path": "安装路径不存在。"
+      "missing_path": "PATH项不存在"
     }
   },
   "g": {
