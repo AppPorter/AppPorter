@@ -26,11 +26,12 @@ impl Env {
             return Ok(cached.clone());
         }
 
-        let mut env = Env::default();
-        env.user_sid = Env::get_user_sid().await?;
+        let env = Env {
+            user_sid: Env::get_user_sid().await?,
+            ..Default::default()
+        };
 
-        // Try to cache the result, ignore if another thread already cached it
-        CACHED_ENV.set(env.clone());
+        let _ = CACHED_ENV.set(env.clone());
 
         Ok(env)
     }
