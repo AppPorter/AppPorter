@@ -18,22 +18,22 @@ pub async fn cli(app: &AppHandle) -> Result<String> {
         .filter(|arg| arg != "--silent")
         .collect();
     if args.len() == 3 || args.len() == 4 {
-        cases(app, args).await?;
+        match_cases(app, args).await?;
     }
 
     let mut receiver = CHANNEL.1.resubscribe();
     loop {
         if let Ok(new_args) = receiver.recv().await {
             if new_args.len() == 3 || new_args.len() == 4 {
-                cases(app, new_args).await?;
+                match_cases(app, new_args).await?;
             }
         }
     }
 
-    async fn cases(app: &AppHandle, args: Vec<String>) -> Result<()> {
+    async fn match_cases(app: &AppHandle, args: Vec<String>) -> Result<()> {
         match args[1].as_str() {
             "preview" => {
-                let value = args[2].clone();
+                let value = &args[2];
                 if let Some(extension) = std::path::Path::new(&value)
                     .extension()
                     .and_then(|ext| ext.to_str())
@@ -44,7 +44,7 @@ pub async fn cli(app: &AppHandle) -> Result<String> {
                 }
             }
             "uninstall_app" => {
-                let value = args[2].clone();
+                let value = &args[2];
                 if let Ok(timestamp) = value.parse::<i64>() {
                     app.emit("uninstall_app", timestamp)?;
                 }

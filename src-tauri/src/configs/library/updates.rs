@@ -8,14 +8,14 @@ use anyhow::Result;
 impl Library {
     pub async fn update_app_list_from_config(
         &mut self,
-        config: AppInstallConfig,
-        full_path: String,
-        full_path_directory: String,
+        config: AppInstallConfig<'_>,
+        full_path: &str,
+        full_path_directory: &str,
         timestamp: i64,
     ) -> Result<()> {
-        let mut updated_details = config.details.clone();
-        updated_details.paths.full_path = full_path;
-        updated_details.config.full_path_directory = full_path_directory;
+        let mut updated_details = config.details;
+        updated_details.paths.full_path = full_path.to_owned();
+        updated_details.config.full_path_directory = full_path_directory.to_owned();
         updated_details.validation_status = AppValidationStatus {
             file_exists: true,
             registry_valid: true,
@@ -30,7 +30,7 @@ impl Library {
             },
             installed: true,
             details: updated_details,
-            url: config.url.unwrap_or_default(),
+            url: config.url.unwrap_or_default().to_owned(),
         };
 
         if config.timestamp != 0 {
@@ -63,8 +63,8 @@ impl Library {
 
     pub async fn update_tool_list_from_config(
         &mut self,
-        config: ToolInstallConfig,
-        install_path: String,
+        config: ToolInstallConfig<'_>,
+        install_path: &str,
         timestamp: i64,
     ) -> Result<()> {
         let tool_timestamp = if config.timestamp != 0 {
@@ -76,14 +76,14 @@ impl Library {
         let details = ToolDetails {
             name: config.details.name,
             config: ToolConfig {
-                archive_password: config.password.unwrap_or_default(),
+                archive_password: config.password.unwrap_or_default().to_owned(),
                 add_to_path: false,
                 archive_path_directory: String::new(),
                 full_path_directory: String::new(),
             },
             paths: ToolPaths {
-                parent_install_path: config.details.paths.parent_install_path.clone(),
-                install_path: install_path.clone(),
+                parent_install_path: config.details.paths.parent_install_path,
+                install_path: install_path.to_owned(),
             },
             validation_status: ToolValidationStatus {
                 file_exists: true,
@@ -95,7 +95,7 @@ impl Library {
             timestamp: tool_timestamp,
             installed: true,
             details,
-            url: config.url.unwrap_or_default(),
+            url: config.url.unwrap_or_default().to_owned(),
         };
 
         if config.timestamp != 0 {

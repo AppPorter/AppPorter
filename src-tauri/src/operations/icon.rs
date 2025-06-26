@@ -5,7 +5,7 @@ use std::path::Path;
 use systemicons::get_icon;
 use tokio::fs;
 
-pub async fn convert_icon_to_base64(path: String) -> Result<String> {
+pub async fn convert_icon_to_base64(path: &str) -> Result<String> {
     let path = Path::new(&path);
 
     if !path.exists() {
@@ -47,7 +47,7 @@ pub async fn convert_icon_to_base64(path: String) -> Result<String> {
     }
 }
 
-pub async fn convert_base64_to_ico(base64_data: String, filename: String) -> Result<String> {
+pub async fn convert_base64_to_ico(base64_data: &str, filename: &str) -> Result<String> {
     let icons_dir = dirs::config_local_dir()
         .ok_or(anyhow!("Failed to get local config directory"))?
         .join("AppPorter")
@@ -62,7 +62,7 @@ pub async fn convert_base64_to_ico(base64_data: String, filename: String) -> Res
             .ok_or(anyhow!("Invalid base64 data URL format"))?
             .to_owned()
     } else {
-        base64_data
+        base64_data.to_owned()
     };
 
     let image_data = STANDARD
@@ -72,12 +72,12 @@ pub async fn convert_base64_to_ico(base64_data: String, filename: String) -> Res
     let output_filename = if filename.ends_with(".ico") {
         filename
     } else {
-        format!("{}.ico", filename)
+        &format!("{}.ico", filename)
     };
     let output_path = icons_dir.join(&output_filename);
 
     tokio::task::spawn_blocking({
-        let image_data = image_data.clone();
+        let image_data = image_data;
         let output_path = output_path.clone();
         move || -> Result<()> {
             let img = image::load_from_memory(&image_data)?;

@@ -27,15 +27,15 @@ impl Env {
         }
 
         let mut env = Env::default();
-        env.user_sid = env.get_user_sid().await?;
+        env.user_sid = Env::get_user_sid().await?;
 
         // Try to cache the result, ignore if another thread already cached it
-        let _ = CACHED_ENV.set(env.clone());
+        CACHED_ENV.set(env.clone());
 
         Ok(env)
     }
 
-    async fn get_user_sid(&self) -> Result<String> {
+    async fn get_user_sid() -> Result<String> {
         let output = Command::new("powershell")
             .args([
                 "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",

@@ -42,7 +42,7 @@ pub fn create_registry_entries(
 }
 
 pub fn remove_registry_entries(app_name: &str, current_user_only: bool) -> Result<()> {
-    let key: String;
+    let key;
 
     if current_user_only {
         key = format!(

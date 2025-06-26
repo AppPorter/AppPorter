@@ -1,6 +1,6 @@
 use anyhow::{Result, anyhow};
 
-pub async fn validate_path(path: String) -> Result<String> {
+pub async fn validate_path(path: &str) -> Result<String> {
     fn is_valid_path_format(path: &str) -> bool {
         let chars: Vec<char> = path.chars().collect();
         chars.first().is_some_and(|c| c.is_ascii_alphabetic())

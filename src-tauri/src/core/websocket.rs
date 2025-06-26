@@ -136,7 +136,7 @@ async fn handle_extension_message(app: &AppHandle, msg: Message) -> Result<Messa
         }
 
         // Handle legacy unencrypted messages for backward compatibility
-        preview_url(app, message_data.to_string()).await?;
+        preview_url(app, message_data).await?;
 
         Ok(Message::text("Success"))
     } else {

@@ -42,7 +42,7 @@ pub fn sanitize_path(path: &str) -> String {
         .join("\\")
 }
 
-pub async fn get_archive_content(path: String, password: Option<String>) -> Result<Vec<String>> {
+pub async fn get_archive_content(path: &str, password: Option<&str>) -> Result<Vec<String>> {
     let output = Command::new(get_7z_path()?)
         .args([
             "l",

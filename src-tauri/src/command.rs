@@ -7,7 +7,7 @@ use tauri::AppHandle;
 
 #[derive(Deserialize, Clone)]
 #[serde(tag = "name")]
-pub enum Command {
+pub enum Command<'a> {
     LoadEnv,
     LoadSettings,
     SaveSettings {
@@ -33,13 +33,13 @@ pub enum Command {
     RemoveStartup,
 
     PreviewUrl {
-        url: String,
+        url: &'a str,
     },
     InstallApp {
-        config: Box<AppInstallConfig>,
+        config: Box<AppInstallConfig<'a>>,
     },
     InstallTool {
-        config: Box<ToolInstallConfig>,
+        config: Box<ToolInstallConfig<'a>>,
     },
     UninstallApp {
         timestamp: i64,
@@ -49,13 +49,13 @@ pub enum Command {
     },
 
     OpenApp {
-        path: String,
+        path: &'a str,
     },
     OpenFolder {
-        path: String,
+        path: &'a str,
     },
     OpenRegistry {
-        app_name: String,
+        app_name: &'a str,
         current_user_only: bool,
     },
 
@@ -66,26 +66,26 @@ pub enum Command {
         path: ExePath,
     },
     ConvertIconToBase64 {
-        path: String,
+        path: &'a str,
     },
     ValidatePath {
-        path: String,
+        path: &'a str,
     },
     GetArchiveContent {
-        path: String,
-        password: Option<String>,
+        path: &'a str,
+        password: Option<&'a str>,
     },
     CheckPathEmpty {
-        path: String,
+        path: &'a str,
     },
     GetArchiveTree {
-        path: String,
-        password: Option<String>,
+        path: &'a str,
+        password: Option<&'a str>,
     },
     GetTimestamp,
 }
 
-impl Command {
+impl<'a> Command<'a> {
     fn ser<T: ErasedSerialize + Send + 'static>(v: T) -> Result<CommandResult> {
         if let Some(s) = (&v as &dyn std::any::Any).downcast_ref::<String>() {
             return Ok(CommandResult::String(s.clone()));
@@ -132,7 +132,13 @@ impl Command {
 
             GetDetails { path } => Self::ser(get_details(path).await?),
             RunInstaller { path } => Self::ser(
-                run_installer(path.zip_path, path.executable_path, path.password, &app).await?,
+                run_installer(
+                    &path.zip_path,
+                    &path.executable_path,
+                    path.password.as_deref(),
+                    &app,
+                )
+                .await?,
             ),
             ConvertIconToBase64 { path } => Self::ser(convert_icon_to_base64(path).await?),
             ValidatePath { path } => Self::ser(validate_path(path).await?),
@@ -162,7 +168,7 @@ impl CommandResult {
 }
 
 #[tauri::command(async)]
-pub async fn execute_command(command: Command, app: AppHandle) -> Result<String, String> {
+pub async fn execute_command(command: Command<'_>, app: AppHandle) -> Result<String, String> {
     match command.execute(app).await {
         Ok(res) => {
             if let Some(s) = res.as_string() {

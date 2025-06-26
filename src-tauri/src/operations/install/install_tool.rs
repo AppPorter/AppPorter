@@ -9,20 +9,24 @@ use std::path::Path;
 use tauri::{AppHandle, Emitter};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct ToolInstallConfig {
-    pub zip_path: String,
-    pub password: Option<String>,
+pub struct ToolInstallConfig<'a> {
+    pub zip_path: &'a str,
+    pub password: Option<&'a str>,
     pub timestamp: i64,
     pub details: ToolDetails,
-    pub url: Option<String>,
+    pub url: Option<&'a str>,
 }
 
-pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<String> {
+pub async fn install_tool<'a>(config: ToolInstallConfig<'a>, app: &AppHandle) -> Result<String> {
     let timestamp = chrono::Utc::now().timestamp();
 
     app.emit("tool_install_progress", 0)?;
 
-    let install_path = setup_installation_directory(&config).await?;
+    let install_path = setup_installation_directory(
+        &config.details.paths.parent_install_path,
+        &config.details.name,
+    )
+    .await?;
     extract_archive_files(
         &config.zip_path,
         &install_path,
@@ -41,7 +45,7 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
     let mut app_list = Library::read().await?;
 
     app_list
-        .update_tool_list_from_config(config.clone(), install_path.clone(), timestamp)
+        .update_tool_list_from_config(config, &install_path, timestamp)
         .await?;
 
     app.emit("tool_install_progress", 101)?;
@@ -49,15 +53,15 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
     Ok(install_path)
 }
 
-async fn setup_installation_directory(config: &ToolInstallConfig) -> Result<String> {
-    if !Path::new(&config.details.paths.parent_install_path).exists() {
-        tokio::fs::create_dir_all(&config.details.paths.parent_install_path).await?;
+async fn setup_installation_directory(
+    parent_install_path: &str,
+    tool_name: &str,
+) -> Result<String> {
+    if !Path::new(parent_install_path).exists() {
+        tokio::fs::create_dir_all(parent_install_path).await?;
     }
 
-    let install_path = format!(
-        "{}\\{}",
-        config.details.paths.parent_install_path, config.details.name
-    );
+    let install_path = format!("{}\\{}", parent_install_path, tool_name);
 
     let target_path = Path::new(&install_path);
     if !target_path.exists() {

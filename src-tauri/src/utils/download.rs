@@ -3,7 +3,7 @@ use futures_util::StreamExt;
 use std::cmp::min;
 use std::io::Write;
 
-pub async fn download_file(url: &String) -> Result<String> {
+pub async fn download_file(url: &str) -> Result<String> {
     let temp_dir = std::env::temp_dir().join("AppPorter").join("downloads");
     std::fs::create_dir_all(&temp_dir)?;
 

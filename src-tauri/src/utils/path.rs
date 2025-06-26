@@ -29,7 +29,7 @@ pub fn remove_from_path(path_to_remove: &str, current_user_only: bool) -> Result
     if current_user_only {
         let key = CURRENT_USER.create("Environment")?;
         if let Ok(current_path) = key.get_string("Path") {
-            let new_path: String = current_path
+            let new_path = current_path
                 .split(';')
                 .filter(|p| p.trim() != path_to_remove.trim())
                 .collect::<Vec<&str>>()
@@ -41,7 +41,7 @@ pub fn remove_from_path(path_to_remove: &str, current_user_only: bool) -> Result
         let key = LOCAL_MACHINE
             .create(r"SYSTEM\CurrentControlSet\Control\Session Manager\Environment")?;
         if let Ok(current_path) = key.get_string("path") {
-            let new_path: String = current_path
+            let new_path = current_path
                 .split(';')
                 .filter(|p| p.trim() != path_to_remove.trim())
                 .collect::<Vec<&str>>()

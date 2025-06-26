@@ -320,7 +320,7 @@ impl Library {
                 },
                 paths: AppPaths {
                     parent_install_path: install_path.clone(),
-                    install_path: install_path.clone(),
+                    install_path,
                     full_path,
                 },
                 validation_status: AppValidationStatus {

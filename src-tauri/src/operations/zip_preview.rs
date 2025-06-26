@@ -189,7 +189,7 @@ fn sort_nodes(nodes: &mut Vec<FileTreeNode>) {
     }
 }
 
-pub async fn get_archive_tree(path: String, password: Option<String>) -> Result<Vec<FileTreeNode>> {
+pub async fn get_archive_tree(path: &str, password: Option<&str>) -> Result<Vec<FileTreeNode>> {
     let file_paths = get_archive_content(path, password).await?;
     Ok(build_file_tree(file_paths))
 }

@@ -4,9 +4,9 @@ use std::process::{Command, Stdio};
 use tauri::AppHandle;
 
 pub async fn run_installer(
-    zip_path: String,
-    executable_path: String,
-    password: Option<String>,
+    zip_path: &str,
+    executable_path: &str,
+    password: Option<&str>,
     app: &AppHandle,
 ) -> Result<String> {
     let timestamp = chrono::Utc::now().timestamp_millis();

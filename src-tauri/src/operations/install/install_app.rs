@@ -13,15 +13,18 @@ use std::path::Path;
 use tauri::{AppHandle, Emitter};
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
-pub struct AppInstallConfig {
-    pub zip_path: String,
-    pub password: Option<String>,
+pub struct AppInstallConfig<'a> {
+    pub zip_path: &'a str,
+    pub password: Option<&'a str>,
     pub timestamp: i64,
     pub details: AppDetails,
-    pub url: Option<String>,
+    pub url: Option<&'a str>,
 }
 
-pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(String, String)> {
+pub async fn install_app<'a>(
+    config: AppInstallConfig<'a>,
+    app: &AppHandle,
+) -> Result<(String, String)> {
     let timestamp = chrono::Utc::now().timestamp();
 
     app.emit("app_install_progress", 0)?;
@@ -48,8 +51,8 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     let mut shell_link = ShellLink::new(&full_path)?;
     if config.details.config.custom_icon {
         let icon_path = convert_base64_to_ico(
-            config.details.info.icon.clone(),
-            format!("{}-{}", config.details.info.name.clone(), timestamp),
+            &config.details.info.icon,
+            &format!("{}-{}", config.details.info.name, timestamp),
         )
         .await?;
         shell_link.set_icon_location(Some(icon_path));
@@ -99,7 +102,7 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
 
     let mut app_list = Library::read().await?;
     app_list
-        .update_app_list_from_config(config, full_path.clone(), full_path_directory, timestamp)
+        .update_app_list_from_config(config, &full_path, &full_path_directory, timestamp)
         .await?;
 
     app.emit("app_install_progress", 101)?;

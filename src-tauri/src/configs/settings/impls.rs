@@ -73,9 +73,9 @@ impl Settings {
         let mut settings = Settings::read().await?;
         let env = Env::read().await?;
 
-        settings.run_as_admin = settings.check_run_as_admin(env.user_sid)?;
+        settings.run_as_admin = settings.check_run_as_admin(&env.user_sid)?;
         settings.color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
-        settings.update_install_paths(env.system_drive_letter, env.username);
+        settings.update_install_paths(&env.system_drive_letter, &env.username);
         settings.context_menu = context_menu::check_and_fix_context_menu()?;
         settings.auto_startup = startup::check_and_fix_startup()?;
 
@@ -99,7 +99,7 @@ impl Settings {
                 if let Ok(current_color) = Self::get_system_accent_color() {
                     if current_color != last_color {
                         last_color = current_color.clone();
-                        let _ = app_handle.emit("theme-color-changed", &current_color);
+                        app_handle.emit("theme-color-changed", &current_color);
                     }
                 }
             }
@@ -129,7 +129,7 @@ impl Settings {
         Ok(format!("#{}{}{}", r, g, b))
     }
 
-    fn check_run_as_admin(&self, user_sid: String) -> Result<bool> {
+    fn check_run_as_admin(&self, user_sid: &str) -> Result<bool> {
         let registry_path = format!(
             r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
             user_sid
@@ -142,7 +142,7 @@ impl Settings {
             .is_ok_and(|value| value.contains("RUNASADMIN")))
     }
 
-    fn update_install_paths(&mut self, system_drive_letter: String, username: String) {
+    fn update_install_paths(&mut self, system_drive_letter: &str, username: &str) {
         if self.app_install.all_users.install_path.is_empty() {
             self.app_install.all_users.install_path =
                 format!(r"{}:\Program Files", system_drive_letter);
