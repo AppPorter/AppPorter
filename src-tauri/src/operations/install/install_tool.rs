@@ -52,7 +52,7 @@ pub async fn install_tool<'a>(config: ToolInstallConfig<'a>, app: &AppHandle) ->
             format!("{}\\{}", install_path, normalized_path)
         };
 
-        add_to_path(&full_path_directory, false)?;
+        add_to_path(&full_path_directory, true)?;
     }
 
     let mut app_list = Library::load().await?;

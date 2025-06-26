@@ -36,6 +36,16 @@ pub async fn create_start_menu_shortcut(
     Ok(())
 }
 
+pub async fn remove_desktop_shortcut(app_name: &str) -> Result<()> {
+    if let Some(desktop_dir) = dirs::desktop_dir() {
+        let desktop_shortcut = desktop_dir.join(format!("{}.lnk", app_name));
+        if desktop_shortcut.exists() {
+            fs::remove_file(desktop_shortcut).await?;
+        }
+    }
+    Ok(())
+}
+
 pub async fn remove_start_menu_shortcut(current_user_only: bool, app_name: &str) -> Result<()> {
     let env = Env::read().await?;
     let start_menu_path = if current_user_only {
@@ -52,16 +62,6 @@ pub async fn remove_start_menu_shortcut(current_user_only: bool, app_name: &str)
     let start_menu_shortcut = Path::new(&start_menu_path);
     if start_menu_shortcut.exists() {
         fs::remove_file(start_menu_shortcut).await?;
-    }
-    Ok(())
-}
-
-pub async fn remove_desktop_shortcut(app_name: &str) -> Result<()> {
-    if let Some(desktop_dir) = dirs::desktop_dir() {
-        let desktop_shortcut = desktop_dir.join(format!("{}.lnk", app_name));
-        if desktop_shortcut.exists() {
-            fs::remove_file(desktop_shortcut).await?;
-        }
     }
     Ok(())
 }

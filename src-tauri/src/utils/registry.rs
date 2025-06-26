@@ -50,7 +50,7 @@ pub fn remove_registry_entries(app_name: &str, current_user_only: bool) -> Resul
             app_name
         );
         if CURRENT_USER.open(&key).is_ok() {
-            let _ = CURRENT_USER.remove_tree(&key);
+            CURRENT_USER.remove_tree(&key)?;
         }
     } else {
         key = format!(
@@ -58,7 +58,7 @@ pub fn remove_registry_entries(app_name: &str, current_user_only: bool) -> Resul
             app_name
         );
         if LOCAL_MACHINE.open(&key).is_ok() {
-            let _ = LOCAL_MACHINE.remove_tree(&key);
+            LOCAL_MACHINE.remove_tree(&key)?;
         }
     }
     Ok(())
