@@ -113,7 +113,7 @@ impl Settings {
     pub fn get_system_accent_color() -> Result<String> {
         let accent_color = CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
-            .get_u32("AccentColorMenu")?;
+            .get_u32("StartColorMenu")?;
 
         let accent_color_str = format!("{:08x}", accent_color);
         let (b, g, r) = (

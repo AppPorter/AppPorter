@@ -99,17 +99,17 @@ export const SettingsStore = defineStore('settings', {
     generateColorPalette(): Record<string, string> {
       const baseColor = Color(this.color)
       return {
-        50: baseColor.lighten(0.4).hex(),
-        100: baseColor.lighten(0.3).hex(),
-        200: baseColor.lighten(0.2).hex(),
-        300: baseColor.lighten(0.1).hex(),
-        400: baseColor.lighten(0.05).hex(),
+        50: baseColor.lighten(0.5).hex(),
+        100: baseColor.lighten(0.4).hex(),
+        200: baseColor.lighten(0.3).hex(),
+        300: baseColor.lighten(0.2).hex(),
+        400: baseColor.lighten(0.1).hex(),
         500: baseColor.hex(),
-        600: baseColor.darken(0.05).hex(),
-        700: baseColor.darken(0.1).hex(),
-        800: baseColor.darken(0.2).hex(),
-        900: baseColor.darken(0.3).hex(),
-        950: baseColor.darken(0.4).hex(),
+        600: baseColor.darken(0.1).hex(),
+        700: baseColor.darken(0.2).hex(),
+        800: baseColor.darken(0.3).hex(),
+        900: baseColor.darken(0.4).hex(),
+        950: baseColor.darken(0.5).hex(),
       }
     },
 
