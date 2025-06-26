@@ -34,7 +34,6 @@ impl Library {
         };
 
         if config.timestamp != 0 {
-            // Update existing app with matching timestamp
             if let Some(existing_app) = self
                 .apps
                 .iter_mut()
@@ -44,7 +43,6 @@ impl Library {
                 existing_app.details = new_app.details;
             }
         } else {
-            // Remove existing similar app and add new one
             self.apps.retain(|existing_app| {
                 let mut app1 = existing_app.clone();
                 let mut app2 = new_app.clone();
@@ -65,6 +63,7 @@ impl Library {
         &mut self,
         config: ToolInstallConfig<'_>,
         install_path: &str,
+        full_path_directory: &str,
         timestamp: i64,
     ) -> Result<()> {
         let tool_timestamp = if config.timestamp != 0 {
@@ -79,7 +78,7 @@ impl Library {
                 archive_password: config.password.unwrap_or_default().to_owned(),
                 add_to_path: false,
                 archive_path_directory: String::new(),
-                full_path_directory: String::new(),
+                full_path_directory: full_path_directory.to_owned(),
             },
             paths: ToolPaths {
                 parent_install_path: config.details.paths.parent_install_path,
@@ -99,7 +98,6 @@ impl Library {
         };
 
         if config.timestamp != 0 {
-            // Update existing tool with matching timestamp
             if let Some(existing_tool) = self
                 .tools
                 .iter_mut()
@@ -108,11 +106,9 @@ impl Library {
                 existing_tool.installed = true;
                 existing_tool.details = new_tool.details;
             } else {
-                // If tool doesn't exist, add it as new
                 self.tools.push(new_tool);
             }
         } else {
-            // Remove existing similar tool and add new one
             self.tools.retain(|existing_tool| {
                 let mut tool1 = existing_tool.clone();
                 let mut tool2 = new_tool.clone();
@@ -127,17 +123,13 @@ impl Library {
         Ok(())
     }
 
-    /// Update app list by either marking as uninstalled or removing completely
     pub async fn update_app_list_after_uninstall(&mut self, timestamp: i64) -> Result<()> {
-        // Find the app to be uninstalled
         let app_index = self
             .apps
             .iter()
             .position(|existing_app| existing_app.timestamp == timestamp);
 
         if let Some(index) = app_index {
-            // If the app has a URL, just mark it as not installed
-            // Otherwise, remove it completely from the list
             if !self.apps[index].url.is_empty() {
                 self.apps[index].installed = false;
             } else {
@@ -149,17 +141,13 @@ impl Library {
         Ok(())
     }
 
-    /// Update tool list by either marking as uninstalled or removing completely
     pub async fn update_tool_list_after_uninstall(&mut self, timestamp: i64) -> Result<()> {
-        // Find the tool to be uninstalled
         let tool_index = self
             .tools
             .iter()
             .position(|existing_tool| existing_tool.timestamp == timestamp);
 
         if let Some(index) = tool_index {
-            // If the tool has a URL, just mark it as not installed
-            // Otherwise, remove it completely from the list
             if !self.tools[index].url.is_empty() {
                 self.tools[index].installed = false;
             } else {

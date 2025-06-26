@@ -1,6 +1,6 @@
 use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
 use crate::configs::{ConfigFile, env::Env};
-use crate::core::{context_menu, startup}; // Add import for context_menu and startup modules
+use crate::core::{context_menu, startup};
 use anyhow::{Result, anyhow};
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -10,7 +10,6 @@ use std::time::Duration;
 use tauri::{AppHandle, Emitter};
 use windows_registry::CURRENT_USER;
 
-// Global flag to control theme monitoring
 static THEME_MONITORING_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 #[async_trait::async_trait]
@@ -83,7 +82,6 @@ impl Settings {
         Ok(())
     }
 
-    // Start monitoring system theme color changes
     pub fn start_theme_monitoring(app_handle: AppHandle) {
         if THEME_MONITORING_ACTIVE.swap(true, Ordering::SeqCst) {
             return;
@@ -108,18 +106,15 @@ impl Settings {
         });
     }
 
-    // Stop theme monitoring
     pub fn stop_theme_monitoring() {
         THEME_MONITORING_ACTIVE.store(false, Ordering::SeqCst);
     }
 
-    // Get current system accent color from registry
     pub fn get_system_accent_color() -> Result<String> {
         let accent_color = CURRENT_USER
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
             .get_u32("AccentColorMenu")?;
 
-        // Convert ABGR format to RGB hex
         let accent_color_str = format!("{:08x}", accent_color);
         let (b, g, r) = (
             &accent_color_str[2..4],

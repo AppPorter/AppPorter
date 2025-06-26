@@ -1,4 +1,3 @@
-use crate::configs::ConfigFile;
 use crate::configs::library::*;
 use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
@@ -17,8 +16,8 @@ pub struct AppInstallConfig<'a> {
     pub zip_path: &'a str,
     pub password: Option<&'a str>,
     pub timestamp: i64,
-    pub details: AppDetails,
     pub url: Option<&'a str>,
+    pub details: AppDetails,
 }
 
 pub async fn install_app<'a>(
@@ -76,7 +75,6 @@ pub async fn install_app<'a>(
     }
 
     let mut full_path_directory = String::new();
-
     if config.details.config.add_to_path {
         full_path_directory = if config.details.config.archive_path_directory.is_empty() {
             Path::new(&full_path)
@@ -100,7 +98,7 @@ pub async fn install_app<'a>(
         )?;
     }
 
-    let mut app_list = Library::read().await?;
+    let mut app_list = Library::load().await?;
     app_list
         .update_app_list_from_config(config, &full_path, &full_path_directory, timestamp)
         .await?;

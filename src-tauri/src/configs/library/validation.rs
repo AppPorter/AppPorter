@@ -15,12 +15,10 @@ impl Library {
                 continue;
             }
 
-            // Check if executable exists
             let file_exists = tokio::fs::try_exists(&app.details.paths.full_path)
                 .await
                 .unwrap_or(false);
 
-            // Check registry Comments value
             let registry_valid = if app.details.config.create_registry_key {
                 let registry_path = if app.details.config.current_user_only {
                     format!(
@@ -47,7 +45,6 @@ impl Library {
                 true
             };
 
-            // Check PATH environment variable
             let path_valid = if app.details.config.add_to_path {
                 let path_to_check = &app.details.config.full_path_directory;
 
@@ -86,16 +83,13 @@ impl Library {
                 continue;
             }
 
-            // Check if executable exists
             let file_exists = tokio::fs::try_exists(&tool.details.paths.install_path)
                 .await
                 .unwrap_or(false);
 
-            // Check PATH environment variable
             let path_valid = if tool.details.config.add_to_path {
                 let path_to_check = &tool.details.config.full_path_directory;
 
-                // tools are always added to CURRENT_USER environment
                 match CURRENT_USER.open("Environment") {
                     Ok(key) => match key.get_string("Path") {
                         Ok(path) => path.split(';').any(|p| p.trim() == path_to_check.trim()),
@@ -116,24 +110,20 @@ impl Library {
     }
 
     pub fn remove_duplicates(&mut self) {
-        // Remove duplicates from apps
         let mut i = 0;
         while i < self.apps.len() {
             let mut j = i + 1;
             while j < self.apps.len() {
                 if self.apps[i].details.paths.full_path == self.apps[j].details.paths.full_path {
-                    // Check if all other fields except timestamp and version are identical
                     let mut app1 = self.apps[i].clone();
                     let mut app2 = self.apps[j].clone();
 
-                    // Reset timestamp and version for comparison
                     app1.timestamp = 0;
                     app2.timestamp = 0;
                     app1.details.info.version = String::new();
                     app2.details.info.version = String::new();
 
                     if app1 == app2 {
-                        // Remove the entry with earlier timestamp
                         if self.apps[i].timestamp < self.apps[j].timestamp {
                             self.apps.remove(i);
                             j = i + 1;
@@ -149,7 +139,6 @@ impl Library {
             i += 1;
         }
 
-        // Remove duplicates from tools
         let mut i = 0;
         while i < self.tools.len() {
             let mut j = i + 1;
@@ -157,16 +146,13 @@ impl Library {
                 if self.tools[i].details.paths.install_path
                     == self.tools[j].details.paths.install_path
                 {
-                    // Check if all other fields except timestamp and version are identical
                     let mut tool1 = self.tools[i].clone();
                     let mut tool2 = self.tools[j].clone();
 
-                    // Reset timestamp and version for comparison
                     tool1.timestamp = 0;
                     tool2.timestamp = 0;
 
                     if tool1 == tool2 {
-                        // Remove the entry with earlier timestamp
                         if self.tools[i].timestamp < self.tools[j].timestamp {
                             self.tools.remove(i);
                             j = i + 1;
@@ -184,19 +170,15 @@ impl Library {
     }
 
     pub async fn sync_from_registry(&mut self) -> Result<()> {
-        // Get list of installed apps from registry
         let registry_apps = find_registry_apps()?;
 
-        // For each app found in registry
         for reg_app in registry_apps {
-            // Check if it's already in our list
             let app_exists = self.apps.iter().any(|app| {
                 app.installed
                     && app.details.info.name == reg_app.info.name
                     && app.details.paths.full_path == reg_app.paths.full_path
             });
 
-            // If not in our list, add it
             if !app_exists {
                 self.apps.push(super::structs::App {
                     timestamp: chrono::Utc::now().timestamp(),
@@ -210,7 +192,6 @@ impl Library {
         fn find_registry_apps() -> Result<Vec<AppDetails>> {
             let mut result = Vec::new();
 
-            // Search in both HKEY_CURRENT_USER and HKEY_LOCAL_MACHINE
             search_registry(
                 &mut result,
                 windows_registry::CURRENT_USER,
@@ -259,18 +240,16 @@ impl Library {
             app_key: &windows_registry::Key,
             current_user_only: bool,
         ) -> Result<Option<AppDetails>> {
-            // Extract required values
             let name = match app_key.get_string("DisplayName") {
                 Ok(name) => name,
-                Err(_) => return Ok(None), // Skip if no display name
+                Err(_) => return Ok(None),
             };
 
             let full_path = match app_key.get_string("DisplayIcon") {
                 Ok(path) => path,
-                Err(_) => return Ok(None), // Skip if no path
+                Err(_) => return Ok(None),
             };
 
-            // Extract optional values with defaults
             let version = app_key.get_string("DisplayVersion").unwrap_or_default();
             let publisher = app_key.get_string("Publisher").unwrap_or_default();
             let install_path = app_key.get_string("InstallLocation").map(|path| {
@@ -298,7 +277,6 @@ impl Library {
             let create_registry_key = config.create_registry_key;
             let add_to_path = config.add_to_path;
 
-            // Create a new AppDetails
             let app = AppDetails {
                 info: AppBasicInformation {
                     name,
