@@ -99,7 +99,7 @@ impl Settings {
                 if let Ok(current_color) = Self::get_system_accent_color() {
                     if current_color != last_color {
                         last_color = current_color.clone();
-                        app_handle.emit("theme-color-changed", &current_color);
+                        let _ = app_handle.emit("theme-color-changed", &current_color);
                     }
                 }
             }
