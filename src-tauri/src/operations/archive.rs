@@ -46,7 +46,7 @@ pub async fn get_archive_content(path: &str, password: Option<&str>) -> Result<V
     let output = Command::new(get_7z_path()?)
         .args([
             "l",
-            &path,
+            path,
             "-y",
             &format!("-p{}", password.ok_or(anyhow!("Failed to get password"))?),
         ])

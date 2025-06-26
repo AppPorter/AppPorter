@@ -8,7 +8,7 @@ pub async fn validate_path(path: &str) -> Result<String> {
             && chars.get(2).is_some_and(|c| *c == '\\')
     }
 
-    if !is_valid_path_format(&path) {
+    if !is_valid_path_format(path) {
         return Err(anyhow!("Invalid drive letter or path format"));
     }
 

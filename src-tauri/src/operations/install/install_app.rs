@@ -36,10 +36,10 @@ pub async fn install_app<'a>(
 
     tokio::fs::create_dir_all(&install_path).await?;
     extract_archive_files(
-        &config.zip_path,
+        config.zip_path,
         &install_path,
         app,
-        config.password.as_deref(),
+        config.password,
         "app_install_progress",
     )
     .await?;

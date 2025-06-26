@@ -74,10 +74,9 @@ pub async fn convert_base64_to_ico(base64_data: &str, filename: &str) -> Result<
     } else {
         &format!("{}.ico", filename)
     };
-    let output_path = icons_dir.join(&output_filename);
+    let output_path = icons_dir.join(output_filename);
 
     tokio::task::spawn_blocking({
-        let image_data = image_data;
         let output_path = output_path.clone();
         move || -> Result<()> {
             let img = image::load_from_memory(&image_data)?;

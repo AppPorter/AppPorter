@@ -16,10 +16,10 @@ pub async fn run_installer(
     std::fs::create_dir_all(&temp_dir)?;
 
     extract_archive_files(
-        &zip_path,
+        zip_path,
         &temp_dir.to_string_lossy(),
         app,
-        password.as_deref(),
+        password,
         "installer_extract_progress",
     )
     .await?;

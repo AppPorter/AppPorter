@@ -123,12 +123,12 @@ impl<'a> Command<'a> {
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp, &app).await?),
             UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp, &app).await?),
 
-            OpenApp { path } => Self::ser(open_app(&path).await?),
-            OpenFolder { path } => Self::ser(open_folder(&path).await?),
+            OpenApp { path } => Self::ser(open_app(path).await?),
+            OpenFolder { path } => Self::ser(open_folder(path).await?),
             OpenRegistry {
                 app_name,
                 current_user_only,
-            } => Self::ser(open_registry(&app_name, current_user_only).await?),
+            } => Self::ser(open_registry(app_name, current_user_only).await?),
 
             GetDetails { path } => Self::ser(get_details(path).await?),
             RunInstaller { path } => Self::ser(
@@ -145,7 +145,7 @@ impl<'a> Command<'a> {
             GetArchiveContent { path, password } => {
                 Self::ser(get_archive_content(path, password).await?)
             }
-            CheckPathEmpty { path } => Self::ser(check_path_empty(&path).await?),
+            CheckPathEmpty { path } => Self::ser(check_path_empty(path).await?),
             GetArchiveTree { path, password } => Self::ser(get_archive_tree(path, password).await?),
             GetTimestamp => Self::ser(get_timestamp()?),
         }
