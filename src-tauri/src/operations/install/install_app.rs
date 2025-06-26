@@ -1,7 +1,7 @@
 use crate::configs::library::*;
-use crate::operations::convert_base64_to_ico;
 use crate::operations::extract_archive_files;
 use crate::operations::install::flatten_nested_folders;
+use crate::utils::convert_base64_to_ico;
 use crate::utils::path::add_to_path;
 use crate::utils::registry::create_registry_entries;
 use crate::utils::shortcuts::{create_desktop_shortcut, create_start_menu_shortcut};
