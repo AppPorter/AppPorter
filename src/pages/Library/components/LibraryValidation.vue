@@ -42,17 +42,19 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
 
     appToValidate.value = app
 
-    if (app.type === 'tool') {
-        return;
-    }
-
     const validation = app.details.validation_status
     const fileExists = validation.file_exists
-    const registryValid = validation.registry_valid
     const pathExists = validation.path_exists
 
-    if (!fileExists || !registryValid || !pathExists) {
-        showDialog.value = true
+    if (app.type === 'tool') {
+        if (!fileExists || !pathExists) {
+            showDialog.value = true
+        }
+    } else {
+        const registryValid = validation.registry_valid
+        if (!fileExists || !registryValid || !pathExists) {
+            showDialog.value = true
+        }
     }
 }
 
@@ -101,12 +103,14 @@ defineExpose({
                     <i
                         :class="appToValidate.details.validation_status.file_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div class="flex items-center justify-between rounded p-2">
+                <div v-if="appToValidate.type === 'app' && appToValidate.details.config.create_registry_key"
+                    class="flex items-center justify-between rounded p-2">
                     <span>Registry Valid</span>
                     <i
                         :class="appToValidate.details.validation_status.registry_valid ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div class="flex items-center justify-between rounded p-2">
+                <div v-if="appToValidate.details.config.add_to_path"
+                    class="flex items-center justify-between rounded p-2">
                     <span>Path Exists</span>
                     <i
                         :class="appToValidate.details.validation_status.path_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
