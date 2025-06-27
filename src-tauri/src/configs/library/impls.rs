@@ -16,7 +16,6 @@ impl ConfigFile for Library {
 impl Library {
     pub async fn load() -> Result<Library> {
         let mut library = Library::read().await?;
-        library.sync_from_registry().await?;
         library.remove_duplicates();
         library.validate_installs().await?;
 
