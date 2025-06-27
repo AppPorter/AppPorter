@@ -12,7 +12,7 @@ pub async fn run_installer(
     let timestamp = chrono::Utc::now().timestamp_millis();
     let temp_dir = std::env::temp_dir()
         .join("AppPorter")
-        .join(format!("installer_{}", timestamp));
+        .join(format!("installer_{timestamp}"));
     std::fs::create_dir_all(&temp_dir)?;
 
     extract_archive_files(

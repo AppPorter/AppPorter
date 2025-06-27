@@ -70,7 +70,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
 
     let mut pw = String::new();
     if let Some(password) = &input.password {
-        pw = format!("-p{}", password);
+        pw = format!("-p{password}");
     }
     args.push(&pw);
 
@@ -110,7 +110,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
         r#"[Console]::OutputEncoding = [System.Text.Encoding]::UTF8;
         $ErrorActionPreference = 'Stop';
         try {{
-            $file_path = '{}';
+            $file_path = '{safe_path_for_ps}';
             $version_info = (Get-Item $file_path).VersionInfo;
             Write-Output (ConvertTo-Json -Compress @{{
                 product_name = $version_info.ProductName;
@@ -125,8 +125,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
             Write-Output (ConvertTo-Json -Compress @{{
                 error = $_.Exception.Message;
             }})
-        }}"#,
-        safe_path_for_ps
+        }}"#
     );
 
     let output2 = Command::new("powershell")

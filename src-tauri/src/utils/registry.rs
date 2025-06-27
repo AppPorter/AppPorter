@@ -40,18 +40,12 @@ pub fn remove_registry_entries(app_name: &str, current_user_only: bool) -> Resul
     let key;
 
     if current_user_only {
-        key = format!(
-            r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            app_name
-        );
+        key = format!(r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{app_name}");
         if CURRENT_USER.open(&key).is_ok() {
             CURRENT_USER.remove_tree(&key)?;
         }
     } else {
-        key = format!(
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{}",
-            app_name
-        );
+        key = format!(r"SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\{app_name}");
         if LOCAL_MACHINE.open(&key).is_ok() {
             LOCAL_MACHINE.remove_tree(&key)?;
         }

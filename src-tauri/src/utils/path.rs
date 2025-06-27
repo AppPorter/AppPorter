@@ -18,7 +18,7 @@ pub fn add_to_path(path_directory: &str, current_user_only: bool) -> Result<()> 
         .split(';')
         .any(|p| p.trim() == path_directory.trim())
     {
-        let new_path = format!("{};{}", current_path, path_directory);
+        let new_path = format!("{current_path};{path_directory}");
         key.set_expand_string(path_key, new_path)?;
     }
 

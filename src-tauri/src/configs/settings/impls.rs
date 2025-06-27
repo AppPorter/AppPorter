@@ -43,7 +43,7 @@ impl Default for Settings {
                     create_desktop_shortcut: false,
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
-                    install_path: format!(r"{}:\Program Files", system_drive),
+                    install_path: format!(r"{system_drive}:\Program Files"),
                     add_to_path: false,
                 },
                 current_user: InstallSettings {
@@ -51,8 +51,7 @@ impl Default for Settings {
                     create_registry_key: true,
                     create_start_menu_shortcut: true,
                     install_path: format!(
-                        r"{}:\Users\{}\AppData\Local\Programs",
-                        system_drive, username
+                        r"{system_drive}:\Users\{username}\AppData\Local\Programs",
                     ),
                     add_to_path: false,
                 },
@@ -115,19 +114,18 @@ impl Settings {
             .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
             .get_u32("StartColorMenu")?;
 
-        let accent_color_str = format!("{:08x}", accent_color);
+        let accent_color_str = format!("{accent_color:08x}");
         let (b, g, r) = (
             &accent_color_str[2..4],
             &accent_color_str[4..6],
             &accent_color_str[6..8],
         );
-        Ok(format!("#{}{}{}", r, g, b))
+        Ok(format!("#{r}{g}{b}"))
     }
 
     fn check_run_as_admin(&self, user_sid: &str) -> Result<bool> {
         let registry_path = format!(
-            r"{}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers",
-            user_sid
+            r"{user_sid}\Software\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
         );
         let exe_path = std::env::current_exe()?.to_string_lossy().to_string();
 
@@ -140,14 +138,12 @@ impl Settings {
     fn update_install_paths(&mut self, system_drive_letter: &str, username: &str) {
         if self.app_install.all_users.install_path.is_empty() {
             self.app_install.all_users.install_path =
-                format!(r"{}:\Program Files", system_drive_letter);
+                format!(r"{system_drive_letter}:\Program Files");
         }
 
         if self.app_install.current_user.install_path.is_empty() {
-            self.app_install.current_user.install_path = format!(
-                r"{}:\Users\{}\AppData\Local\Programs",
-                system_drive_letter, username
-            );
+            self.app_install.current_user.install_path =
+                format!(r"{system_drive_letter}:\Users\{username}\AppData\Local\Programs",);
         }
     }
 }

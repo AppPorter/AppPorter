@@ -28,7 +28,7 @@ pub fn build_file_tree(paths: Vec<String>) -> Vec<FileTreeNode> {
             current_path = if current_path.is_empty() {
                 part.to_string()
             } else {
-                format!("{}\\{}", current_path, part)
+                format!("{current_path}\\{part}")
             };
             dir_map.insert(current_path.clone(), true);
         }
@@ -50,7 +50,7 @@ pub fn build_file_tree(paths: Vec<String>) -> Vec<FileTreeNode> {
             current_path = if current_path.is_empty() {
                 part.to_string()
             } else {
-                format!("{}\\{}", current_path, part)
+                format!("{current_path}\\{part}")
             };
 
             let is_last = index == parts.len() - 1;

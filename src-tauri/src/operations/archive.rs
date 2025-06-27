@@ -74,7 +74,7 @@ pub async fn extract_archive_files(
     event_name: &str,
 ) -> Result<()> {
     let path_7z = get_7z_path()?;
-    let password_arg = format!("-p{}", password);
+    let password_arg = format!("-p{password}");
 
     let output = Command::new(&path_7z)
         .args(["l", zip_path, "-y", &password_arg])
@@ -110,7 +110,7 @@ pub async fn extract_archive_files(
         }
     }
 
-    let output_dir = format!("-o{}", install_path);
+    let output_dir = format!("-o{install_path}");
     let mut extract_args = vec!["-bsp2", "x", zip_path, &output_dir, "-y", "-aoa", "-snl"];
 
     if !password.is_empty() {

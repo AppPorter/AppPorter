@@ -39,10 +39,9 @@ pub async fn open_registry(name: &str, current_user_only: bool) -> Result<()> {
 
     let ps_command = format!(
         r#"
-        New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit" -Name "LastKey" -Value "{}{}" -Force
+        New-ItemProperty -Path "HKCU:\Software\Microsoft\Windows\CurrentVersion\Applets\Regedit" -Name "LastKey" -Value "{regpath}{name}" -Force
         Start-Process regedit
         "#,
-        regpath, name
     );
 
     let output = Command::new("powershell")

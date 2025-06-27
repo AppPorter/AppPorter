@@ -38,7 +38,7 @@ pub async fn create_start_menu_shortcut(
 
 pub async fn remove_desktop_shortcut(app_name: &str) -> Result<()> {
     if let Some(desktop_dir) = dirs::desktop_dir() {
-        let desktop_shortcut = desktop_dir.join(format!("{}.lnk", app_name));
+        let desktop_shortcut = desktop_dir.join(format!("{app_name}.lnk"));
         if desktop_shortcut.exists() {
             fs::remove_file(desktop_shortcut).await?;
         }
@@ -72,7 +72,7 @@ pub async fn remove_custom_icon(app_name: &str, timestamp: i64) -> Result<()> {
         .join("AppPorter")
         .join("icons");
 
-    let icon_filename = format!("{}-{}.ico", app_name, timestamp);
+    let icon_filename = format!("{app_name}-{timestamp}.ico");
     let icon_path = icons_dir.join(&icon_filename);
 
     if icon_path.exists() {

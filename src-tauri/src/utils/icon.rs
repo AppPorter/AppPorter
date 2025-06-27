@@ -72,7 +72,7 @@ pub async fn convert_base64_to_ico(base64_data: &str, filename: &str) -> Result<
     let output_filename = if filename.ends_with(".ico") {
         filename
     } else {
-        &format!("{}.ico", filename)
+        &format!("{filename}.ico")
     };
     let output_path = icons_dir.join(output_filename);
 
