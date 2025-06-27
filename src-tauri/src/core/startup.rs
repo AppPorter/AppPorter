@@ -26,7 +26,7 @@ pub fn check_and_fix_startup() -> Result<bool> {
     let app_path = current_exe
         .to_str()
         .ok_or(anyhow!("Failed to get current exe path"))?;
-    let expected_value = format!("\"{}\" --silent", app_path);
+    let expected_value = format!("\"{app_path}\" --silent");
 
     if let Ok(shell_key) = CURRENT_USER.open(r"Software\Microsoft\Windows\CurrentVersion\Run") {
         if let Ok(current_value) = shell_key.get_string("AppPorter") {

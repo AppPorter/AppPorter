@@ -9,18 +9,16 @@ pub fn register_context_menu() -> Result<()> {
         .to_owned();
 
     for ext in SUPPORTED_EXTENSIONS {
-        let base_path = format!(
-            "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
-            ext
-        );
+        let base_path =
+            format!("Software\\Classes\\SystemFileAssociations\\.{ext}\\shell\\AppPorter");
 
         let shell_key = CURRENT_USER.create(&base_path)?;
         shell_key.set_string("", "Install using AppPorter")?;
         shell_key.set_string("Icon", &app_path)?;
 
         CURRENT_USER
-            .create(format!("{}\\command", base_path))?
-            .set_string("", format!(r#""{}" preview "%1""#, app_path))?;
+            .create(format!("{base_path}\\command"))?
+            .set_string("", format!(r#""{app_path}" preview "%1""#))?;
     }
 
     Ok(())
@@ -28,10 +26,8 @@ pub fn register_context_menu() -> Result<()> {
 
 pub fn unregister_context_menu() -> Result<()> {
     for ext in SUPPORTED_EXTENSIONS {
-        let base_path = format!(
-            "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
-            ext
-        );
+        let base_path =
+            format!("Software\\Classes\\SystemFileAssociations\\.{ext}\\shell\\AppPorter");
         CURRENT_USER.remove_tree(&base_path)?;
     }
     Ok(())
@@ -42,17 +38,15 @@ pub fn check_and_fix_context_menu() -> Result<bool> {
         .to_str()
         .ok_or(anyhow!("Failed to get current exe path"))?
         .to_owned();
-    let expected_command = format!(r#""{}" preview "%1""#, app_path);
+    let expected_command = format!(r#""{app_path}" preview "%1""#);
     let expected_display_name = "Install using AppPorter";
 
     let mut any_exists = false;
     let mut needs_fix = false;
 
     for ext in SUPPORTED_EXTENSIONS {
-        let base_path = format!(
-            "Software\\Classes\\SystemFileAssociations\\.{}\\shell\\AppPorter",
-            ext
-        );
+        let base_path =
+            format!("Software\\Classes\\SystemFileAssociations\\.{ext}\\shell\\AppPorter");
 
         // Check if registry key exists
         if let Ok(shell_key) = CURRENT_USER.open(&base_path) {
@@ -73,7 +67,7 @@ pub fn check_and_fix_context_menu() -> Result<bool> {
             }
 
             // Check command
-            let command_path = format!("{}\\command", base_path);
+            let command_path = format!("{base_path}\\command");
             match CURRENT_USER.open(&command_path) {
                 Ok(command_key) => {
                     let current_command = command_key.get_string("").unwrap_or_default();
