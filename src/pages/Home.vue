@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config'
+import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
@@ -32,7 +33,23 @@ async function handleContinueClick() {
     return
   }
 
-  installConfig.show_preview_drawer = true
+  const inputType = await invoke('execute_command', {
+    command: {
+      name: 'DetermineInputType',
+      input: installConfig.zip_path
+    }
+  }) as string
+
+  if (JSON.parse(inputType)) {
+    await invoke('execute_command', {
+      command: {
+        name: 'PreviewUrl',
+        url: installConfig.zip_path
+      }
+    })
+  } else {
+    installConfig.show_preview_drawer = true
+  }
 }
 </script>
 
@@ -51,7 +68,7 @@ async function handleContinueClick() {
 
       <div class="space-y-6">
         <div class="flex items-center gap-2">
-          <InputText v-model="installConfig.zip_path" :placeholder="t('ui.select_placeholder.archive')"
+          <InputText v-model="installConfig.zip_path" :placeholder="t('ui.select_placeholder.archive_or_url')"
             class="h-9 flex-1 text-sm" />
           <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
             :label="t('g.browse')" />
