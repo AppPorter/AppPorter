@@ -82,12 +82,12 @@ onMounted(async () => {
       command: {
         name: 'InstallApp',
         config: {
-          zip_path: installConfig.zip_path,
-          password: installConfig.archive_password,
-          details: installConfig.app_details,
           timestamp: installConfig.timestamp,
+          installed: false,
           url: installConfig.url,
+          details: installConfig.app_details,
         },
+        zip_path: installConfig.zip_path,
       },
     })
     result = JSON.parse(result as string)

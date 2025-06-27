@@ -49,6 +49,12 @@ pub enum Command<'a> {
     UninstallTool {
         timestamp: i64,
     },
+    RepairApp {
+        timestamp: i64,
+    },
+    RepairTool {
+        timestamp: i64,
+    },
 
     OpenApp {
         path: &'a str,
@@ -128,6 +134,8 @@ impl<'a> Command<'a> {
             }
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp).await?),
             UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp).await?),
+            RepairApp { timestamp } => Self::ser(repair_app(timestamp).await?),
+            RepairTool { timestamp } => Self::ser(repair_tool(timestamp).await?),
 
             OpenApp { path } => Self::ser(open_app(path).await?),
             OpenFolder { path } => Self::ser(open_folder(path).await?),

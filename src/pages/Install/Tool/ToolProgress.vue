@@ -58,12 +58,12 @@ onMounted(async () => {
             command: {
                 name: 'InstallTool',
                 config: {
-                    zip_path: installConfig.zip_path,
-                    password: installConfig.archive_password,
                     timestamp: installConfig.timestamp,
-                    details: installConfig.tool_details,
+                    installed: false,
                     url: installConfig.url,
+                    details: installConfig.tool_details,
                 },
+                zip_path: installConfig.zip_path,
             },
         })
         installPath.value = result as string
@@ -141,7 +141,7 @@ async function handleCopyInstallPath() {
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                            }}</span>
+                                        }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"

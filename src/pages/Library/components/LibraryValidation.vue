@@ -62,9 +62,13 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (action === 'uninstall') {
         await triggerUninstall(appToValidate.value.type, appToValidate.value.timestamp)
     } else {
+        const commandName = action === 'repair'
+            ? (appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool')
+            : 'Reinstall'
+
         await invoke('execute_command', {
             command: {
-                name: action === 'reinstall' ? 'Reinstall' : 'Repair',
+                name: commandName,
                 timestamp: appToValidate.value.timestamp,
             },
         })
@@ -92,17 +96,17 @@ defineExpose({
                 {{ t('ui.validation.issue', { name: appToValidate.details.info.name }) }}
             </div>
             <div class="mb-6 space-y-2">
-                <div class="flex items-center justify-between rounded bg-surface-50 p-2">
+                <div class="flex items-center justify-between rounded p-2">
                     <span>File Exists</span>
                     <i
                         :class="appToValidate.details.validation_status.file_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div class="flex items-center justify-between rounded bg-surface-50 p-2">
+                <div class="flex items-center justify-between rounded p-2">
                     <span>Registry Valid</span>
                     <i
                         :class="appToValidate.details.validation_status.registry_valid ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div class="flex items-center justify-between rounded bg-surface-50 p-2">
+                <div class="flex items-center justify-between rounded p-2">
                     <span>Path Exists</span>
                     <i
                         :class="appToValidate.details.validation_status.path_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
