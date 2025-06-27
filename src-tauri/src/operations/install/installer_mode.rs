@@ -6,7 +6,7 @@ use tauri::AppHandle;
 pub async fn run_installer(
     zip_path: &str,
     executable_path: &str,
-    password: Option<&str>,
+    password: &str,
     app: &AppHandle,
 ) -> Result<String> {
     let timestamp = chrono::Utc::now().timestamp_millis();

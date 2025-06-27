@@ -70,13 +70,11 @@ pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,
     app: &AppHandle,
-    password: Option<&str>,
+    password: &str,
     event_name: &str,
 ) -> Result<()> {
     let path_7z = get_7z_path()?;
-    let password_arg = password
-        .map(|p| format!("-p{}", p))
-        .ok_or(anyhow!("Failed to get password"))?;
+    let password_arg = format!("-p{}", password);
 
     let output = Command::new(&path_7z)
         .args(["l", zip_path, "-y", &password_arg])
@@ -114,7 +112,10 @@ pub async fn extract_archive_files(
 
     let output_dir = format!("-o{}", install_path);
     let mut extract_args = vec!["-bsp2", "x", zip_path, &output_dir, "-y", "-aoa", "-snl"];
-    extract_args.push(&password_arg);
+
+    if !password.is_empty() {
+        extract_args.push(&password_arg);
+    }
 
     let mut child = std::process::Command::new(&path_7z)
         .args(extract_args)

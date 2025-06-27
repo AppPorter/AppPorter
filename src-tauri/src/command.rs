@@ -36,10 +36,12 @@ pub enum Command<'a> {
         url: &'a str,
     },
     InstallApp {
-        config: Box<AppInstallConfig<'a>>,
+        config: App,
+        zip_path: &'a str,
     },
     InstallTool {
-        config: Box<ToolInstallConfig<'a>>,
+        config: Tool,
+        zip_path: &'a str,
     },
     UninstallApp {
         timestamp: i64,
@@ -118,8 +120,12 @@ impl<'a> Command<'a> {
             RemoveStartup => Self::ser(remove_startup()?),
 
             PreviewUrl { url } => Self::ser(preview_url(&app, url).await?),
-            InstallApp { config } => Self::ser(install_app(*config, &app).await?),
-            InstallTool { config } => Self::ser(install_tool(*config, &app).await?),
+            InstallApp { config, zip_path } => {
+                Self::ser(install_app(config, zip_path, &app).await?)
+            }
+            InstallTool { config, zip_path } => {
+                Self::ser(install_tool(config, zip_path, &app).await?)
+            }
             UninstallApp { timestamp } => Self::ser(uninstall_app(timestamp).await?),
             UninstallTool { timestamp } => Self::ser(uninstall_tool(timestamp).await?),
 
@@ -135,7 +141,7 @@ impl<'a> Command<'a> {
                 run_installer(
                     &path.zip_path,
                     &path.executable_path,
-                    path.password.as_deref(),
+                    path.password.as_deref().unwrap_or_default(),
                     &app,
                 )
                 .await?,
