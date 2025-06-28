@@ -91,12 +91,12 @@ watch(
     if (newValue === oldValue) return
 
     if (newValue) {
-      await invoke('execute_command', {
-        command: { name: 'RegisterContextMenu' },
+      await invoke('exec', {
+        cmd: { name: 'RegisterContextMenu' },
       })
     } else {
-      await invoke('execute_command', {
-        command: { name: 'UnregisterContextMenu' },
+      await invoke('exec', {
+        cmd: { name: 'UnregisterContextMenu' },
       })
     }
   }
@@ -108,12 +108,12 @@ watch(
     if (newValue === oldValue) return
 
     if (newValue) {
-      await invoke('execute_command', {
-        command: { name: 'SetStartup' },
+      await invoke('exec', {
+        cmd: { name: 'SetStartup' },
       })
     } else {
-      await invoke('execute_command', {
-        command: { name: 'RemoveStartup' },
+      await invoke('exec', {
+        cmd: { name: 'RemoveStartup' },
       })
     }
   }

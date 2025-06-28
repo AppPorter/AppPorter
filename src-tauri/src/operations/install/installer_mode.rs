@@ -8,7 +8,7 @@ pub async fn run_installer(
     executable_path: &str,
     password: &str,
     app: &AppHandle,
-) -> Result<String> {
+) -> Result<()> {
     let timestamp = chrono::Utc::now().timestamp_millis();
     let temp_dir = std::env::temp_dir()
         .join("AppPorter")
@@ -44,9 +44,11 @@ pub async fn run_installer(
     std::fs::remove_dir_all(&temp_dir)?;
 
     if output.stderr.is_empty() {
-        Ok("Installer completed successfully".to_owned())
+        Ok(())
     } else {
-        let error_msg = String::from_utf8_lossy(&output.stderr);
-        Err(anyhow!("Installer failed: {}", error_msg))
+        Err(anyhow!(
+            "Installer failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        ))
     }
 }

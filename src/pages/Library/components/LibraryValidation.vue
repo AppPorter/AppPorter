@@ -68,8 +68,8 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
             ? (appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool')
             : 'Reinstall'
 
-        await invoke('execute_command', {
-            command: {
+        await invoke('exec', {
+            cmd: {
                 name: commandName,
                 timestamp: appToValidate.value.timestamp,
             },

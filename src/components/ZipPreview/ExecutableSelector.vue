@@ -105,8 +105,8 @@ async function handleSelect() {
   if (isSelecting.value) return
   isSelecting.value = true
   emit('loading', true)
-  const result = await invoke('execute_command', {
-    command: {
+  const result = await invoke('exec', {
+    cmd: {
       name: 'GetDetails',
       path: {
         zip_path: props.zipPath,
@@ -137,8 +137,8 @@ async function handleInstallerMode() {
   isSelecting.value = true
   emit('loading', true)
 
-  await invoke('execute_command', {
-    command: {
+  await invoke('exec', {
+    cmd: {
       name: 'RunInstaller',
       path: {
         zip_path: props.zipPath,

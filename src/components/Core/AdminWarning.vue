@@ -32,8 +32,8 @@ const handleAdminPrompt = (event) => {
     },
     accept: () => {
       if (!env.debug) {
-        invoke('execute_command', {
-          command: {
+        invoke('exec', {
+          cmd: {
             name: 'Elevate',
             revert: false,
           },

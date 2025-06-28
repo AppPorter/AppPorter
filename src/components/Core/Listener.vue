@@ -46,8 +46,8 @@ onMounted(async () => {
         showWindow()
     })
 
-    invoke('execute_command', {
-        command: {
+    invoke('exec', {
+        cmd: {
             name: 'Cli',
         },
     })

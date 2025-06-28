@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::Result;
-use app_porter_lib::{command, configs::*, core::*, operations::*};
+use app_porter_lib::{commands, configs::*, core::*, operations::*};
 use tauri::Manager;
 
 #[tokio::main]
@@ -53,7 +53,7 @@ async fn run() -> Result<()> {
         }))
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_clipboard_manager::init())
-        .invoke_handler(tauri::generate_handler![command::execute_command])
+        .invoke_handler(tauri::generate_handler![commands::exec])
         .run(tauri::generate_context!())?;
     Ok(())
 }

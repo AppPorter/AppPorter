@@ -9,8 +9,8 @@ function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     tauriWindow.hide()
   } else {
-    invoke('execute_command', {
-      command: { name: 'Exit', code: 0 },
+    invoke('exec', {
+      cmd: { name: 'Exit', code: 0 },
     })
   }
 }

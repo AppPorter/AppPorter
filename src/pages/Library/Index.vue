@@ -124,8 +124,8 @@ function showMenu(event) {
 async function installApp() {
   if (!selectedApp.value) return
   loading.value = true
-  await invoke('execute_command', {
-    command: {
+  await invoke('exec', {
+    cmd: {
       name: 'InstallWithLink',
       url: selectedApp.value.url,
       timestamp: selectedApp.value.timestamp,

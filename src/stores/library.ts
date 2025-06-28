@@ -107,15 +107,15 @@ export const LibraryStore = defineStore('library', {
 
   actions: {
     async loadLibrary() {
-      const result = await invoke<string>('execute_command', {
-        command: { name: 'LoadLibrary' },
+      const result = await invoke<string>('exec', {
+        cmd: { name: 'LoadLibrary' },
       })
       this.$patch(JSON.parse(result))
     },
 
     async saveLibrary() {
-      await invoke('execute_command', {
-        command: {
+      await invoke('exec', {
+        cmd: {
           name: 'SaveLibrary',
           library: this.$state,
         },
@@ -145,16 +145,16 @@ export const LibraryStore = defineStore('library', {
     async executeUninstall(apptype: InstallTypes, timestamp: number) {
       switch (apptype) {
         case 'app':
-          await invoke('execute_command', {
-            command: {
+          await invoke('exec', {
+            cmd: {
               name: 'UninstallApp',
               timestamp,
             },
           })
           break
         case 'tool':
-          await invoke('execute_command', {
-            command: {
+          await invoke('exec', {
+            cmd: {
               name: 'UninstallTool',
               timestamp,
             },

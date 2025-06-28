@@ -73,7 +73,7 @@ impl Settings {
 
         settings.run_as_admin = settings.check_run_as_admin(&env.user_sid)?;
         settings.color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
-        settings.update_install_paths(&env.system_drive_letter, &env.username);
+        settings.update_install_paths(&env.system_drive_letter, &env.username)?;
         settings.context_menu = context_menu::check_and_fix_context_menu()?;
         settings.auto_startup = startup::check_and_fix_startup()?;
 
@@ -81,9 +81,9 @@ impl Settings {
         Ok(())
     }
 
-    pub fn start_theme_monitoring(app_handle: AppHandle) {
+    pub fn start_theme_monitoring(app_handle: AppHandle) -> Result<()> {
         if THEME_MONITORING_ACTIVE.swap(true, Ordering::SeqCst) {
-            return;
+            return Ok(());
         }
 
         let app_handle = Arc::new(app_handle);
@@ -103,10 +103,12 @@ impl Settings {
 
             THEME_MONITORING_ACTIVE.store(false, Ordering::SeqCst);
         });
+        Ok(())
     }
 
-    pub fn stop_theme_monitoring() {
+    pub fn stop_theme_monitoring() -> Result<()> {
         THEME_MONITORING_ACTIVE.store(false, Ordering::SeqCst);
+        Ok(())
     }
 
     pub fn get_system_accent_color() -> Result<String> {
@@ -135,7 +137,7 @@ impl Settings {
             .is_ok_and(|value| value.contains("RUNASADMIN")))
     }
 
-    fn update_install_paths(&mut self, system_drive_letter: &str, username: &str) {
+    fn update_install_paths(&mut self, system_drive_letter: &str, username: &str) -> Result<()> {
         if self.app_install.all_users.install_path.is_empty() {
             self.app_install.all_users.install_path =
                 format!(r"{system_drive_letter}:\Program Files");
@@ -145,5 +147,6 @@ impl Settings {
             self.app_install.current_user.install_path =
                 format!(r"{system_drive_letter}:\Users\{username}\AppData\Local\Programs",);
         }
+        Ok(())
     }
 }

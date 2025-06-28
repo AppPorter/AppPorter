@@ -69,8 +69,8 @@ async function handleSubscribe() {
     subscribeSuccess.value = false
 
     // Add URL to subscribed URLs
-    const timestamp = await invoke('execute_command', {
-        command: { name: 'GetTimestamp' },
+    const timestamp = await invoke('exec', {
+        cmd: { name: 'GetTimestamp' },
     }) as string
 
     libraryStore.urls.push({ url, timestamp: parseInt(timestamp) })
@@ -147,8 +147,8 @@ async function handlePasswordSubmit() {
 
 async function GetArchiveContent(password: string) {
     const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
-    const result = await invoke('execute_command', {
-        command: {
+    const result = await invoke('exec', {
+        cmd: {
             name: 'GetArchiveTree',
             path: zipPath,
             password: password,

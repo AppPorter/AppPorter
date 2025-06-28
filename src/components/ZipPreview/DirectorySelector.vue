@@ -41,8 +41,8 @@ async function loadFileTree() {
     loading.value = true
     emit('loading', true)
 
-    const result = await invoke('execute_command', {
-        command: {
+    const result = await invoke('exec', {
+        cmd: {
             name: 'GetArchiveTree',
             path: props.zipPath,
             password: props.password || '',

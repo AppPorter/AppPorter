@@ -24,8 +24,8 @@ installConfig.page = 'Install_Tool_Progress'
 const { t } = useI18n()
 
 const handleOpenInstallFolder = async () => {
-    await invoke('execute_command', {
-        command: {
+    await invoke('exec', {
+        cmd: {
             name: 'OpenFolder',
             path: installPath.value
         }
@@ -54,8 +54,8 @@ onMounted(async () => {
     })
 
     try {
-        const result = await invoke('execute_command', {
-            command: {
+        const result = await invoke('exec', {
+            cmd: {
                 name: 'InstallTool',
                 config: {
                     timestamp: installConfig.timestamp,

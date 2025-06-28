@@ -54,8 +54,8 @@ onMounted(async () => {
         await settings.acknowledgeFirstRun()
       },
       reject: () => {
-        invoke('execute_command', {
-          command: { name: 'Exit', code: 0 },
+        invoke('exec', {
+          cmd: { name: 'Exit', code: 0 },
         })
       },
     })

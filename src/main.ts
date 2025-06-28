@@ -40,8 +40,8 @@ const createTrayMenu = (t: (key: string) => string) => {
         id: 'quit',
         text: t('g.exit'),
         action: () =>
-          invoke('execute_command', {
-            command: { name: 'Exit', code: 0 },
+          invoke('exec', {
+            cmd: { name: 'Exit', code: 0 },
           }),
       },
     ],

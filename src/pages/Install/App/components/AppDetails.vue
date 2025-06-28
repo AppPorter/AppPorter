@@ -43,8 +43,8 @@ async function selectIcon() {
       originalIcon = icon.value
     }
 
-    const base64Icon = await invoke('execute_command', {
-      command: {
+    const base64Icon = await invoke('exec', {
+      cmd: {
         name: 'ConvertIconToBase64',
         path: String(selected)
       }

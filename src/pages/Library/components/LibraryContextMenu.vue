@@ -123,8 +123,8 @@ const menuItems = computed(() => {
 async function previewUrl() {
     if (!props.selectedApp) return
 
-    await invoke('execute_command', {
-        command: {
+    await invoke('exec', {
+        cmd: {
             name: 'PreviewUrl',
             url: props.selectedApp.url,
         },
@@ -134,8 +134,8 @@ async function previewUrl() {
 async function openApp() {
     if (!props.selectedApp) return
     if (props.selectedApp.type === 'app') {
-        await invoke('execute_command', {
-            command: {
+        await invoke('exec', {
+            cmd: {
                 name: 'OpenApp',
                 path: props.selectedApp.details.paths.full_path,
             },
@@ -145,8 +145,8 @@ async function openApp() {
 
 async function openInstallFolder() {
     if (!props.selectedApp) return
-    await invoke('execute_command', {
-        command: {
+    await invoke('exec', {
+        cmd: {
             name: 'OpenFolder',
             path: props.selectedApp.details.paths.install_path,
         },
@@ -156,8 +156,8 @@ async function openInstallFolder() {
 async function openRegistry() {
     if (!props.selectedApp) return
     if (props.selectedApp.type === 'app') {
-        await invoke('execute_command', {
-            command: {
+        await invoke('exec', {
+            cmd: {
                 name: 'OpenRegistry',
                 app_name: props.selectedApp.details.info.name,
                 current_user_only: props.selectedApp.details.config.current_user_only,

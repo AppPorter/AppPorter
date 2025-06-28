@@ -29,8 +29,8 @@ export const EnvStore = defineStore('env', {
 
   actions: {
     async loadEnv() {
-      const result = await invoke<string>('execute_command', {
-        command: { name: 'LoadEnv' },
+      const result = await invoke<string>('exec', {
+        cmd: { name: 'LoadEnv' },
       })
       const env = JSON.parse(result)
 

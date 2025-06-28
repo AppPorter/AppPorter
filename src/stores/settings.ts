@@ -75,16 +75,16 @@ export const SettingsStore = defineStore('settings', {
 
   actions: {
     async loadSettings() {
-      const result = await invoke<string>('execute_command', {
-        command: { name: 'LoadSettings' },
+      const result = await invoke<string>('exec', {
+        cmd: { name: 'LoadSettings' },
       })
       const settings = JSON.parse(result)
       this.$patch(settings)
     },
 
     async saveSettings() {
-      await invoke('execute_command', {
-        command: {
+      await invoke('exec', {
+        cmd: {
           name: 'SaveSettings',
           settings: this.$state,
         },
@@ -166,8 +166,8 @@ export const SettingsStore = defineStore('settings', {
     },
 
     async startThemeColorMonitoring() {
-      await invoke('execute_command', {
-        command: { name: 'StartThemeMonitoring' },
+      await invoke('exec', {
+        cmd: { name: 'StartThemeMonitoring' },
       })
 
       const unlisten = await listen<string>('theme-color-changed', (event) => {
@@ -183,8 +183,8 @@ export const SettingsStore = defineStore('settings', {
     },
 
     async stopThemeColorMonitoring() {
-      await invoke('execute_command', {
-        command: { name: 'StopThemeMonitoring' },
+      await invoke('exec', {
+        cmd: { name: 'StopThemeMonitoring' },
       })
 
       if (this.unlistenThemeColor) {

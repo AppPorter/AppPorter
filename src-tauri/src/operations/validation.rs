@@ -3,18 +3,18 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub enum InputType {
-    DownloadUrl,
-    LocalPath,
+    Url,
+    File,
     Invalid,
 }
 
 pub async fn determine_input_type(input: &str) -> Result<InputType> {
-    fn is_local_path(input: &str) -> bool {
+    fn is_file(input: &str) -> bool {
         let chars: Vec<char> = input.chars().collect();
         chars.len() >= 3 && chars[0].is_ascii_alphabetic() && chars[1] == ':' && chars[2] == '\\'
     }
 
-    fn is_download_url(input: &str) -> bool {
+    fn is_url(input: &str) -> bool {
         if input.starts_with("http://") || input.starts_with("https://") {
             return true;
         }
@@ -42,12 +42,12 @@ pub async fn determine_input_type(input: &str) -> Result<InputType> {
         return Ok(InputType::Invalid);
     }
 
-    if is_local_path(trimmed) {
-        return Ok(InputType::LocalPath);
+    if is_file(trimmed) {
+        return Ok(InputType::File);
     }
 
-    if is_download_url(trimmed) {
-        return Ok(InputType::DownloadUrl);
+    if is_url(trimmed) {
+        return Ok(InputType::Url);
     }
 
     Ok(InputType::Invalid)

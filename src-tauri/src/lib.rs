@@ -1,4 +1,4 @@
-pub mod command;
+pub mod commands;
 pub mod configs;
 pub mod core;
 pub mod operations;

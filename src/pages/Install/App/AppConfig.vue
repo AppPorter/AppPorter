@@ -32,8 +32,8 @@ async function handleInstallClick() {
   pathError.value = !installConfig.app_details.paths.parent_install_path
 
   try {
-    const validatedPath = (await invoke('execute_command', {
-      command: {
+    const validatedPath = (await invoke('exec', {
+      cmd: {
         name: 'ValidatePath',
         path: installConfig.app_details.paths.parent_install_path,
       },
@@ -51,8 +51,8 @@ async function handleInstallClick() {
   }
 
   try {
-    await invoke('execute_command', {
-      command: {
+    await invoke('exec', {
+      cmd: {
         name: 'CheckPathEmpty',
         path: installConfig.app_details.paths.install_path,
       },

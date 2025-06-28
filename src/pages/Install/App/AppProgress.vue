@@ -23,8 +23,8 @@ const { t } = useI18n()
 
 const handleOpenExecutable = async () => {
   if (fullPath.value) {
-    await invoke('execute_command', {
-      command: {
+    await invoke('exec', {
+      cmd: {
         name: 'OpenApp',
         path: fullPath.value
       }
@@ -33,8 +33,8 @@ const handleOpenExecutable = async () => {
 }
 
 const handleOpenInstallFolder = async () => {
-  await invoke('execute_command', {
-    command: {
+  await invoke('exec', {
+    cmd: {
       name: 'OpenFolder',
       path: installPath.value
     }
@@ -78,8 +78,8 @@ onMounted(async () => {
   })
 
   try {
-    let result = await invoke('execute_command', {
-      command: {
+    let result = await invoke('exec', {
+      cmd: {
         name: 'InstallApp',
         config: {
           timestamp: installConfig.timestamp,

@@ -11,7 +11,7 @@ lazy_static! {
     ) = broadcast::channel(1);
 }
 
-pub async fn cli(app: &AppHandle) -> Result<String> {
+pub async fn cli(app: &AppHandle) -> Result<()> {
     let init_args: Vec<String> = std::env::args().collect();
     let args: Vec<String> = init_args
         .into_iter()

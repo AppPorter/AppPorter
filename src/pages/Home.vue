@@ -5,11 +5,13 @@ import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Home'
 const { t } = useI18n()
+const inputError = ref(false)
 
 async function selectZipFile() {
   const selected = await open({
@@ -33,16 +35,23 @@ async function handleContinueClick() {
     return
   }
 
-  const inputType = await invoke('execute_command', {
-    command: {
+  type InputType = 'Url' | 'File' | 'Invalid'
+
+  const inputType = await invoke('exec', {
+    cmd: {
       name: 'DetermineInputType',
       input: installConfig.zip_path
     }
-  }) as string
+  }) as InputType
 
-  if (JSON.parse(inputType)) {
-    await invoke('execute_command', {
-      command: {
+  if (inputType === 'Invalid') {
+    inputError.value = true
+    return
+  }
+
+  if (inputType === 'Url') {
+    await invoke('exec', {
+      cmd: {
         name: 'PreviewUrl',
         url: installConfig.zip_path
       }
@@ -69,7 +78,7 @@ async function handleContinueClick() {
       <div class="space-y-6">
         <div class="flex items-center gap-2">
           <InputText v-model="installConfig.zip_path" :placeholder="t('ui.select_placeholder.archive_or_url')"
-            class="h-9 flex-1 text-sm" />
+            :invalid="inputError" class="h-9 flex-1 text-sm" />
           <Button @click="selectZipFile" severity="secondary" class="h-9 px-4" icon="mir-folder_open"
             :label="t('g.browse')" />
         </div>
