@@ -3,7 +3,7 @@ import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
@@ -70,12 +70,9 @@ async function handleInstallClick() {
     pathError.value = !installConfig.tool_details.paths.parent_install_path
 
     try {
-        const validatedPath = (await invoke('exec', {
-            cmd: {
-                name: 'ValidatePath',
-                path: installConfig.tool_details.paths.parent_install_path,
-            },
-        })) as string
+        const validatedPath = (await exec('ValidatePath', {
+            path: installConfig.tool_details.paths.parent_install_path,
+        }))
 
         installConfig.tool_details.paths.parent_install_path = validatedPath
         installConfig.tool_details.paths.install_path = `${validatedPath}\\${installConfig.tool_details.name}`
@@ -89,11 +86,8 @@ async function handleInstallClick() {
     }
 
     try {
-        await invoke('exec', {
-            cmd: {
-                name: 'CheckPathEmpty',
-                path: installConfig.tool_details.paths.install_path,
-            },
+        await exec('ValidateInstallPath', {
+            path: installConfig.tool_details.paths.install_path,
         })
         await new Promise((resolve, reject) => {
             confirm.require({

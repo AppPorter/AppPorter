@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { exec } from '@/exec'
 
 const installConfig = InstallConfigStore()
 installConfig.page = 'Home'
@@ -37,11 +38,8 @@ async function handleContinueClick() {
 
   type InputType = 'Url' | 'File' | 'Invalid'
 
-  const inputType = await invoke('exec', {
-    cmd: {
-      name: 'DetermineInputType',
-      input: installConfig.zip_path
-    }
+  const inputType = await exec('DetermineInputType', {
+    input: installConfig.zip_path
   }) as InputType
 
   if (inputType === 'Invalid') {

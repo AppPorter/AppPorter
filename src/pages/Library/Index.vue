@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { LibraryStore } from '@/stores/library'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import DataView from 'primevue/dataview'
 import Panel from 'primevue/panel'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -124,12 +124,9 @@ function showMenu(event) {
 async function installApp() {
   if (!selectedApp.value) return
   loading.value = true
-  await invoke('exec', {
-    cmd: {
-      name: 'InstallWithLink',
-      url: selectedApp.value.url,
-      timestamp: selectedApp.value.timestamp,
-    },
+  await exec('InstallWithLink', {
+    url: selectedApp.value.url,
+    timestamp: selectedApp.value.timestamp,
   })
   loading.value = false
 }

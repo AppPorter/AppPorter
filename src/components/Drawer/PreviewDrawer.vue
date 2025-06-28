@@ -3,7 +3,7 @@ import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { LibraryStore } from '@/stores/library'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Drawer from 'primevue/drawer'
@@ -69,9 +69,7 @@ async function handleSubscribe() {
     subscribeSuccess.value = false
 
     // Add URL to subscribed URLs
-    const timestamp = await invoke('exec', {
-        cmd: { name: 'GetTimestamp' },
-    }) as string
+    const timestamp = await exec('GetTimestamp')
 
     libraryStore.urls.push({ url, timestamp: parseInt(timestamp) })
     await libraryStore.saveLibrary()
@@ -147,15 +145,11 @@ async function handlePasswordSubmit() {
 
 async function GetArchiveContent(password: string) {
     const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
-    const result = await invoke('exec', {
-        cmd: {
-            name: 'GetArchiveTree',
-            path: zipPath,
-            password: password,
-        },
+    const treeData = await exec('GetArchiveTree', {
+        path: zipPath,
+        password: password,
     })
 
-    const treeData = JSON.parse(result as string)
     if (isTemporaryMode.value) {
         installConfig.setTempData({ file_tree: treeData })
     } else {
@@ -200,7 +194,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -220,7 +214,7 @@ async function GetArchiveContent(password: string) {
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
                             <span class="text-sm font-medium">{{ t('g.loading')
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>

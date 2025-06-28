@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { window as tauriWindow } from '@/main'
 import { SettingsStore } from '@/stores/settings'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 
 const settingsStore = SettingsStore()
 
@@ -9,8 +9,8 @@ function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {
     tauriWindow.hide()
   } else {
-    invoke('exec', {
-      cmd: { name: 'Exit', code: 0 },
+    exec('Exit', {
+      code: 0,
     })
   }
 }

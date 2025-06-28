@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { InstallTypes } from '@/stores/library'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -68,11 +68,8 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
             ? (appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool')
             : 'Reinstall'
 
-        await invoke('exec', {
-            cmd: {
-                name: commandName,
-                timestamp: appToValidate.value.timestamp,
-            },
+        await exec(commandName, {
+            timestamp: appToValidate.value.timestamp,
         })
         emit('loadLibrary')
     }

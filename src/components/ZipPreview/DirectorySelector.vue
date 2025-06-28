@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import SelectButton from 'primevue/selectbutton'
@@ -41,12 +41,9 @@ async function loadFileTree() {
     loading.value = true
     emit('loading', true)
 
-    const result = await invoke('exec', {
-        cmd: {
-            name: 'GetArchiveTree',
-            path: props.zipPath,
-            password: props.password || '',
-        },
+    const result = exec('GetArchiveTree', {
+        zip_path: props.zipPath,
+        password: props.password || '',
     })
 
     const treeData = JSON.parse(result as string)

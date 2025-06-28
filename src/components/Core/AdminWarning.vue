@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { EnvStore } from '@/stores/env'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import ConfirmPopup from 'primevue/confirmpopup'
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
@@ -32,11 +32,8 @@ const handleAdminPrompt = (event) => {
     },
     accept: () => {
       if (!env.debug) {
-        invoke('exec', {
-          cmd: {
-            name: 'Elevate',
-            revert: false,
-          },
+        exec('Elevate', {
+          revert: false,
         })
       }
     },

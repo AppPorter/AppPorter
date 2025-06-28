@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import SplitButton from 'primevue/splitbutton'
@@ -105,18 +105,14 @@ async function handleSelect() {
   if (isSelecting.value) return
   isSelecting.value = true
   emit('loading', true)
-  const result = await invoke('exec', {
-    cmd: {
-      name: 'GetDetails',
-      path: {
-        zip_path: props.zipPath,
-        executable_path: selectedPath.value,
-        password: props.password,
-      },
-    },
+  const details = await exec('GetDetails', {
+    path: {
+      zip_path: props.zipPath,
+      executable_path: selectedPath.value,
+      password: props.password,
+    }
   })
 
-  const details = JSON.parse(result as string)
   store.app_details.info.name = details.product_name
   store.app_details.info.version = details.version
   store.app_details.info.publisher = details.copyright
@@ -137,15 +133,12 @@ async function handleInstallerMode() {
   isSelecting.value = true
   emit('loading', true)
 
-  await invoke('exec', {
-    cmd: {
-      name: 'RunInstaller',
-      path: {
-        zip_path: props.zipPath,
-        executable_path: selectedPath.value,
-        password: props.password,
-      },
-    },
+  await exec('RunInstaller', {
+    path: {
+      zip_path: props.zipPath,
+      executable_path: selectedPath.value,
+      password: props.password,
+    }
   })
 
   isSelecting.value = false

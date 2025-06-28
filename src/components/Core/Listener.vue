@@ -3,7 +3,7 @@ import { window as tauriWindow } from '@/main'
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
 import { type InstallTypes, LibraryStore } from '@/stores/library'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import { inject, onMounted } from 'vue'
 
@@ -46,10 +46,6 @@ onMounted(async () => {
         showWindow()
     })
 
-    invoke('exec', {
-        cmd: {
-            name: 'Cli',
-        },
-    })
+    exec('Cli')
 })
 </script>

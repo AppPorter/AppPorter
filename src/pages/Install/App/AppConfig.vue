@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { goTo } from '@/router';
 import { InstallConfigStore } from '@/stores/install_config';
-import { invoke } from '@tauri-apps/api/core';
+import { exec } from '@/exec'
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
 import { ref } from 'vue';
@@ -32,12 +32,9 @@ async function handleInstallClick() {
   pathError.value = !installConfig.app_details.paths.parent_install_path
 
   try {
-    const validatedPath = (await invoke('exec', {
-      cmd: {
-        name: 'ValidatePath',
-        path: installConfig.app_details.paths.parent_install_path,
-      },
-    })) as string
+    const validatedPath = await exec('ValidatePath', {
+      path: installConfig.app_details.paths.parent_install_path,
+    })
 
     installConfig.app_details.paths.parent_install_path = validatedPath
     installConfig.app_details.paths.install_path = `${validatedPath}\\${installConfig.app_details.info.name}`
@@ -51,11 +48,8 @@ async function handleInstallClick() {
   }
 
   try {
-    await invoke('exec', {
-      cmd: {
-        name: 'CheckPathEmpty',
-        path: installConfig.app_details.paths.install_path,
-      },
+    await exec('CheckPathEmpty', {
+      path: installConfig.app_details.paths.install_path,
     })
 
     await new Promise((resolve, reject) => {

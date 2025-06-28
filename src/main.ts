@@ -1,3 +1,4 @@
+import { exec } from '@/exec'
 import { setupI18n } from '@/locales/i18n'
 import Main from '@/Main.vue'
 import router, { setupRouterGuards } from '@/router'
@@ -6,7 +7,6 @@ import '@/styles/main.css'
 import { definePreset } from '@primeuix/themes'
 import Aura from '@primeuix/themes/aura'
 import { defaultWindowIcon } from '@tauri-apps/api/app'
-import { invoke } from '@tauri-apps/api/core'
 import { Menu } from '@tauri-apps/api/menu'
 import { TrayIcon, type TrayIconEvent } from '@tauri-apps/api/tray'
 import { getCurrentWindow } from '@tauri-apps/api/window'
@@ -39,10 +39,7 @@ const createTrayMenu = (t: (key: string) => string) => {
       {
         id: 'quit',
         text: t('g.exit'),
-        action: () =>
-          invoke('exec', {
-            cmd: { name: 'Exit', code: 0 },
-          }),
+        action: () => exec('Exit', { code: 0 }),
       },
     ],
   })

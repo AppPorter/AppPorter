@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -23,21 +23,15 @@ const { t } = useI18n()
 
 const handleOpenExecutable = async () => {
   if (fullPath.value) {
-    await invoke('exec', {
-      cmd: {
-        name: 'OpenApp',
-        path: fullPath.value
-      }
+    await exec('OpenApp', {
+      path: fullPath.value
     })
   }
 }
 
 const handleOpenInstallFolder = async () => {
-  await invoke('exec', {
-    cmd: {
-      name: 'OpenFolder',
-      path: installPath.value
-    }
+  await exec('OpenFolder', {
+    path: installPath.value
   })
 }
 
@@ -78,19 +72,15 @@ onMounted(async () => {
   })
 
   try {
-    let result = await invoke('exec', {
-      cmd: {
-        name: 'InstallApp',
-        config: {
-          timestamp: installConfig.timestamp,
-          installed: false,
-          url: installConfig.url,
-          details: installConfig.app_details,
-        },
-        zip_path: installConfig.zip_path,
+    let result = await exec('InstallApp', {
+      config: {
+        timestamp: installConfig.timestamp,
+        installed: false,
+        url: installConfig.url,
+        details: installConfig.app_details,
       },
+      zip_path: installConfig.zip_path,
     })
-    result = JSON.parse(result as string)
     installPath.value = result[0]
     fullPath.value = result[1]
   } catch (error) {

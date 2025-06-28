@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
 import { InstallConfigStore } from '@/stores/install_config'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
@@ -24,11 +24,8 @@ installConfig.page = 'Install_Tool_Progress'
 const { t } = useI18n()
 
 const handleOpenInstallFolder = async () => {
-    await invoke('exec', {
-        cmd: {
-            name: 'OpenFolder',
-            path: installPath.value
-        }
+    await exec('OpenFolder', {
+        path: installPath.value
     })
 }
 
@@ -54,19 +51,16 @@ onMounted(async () => {
     })
 
     try {
-        const result = await invoke('exec', {
-            cmd: {
-                name: 'InstallTool',
-                config: {
-                    timestamp: installConfig.timestamp,
-                    installed: false,
-                    url: installConfig.url,
-                    details: installConfig.tool_details,
-                },
-                zip_path: installConfig.zip_path,
+        const result = await exec('InstallTool', {
+            config: {
+                timestamp: installConfig.timestamp,
+                installed: false,
+                url: installConfig.url,
+                details: installConfig.tool_details,
             },
+            zip_path: installConfig.zip_path,
         })
-        installPath.value = result as string
+        installPath.value = result
     } catch (error) {
         globalThis.$errorHandler.showError(error)
         currentStatus.value = t('ui.install.progress.failed')

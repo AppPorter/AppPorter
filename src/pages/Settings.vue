@@ -2,7 +2,6 @@
 import { EnvStore } from '@/stores/env'
 import { InstallConfigStore } from '@/stores/install_config'
 import { SettingsStore } from '@/stores/settings'
-import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Chip from 'primevue/chip'
@@ -13,6 +12,7 @@ import SelectButton from 'primevue/selectbutton'
 import ToggleSwitch from 'primevue/toggleswitch'
 import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { exec } from '@/exec'
 
 const settings = SettingsStore()
 const env = EnvStore()
@@ -91,13 +91,9 @@ watch(
     if (newValue === oldValue) return
 
     if (newValue) {
-      await invoke('exec', {
-        cmd: { name: 'RegisterContextMenu' },
-      })
+      await exec('RegisterContextMenu')
     } else {
-      await invoke('exec', {
-        cmd: { name: 'UnregisterContextMenu' },
-      })
+      await exec('UnregisterContextMenu')
     }
   }
 )
@@ -108,13 +104,9 @@ watch(
     if (newValue === oldValue) return
 
     if (newValue) {
-      await invoke('exec', {
-        cmd: { name: 'SetStartup' },
-      })
+      await exec('SetStartup')
     } else {
-      await invoke('exec', {
-        cmd: { name: 'RemoveStartup' },
-      })
+      await exec('RemoveStartup')
     }
   }
 )

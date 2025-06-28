@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { AppDetails, ToolDetails } from '@/stores/library'
 import { type InstallTypes, LibraryStore } from '@/stores/library'
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import Menu from 'primevue/menu'
 import { computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -123,45 +123,33 @@ const menuItems = computed(() => {
 async function previewUrl() {
     if (!props.selectedApp) return
 
-    await invoke('exec', {
-        cmd: {
-            name: 'PreviewUrl',
-            url: props.selectedApp.url,
-        },
+    await exec('PreviewUrl', {
+        url: props.selectedApp.url,
     })
 }
 
 async function openApp() {
     if (!props.selectedApp) return
     if (props.selectedApp.type === 'app') {
-        await invoke('exec', {
-            cmd: {
-                name: 'OpenApp',
-                path: props.selectedApp.details.paths.full_path,
-            },
+        await exec('OpenApp', {
+            path: props.selectedApp.details.paths.full_path,
         })
     }
 }
 
 async function openInstallFolder() {
     if (!props.selectedApp) return
-    await invoke('exec', {
-        cmd: {
-            name: 'OpenFolder',
-            path: props.selectedApp.details.paths.install_path,
-        },
+    await exec('OpenFolder', {
+        path: props.selectedApp.details.paths.install_path,
     })
 }
 
 async function openRegistry() {
     if (!props.selectedApp) return
     if (props.selectedApp.type === 'app') {
-        await invoke('exec', {
-            cmd: {
-                name: 'OpenRegistry',
-                app_name: props.selectedApp.details.info.name,
-                current_user_only: props.selectedApp.details.config.current_user_only,
-            },
+        await exec('OpenRegistry', {
+            app_name: props.selectedApp.details.info.name,
+            current_user_only: props.selectedApp.details.config.current_user_only,
         })
     }
 }

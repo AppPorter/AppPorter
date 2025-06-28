@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { InstallConfigStore } from '@/stores/install_config';
-import { invoke } from '@tauri-apps/api/core';
+import { exec } from '@/exec'
 import { open } from '@tauri-apps/plugin-dialog';
 import { storeToRefs } from 'pinia';
 import { toRef } from 'vue';
@@ -43,12 +43,9 @@ async function selectIcon() {
       originalIcon = icon.value
     }
 
-    const base64Icon = await invoke('exec', {
-      cmd: {
-        name: 'ConvertIconToBase64',
-        path: String(selected)
-      }
-    }) as string
+    const base64Icon = await exec('ConvertIconToBase64', {
+      path: selected
+    })
 
     icon.value = base64Icon
     custom_icon.value = true
