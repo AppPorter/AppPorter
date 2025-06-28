@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { defineStore } from 'pinia'
 import type { Settings } from './settings'
 
@@ -29,11 +29,7 @@ export const EnvStore = defineStore('env', {
 
   actions: {
     async loadEnv() {
-      const result = await invoke<string>('exec', {
-        cmd: { name: 'LoadEnv' },
-      })
-      const env = JSON.parse(result)
-
+      const env = await exec('LoadEnv')
       this.$patch(env)
     },
 

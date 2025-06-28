@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { defineStore } from 'pinia'
 
 export type InstallTypes = 'app' | 'tool' | 'url'
@@ -107,18 +107,13 @@ export const LibraryStore = defineStore('library', {
 
   actions: {
     async loadLibrary() {
-      const result = await invoke<string>('exec', {
-        cmd: { name: 'LoadLibrary' },
-      })
-      this.$patch(JSON.parse(result))
+      const result = await exec('LoadLibrary')
+      this.$patch(result)
     },
 
     async saveLibrary() {
-      await invoke('exec', {
-        cmd: {
-          name: 'SaveLibrary',
-          library: this.$state,
-        },
+      await exec('SaveLibrary', {
+        library: this.$state,
       })
     },
 
@@ -145,20 +140,10 @@ export const LibraryStore = defineStore('library', {
     async executeUninstall(apptype: InstallTypes, timestamp: number) {
       switch (apptype) {
         case 'app':
-          await invoke('exec', {
-            cmd: {
-              name: 'UninstallApp',
-              timestamp,
-            },
-          })
+          await exec('UninstallApp', { timestamp })
           break
         case 'tool':
-          await invoke('exec', {
-            cmd: {
-              name: 'UninstallTool',
-              timestamp,
-            },
-          })
+          await exec('UninstallTool', { timestamp })
           break
       }
 

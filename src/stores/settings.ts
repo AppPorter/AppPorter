@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core'
+import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import Color from 'color'
 import { defineStore } from 'pinia'
@@ -75,19 +75,13 @@ export const SettingsStore = defineStore('settings', {
 
   actions: {
     async loadSettings() {
-      const result = await invoke<string>('exec', {
-        cmd: { name: 'LoadSettings' },
-      })
-      const settings = JSON.parse(result)
-      this.$patch(settings)
+      const result = await exec('LoadSettings')
+      this.$patch(result)
     },
 
     async saveSettings() {
-      await invoke('exec', {
-        cmd: {
-          name: 'SaveSettings',
-          settings: this.$state,
-        },
+      await exec('SaveSettings', {
+        settings: this.$state,
       })
     },
 
@@ -166,9 +160,7 @@ export const SettingsStore = defineStore('settings', {
     },
 
     async startThemeColorMonitoring() {
-      await invoke('exec', {
-        cmd: { name: 'StartThemeMonitoring' },
-      })
+      await exec('StartThemeMonitoring')
 
       const unlisten = await listen<string>('theme-color-changed', (event) => {
         this.color = event.payload
@@ -183,9 +175,7 @@ export const SettingsStore = defineStore('settings', {
     },
 
     async stopThemeColorMonitoring() {
-      await invoke('exec', {
-        cmd: { name: 'StopThemeMonitoring' },
-      })
+      await exec('StopThemeMonitoring')
 
       if (this.unlistenThemeColor) {
         this.unlistenThemeColor()

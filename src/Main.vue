@@ -8,7 +8,6 @@ import Uninstall from '@/components/Core/Uninstall.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
 import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
 import { generateMaterialIconsClasses } from '@/styles/material_icons.ts'
-import { invoke } from '@tauri-apps/api/core'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
@@ -17,6 +16,7 @@ import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
 import { InstallTypes } from './stores/library.ts'
 import { SettingsStore } from './stores/settings.ts'
+import { exec } from './exec.ts'
 
 const confirm = useConfirm()
 const { t } = useI18n()
@@ -54,8 +54,8 @@ onMounted(async () => {
         await settings.acknowledgeFirstRun()
       },
       reject: () => {
-        invoke('exec', {
-          cmd: { name: 'Exit', code: 0 },
+        exec('Exit', {
+          code: 0
         })
       },
     })
