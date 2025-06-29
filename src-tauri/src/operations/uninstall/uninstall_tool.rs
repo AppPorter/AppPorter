@@ -12,13 +12,13 @@ pub async fn uninstall_tool(timestamp: i64) -> Result<()> {
         .find(|tool| tool.timestamp == timestamp)
         .ok_or(anyhow!("Tool not found in library"))?;
 
-    let tool_path = &tool_config.details.paths.install_path;
+    let tool_path = &tool_config.details.install_path;
     if Path::new(tool_path).exists() {
         fs::remove_dir_all(tool_path).await?;
     }
 
-    if tool_config.details.config.add_to_path {
-        remove_from_path(&tool_config.details.config.full_path_directory, true)?;
+    if tool_config.details.add_to_path.0 {
+        remove_from_path(&tool_config.details.add_to_path.1, true)?;
     }
 
     library.update_tool_list_after_uninstall(timestamp).await?;

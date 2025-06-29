@@ -25,17 +25,17 @@ pub async fn reinstall_app(timestamp: i64, zip_path: &str) -> Result<()> {
         zip_path,
         &temp_dir.to_string_lossy(),
         None,
-        &app_config.details.config.archive_password,
+        &app_config.archive_password,
         "",
     )
     .await?;
 
     flatten_nested_folders(&temp_dir.to_string_lossy(), None).await?;
 
-    tokio::fs::create_dir_all(&app_config.details.paths.install_path).await?;
+    tokio::fs::create_dir_all(&app_config.details.install_path).await?;
     move_dir(
         &temp_dir,
-        &app_config.details.paths.install_path,
+        &app_config.details.install_path,
         &fs_extra::dir::CopyOptions::new()
             .overwrite(true)
             .content_only(true),

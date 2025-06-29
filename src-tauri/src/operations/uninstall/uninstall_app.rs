@@ -16,7 +16,7 @@ pub async fn uninstall_app(timestamp: i64) -> Result<()> {
         .find(|app| app.timestamp == timestamp)
         .ok_or(anyhow!("App not found in library"))?;
 
-    let app_path = &app_config.details.paths.install_path;
+    let app_path = &app_config.details.install_path;
     if Path::new(app_path).exists() {
         fs::remove_dir_all(app_path).await?;
     }
@@ -27,7 +27,7 @@ pub async fn uninstall_app(timestamp: i64) -> Result<()> {
 
     if app_config.details.config.create_start_menu_shortcut {
         remove_start_menu_shortcut(
-            app_config.details.config.current_user_only,
+            app_config.details.current_user_only,
             &app_config.details.info.name,
         )
         .await?;
@@ -40,14 +40,14 @@ pub async fn uninstall_app(timestamp: i64) -> Result<()> {
     if app_config.details.config.create_registry_key {
         remove_registry_entries(
             &app_config.details.info.name,
-            app_config.details.config.current_user_only,
+            app_config.details.current_user_only,
         )?;
     }
 
-    if app_config.details.config.add_to_path {
+    if app_config.details.config.add_to_path.0 {
         remove_from_path(
-            &app_config.details.config.full_path_directory,
-            app_config.details.config.current_user_only,
+            &app_config.details.config.add_to_path.1,
+            app_config.details.current_user_only,
         )?;
     }
 

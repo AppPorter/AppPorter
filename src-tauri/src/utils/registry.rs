@@ -4,7 +4,7 @@ use std::env;
 use windows_registry::{CURRENT_USER, LOCAL_MACHINE};
 
 pub fn create_registry_entries(config: &App) -> Result<()> {
-    let key = if config.details.config.current_user_only {
+    let key = if config.details.current_user_only {
         CURRENT_USER.create(format!(
             r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
             config.details.info.name
@@ -17,10 +17,10 @@ pub fn create_registry_entries(config: &App) -> Result<()> {
     };
 
     key.set_string("Comments", "Installed with AppPorter")?;
-    key.set_string("DisplayIcon", &config.details.paths.full_path)?;
+    key.set_string("DisplayIcon", &config.details.full_path)?;
     key.set_string("DisplayName", &config.details.info.name)?;
     key.set_string("DisplayVersion", &config.details.info.version)?;
-    key.set_string("InstallLocation", &config.details.paths.install_path)?;
+    key.set_string("InstallLocation", &config.details.install_path)?;
     key.set_u32("NoModify", 1)?;
     key.set_u32("NoRemove", 0)?;
     key.set_u32("NoRepair", 1)?;

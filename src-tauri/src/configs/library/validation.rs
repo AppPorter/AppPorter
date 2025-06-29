@@ -9,12 +9,12 @@ impl Library {
                 continue;
             }
 
-            let file_exists = tokio::fs::try_exists(&app.details.paths.full_path)
+            let file_exists = tokio::fs::try_exists(&app.details.full_path)
                 .await
                 .unwrap_or(false);
 
             let registry_valid = if app.details.config.create_registry_key {
-                let registry_path = if app.details.config.current_user_only {
+                let registry_path = if app.details.current_user_only {
                     format!(
                         r"Software\Microsoft\Windows\CurrentVersion\Uninstall\{}",
                         app.details.info.name
@@ -26,7 +26,7 @@ impl Library {
                     )
                 };
 
-                let reg_key = if app.details.config.current_user_only {
+                let reg_key = if app.details.current_user_only {
                     windows_registry::CURRENT_USER.open(&registry_path)
                 } else {
                     windows_registry::LOCAL_MACHINE.open(&registry_path)
@@ -39,10 +39,10 @@ impl Library {
                 true
             };
 
-            let path_valid = if app.details.config.add_to_path {
-                let path_to_check = &app.details.config.full_path_directory;
+            let path_valid = if app.details.config.add_to_path.0 {
+                let path_to_check = &app.details.config.add_to_path.1;
 
-                if app.details.config.current_user_only {
+                if app.details.current_user_only {
                     match CURRENT_USER.open("Environment") {
                         Ok(key) => match key.get_string("Path") {
                             Ok(path) => path.split(';').any(|p| p.trim() == path_to_check.trim()),
@@ -65,7 +65,7 @@ impl Library {
                 true
             };
 
-            app.details.validation_status = AppValidationStatus {
+            app.validation_status = AppValidationStatus {
                 file_exists,
                 registry_valid,
                 path_exists: path_valid,
@@ -77,12 +77,12 @@ impl Library {
                 continue;
             }
 
-            let file_exists = tokio::fs::try_exists(&tool.details.paths.install_path)
+            let file_exists = tokio::fs::try_exists(&tool.details.install_path)
                 .await
                 .unwrap_or(false);
 
-            let path_valid = if tool.details.config.add_to_path {
-                let path_to_check = &tool.details.config.full_path_directory;
+            let path_valid = if tool.details.add_to_path.0 {
+                let path_to_check = &tool.details.add_to_path.1;
 
                 match CURRENT_USER.open("Environment") {
                     Ok(key) => match key.get_string("Path") {
@@ -95,7 +95,7 @@ impl Library {
                 true
             };
 
-            tool.details.validation_status = ToolValidationStatus {
+            tool.validation_status = ToolValidationStatus {
                 file_exists,
                 path_exists: path_valid,
             };
@@ -108,7 +108,7 @@ impl Library {
         while i < self.apps.len() {
             let mut j = i + 1;
             while j < self.apps.len() {
-                if self.apps[i].details.paths.full_path == self.apps[j].details.paths.full_path {
+                if self.apps[i].details.full_path == self.apps[j].details.full_path {
                     let mut app1 = self.apps[i].clone();
                     let mut app2 = self.apps[j].clone();
 
@@ -137,9 +137,7 @@ impl Library {
         while i < self.tools.len() {
             let mut j = i + 1;
             while j < self.tools.len() {
-                if self.tools[i].details.paths.install_path
-                    == self.tools[j].details.paths.install_path
-                {
+                if self.tools[i].details.install_path == self.tools[j].details.install_path {
                     let mut tool1 = self.tools[i].clone();
                     let mut tool2 = self.tools[j].clone();
 

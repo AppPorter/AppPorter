@@ -42,12 +42,10 @@ pub enum Command<'a> {
         url: &'a str,
     },
     InstallApp {
-        config: App,
-        zip_path: &'a str,
+        config: AppInstallConfig,
     },
     InstallTool {
-        config: Tool,
-        zip_path: &'a str,
+        config: ToolInstallConfig,
     },
     UninstallApp {
         timestamp: i64,
@@ -130,11 +128,11 @@ impl<'a> Command<'a> {
             RemoveStartup => json!(remove_startup()?),
 
             PreviewUrl { url } => json!(preview_url(&app, url).await?),
-            InstallApp { config, zip_path } => {
-                json!(install_app(config, zip_path, &app).await?)
+            InstallApp { config } => {
+                json!(install_app(config, &app).await?)
             }
-            InstallTool { config, zip_path } => {
-                json!(install_tool(config, zip_path, &app).await?)
+            InstallTool { config } => {
+                json!(install_tool(config, &app).await?)
             }
             UninstallApp { timestamp } => json!(uninstall_app(timestamp).await?),
             UninstallTool { timestamp } => json!(uninstall_tool(timestamp).await?),

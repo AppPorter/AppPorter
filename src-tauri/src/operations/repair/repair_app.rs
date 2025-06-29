@@ -15,11 +15,8 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     }
 
     if config.details.config.create_start_menu_shortcut {
-        remove_start_menu_shortcut(
-            config.details.config.current_user_only,
-            &config.details.info.name,
-        )
-        .await?;
+        remove_start_menu_shortcut(config.details.current_user_only, &config.details.info.name)
+            .await?;
     }
 
     if config.details.config.custom_icon {
@@ -27,20 +24,17 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     }
 
     if config.details.config.create_registry_key {
-        remove_registry_entries(
-            &config.details.info.name,
-            config.details.config.current_user_only,
-        )?;
+        remove_registry_entries(&config.details.info.name, config.details.current_user_only)?;
     }
 
-    if config.details.config.add_to_path {
+    if config.details.config.add_to_path.0 {
         remove_from_path(
-            &config.details.config.full_path_directory,
-            config.details.config.current_user_only,
+            &config.details.config.add_to_path.1,
+            config.details.current_user_only,
         )?;
     }
 
-    let mut shell_link = ShellLink::new(&config.details.paths.full_path)?;
+    let mut shell_link = ShellLink::new(&config.details.full_path)?;
     if config.details.config.custom_icon {
         let icon_path = convert_base64_to_ico(
             &config.details.info.icon,
@@ -57,7 +51,7 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     if config.details.config.create_start_menu_shortcut {
         create_start_menu_shortcut(
             &shell_link,
-            config.details.config.current_user_only,
+            config.details.current_user_only,
             &config.details.info.name,
         )
         .await?;
@@ -67,10 +61,10 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
         create_registry_entries(config)?;
     }
 
-    if config.details.config.add_to_path {
+    if config.details.config.add_to_path.0 {
         add_to_path(
-            &config.details.config.full_path_directory,
-            config.details.config.current_user_only,
+            &config.details.config.add_to_path.1,
+            config.details.current_user_only,
         )?;
     }
 

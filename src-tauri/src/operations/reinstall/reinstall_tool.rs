@@ -26,17 +26,17 @@ pub async fn reinstall_tool(timestamp: i64, zip_path: &str) -> Result<()> {
         zip_path,
         &temp_dir.to_string_lossy(),
         None,
-        &tool_config.details.config.archive_password,
+        &tool_config.archive_password,
         "",
     )
     .await?;
 
     flatten_nested_folders(&temp_dir.to_string_lossy(), None).await?;
 
-    tokio::fs::create_dir_all(&tool_config.details.paths.install_path).await?;
+    tokio::fs::create_dir_all(&tool_config.details.install_path).await?;
     move_dir(
         &temp_dir,
-        &tool_config.details.paths.install_path,
+        &tool_config.details.install_path,
         &fs_extra::dir::CopyOptions::new()
             .overwrite(true)
             .content_only(true),

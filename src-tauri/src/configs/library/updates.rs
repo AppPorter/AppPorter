@@ -7,17 +7,11 @@ impl Library {
     pub async fn update_app_list_from_config(&mut self, config: App) -> Result<()> {
         let mut config = config.clone();
 
-        config.details.validation_status = AppValidationStatus {
+        config.installed = true;
+        config.validation_status = AppValidationStatus {
             file_exists: true,
             registry_valid: true,
             path_exists: true,
-        };
-
-        let new_app = App {
-            timestamp: config.timestamp,
-            installed: true,
-            details: config.details,
-            url: config.url,
         };
 
         if let Some(existing_app) = self
@@ -25,21 +19,11 @@ impl Library {
             .iter_mut()
             .find(|app| app.timestamp == config.timestamp)
         {
-            existing_app.installed = true;
-            existing_app.details = new_app.details.clone();
+            *existing_app = config;
+        } else {
+            self.apps.push(config);
         }
 
-        self.apps.retain(|existing_app| {
-            let mut app1 = existing_app.clone();
-            let mut app2 = new_app.clone();
-            app1.timestamp = 0;
-            app2.timestamp = 0;
-            app1.details.info.version = String::new();
-            app2.details.info.version = String::new();
-            app1 != app2
-        });
-
-        self.apps.push(new_app);
         self.save().await?;
         Ok(())
     }
@@ -47,16 +31,10 @@ impl Library {
     pub async fn update_tool_list_from_config(&mut self, config: Tool) -> Result<()> {
         let mut config = config.clone();
 
-        config.details.validation_status = ToolValidationStatus {
+        config.installed = true;
+        config.validation_status = ToolValidationStatus {
             file_exists: true,
             path_exists: true,
-        };
-
-        let new_tool = Tool {
-            timestamp: config.timestamp,
-            installed: true,
-            details: config.details,
-            url: config.url,
         };
 
         if let Some(existing_tool) = self
@@ -64,19 +42,11 @@ impl Library {
             .iter_mut()
             .find(|tool| tool.timestamp == config.timestamp)
         {
-            existing_tool.installed = true;
-            existing_tool.details = new_tool.details.clone();
+            *existing_tool = config;
+        } else {
+            self.tools.push(config);
         }
 
-        self.tools.retain(|existing_tool| {
-            let mut tool1 = existing_tool.clone();
-            let mut tool2 = new_tool.clone();
-            tool1.timestamp = 0;
-            tool2.timestamp = 0;
-            tool1 != tool2
-        });
-
-        self.tools.push(new_tool);
         self.save().await?;
         Ok(())
     }

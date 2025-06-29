@@ -9,12 +9,12 @@ pub async fn repair_tool(timestamp: i64) -> Result<()> {
         .find(|tool| tool.timestamp == timestamp)
         .ok_or(anyhow!("Tool not found in library"))?;
 
-    if config.details.config.add_to_path {
-        remove_from_path(&config.details.config.full_path_directory, true)?;
+    if config.details.add_to_path.0 {
+        remove_from_path(&config.details.add_to_path.1, true)?;
     }
 
-    if config.details.config.add_to_path {
-        add_to_path(&config.details.config.full_path_directory, true)?;
+    if config.details.add_to_path.0 {
+        add_to_path(&config.details.add_to_path.1, true)?;
     }
 
     Ok(())

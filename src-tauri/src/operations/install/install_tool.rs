@@ -4,55 +4,57 @@ use crate::{
     utils::path::add_to_path,
 };
 use anyhow::Result;
+use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
 
-pub async fn install_tool(config: Tool, zip_path: &str, app: &AppHandle) -> Result<String> {
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct ToolInstallConfig {
+    pub tool: Tool,
+    pub archive_path_dir: String,
+    pub zip_path: String,
+}
+
+pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<String> {
     let mut config = config.clone();
 
-    config.timestamp = chrono::Utc::now().timestamp();
+    if config.tool.timestamp == 0 {
+        config.tool.timestamp = chrono::Utc::now().timestamp();
+    }
 
     app.emit("tool_install_progress", 0)?;
 
-    config.details.paths.install_path = format!(
-        "{}\\{}",
-        config.details.paths.parent_install_path, config.details.name
-    );
-
-    tokio::fs::create_dir_all(&config.details.paths.install_path).await?;
+    tokio::fs::create_dir_all(&config.tool.details.install_path).await?;
     extract_archive_files(
-        zip_path,
-        &config.details.paths.install_path,
+        &config.zip_path,
+        &config.tool.details.install_path,
         Some(app),
-        &config.details.config.archive_password,
+        &config.tool.archive_password,
         "tool_install_progress",
     )
     .await?;
 
-    flatten_nested_folders(&config.details.paths.install_path, None).await?;
+    flatten_nested_folders(&config.tool.details.install_path, None).await?;
 
-    if config.details.config.add_to_path {
-        config.details.config.full_path_directory =
-            if config.details.config.archive_path_directory.is_empty() {
-                config.details.paths.install_path.clone()
-            } else {
-                let normalized_path = config
-                    .details
-                    .config
-                    .archive_path_directory
-                    .trim_start_matches(['/', '\\'])
-                    .replace("/", "\\");
-                format!("{}\\{}", config.details.paths.install_path, normalized_path)
-            };
+    if config.tool.details.add_to_path.0 {
+        config.tool.details.add_to_path.1 = if config.tool.details.add_to_path.1.is_empty() {
+            config.tool.details.install_path.clone()
+        } else {
+            let normalized_path = config
+                .archive_path_dir
+                .trim_start_matches(['/', '\\'])
+                .replace("/", "\\");
+            format!("{}\\{}", config.tool.details.install_path, normalized_path)
+        };
 
-        add_to_path(&config.details.config.full_path_directory, true)?;
+        add_to_path(&config.tool.details.add_to_path.1, true)?;
     }
 
     let mut app_list = Library::load().await?;
     app_list
-        .update_tool_list_from_config(config.clone())
+        .update_tool_list_from_config(config.tool.clone())
         .await?;
 
     app.emit("tool_install_progress", 101)?;
 
-    Ok(config.details.paths.install_path)
+    Ok(config.tool.details.install_path)
 }
