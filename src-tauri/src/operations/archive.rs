@@ -1,13 +1,14 @@
 use anyhow::{Result, anyhow};
+use std::env;
 use std::io::Read;
 use std::os::windows::process::CommandExt;
 use std::path::{Path, PathBuf};
 use std::process::Stdio;
-use std::{env, fs};
 use tauri::{AppHandle, Emitter};
+use tokio::fs;
 use tokio::process::Command;
 
-pub fn get_7z_path() -> Result<PathBuf> {
+pub async fn get_7z_path() -> Result<PathBuf> {
     let current_exe = env::current_exe()?;
     let current_dir = current_exe
         .parent()
@@ -26,8 +27,8 @@ pub fn get_7z_path() -> Result<PathBuf> {
 
     for (filename, bytes) in &files {
         let file_path = current_dir.join(filename);
-        if !file_path.exists() || fs::metadata(&file_path)?.len() != bytes.len() as u64 {
-            fs::write(&file_path, bytes)?;
+        if !file_path.exists() || fs::metadata(&file_path).await?.len() != bytes.len() as u64 {
+            fs::write(&file_path, bytes).await?;
         }
     }
 
@@ -43,7 +44,7 @@ pub fn sanitize_path(path: &str) -> String {
 }
 
 pub async fn get_archive_content(path: &str, password: Option<&str>) -> Result<Vec<String>> {
-    let output = Command::new(get_7z_path()?)
+    let output = Command::new(get_7z_path().await?)
         .args([
             "l",
             path,
@@ -69,11 +70,11 @@ pub async fn get_archive_content(path: &str, password: Option<&str>) -> Result<V
 pub async fn extract_archive_files(
     zip_path: &str,
     install_path: &str,
-    app: &AppHandle,
+    app: Option<&AppHandle>,
     password: &str,
     event_name: &str,
 ) -> Result<()> {
-    let path_7z = get_7z_path()?;
+    let path_7z = get_7z_path().await?;
     let password_arg = format!("-p{password}");
 
     let output = Command::new(&path_7z)
@@ -94,12 +95,12 @@ pub async fn extract_archive_files(
     }
 
     let paths = parse_7z_list_output(&String::from_utf8_lossy(&output.stdout));
-    let canonical_install_path = fs::canonicalize(install_path)?;
+    let canonical_install_path = fs::canonicalize(install_path).await?;
 
     for path in &paths {
         let target_path = Path::new(install_path).join(sanitize_path(path));
         if let Ok(canonical_path) =
-            fs::canonicalize(target_path.parent().unwrap_or(Path::new(install_path)))
+            fs::canonicalize(target_path.parent().unwrap_or(Path::new(install_path))).await
         {
             if !canonical_path.starts_with(&canonical_install_path) {
                 return Err(anyhow!(
@@ -128,7 +129,7 @@ pub async fn extract_archive_files(
         .take()
         .ok_or(anyhow!("Failed to capture stderr"))?;
     let mut buffer = [0; 1024];
-    let app_clone = app.clone();
+    let app_clone = app.cloned();
     let event_name = event_name.to_owned();
 
     let handle = std::thread::spawn(move || {
@@ -139,7 +140,9 @@ pub async fn extract_archive_files(
             if let Ok(output) = String::from_utf8(buffer[..n].to_vec()) {
                 if let Some(percent_str) = output.split('%').next() {
                     if let Ok(percent) = percent_str.trim().parse::<u32>() {
-                        let _ = app_clone.emit(&event_name, percent);
+                        if let Some(app) = app_clone.clone() {
+                            let _ = app.emit(&event_name, percent);
+                        }
                     }
                 }
             }

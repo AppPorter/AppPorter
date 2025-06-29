@@ -26,7 +26,7 @@ pub async fn install_app(config: App, zip_path: &str, app: &AppHandle) -> Result
     extract_archive_files(
         zip_path,
         &config.details.paths.install_path,
-        app,
+        Some(app),
         &config.details.config.archive_password,
         "app_install_progress",
     )

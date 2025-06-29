@@ -18,7 +18,7 @@ pub async fn run_installer(
     extract_archive_files(
         zip_path,
         &temp_dir.to_string_lossy(),
-        app,
+        Some(app),
         password,
         "installer_extract_progress",
     )

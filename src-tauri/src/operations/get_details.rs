@@ -74,7 +74,7 @@ pub async fn get_details(input: ExePath) -> Result<ExeDetails> {
     }
     args.push(&pw);
 
-    let output1 = Command::new(get_7z_path()?)
+    let output1 = Command::new(get_7z_path().await?)
         .args(args)
         .creation_flags(0x08000000)
         .output()

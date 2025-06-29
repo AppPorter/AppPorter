@@ -1,15 +1,15 @@
 use anyhow::{Result, anyhow};
 use futures_util::StreamExt;
 use std::cmp::min;
-use std::io::Write;
+use tokio::io::AsyncWriteExt;
 
 pub async fn download_file(url: &str) -> Result<String> {
     if !check_download_url(url).await? {
         return Err(anyhow!("URL is not a valid download link"));
     }
 
-    let temp_dir = std::env::temp_dir().join("AppPorter").join("downloads");
-    std::fs::create_dir_all(&temp_dir)?;
+    let temp_dir = std::env::temp_dir().join("AppPorter").join("Downloads");
+    tokio::fs::create_dir_all(&temp_dir).await?;
 
     let url_path = url
         .split('/')
@@ -25,13 +25,13 @@ pub async fn download_file(url: &str) -> Result<String> {
         .content_length()
         .ok_or(anyhow!("Failed to get content length"))?;
 
-    let mut file = std::fs::File::create(&file_path)?;
+    let mut file = tokio::fs::File::create(&file_path).await?;
     let mut downloaded: u64 = 0;
     let mut stream = res.bytes_stream();
 
     while let Some(item) = stream.next().await {
         let chunk = item?;
-        file.write_all(&chunk)?;
+        file.write_all(&chunk).await?;
         let new = min(downloaded + (chunk.len() as u64), total_size);
         downloaded = new;
     }

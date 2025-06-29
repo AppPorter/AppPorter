@@ -1,7 +1,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 use anyhow::Result;
-use app_porter_lib::{commands, configs::*, core::*, operations::*};
+use app_porter_lib::{commands, configs::*, core::*};
 use tauri::Manager;
 
 #[tokio::main]
@@ -16,8 +16,6 @@ async fn main() -> Result<()> {
 async fn run() -> Result<()> {
     Env::read().await?;
     Settings::initialize().await?;
-
-    get_7z_path()?;
 
     tauri::Builder::default()
         .setup(|app| {

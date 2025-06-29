@@ -22,7 +22,7 @@ pub async fn install_tool(config: Tool, zip_path: &str, app: &AppHandle) -> Resu
     extract_archive_files(
         zip_path,
         &config.details.paths.install_path,
-        app,
+        Some(app),
         &config.details.config.archive_password,
         "tool_install_progress",
     )

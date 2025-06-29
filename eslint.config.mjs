@@ -55,6 +55,7 @@ export default [
         },
       ],
       'vue/first-attribute-linebreak': 'off',
+      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {

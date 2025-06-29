@@ -61,6 +61,14 @@ pub enum Command<'a> {
     RepairTool {
         timestamp: i64,
     },
+    ReinstallApp {
+        timestamp: i64,
+        zip_path: &'a str,
+    },
+    ReinstallTool {
+        timestamp: i64,
+        zip_path: &'a str,
+    },
 
     OpenApp {
         path: &'a str,
@@ -132,6 +140,18 @@ impl<'a> Command<'a> {
             UninstallTool { timestamp } => json!(uninstall_tool(timestamp).await?),
             RepairApp { timestamp } => json!(repair_app(timestamp).await?),
             RepairTool { timestamp } => json!(repair_tool(timestamp).await?),
+            ReinstallApp {
+                timestamp,
+                zip_path,
+            } => {
+                json!(reinstall_app(timestamp, zip_path).await?)
+            }
+            ReinstallTool {
+                timestamp,
+                zip_path,
+            } => {
+                json!(reinstall_tool(timestamp, zip_path).await?)
+            }
 
             OpenApp { path } => json!(open_app(path).await?),
             OpenFolder { path } => json!(open_folder(path).await?),
