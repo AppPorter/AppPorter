@@ -1,6 +1,6 @@
 import { invoke } from '@tauri-apps/api/core'
 
-export async function exec(name: string, params?: Record<string, unknown>): Promise<string> {
+export async function exec(name: string, params?: Record<string, unknown>): Promise<any> {
   const result = await invoke<string>('exec', {
     cmd: {
       name: name,

@@ -180,7 +180,7 @@ async function handleInstallClick() {
 
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.paths.parent_install_path"
@@ -206,7 +206,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
