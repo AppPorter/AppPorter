@@ -1,42 +1,8 @@
 import { exec } from '@/exec'
-import { listen } from '@tauri-apps/api/event'
-import Color from 'color'
 import { defineStore } from 'pinia'
-
-export interface Settings {
-  first_run: boolean
-  language: LanguageType
-  theme: ThemeType
-  minimize_to_tray_on_close: boolean
-  context_menu: boolean
-  auto_startup: boolean
-  color: string
-  run_as_admin: boolean
-  app_install: AppInstall
-  tool_install: ToolInstall
-}
-
-export type LanguageType = 'en' | 'zh-hans' | 'zh-hant' | 'fr' | 'de' | 'es' | 'ja' | 'ko' | 'ru'
-export type ThemeType = 'system' | 'light' | 'dark'
-
-interface AppInstall {
-  current_user_only: boolean
-  all_users: InstallSettings
-  current_user: InstallSettings
-}
-
-interface InstallSettings {
-  create_desktop_shortcut: boolean
-  create_registry_key: boolean
-  create_start_menu_shortcut: boolean
-  install_path: string
-  add_to_path: boolean
-}
-
-interface ToolInstall {
-  install_path: string
-  add_to_path: boolean
-}
+import type { Settings } from '#/Settings'
+import Color from 'color'
+import { listen } from '@tauri-apps/api/event'
 
 export const SettingsStore = defineStore('settings', {
   state: (): Settings & { unlistenThemeColor?: (() => void) | null } => ({
@@ -75,8 +41,7 @@ export const SettingsStore = defineStore('settings', {
 
   actions: {
     async loadSettings() {
-      const result = await exec('LoadSettings')
-      this.$patch(result)
+      this.$patch(await exec<Settings>('LoadSettings'))
     },
 
     async saveSettings() {

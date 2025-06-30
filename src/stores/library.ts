@@ -1,76 +1,8 @@
 import { exec } from '@/exec'
 import { defineStore } from 'pinia'
+import type { Library } from '#/Library'
 
 export type InstallTypes = 'app' | 'tool' | 'url'
-
-interface Library {
-  apps: App[]
-  tools: Tool[]
-  urls: Url[]
-}
-
-export interface App {
-  timestamp: number
-  installed: boolean
-  url: string
-  archive_password: string
-  details: AppDetails
-  validation_status: AppValidationStatus
-}
-
-export interface AppDetails {
-  current_user_only: boolean
-  info: AppInfo
-  config: AppConfig
-  install_path: string
-  full_path: string
-}
-
-export interface AppInfo {
-  name: string
-  icon: string
-  publisher: string
-  version: string
-}
-
-export interface AppConfig {
-  custom_icon: boolean
-  create_desktop_shortcut: boolean
-  create_start_menu_shortcut: boolean
-  create_registry_key: boolean
-  add_to_path: [boolean, string]
-}
-
-export interface AppValidationStatus {
-  file_exists: boolean
-  registry_valid: boolean
-  path_exists: boolean
-}
-
-export interface Tool {
-  timestamp: number
-  installed: boolean
-  url: string
-  archive_password: string
-  details: ToolDetails
-  validation_status: ToolValidationStatus
-}
-
-export interface ToolDetails {
-  name: string
-  add_to_path: [boolean, string]
-  install_path: string
-}
-
-export interface ToolValidationStatus {
-  file_exists: boolean
-  path_exists: boolean
-}
-
-export interface Url {
-  url: string
-  timestamp: number
-}
 
 export const LibraryStore = defineStore('library', {
   state: (): Library => ({
@@ -90,7 +22,7 @@ export const LibraryStore = defineStore('library', {
 
   actions: {
     async loadLibrary() {
-      const result = await exec('LoadLibrary')
+      const result = await exec<Library>('LoadLibrary')
       this.$patch(result)
     },
 
@@ -112,11 +44,11 @@ export const LibraryStore = defineStore('library', {
       return this.tools.some((tool) => tool.url === url)
     },
 
-    getAppByTimestamp(timestamp: number) {
+    getAppByTimestamp(timestamp: bigint) {
       return this.installedApps.find((app) => app.timestamp === timestamp)
     },
 
-    getToolByTimestamp(timestamp: number) {
+    getToolByTimestamp(timestamp: bigint) {
       return this.installedTools.find((tool) => tool.timestamp === timestamp)
     },
 
@@ -133,12 +65,12 @@ export const LibraryStore = defineStore('library', {
       await this.loadLibrary()
     },
 
-    async removeApp(timestamp: number) {
+    async removeApp(timestamp: bigint) {
       this.apps = this.apps.filter((app) => app.timestamp !== timestamp)
       await this.saveLibrary()
     },
 
-    async removeTool(timestamp: number) {
+    async removeTool(timestamp: bigint) {
       this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
       await this.saveLibrary()
     },

@@ -1,6 +1,7 @@
-import { FileTreeNode } from '@/components/ZipPreview/ZipPreview.vue'
+import { FileTreeNode } from '#/FileTreeNode'
 import { defineStore } from 'pinia'
-import type { AppDetails, ToolDetails } from './library'
+import type { AppDetails } from '#/AppDetails'
+import type { ToolDetails } from '#/ToolDetails'
 
 type Pages =
   | 'Home'

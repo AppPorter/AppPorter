@@ -26,4 +26,4 @@ dist-ssr
 components.d.ts
 .github/instructions/*
 .github/prompts/*
-.src-tauri/bindings/*
+src-tauri/bindings/*

@@ -15,9 +15,8 @@ const env = EnvStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 
-const handleAdminPrompt = (event) => {
+const handleAdminPrompt = () => {
   confirm.require({
-    target: event.currentTarget,
     message: t('ui.admin_prompt.msg'),
     group: 'admin_popup',
     icon: 'mir-warning',
@@ -53,7 +52,7 @@ const handleAdminPrompt = (event) => {
       <ConfirmPopup group="admin_popup" />
       <button
         class="rounded-md bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700 transition-colors hover:bg-amber-200 hover:text-amber-800 dark:bg-amber-800/30 dark:text-amber-400 dark:hover:bg-amber-700/50 dark:hover:text-amber-300"
-        @click="handleAdminPrompt($event)">
+        @click="handleAdminPrompt()">
         {{ t('g.solve') }}
       </button>
     </div>

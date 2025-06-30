@@ -1,16 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-
-export interface FileTreeNode {
-  key: string
-  name: string
-  path: string
-  node_type: string
-  children?: FileTreeNode[]
-  expanded: boolean
-  level: number
-}
+import { FileTreeNode } from '#/FileTreeNode'
 
 interface FileNode {
   key: string

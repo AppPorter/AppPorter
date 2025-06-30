@@ -96,7 +96,7 @@ if (settingsStore.minimize_to_tray_on_close) {
       }
     },
   }
-  trayIcon = await TrayIcon.new(trayOptions).catch(console.error)
+  trayIcon = await TrayIcon.new(trayOptions)
 }
 
 app.mount('#app')

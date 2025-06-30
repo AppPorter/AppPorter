@@ -1,21 +1,16 @@
 import { exec } from '@/exec'
 import { defineStore } from 'pinia'
-import type { Settings } from './settings'
+import { Env } from '#/Env'
+import { Settings } from '#/Settings'
 
-interface Env {
-  debug: boolean
-  elevated: boolean
-  system_drive_letter: string
-  user_sid: string
-  username: string
-
+interface General {
   initialSettings: Settings | null
   isBasicSettingsChanged: boolean
   isDarkMode: boolean
 }
 
 export const EnvStore = defineStore('env', {
-  state: (): Env => ({
+  state: (): Env & General => ({
     debug: false,
     elevated: false,
     system_drive_letter: '',
@@ -29,8 +24,7 @@ export const EnvStore = defineStore('env', {
 
   actions: {
     async loadEnv() {
-      const env = await exec('LoadEnv')
-      this.$patch(env)
+      this.$patch(await exec<Env>('LoadEnv'))
     },
 
     async setInitialSettings() {

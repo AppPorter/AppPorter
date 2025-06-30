@@ -62,7 +62,7 @@ const routes = [
       icon: 'mir-settings',
     },
   },
-] as unknown as RouteRecordRaw[]
+] as RouteRecordRaw[]
 
 const router = createRouter({
   history: createMemoryHistory(),
