@@ -25,6 +25,8 @@ interface InstallConfig {
     archive_password: string
     file_tree: FileTreeNode[]
   }
+  archive_exe_path?: string
+  archive_path_dir?: string
 
   app_details: AppDetails
   tool_details: ToolDetails
@@ -49,6 +51,7 @@ export const InstallConfigStore = defineStore('install_config', {
     },
 
     app_details: {
+      current_user_only: false,
       info: {
         name: '',
         icon: '',
@@ -56,31 +59,19 @@ export const InstallConfigStore = defineStore('install_config', {
         version: '',
       },
       config: {
-        archive_exe_path: '',
-        current_user_only: false,
+        custom_icon: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: true,
         create_registry_key: false,
-        custom_icon: false,
-        add_to_path: false,
-        path_directory: '',
+        add_to_path: [false, ''],
       },
-      paths: {
-        parent_install_path: '',
-        install_path: '',
-        full_path: '',
-      },
+      install_path: '',
+      full_path: '',
     },
     tool_details: {
       name: '',
-      config: {
-        add_to_path: false,
-        path_directory: '',
-      },
-      paths: {
-        parent_install_path: '',
-        install_path: '',
-      },
+      add_to_path: [false, ''],
+      install_path: '',
     },
   }),
 

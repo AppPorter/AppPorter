@@ -80,7 +80,7 @@ function handleStatusClick(app: LibraryItemProps['item']) {
 
                 <div class="flex flex-col gap-1 text-xs">
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
-                    <span v-if="item.details.paths.install_path" class="break-all opacity-75">{{
+                    <span v-if="item.details.paths?.install_path" class="break-all opacity-75">{{
                         item.details.paths.install_path }}</span>
                 </div>
             </div>

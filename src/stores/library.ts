@@ -13,17 +13,20 @@ export interface App {
   timestamp: number
   installed: boolean
   url: string
+  archive_password: string
   details: AppDetails
+  validation_status: AppValidationStatus
 }
 
 export interface AppDetails {
-  info: AppBasicInformation
+  current_user_only: boolean
+  info: AppInfo
   config: AppConfig
-  paths: AppPaths
-  validation_status?: AppValidationStatus
+  install_path: string
+  full_path: string
 }
 
-export interface AppBasicInformation {
+export interface AppInfo {
   name: string
   icon: string
   publisher: string
@@ -31,21 +34,11 @@ export interface AppBasicInformation {
 }
 
 export interface AppConfig {
-  archive_exe_path: string
-  archive_password?: string
-  current_user_only: boolean
+  custom_icon: boolean
   create_desktop_shortcut: boolean
   create_start_menu_shortcut: boolean
   create_registry_key: boolean
-  custom_icon: boolean
-  add_to_path: boolean
-  path_directory: string
-}
-
-export interface AppPaths {
-  parent_install_path: string
-  install_path: string
-  full_path: string
+  add_to_path: [boolean, string]
 }
 
 export interface AppValidationStatus {
@@ -58,24 +51,14 @@ export interface Tool {
   timestamp: number
   installed: boolean
   url: string
+  archive_password: string
   details: ToolDetails
+  validation_status: ToolValidationStatus
 }
 
 export interface ToolDetails {
   name: string
-  config: ToolConfig
-  paths: ToolPaths
-  validation_status?: ToolValidationStatus
-}
-
-export interface ToolConfig {
-  archive_password?: string
-  add_to_path: boolean
-  path_directory: string
-}
-
-export interface ToolPaths {
-  parent_install_path: string
+  add_to_path: [boolean, string]
   install_path: string
 }
 

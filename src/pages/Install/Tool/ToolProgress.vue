@@ -53,12 +53,20 @@ onMounted(async () => {
     try {
         const result = await exec('InstallTool', {
             config: {
-                timestamp: installConfig.timestamp,
-                installed: false,
-                url: installConfig.url,
-                details: installConfig.tool_details,
-            },
-            zip_path: installConfig.zip_path,
+                tool: {
+                    timestamp: installConfig.timestamp,
+                    installed: false,
+                    url: installConfig.url,
+                    archive_password: installConfig.archive_password,
+                    details: installConfig.tool_details,
+                    validation_status: {
+                        file_exists: false,
+                        path_exists: false
+                    }
+                },
+                archive_path_dir: installConfig.tool_details.add_to_path[1],
+                zip_path: installConfig.zip_path,
+            }
         })
         installPath.value = result
     } catch (error) {

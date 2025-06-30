@@ -33,22 +33,17 @@ const links = computed(() => {
         version: ''
       },
       config: {
-        ...tool.details.config,
-        current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: false,
         create_registry_key: false,
-        archive_exe_path: '',
+        add_to_path: tool.details.add_to_path,
       },
-      paths: {
-        parent_install_path: tool.details.paths.parent_install_path,
-        install_path: tool.details.paths.install_path,
-        full_path: tool.details.paths.install_path,
-      },
+      install_path: tool.details.install_path,
+      full_path: tool.details.install_path,
       validation_status: {
-        file_exists: tool.details.validation_status.file_exists,
+        file_exists: tool.validation_status.file_exists,
         registry_valid: false,
-        path_exists: tool.details.validation_status.path_exists,
+        path_exists: tool.validation_status.path_exists,
       }
     }
   }))
@@ -64,17 +59,13 @@ const links = computed(() => {
         version: ''
       },
       config: {
-        current_user_only: false,
         create_desktop_shortcut: false,
         create_start_menu_shortcut: false,
         create_registry_key: false,
-        archive_exe_path: '',
+        add_to_path: [false, ''],
       },
-      paths: {
-        parent_install_path: '',
-        install_path: '',
-        full_path: '',
-      },
+      install_path: '',
+      full_path: '',
       validation_status: {
         file_exists: false,
         registry_valid: false,

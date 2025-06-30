@@ -29,15 +29,14 @@ function handleBackClick() {
 async function handleInstallClick() {
   nameError.value = !installConfig.app_details.info.name
 
-  pathError.value = !installConfig.app_details.paths.parent_install_path
+  pathError.value = !installConfig.app_details.install_path
 
   try {
     const validatedPath = await exec('ValidatePath', {
-      path: installConfig.app_details.paths.parent_install_path,
+      path: installConfig.app_details.install_path,
     })
 
-    installConfig.app_details.paths.parent_install_path = validatedPath
-    installConfig.app_details.paths.install_path = `${validatedPath}\\${installConfig.app_details.info.name}`
+    installConfig.app_details.install_path = `${validatedPath}\\${installConfig.app_details.info.name}`
   } catch (error) {
     pathError.value = true
     globalThis.$errorHandler.showError(error)
@@ -49,7 +48,7 @@ async function handleInstallClick() {
 
   try {
     await exec('CheckPathEmpty', {
-      path: installConfig.app_details.paths.install_path,
+      path: installConfig.app_details.install_path,
     })
 
     await new Promise((resolve, reject) => {

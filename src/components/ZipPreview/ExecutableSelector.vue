@@ -117,7 +117,7 @@ async function handleSelect() {
   store.app_details.info.version = details.version
   store.app_details.info.publisher = details.copyright
   store.app_details.info.icon = details.icon_data_url
-  store.app_details.config.archive_exe_path = selectedPath.value
+  store.archive_exe_path = selectedPath.value
 
   emit('executable-selected')
   isSelecting.value = false

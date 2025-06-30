@@ -19,6 +19,10 @@ interface LibraryValidationProps {
             info: {
                 name: string
             }
+            config?: {
+                create_registry_key: boolean
+                add_to_path: [boolean, string]
+            }
             validation_status: {
                 file_exists: boolean
                 registry_valid: boolean
@@ -105,13 +109,13 @@ defineExpose({
                     <i
                         :class="appToValidate.details.validation_status.file_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div v-if="appToValidate.type === 'app' && appToValidate.details.config.create_registry_key"
+                <div v-if="appToValidate.type === 'app' && appToValidate.details.config?.create_registry_key"
                     class="flex items-center justify-between rounded p-2">
                     <span>Registry Valid</span>
                     <i
                         :class="appToValidate.details.validation_status.registry_valid ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div v-if="appToValidate.details.config.add_to_path"
+                <div v-if="appToValidate.details.config?.add_to_path"
                     class="flex items-center justify-between rounded p-2">
                     <span>Path Exists</span>
                     <i

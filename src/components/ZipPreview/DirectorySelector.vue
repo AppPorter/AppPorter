@@ -41,12 +41,11 @@ async function loadFileTree() {
     loading.value = true
     emit('loading', true)
 
-    const result = exec('GetArchiveTree', {
+    const treeData = await exec('GetArchiveTree', {
         zip_path: props.zipPath,
         password: props.password || '',
-    })
+    }) as FileTreeNode[]
 
-    const treeData = JSON.parse(result as string)
     fileTree.value = treeData
     emit('update-file-tree', treeData)
     loading.value = false
@@ -97,9 +96,9 @@ async function handleSelect() {
         emit('loading', true)
 
         if (store.page.includes('App')) {
-            store.app_details.config.path_directory = selectedPath.value
+            store.archive_path_dir = selectedPath.value
         } else {
-            store.tool_details.config.path_directory = selectedPath.value
+            store.archive_path_dir = selectedPath.value
         }
 
         emit('directory-select', selectedPath.value)

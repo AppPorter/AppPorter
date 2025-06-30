@@ -14,7 +14,7 @@ defineProps<{
 }>()
 
 const installConfig = InstallConfigStore()
-const { zip_path, app_details } = storeToRefs(installConfig)
+const { archive_exe_path, zip_path, app_details } = storeToRefs(installConfig)
 
 let originalIcon = ''
 
@@ -74,7 +74,7 @@ function restoreOriginalIcon() {
         </p>
         <p class="ml-6 mt-0.5 text-xs">
           {{ t('ui.install.executable_path') }}:
-          <span class="break-all font-medium">{{ app_details.config.archive_exe_path }}</span>
+          <span class="break-all font-medium">{{ archive_exe_path }}</span>
         </p>
       </div>
     </template>

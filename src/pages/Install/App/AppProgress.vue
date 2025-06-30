@@ -74,12 +74,22 @@ onMounted(async () => {
   try {
     let result = await exec('InstallApp', {
       config: {
-        timestamp: installConfig.timestamp,
-        installed: false,
-        url: installConfig.url,
-        details: installConfig.app_details,
-      },
-      zip_path: installConfig.zip_path,
+        app: {
+          timestamp: installConfig.timestamp,
+          installed: false,
+          url: installConfig.url,
+          archive_password: installConfig.archive_password,
+          details: installConfig.app_details,
+          validation_status: {
+            file_exists: false,
+            registry_valid: false,
+            path_exists: false
+          }
+        },
+        archive_exe_path: installConfig.archive_exe_path,
+        archive_path_dir: installConfig.app_details.config.add_to_path[1],
+        zip_path: installConfig.zip_path,
+      }
     })
     installPath.value = result[0]
     fullPath.value = result[1]

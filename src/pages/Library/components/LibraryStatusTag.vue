@@ -9,12 +9,10 @@ interface LibraryStatusTagProps {
     item: {
         type: InstallTypes
         installed: boolean
-        details: {
-            validation_status: {
-                file_exists: boolean
-                registry_valid: boolean
-                path_exists: boolean
-            }
+        validation_status: {
+            file_exists: boolean
+            registry_valid?: boolean
+            path_exists: boolean
         }
     }
     tagType: 'type' | 'status'
@@ -60,7 +58,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         }
     }
 
-    const validation = data.details.validation_status
+    const validation = data.validation_status
 
     if (data.type === 'app') {
         const isValid = validation.file_exists && validation.registry_valid && validation.path_exists

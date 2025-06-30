@@ -43,13 +43,9 @@ interface LibraryContextMenuProps {
                 create_desktop_shortcut: boolean
                 create_start_menu_shortcut: boolean
                 create_registry_key: boolean
-                archive_exe_path: string
             }
-            paths: {
-                parent_install_path: string
-                install_path: string
-                full_path: string
-            }
+            install_path: string
+            full_path: string
             validation_status: {
                 file_exists: boolean
                 registry_valid: boolean
@@ -132,7 +128,7 @@ async function openApp() {
     if (!props.selectedApp) return
     if (props.selectedApp.type === 'app') {
         await exec('OpenApp', {
-            path: props.selectedApp.details.paths.full_path,
+            path: props.selectedApp.details.full_path,
         })
     }
 }
@@ -140,7 +136,7 @@ async function openApp() {
 async function openInstallFolder() {
     if (!props.selectedApp) return
     await exec('OpenFolder', {
-        path: props.selectedApp.details.paths.install_path,
+        path: props.selectedApp.details.install_path,
     })
 }
 
@@ -149,7 +145,7 @@ async function openRegistry() {
     if (props.selectedApp.type === 'app') {
         await exec('OpenRegistry', {
             app_name: props.selectedApp.details.info.name,
-            current_user_only: props.selectedApp.details.config.current_user_only,
+            current_user_only: props.selectedApp.details.current_user_only,
         })
     }
 }

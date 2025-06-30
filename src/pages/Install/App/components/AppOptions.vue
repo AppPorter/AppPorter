@@ -28,13 +28,12 @@ const {
 
 const { zip_path, app_details } = storeToRefs(installConfig)
 
-const current_user_only = toRef(app_details.value.config, 'current_user_only')
+const current_user_only = toRef(app_details.value, 'current_user_only')
 const create_desktop_shortcut = toRef(app_details.value.config, 'create_desktop_shortcut')
 const create_registry_key = toRef(app_details.value.config, 'create_registry_key')
 const create_start_menu_shortcut = toRef(app_details.value.config, 'create_start_menu_shortcut')
 const add_to_path = toRef(app_details.value.config, 'add_to_path')
-const path_directory = toRef(app_details.value.config, 'path_directory')
-const install_path = toRef(app_details.value.paths, 'parent_install_path')
+const install_path = toRef(app_details.value, 'install_path')
 
 const directoryDrawerVisible = ref(false)
 
@@ -58,8 +57,7 @@ function updateConfig(isCurrentUser: boolean) {
   create_desktop_shortcut.value = sourceConfig.create_desktop_shortcut
   create_registry_key.value = sourceConfig.create_registry_key
   create_start_menu_shortcut.value = sourceConfig.create_start_menu_shortcut
-  add_to_path.value = sourceConfig.add_to_path
-  path_directory.value = ''
+  add_to_path.value = [sourceConfig.add_to_path, '']
   install_path.value = sourceConfig.install_path
 }
 
@@ -133,7 +131,7 @@ function handleInstallModeChange(event: { value: boolean }) {
               <Checkbox v-model="create_start_menu_shortcut" :binary="true" inputId="start_menu_shortcut" />
               <label for="start_menu_shortcut" class="text-sm">{{
                 t('cls.install.shortcuts.start_menu')
-              }}</label>
+                }}</label>
             </div>
             <div class="flex items-center gap-2">
               <Checkbox v-model="create_registry_key" :binary="true" inputId="registry_key" />
@@ -141,12 +139,12 @@ function handleInstallModeChange(event: { value: boolean }) {
             </div>
             <div class="flex flex-col gap-1">
               <div class="flex items-center gap-2">
-                <Checkbox v-model="add_to_path" :binary="true" inputId="add_to_path" />
+                <Checkbox v-model="add_to_path[0]" :binary="true" inputId="add_to_path" />
                 <label for="add_to_path" class="text-sm">{{ t('cls.install.shortcuts.add_to_path') }}</label>
               </div>
-              <div v-if="add_to_path" class="ml-6 mt-1">
+              <div v-if="add_to_path[0]" class="ml-6 mt-1">
                 <div class="flex gap-2">
-                  <InputText v-model="path_directory" :placeholder="t('ui.select_placeholder.path_directory')"
+                  <InputText v-model="add_to_path[1]" :placeholder="t('ui.select_placeholder.path_directory')"
                     class="h-8 w-full text-sm" />
                   <Button class="h-8 w-36" severity="secondary" @click="directoryDrawerVisible = true"
                     icon="mir-folder_open" :label="t('g.browse')" />
@@ -160,5 +158,5 @@ function handleInstallModeChange(event: { value: boolean }) {
   </Panel>
 
   <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="zip_path"
-    @directory-select="path_directory = $event" />
+    @directory-select="add_to_path[1] = $event" />
 </template>

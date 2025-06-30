@@ -27,7 +27,7 @@ const nameError = ref(false)
 const directoryDrawerVisible = ref(false)
 
 const formatted_final_path = computed(() => {
-    const parentPath = installConfig.tool_details.paths.parent_install_path
+    const parentPath = installConfig.tool_details.install_path
     const toolName = installConfig.tool_details.name
 
     if (!parentPath || !toolName) return ''
@@ -36,9 +36,9 @@ const formatted_final_path = computed(() => {
 })
 
 onMounted(async () => {
-    installConfig.tool_details.paths.parent_install_path = tool_install.install_path
-    installConfig.tool_details.config.add_to_path = tool_install.add_to_path
-    installConfig.tool_details.config.path_directory = ''
+    installConfig.tool_details.install_path = tool_install.install_path
+    installConfig.tool_details.add_to_path[0] = tool_install.add_to_path
+    installConfig.tool_details.add_to_path[1] = ''
 
     if (installConfig.zip_path) {
         const pathParts = installConfig.zip_path.split('\\')
@@ -57,7 +57,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installConfig.tool_details.paths.parent_install_path = String(selected)
+        installConfig.tool_details.install_path = String(selected)
         pathError.value = false
     }
 }
@@ -67,15 +67,14 @@ async function handleInstallClick() {
     nameError.value = false
 
     nameError.value = !installConfig.tool_details.name
-    pathError.value = !installConfig.tool_details.paths.parent_install_path
+    pathError.value = !installConfig.tool_details.install_path
 
     try {
         const validatedPath = (await exec('ValidatePath', {
-            path: installConfig.tool_details.paths.parent_install_path,
+            path: installConfig.tool_details.install_path,
         }))
 
-        installConfig.tool_details.paths.parent_install_path = validatedPath
-        installConfig.tool_details.paths.install_path = `${validatedPath}\\${installConfig.tool_details.name}`
+        installConfig.tool_details.install_path = `${validatedPath}\\${installConfig.tool_details.name}`
     } catch (error) {
         globalThis.$errorHandler.showError(error)
         pathError.value = true
@@ -87,7 +86,7 @@ async function handleInstallClick() {
 
     try {
         await exec('ValidateInstallPath', {
-            path: installConfig.tool_details.paths.install_path,
+            path: installConfig.tool_details.install_path,
         })
         await new Promise((resolve, reject) => {
             confirm.require({
@@ -180,10 +179,10 @@ async function handleInstallClick() {
 
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
-                                        <InputText v-model="installConfig.tool_details.paths.parent_install_path"
+                                        <InputText v-model="installConfig.tool_details.install_path"
                                             :placeholder="t('g.browse')" class="h-8 w-full text-sm" :invalid="pathError"
                                             @input="pathError = false" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
@@ -202,16 +201,15 @@ async function handleInstallClick() {
                                     <div class="flex-1 space-y-1 rounded-lg p-1.5">
                                         <div class="flex flex-col gap-1">
                                             <div class="flex items-center gap-2">
-                                                <Checkbox v-model="installConfig.tool_details.config.add_to_path"
+                                                <Checkbox v-model="installConfig.tool_details.add_to_path[0]"
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
-                                            <div v-if="installConfig.tool_details.config.add_to_path" class="ml-6 mt-1">
+                                            <div v-if="installConfig.tool_details.add_to_path[0]" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
-                                                    <InputText
-                                                        v-model="installConfig.tool_details.config.path_directory"
+                                                    <InputText v-model="installConfig.tool_details.add_to_path[1]"
                                                         :placeholder="t('ui.select_placeholder.path_directory')"
                                                         class="h-8 w-full text-sm" />
                                                     <Button class="h-8 w-36" severity="secondary"
@@ -241,6 +239,6 @@ async function handleInstallClick() {
         </div>
 
         <DirectorySelectorDrawer v-model:visible="directoryDrawerVisible" :zip-path="installConfig.zip_path"
-            @directory-select="installConfig.tool_details.config.path_directory = $event" />
+            @directory-select="installConfig.tool_details.add_to_path[1] = $event" />
     </div>
 </template>
