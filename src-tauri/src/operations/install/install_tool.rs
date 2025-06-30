@@ -6,8 +6,10 @@ use crate::{
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Emitter};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 pub struct ToolInstallConfig {
     pub tool: Tool,
     pub archive_path_dir: String,

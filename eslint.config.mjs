@@ -46,7 +46,6 @@ export default [
     rules: {
       'vue/multi-word-component-names': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
-      'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       'tailwindcss/no-custom-classname': [
         'warn',
@@ -55,7 +54,6 @@ export default [
         },
       ],
       'vue/first-attribute-linebreak': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
     },
   },
   {

@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct Library {
     pub apps: Vec<App>,
@@ -8,7 +10,8 @@ pub struct Library {
     pub urls: Vec<Url>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct App {
     pub timestamp: i64,
@@ -19,7 +22,8 @@ pub struct App {
     pub validation_status: AppValidationStatus,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppDetails {
     pub current_user_only: bool,
@@ -29,7 +33,8 @@ pub struct AppDetails {
     pub full_path: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppInfo {
     pub name: String,
@@ -38,7 +43,8 @@ pub struct AppInfo {
     pub version: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppConfig {
     pub custom_icon: bool,
@@ -48,7 +54,8 @@ pub struct AppConfig {
     pub add_to_path: (bool, String),
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppValidationStatus {
     pub file_exists: bool,
@@ -56,7 +63,8 @@ pub struct AppValidationStatus {
     pub path_exists: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct Tool {
     pub timestamp: i64,
@@ -67,7 +75,8 @@ pub struct Tool {
     pub validation_status: ToolValidationStatus,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct ToolDetails {
     pub name: String,
@@ -75,14 +84,16 @@ pub struct ToolDetails {
     pub install_path: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct ToolValidationStatus {
     pub file_exists: bool,
     pub path_exists: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct Url {
     pub url: String,

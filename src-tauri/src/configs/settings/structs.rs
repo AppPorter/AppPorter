@@ -1,6 +1,8 @@
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct Settings {
     pub first_run: bool,
@@ -15,7 +17,8 @@ pub struct Settings {
     pub tool_install: ToolInstall,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum LanguageType {
     En,
@@ -37,7 +40,8 @@ impl Default for LanguageType {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(rename_all = "lowercase")]
 pub enum ThemeType {
     System,
@@ -51,7 +55,8 @@ impl Default for ThemeType {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct AppInstall {
     pub current_user_only: bool,
@@ -59,7 +64,8 @@ pub struct AppInstall {
     pub current_user: InstallSettings,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct InstallSettings {
     pub create_desktop_shortcut: bool,
@@ -69,7 +75,8 @@ pub struct InstallSettings {
     pub add_to_path: bool,
 }
 
-#[derive(Debug, Deserialize, Serialize, Default, Clone)]
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 #[serde(default)]
 pub struct ToolInstall {
     pub install_path: String,

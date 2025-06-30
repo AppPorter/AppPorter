@@ -8,15 +8,18 @@ use std::path::Path;
 use systemicons::get_icon;
 use tempfile::tempdir;
 use tokio::process::Command;
+use ts_rs::TS;
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 pub struct ExePath {
     pub zip_path: String,
     pub executable_path: String,
     pub password: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Debug, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 pub struct ExeDetails {
     pub product_name: String,
     pub version: String,

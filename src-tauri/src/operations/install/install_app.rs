@@ -10,8 +10,10 @@ use mslnk::ShellLink;
 use serde::{Deserialize, Serialize};
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 pub struct AppInstallConfig {
     pub app: App,
     pub archive_exe_path: String,

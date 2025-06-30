@@ -2,8 +2,10 @@ use crate::operations::get_archive_content;
 use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use ts_rs::TS;
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
 pub struct FileTreeNode {
     pub key: String,
     pub name: String,
