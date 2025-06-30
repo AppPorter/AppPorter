@@ -23,14 +23,14 @@ interface LibraryItemProps {
                 publisher: string
                 version: string
             }
-            paths: {
-                install_path: string
-            }
-            validation_status: {
-                file_exists: boolean
-                registry_valid: boolean
-                path_exists: boolean
-            }
+            install_path: string
+
+
+        },
+        validation_status: {
+            file_exists: boolean
+            registry_valid: boolean
+            path_exists: boolean
         }
     }
 }
@@ -80,8 +80,8 @@ function handleStatusClick(app: LibraryItemProps['item']) {
 
                 <div class="flex flex-col gap-1 text-xs">
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
-                    <span v-if="item.details.paths?.install_path" class="break-all opacity-75">{{
-                        item.details.paths.install_path }}</span>
+                    <span v-if="item.details.install_path" class="break-all opacity-75">{{
+                        item.details.install_path }}</span>
                 </div>
             </div>
 

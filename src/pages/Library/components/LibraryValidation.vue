@@ -23,11 +23,12 @@ interface LibraryValidationProps {
                 create_registry_key: boolean
                 add_to_path: [boolean, string]
             }
-            validation_status: {
-                file_exists: boolean
-                registry_valid: boolean
-                path_exists: boolean
-            }
+
+        },
+        validation_status: {
+            file_exists: boolean
+            registry_valid: boolean
+            path_exists: boolean
         }
     }
 }
@@ -50,7 +51,7 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
 
     appToValidate.value = app
 
-    const validation = app.details.validation_status
+    const validation = app.validation_status
     const fileExists = validation.file_exists
     const pathExists = validation.path_exists
 
