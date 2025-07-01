@@ -1,16 +1,8 @@
 use super::{AppInstall, InstallSettings, LanguageType, Settings, ThemeType, ToolInstall};
 use crate::configs::{ConfigFile, env::Env};
-use crate::core::{context_menu, startup};
+use crate::core::{context_menu, startup, theme};
 use anyhow::{Result, anyhow};
 use std::path::PathBuf;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::thread;
-use std::time::Duration;
-use tauri::{AppHandle, Emitter};
-use windows_registry::CURRENT_USER;
-
-static THEME_MONITORING_ACTIVE: AtomicBool = AtomicBool::new(false);
 
 #[async_trait::async_trait]
 impl ConfigFile for Settings {
@@ -72,57 +64,13 @@ impl Settings {
         let env = Env::read().await?;
 
         settings.run_as_admin = settings.check_run_as_admin(&env.user_sid)?;
-        settings.color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
+        settings.color = theme::get_system_accent_color().unwrap_or("ff8c00".to_owned());
         settings.update_install_paths(&env.system_drive_letter, &env.username)?;
         settings.context_menu = context_menu::check_and_fix_context_menu()?;
         settings.auto_startup = startup::check_and_fix_startup()?;
 
         settings.save().await?;
         Ok(())
-    }
-
-    pub fn start_theme_monitoring(app_handle: AppHandle) -> Result<()> {
-        if THEME_MONITORING_ACTIVE.swap(true, Ordering::SeqCst) {
-            return Ok(());
-        }
-
-        let app_handle = Arc::new(app_handle);
-        thread::spawn(move || {
-            let mut last_color = Self::get_system_accent_color().unwrap_or("ff8c00".to_owned());
-
-            while THEME_MONITORING_ACTIVE.load(Ordering::SeqCst) {
-                thread::sleep(Duration::from_secs(1));
-
-                if let Ok(current_color) = Self::get_system_accent_color() {
-                    if current_color != last_color {
-                        last_color = current_color.clone();
-                        let _ = app_handle.emit("theme-color-changed", &current_color);
-                    }
-                }
-            }
-
-            THEME_MONITORING_ACTIVE.store(false, Ordering::SeqCst);
-        });
-        Ok(())
-    }
-
-    pub fn stop_theme_monitoring() -> Result<()> {
-        THEME_MONITORING_ACTIVE.store(false, Ordering::SeqCst);
-        Ok(())
-    }
-
-    pub fn get_system_accent_color() -> Result<String> {
-        let accent_color = CURRENT_USER
-            .open(r"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent")?
-            .get_u32("StartColorMenu")?;
-
-        let accent_color_str = format!("{accent_color:08x}");
-        let (b, g, r) = (
-            &accent_color_str[2..4],
-            &accent_color_str[4..6],
-            &accent_color_str[6..8],
-        );
-        Ok(format!("#{r}{g}{b}"))
     }
 
     fn check_run_as_admin(&self, user_sid: &str) -> Result<bool> {

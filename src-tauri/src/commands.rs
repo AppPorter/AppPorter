@@ -122,8 +122,8 @@ impl<'a> Command<'a> {
             LoadEnv => json!(Env::read().await?),
             LoadSettings => json!(Settings::read().await?),
             SaveSettings { settings } => json!(settings.save().await?),
-            StartThemeMonitoring => json!(Settings::start_theme_monitoring(app)?),
-            StopThemeMonitoring => json!(Settings::stop_theme_monitoring()?),
+            StartThemeMonitoring => json!(start_theme_monitoring(app)?),
+            StopThemeMonitoring => json!(stop_theme_monitoring()?),
             LoadLibrary => json!(Library::load().await?),
             SaveLibrary { library } => json!(library.save().await?),
 
