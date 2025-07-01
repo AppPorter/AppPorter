@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { window as tauriWindow } from '@/main'
-import { SettingsStore } from '@/stores/settings'
+import { settingsStore } from '@/main'
 import { exec } from '@/exec'
-
-const settingsStore = SettingsStore()
 
 function handleClose() {
   if (settingsStore.minimize_to_tray_on_close) {

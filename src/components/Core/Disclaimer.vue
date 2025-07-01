@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
-import { SettingsStore } from '@/stores/settings.ts'
 import { exec } from '@/exec.ts'
 import { onMounted } from 'vue'
+import { settingsStore } from '@/main'
 
 const confirm = useConfirm()
 const { t } = useI18n()
-const settings = SettingsStore()
 
 onMounted(async () => {
-    if (settings.first_run) {
+    if (settingsStore.first_run) {
         confirm.require({
             group: 'disclaimer',
             header: t('ui.disclaimer.header'),
@@ -28,8 +27,8 @@ onMounted(async () => {
                 outlined: true,
             },
             accept: async () => {
-                this.first_run = false
-                await this.saveSettings()
+                settingsStore.first_run = false
+                await settingsStore.saveSettings()
             },
             reject: () => {
                 exec('Exit', {

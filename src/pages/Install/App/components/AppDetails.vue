@@ -5,6 +5,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { storeToRefs } from 'pinia';
 import { toRef } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { installConfig } from '@/main';
 
 defineProps<{
   nameError: boolean
@@ -13,7 +14,6 @@ defineProps<{
   progressMode: 'indeterminate' | 'determinate'
 }>()
 
-const installConfig = InstallConfigStore()
 const { archive_exe_path, zip_path, app_details } = storeToRefs(installConfig)
 
 let originalIcon = ''

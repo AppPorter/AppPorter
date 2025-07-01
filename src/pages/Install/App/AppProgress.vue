@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { goTo } from '@/router'
-import { InstallConfigStore } from '@/stores/install_config'
 import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { generalStore, installConfig } from '@/main'
 
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
@@ -17,8 +17,7 @@ const installPathCopied = ref(false)
 const installPath = ref('')
 const fullPath = ref('')
 
-const installConfig = InstallConfigStore()
-installConfig.page = 'Install_App_Progress'
+generalStore.page = 'Install_App_Progress'
 const { t } = useI18n()
 
 const handleOpenExecutable = async () => {

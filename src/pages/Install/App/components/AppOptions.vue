@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
-import { InstallConfigStore } from '@/stores/install_config'
-import { SettingsStore } from '@/stores/settings'
+import { installConfig, settingsStore } from '@/main'
 import { open } from '@tauri-apps/plugin-dialog'
 import { storeToRefs } from 'pinia'
 import SelectButton from 'primevue/selectbutton'
@@ -16,8 +15,6 @@ defineEmits<{
   'update:pathError': [value: boolean]
 }>()
 
-const settingsStore = SettingsStore()
-const installConfig = InstallConfigStore()
 const { t } = useI18n()
 
 const {

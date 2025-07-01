@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import type { AppDetails } from '#/AppDetails'
 import type { ToolDetails } from '#/ToolDetails'
-import { type InstallTypes, LibraryStore } from '@/stores/library'
+import type { InstallTypes } from '@/stores/library'
 import { exec } from '@/exec'
 import Menu from 'primevue/menu'
 import { computed, inject, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { libraryStore } from '@/main'
 
 const { t } = useI18n()
 const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
-const libraryStore = LibraryStore()
 
 interface LibraryContextMenuProps {
     selectedApp?:

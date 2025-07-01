@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { LibraryStore } from '@/stores/library'
 import { exec } from '@/exec'
 import DataView from 'primevue/dataview'
 import Panel from 'primevue/panel'
@@ -10,8 +9,8 @@ import LibraryContextMenu from './components/LibraryContextMenu.vue'
 import LibraryHeader from './components/LibraryHeader.vue'
 import LibraryItem from './components/LibraryItem.vue'
 import LibraryValidation from './components/LibraryValidation.vue'
+import { libraryStore } from '@/main'
 
-const libraryStore = LibraryStore()
 const { t } = useI18n()
 const contextMenu = ref()
 const validation = ref()

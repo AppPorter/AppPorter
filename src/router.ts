@@ -7,6 +7,7 @@ import Library from '@/pages/Library/Index.vue'
 import Settings from '@/pages/Settings.vue'
 import type { Router, RouteRecordRaw } from 'vue-router'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { generalStore, installConfig } from './main'
 
 const Dummy = { render: () => null }
 
@@ -76,11 +77,8 @@ export function setupRouterGuards(router: Router) {
     }
 
     if (to.path === '/Install') {
-      const { InstallConfigStore } = await import('./stores/install_config')
-      const installConfig = InstallConfigStore()
-
       let path = ''
-      switch (installConfig.page) {
+      switch (generalStore.page) {
         case 'Home':
           path = '/Home'
           break
@@ -101,8 +99,6 @@ export function setupRouterGuards(router: Router) {
     }
 
     if (to.path === '/Home') {
-      const { InstallConfigStore } = await import('./stores/install_config')
-      const installConfig = InstallConfigStore()
       installConfig.$reset()
     }
 

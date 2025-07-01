@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { EnvStore } from '@/stores/env'
 import { exec } from '@/exec'
+import { envStore } from '@/main';
 import ConfirmPopup from 'primevue/confirmpopup'
 import { useConfirm } from 'primevue/useconfirm'
 import { useI18n } from 'vue-i18n'
@@ -11,7 +11,6 @@ defineProps<{
 
 const emit = defineEmits(['dismiss'])
 
-const env = EnvStore()
 const confirm = useConfirm()
 const { t } = useI18n()
 
@@ -30,7 +29,7 @@ const handleAdminPrompt = () => {
       label: t('g.accept'),
     },
     accept: () => {
-      if (!env.debug) {
+      if (!envStore.debug) {
         exec('Elevate', {
           revert: false,
         })
@@ -44,7 +43,7 @@ const handleAdminPrompt = () => {
 </script>
 
 <template>
-  <div v-if="!env.elevated && !dismissWarning"
+  <div v-if="!envStore.elevated && !dismissWarning"
     class="flex min-h-7 flex-wrap items-center gap-x-2 gap-y-1 rounded bg-amber-50 px-3 py-1 dark:bg-amber-900/30">
     <div class="flex items-center gap-2">
       <span class="mir-warning text-amber-600 dark:text-amber-400" />

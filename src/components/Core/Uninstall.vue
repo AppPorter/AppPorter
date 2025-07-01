@@ -7,8 +7,8 @@ const confirm = useConfirm()
 const { t } = useI18n()
 const libraryStore = LibraryStore()
 
-const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Promise<void> => {
-    const app = apptype === 'app' ? libraryStore.getAppByTimestamp(timestamp) : libraryStore.getToolByTimestamp(timestamp)
+const confirmAndUninstall = async (apptype: InstallTypes, timestamp: bigint): Promise<void> => {
+    const app = libraryStore.getByTimestamp(timestamp)
     if (!app) return
 
     return new Promise<void>((resolve, reject) => {
@@ -47,13 +47,13 @@ const confirmAndUninstall = async (apptype: InstallTypes, timestamp: number): Pr
                     message = t('ui.library.confirm_remove_message', {
                         name: app.details.name,
                     })
-                    action = () => libraryStore.removeTool(timestamp)
+                    action = () => libraryStore.remove(timestamp)
                     break
                 case 'app':
                     message = t('ui.library.confirm_remove_message', {
                         name: app.details.info.name,
                     })
-                    action = () => libraryStore.removeApp(timestamp)
+                    action = () => libraryStore.remove(timestamp)
                     break
             }
         }

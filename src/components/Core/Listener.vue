@@ -1,14 +1,11 @@
 <script setup lang="ts">
-import { window as tauriWindow } from '@/main'
+import { generalStore, installConfig, libraryStore, window as tauriWindow } from '@/main'
 import { goTo } from '@/router'
-import { InstallConfigStore } from '@/stores/install_config'
-import { type InstallTypes, LibraryStore } from '@/stores/library'
+import type { InstallTypes } from '@/stores/library'
 import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import { inject, onMounted } from 'vue'
 
-const libraryStore = LibraryStore()
-const installConfig = InstallConfigStore()
 const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
 
 function showWindow() {
@@ -24,7 +21,7 @@ onMounted(async () => {
         installConfig.temp.zip_path = payload[0]
         installConfig.temp.timestamp = payload[1]
 
-        installConfig.show_preview_drawer = true
+        generalStore.drawer.preview = true
         showWindow()
     })
 
@@ -35,7 +32,7 @@ onMounted(async () => {
         installConfig.temp.timestamp = payload[1]
         installConfig.temp.url = payload[2]
 
-        installConfig.show_preview_drawer = true
+        generalStore.drawer.preview = true
         showWindow()
     })
 

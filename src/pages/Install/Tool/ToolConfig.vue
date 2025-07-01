@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
 import { goTo } from '@/router'
-import { InstallConfigStore } from '@/stores/install_config'
-import { SettingsStore } from '@/stores/settings'
 import { exec } from '@/exec'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
@@ -12,14 +10,13 @@ import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { generalStore, installConfig, settingsStore } from '@/main'
 
-const installConfig = InstallConfigStore()
 const { t } = useI18n()
-const settingsStore = SettingsStore()
 const { tool_install } = settingsStore
 const confirm = useConfirm()
 
-installConfig.page = 'Install_Tool_Config'
+generalStore.page = 'Install_Tool_Config'
 
 const pathError = ref(false)
 const nameError = ref(false)
@@ -179,7 +176,7 @@ async function handleInstallClick() {
 
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                    }}</label>
+                                }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="installConfig.tool_details.install_path"
@@ -205,7 +202,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                    }}</label>
+                                                }}</label>
                                             </div>
                                             <div v-if="installConfig.tool_details.add_to_path[0]" class="ml-6 mt-1">
                                                 <div class="flex gap-2">

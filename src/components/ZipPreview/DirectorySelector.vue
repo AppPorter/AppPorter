@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
 import { exec } from '@/exec'
 import Button from 'primevue/button'
 import ProgressSpinner from 'primevue/progressspinner'
 import SelectButton from 'primevue/selectbutton'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
-
-const store = InstallConfigStore()
+import ZipPreview from './ZipPreview.vue'
+import type { FileTreeNode } from '#/FileTreeNode'
+import { generalStore, installConfig } from '@/main'
 
 const { t } = useI18n()
 
@@ -95,10 +94,10 @@ async function handleSelect() {
         isSelecting.value = true
         emit('loading', true)
 
-        if (store.page.includes('App')) {
-            store.archive_path_dir = selectedPath.value
+        if (generalStore.page.includes('App')) {
+            installConfig.archive_path_dir = selectedPath.value
         } else {
-            store.archive_path_dir = selectedPath.value
+            installConfig.archive_path_dir = selectedPath.value
         }
 
         emit('directory-select', selectedPath.value)

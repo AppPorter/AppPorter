@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
@@ -8,9 +7,9 @@ import Panel from 'primevue/panel'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { exec } from '@/exec'
+import { generalStore, installConfig } from '@/main'
 
-const installConfig = InstallConfigStore()
-installConfig.page = 'Home'
+generalStore.page = 'Home'
 const { t } = useI18n()
 const inputError = ref(false)
 
@@ -55,7 +54,7 @@ async function handleContinueClick() {
       }
     })
   } else {
-    installConfig.show_preview_drawer = true
+    generalStore.drawer.preview = true
   }
 }
 </script>

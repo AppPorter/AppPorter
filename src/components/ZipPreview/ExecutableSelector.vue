@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config'
 import { exec } from '@/exec'
 import Button from 'primevue/button'
 import SelectButton from 'primevue/selectbutton'
 import SplitButton from 'primevue/splitbutton'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import ZipPreview, { FileTreeNode } from './ZipPreview.vue'
+import type { FileTreeNode } from '#/FileTreeNode'
+import type { ExeDetails } from '#/ExeDetails'
+import { generalStore, installConfig } from '@/main'
 
-const store = InstallConfigStore()
 const { t } = useI18n()
 
 const props = defineProps<{
@@ -105,7 +105,7 @@ async function handleSelect() {
   if (isSelecting.value) return
   isSelecting.value = true
   emit('loading', true)
-  const details = await exec('GetDetails', {
+  const details = await exec<ExeDetails>('GetDetails', {
     path: {
       zip_path: props.zipPath,
       executable_path: selectedPath.value,
@@ -113,11 +113,11 @@ async function handleSelect() {
     }
   })
 
-  store.app_details.info.name = details.product_name
-  store.app_details.info.version = details.version
-  store.app_details.info.publisher = details.copyright
-  store.app_details.info.icon = details.icon_data_url
-  store.archive_exe_path = selectedPath.value
+  installConfig.app_details.info.name = details.product_name
+  installConfig.app_details.info.version = details.version
+  installConfig.app_details.info.publisher = details.copyright
+  installConfig.app_details.info.icon = details.icon_data_url
+  installConfig.archive_exe_path = selectedPath.value
 
   emit('executable-selected')
   isSelecting.value = false
@@ -143,7 +143,7 @@ async function handleInstallerMode() {
 
   isSelecting.value = false
   emit('loading', false)
-  store.show_preview_drawer = false
+  generalStore.drawer.preview = false
 }
 
 const menuItems = ref([

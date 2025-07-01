@@ -7,7 +7,7 @@ import ko from '@/locales/ko.json'
 import ru from '@/locales/ru.json'
 import zhHans from '@/locales/zh-hans.json'
 import zhHant from '@/locales/zh-hant.json'
-import type { LanguageType } from '@/stores/settings'
+import type { LanguageType } from '#/LanguageType'
 import { createI18n } from 'vue-i18n'
 
 export function setupI18n(initialLanguage: LanguageType) {

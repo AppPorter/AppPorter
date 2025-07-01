@@ -16,6 +16,9 @@ import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
 import { createApp } from 'vue'
 import { EnvStore } from './stores/env'
+import { GeneralStore } from './stores/general'
+import { InstallConfigStore } from './stores/install_config'
+import { LibraryStore } from './stores/library'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -50,13 +53,17 @@ const app = createApp(Main)
 
 app.use(pinia)
 
-const envStore = EnvStore()
+export const envStore = EnvStore()
 await envStore.loadEnv()
 
-const settingsStore = SettingsStore()
+export const settingsStore = SettingsStore()
 await settingsStore.loadSettings()
 
-await envStore.setInitialSettings()
+export const generalStore = GeneralStore()
+await generalStore.setInitialSettings()
+
+export const libraryStore = LibraryStore()
+export const installConfig = InstallConfigStore()
 
 const i18n = setupI18n(settingsStore.language)
 app.use(router).use(ToastService).use(ConfirmationService).use(i18n)

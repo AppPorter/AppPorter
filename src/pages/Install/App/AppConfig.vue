@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { goTo } from '@/router';
-import { InstallConfigStore } from '@/stores/install_config';
 import { exec } from '@/exec'
 import Button from 'primevue/button';
 import { useConfirm } from 'primevue/useconfirm';
@@ -8,12 +7,12 @@ import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
 import AppDetails from './components/AppDetails.vue';
 import Options from './components/AppOptions.vue';
+import { generalStore, installConfig } from '@/main';
 
 const { t } = useI18n()
-const installConfig = InstallConfigStore()
 const confirm = useConfirm()
 
-installConfig.page = 'Install_App_Config'
+generalStore.page = 'Install_App_Config'
 
 const pathError = ref(false)
 const nameError = ref(false)

@@ -6,7 +6,8 @@ import InputText from 'primevue/inputtext'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { exec } from '@/exec'
-import type { App, Tool } from '@/stores/library'
+import type { App } from '#/App'
+import type { Tool } from '#/Tool'
 
 const { t } = useI18n()
 const visible = ref(false)

@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
 import { goTo } from '@/router'
-import { InstallConfigStore } from '@/stores/install_config'
-import { LibraryStore } from '@/stores/library'
 import { exec } from '@/exec'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
@@ -10,9 +8,9 @@ import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { generalStore, installConfig, libraryStore } from '@/main'
+import { FileTreeNode } from '#/FileTreeNode'
 
-const installConfig = InstallConfigStore()
-const libraryStore = LibraryStore()
 const { t } = useI18n()
 const showPasswordDialog = ref(false)
 const archivePassword = ref('')
@@ -28,9 +26,9 @@ const isTemporaryMode = computed(() => {
 
 // Computed properties
 const drawerVisible = computed({
-    get: () => installConfig.show_preview_drawer,
+    get: () => generalStore.drawer.preview,
     set: (value: boolean) => {
-        installConfig.show_preview_drawer = value
+        generalStore.drawer.preview = value
         // Clear data when drawer is closed without confirmation
         if (!value) {
             if (isTemporaryMode.value) {
@@ -49,7 +47,7 @@ function handleExecutableSelected() {
         // Confirm temp data when user selects executable
         installConfig.confirmTempData()
     }
-    installConfig.show_preview_drawer = false
+    generalStore.drawer.preview = false
     goTo('/Install/App/Config')
 }
 
@@ -58,7 +56,7 @@ function handleNoExecutable() {
         // Confirm temp data when user selects no executable
         installConfig.confirmTempData()
     }
-    installConfig.show_preview_drawer = false
+    generalStore.drawer.preview = false
     goTo('/Install/Tool/Config')
 }
 
@@ -69,9 +67,9 @@ async function handleSubscribe() {
     subscribeSuccess.value = false
 
     // Add URL to subscribed URLs
-    const timestamp = await exec('GetTimestamp')
+    const timestamp = await exec<bigint>('GetTimestamp')
 
-    libraryStore.urls.push({ url, timestamp: parseInt(timestamp) })
+    libraryStore.urls.push({ url, timestamp })
     await libraryStore.saveLibrary()
 
     subscribeSuccess.value = true
@@ -103,7 +101,7 @@ watch(drawerVisible, async (visible) => {
                     showPasswordDialog.value = true
                 } else {
                     globalThis.$errorHandler.showError(error)
-                    installConfig.show_preview_drawer = false
+                    generalStore.drawer.preview = false
                 }
             } finally {
                 isLoading.value = false
@@ -138,14 +136,14 @@ async function handlePasswordSubmit() {
         } else {
             globalThis.$errorHandler.showError(error)
             showPasswordDialog.value = false
-            installConfig.show_preview_drawer = false
+            generalStore.drawer.preview = false
         }
     }
 }
 
 async function GetArchiveContent(password: string) {
     const zipPath = isTemporaryMode.value ? installConfig.temp.zip_path : installConfig.zip_path
-    const treeData = await exec('GetArchiveTree', {
+    const treeData = await exec<FileTreeNode[]>('GetArchiveTree', {
         path: zipPath,
         password: password,
     })
@@ -174,8 +172,8 @@ async function GetArchiveContent(password: string) {
             </div>
             <template #footer>
                 <div class="flex justify-end gap-2">
-                    <Button @click="installConfig.show_preview_drawer = false" :label="t('g.cancel')"
-                        severity="secondary" outlined icon="mir-close" />
+                    <Button @click="generalStore.drawer.preview = false" :label="t('g.cancel')" severity="secondary"
+                        outlined icon="mir-close" />
                     <Button @click="handlePasswordSubmit" :label="t('g.submit')" icon="mir-check" />
                 </div>
             </template>
@@ -194,7 +192,7 @@ async function GetArchiveContent(password: string) {
                     <p class="text-sm">{{ (isTemporaryMode ? installConfig.temp.url :
                         installConfig.url) ||
                         (isTemporaryMode ? installConfig.temp.zip_path : installConfig.zip_path)
-                    }}
+                        }}
                     </p>
                 </div>
 
@@ -214,7 +212,7 @@ async function GetArchiveContent(password: string) {
                             <div class="size-5 animate-spin rounded-full border-2 border-primary border-t-transparent">
                             </div>
                             <span class="text-sm font-medium">{{ t('g.loading')
-                                }}</span>
+                            }}</span>
                         </div>
                     </div>
                 </div>
