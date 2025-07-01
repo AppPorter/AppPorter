@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AdminWarning from '@/components/Core/AdminWarning.vue'
-import ContextMenuManager from '@/components/Core/ContextMenuManager.vue'
+import ContextMenu from '@/components/Core/ContextMenu.vue'
 import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import Listener from '@/components/Core/Listener.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
@@ -9,21 +9,15 @@ import WindowControls from '@/components/Core/WindowControls.vue'
 import PreviewDrawer from '@/components/Drawer/PreviewDrawer.vue'
 import { generateMaterialIconsClasses } from '@/styles/material_icons.ts'
 import ConfirmDialog from 'primevue/confirmdialog'
-import { useConfirm } from 'primevue/useconfirm'
 import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
 import { InstallTypes } from './stores/library.ts'
-import { SettingsStore } from './stores/settings.ts'
-import { exec } from './exec.ts'
+import Disclaimer from '@/components/Core/Disclaimer.vue'
 
-const confirm = useConfirm()
-const { t } = useI18n()
 const errorHandler = ref()
 const dismissWarning = ref(false)
-const settings = SettingsStore()
-const contextMenuManager = ref()
+const contextMenu = ref()
 const uninstallComponent = ref()
 
 const triggerUninstall = async (apptype: InstallTypes, timestamp: number) => {
@@ -31,36 +25,6 @@ const triggerUninstall = async (apptype: InstallTypes, timestamp: number) => {
 }
 
 provide('triggerUninstall', triggerUninstall)
-
-onMounted(async () => {
-  if (settings.first_run) {
-    confirm.require({
-      group: 'disclaimer',
-      header: t('ui.disclaimer.header'),
-      message: t('ui.disclaimer.msg'),
-      icon: 'mir-info',
-      acceptProps: {
-        label: t('g.accept'),
-        icon: 'mir-check',
-        severity: 'primary',
-      },
-      rejectProps: {
-        label: t('g.exit'),
-        icon: 'mir-close',
-        severity: 'secondary',
-        outlined: true,
-      },
-      accept: async () => {
-        await settings.acknowledgeFirstRun()
-      },
-      reject: () => {
-        exec('Exit', {
-          code: 0
-        })
-      },
-    })
-  }
-})
 
 const route = useRoute()
 const cachedComponents = computed(() => {
@@ -83,12 +47,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <div class="h-screen w-screen select-none" @contextmenu="contextMenuManager.handleContextMenu">
+  <div class="h-screen w-screen select-none" @contextmenu="contextMenu.handleContextMenu">
     <Listener />
 
     <ErrorHandler ref="errorHandler" />
     <ConfirmDialog group="dialog" class="w-[32rem] max-w-[90vw]" />
-    <ConfirmDialog group="disclaimer" class="w-[32rem] max-w-[90vw]" :closable="false" />
+    <Disclaimer />
 
     <WindowControls />
 
@@ -115,7 +79,7 @@ onBeforeMount(() => {
       </Suspense>
     </div>
 
-    <ContextMenuManager ref="contextMenuManager" />
+    <ContextMenu ref="contextMenu" />
 
     <PreviewDrawer />
 
