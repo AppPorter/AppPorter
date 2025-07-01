@@ -7,12 +7,12 @@ const { t } = useI18n()
 
 interface LibraryStatusTagProps {
     item: {
-        type: InstallTypes
-        installed: boolean
-        validation_status: {
-            file_exists: boolean
+        type?: InstallTypes
+        installed?: boolean
+        validation_status?: {
+            file_exists?: boolean
             registry_valid?: boolean
-            path_exists: boolean
+            path_exists?: boolean
         }
     }
     tagType: 'type' | 'status'
@@ -42,10 +42,18 @@ function getLibraryType(data: LibraryStatusTagProps['item']) {
         }
     }
 
+    if (data.type === 'tool') {
+        return {
+            icon: 'mir-folder_copy',
+            severity: 'secondary',
+            value: t('cls.install.types.tool'),
+        }
+    }
+
     return {
-        icon: 'mir-folder_copy',
+        icon: 'mir-help',
         severity: 'secondary',
-        value: t('cls.install.types.tool'),
+        value: t('cls.install.types.app'),
     }
 }
 
@@ -58,7 +66,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         }
     }
 
-    const validation = data.validation_status
+    const validation = data.validation_status || {}
 
     if (data.type === 'app') {
         const isValid = validation.file_exists && validation.registry_valid && validation.path_exists
@@ -78,20 +86,28 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
         }
     }
 
-    const isToolValid = validation.file_exists && validation.path_exists
+    if (data.type === 'tool') {
+        const isToolValid = validation.file_exists && validation.path_exists
 
-    if (isToolValid) {
+        if (isToolValid) {
+            return {
+                icon: 'mir-check',
+                severity: 'success',
+                value: t('ui.library.installed'),
+            }
+        }
+
         return {
-            icon: 'mir-check',
-            severity: 'success',
-            value: t('ui.library.installed'),
+            icon: 'mir-error',
+            severity: 'warn',
+            value: t('ui.validation.validation_error'),
         }
     }
 
     return {
-        icon: 'mir-error',
-        severity: 'warn',
-        value: t('ui.validation.validation_error'),
+        icon: 'mir-help',
+        severity: 'secondary',
+        value: t('ui.library.not_installed'),
     }
 }
 </script>

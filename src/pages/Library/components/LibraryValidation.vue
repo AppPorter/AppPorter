@@ -6,29 +6,22 @@ import { useI18n } from 'vue-i18n'
 import ReinstallDrawer from '@/components/Drawer/ReinstallDrawer.vue'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
+import { AppDetails } from '#/AppDetails'
+import { ToolDetails } from '#/ToolDetails'
 
 const { t } = useI18n()
 const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
 
 interface LibraryValidationProps {
     app?: {
-        timestamp: number
-        type: InstallTypes
-        installed: boolean
-        details: {
-            info: {
-                name: string
-            }
-            config?: {
-                create_registry_key: boolean
-                add_to_path: [boolean, string]
-            }
-
-        },
-        validation_status: {
-            file_exists: boolean
-            registry_valid: boolean
-            path_exists: boolean
+        timestamp: number | bigint
+        type?: InstallTypes
+        installed?: boolean
+        details?: AppDetails | ToolDetails
+        validation_status?: {
+            file_exists?: boolean
+            registry_valid?: boolean
+            path_exists?: boolean
         }
     }
 }
@@ -49,18 +42,21 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
         return
     }
 
-    appToValidate.value = app
+    appToValidate.value = {
+        ...app,
+        timestamp: typeof app.timestamp === 'bigint' ? Number(app.timestamp) : app.timestamp
+    }
 
-    const validation = app.validation_status
-    const fileExists = validation.file_exists
-    const pathExists = validation.path_exists
+    const validation = app.validation_status || {}
+    const fileExists = validation?.file_exists
+    const pathExists = validation?.path_exists
 
     if (app.type === 'tool') {
         if (!fileExists || !pathExists) {
             showDialog.value = true
         }
     } else {
-        const registryValid = validation.registry_valid
+        const registryValid = validation?.registry_valid
         if (!fileExists || !registryValid || !pathExists) {
             showDialog.value = true
         }
@@ -71,7 +67,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await triggerUninstall(appToValidate.value.type, appToValidate.value.timestamp)
+        await triggerUninstall(appToValidate.value.type, typeof appToValidate.value.timestamp === 'bigint' ? Number(appToValidate.value.timestamp) : appToValidate.value.timestamp)
         showDialog.value = false
     } else if (action === 'reinstall') {
         reinstallDrawer.value?.show(appToValidate.value)
@@ -80,7 +76,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
         const commandName = appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool'
 
         await exec(commandName, {
-            timestamp: appToValidate.value.timestamp,
+            timestamp: typeof appToValidate.value.timestamp === 'bigint' ? Number(appToValidate.value.timestamp) : appToValidate.value.timestamp,
         })
         emit('loadLibrary')
         showDialog.value = false
@@ -89,7 +85,17 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
 
 function getActionType() {
     if (!appToValidate.value) return 'repair'
-    return !appToValidate.value.details.validation_status.file_exists ? 'reinstall' : 'repair'
+    const details = appToValidate.value.details
+    if (appToValidate.value.type === 'tool') {
+        if ('name' in details && (!appToValidate.value.validation_status?.file_exists)) {
+            return 'reinstall'
+        }
+        return 'repair'
+    }
+    if ('info' in details && (!appToValidate.value.validation_status?.file_exists)) {
+        return 'reinstall'
+    }
+    return 'repair'
 }
 
 defineExpose({
@@ -102,25 +108,33 @@ defineExpose({
         modal>
         <div class="flex flex-col" v-if="appToValidate">
             <div class="mb-4">
-                {{ t('ui.validation.issue', { name: appToValidate.details.info.name }) }}
+                <template v-if="appToValidate.details && 'info' in appToValidate.details">
+                    {{ t('ui.validation.issue', { name: appToValidate.details.info.name }) }}
+                </template>
+                <template v-else-if="appToValidate.details && 'name' in appToValidate.details">
+                    {{ t('ui.validation.issue', { name: appToValidate.details.name }) }}
+                </template>
+                <template v-else>
+                    {{ t('ui.validation.issue', { name: '' }) }}
+                </template>
             </div>
             <div class="mb-6 space-y-2">
                 <div class="flex items-center justify-between rounded p-2">
                     <span>File Exists</span>
                     <i
-                        :class="appToValidate.details.validation_status.file_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
+                        :class="appToValidate.validation_status?.file_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div v-if="appToValidate.type === 'app' && appToValidate.details.config?.create_registry_key"
+                <div v-if="appToValidate.type === 'app' && appToValidate.details && 'config' in appToValidate.details && appToValidate.details.config?.create_registry_key"
                     class="flex items-center justify-between rounded p-2">
                     <span>Registry Valid</span>
                     <i
-                        :class="appToValidate.details.validation_status.registry_valid ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
+                        :class="appToValidate.validation_status?.registry_valid ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
-                <div v-if="appToValidate.details.config?.add_to_path"
+                <div v-if="appToValidate.details && (('config' in appToValidate.details && appToValidate.details.config?.add_to_path) || ('add_to_path' in appToValidate.details && appToValidate.details.add_to_path))"
                     class="flex items-center justify-between rounded p-2">
                     <span>Path Exists</span>
                     <i
-                        :class="appToValidate.details.validation_status.path_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
+                        :class="appToValidate.validation_status?.path_exists ? 'mir-check text-green-500' : 'mir-close text-red-500'"></i>
                 </div>
             </div>
             <div class="flex justify-end gap-2">

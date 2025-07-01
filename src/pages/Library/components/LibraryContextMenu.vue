@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { AppDetails, ToolDetails } from '@/stores/library'
+import type { AppDetails } from '#/AppDetails'
+import type { ToolDetails } from '#/ToolDetails'
 import { type InstallTypes, LibraryStore } from '@/stores/library'
 import { exec } from '@/exec'
 import Menu from 'primevue/menu'
@@ -71,13 +72,13 @@ const menuItems = computed(() => {
                 label: t('cls.install.self'),
                 icon: 'mir-install_desktop',
                 command: () => previewUrl(),
-                visible: () => true,
+                visible: true,
             },
             {
                 label: t('g.remove'),
                 icon: 'mir-delete',
                 command: () => removeUrl(),
-                visible: () => true,
+                visible: true,
             },
         ]
     }
@@ -87,31 +88,31 @@ const menuItems = computed(() => {
             label: t('cls.install.self'),
             icon: 'mir-install_desktop',
             command: () => previewUrl(),
-            visible: () => props.selectedApp && !props.selectedApp.installed,
+            visible: props.selectedApp ? !props.selectedApp.installed : false,
         },
         {
             label: t('g.open'),
             icon: 'mir-terminal',
             command: () => openApp(),
-            visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app',
+            visible: props.selectedApp ? (props.selectedApp.installed && props.selectedApp.type === 'app') : false,
         },
         {
             label: t('ui.library.open_install_folder'),
             icon: 'mir-folder',
             command: () => openInstallFolder(),
-            visible: () => props.selectedApp?.installed,
+            visible: props.selectedApp ? props.selectedApp.installed : false,
         },
         {
             label: t('ui.library.open_registry'),
             icon: 'mir-app_registration',
             command: () => openRegistry(),
-            visible: () => props.selectedApp?.installed && props.selectedApp?.type === 'app' && props.selectedApp.details.config.create_registry_key,
+            visible: props.selectedApp ? (props.selectedApp.installed && props.selectedApp.type === 'app' && props.selectedApp.details.config.create_registry_key) : false,
         },
         {
             label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
             icon: 'mir-delete',
-            command: () => triggerUninstall(props.selectedApp!.type, props.selectedApp!.timestamp),
-            visible: () => props.selectedApp !== undefined,
+            command: () => triggerUninstall(props.selectedApp!.type, Number(props.selectedApp!.timestamp)),
+            visible: !!props.selectedApp,
         },
     ]
 })
@@ -153,7 +154,7 @@ async function openRegistry() {
 async function removeUrl() {
     if (!props.selectedApp || props.selectedApp.type !== 'url') return
 
-    libraryStore.urls = libraryStore.urls.filter(urlObj => urlObj.timestamp !== props.selectedApp!.timestamp)
+    libraryStore.urls = libraryStore.urls.filter(urlObj => Number(urlObj.timestamp) !== Number(props.selectedApp!.timestamp))
     await libraryStore.saveLibrary()
     emit('loadLibrary')
 }

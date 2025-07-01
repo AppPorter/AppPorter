@@ -6,31 +6,23 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LibraryStatusTag from './LibraryStatusTag.vue'
 import LibraryValidation from './LibraryValidation.vue'
+import { AppDetails } from '#/AppDetails'
+import { ToolDetails } from '#/ToolDetails'
 
 const { t } = useI18n()
 const validationRef = ref()
 
 interface LibraryItemProps {
     item: {
-        timestamp: number
+        timestamp: bigint
         url: string
-        type: InstallTypes
-        installed: boolean
-        details: {
-            info: {
-                name: string
-                icon: string
-                publisher: string
-                version: string
-            }
-            install_path: string
-
-
-        },
-        validation_status: {
-            file_exists: boolean
-            registry_valid: boolean
-            path_exists: boolean
+        type?: InstallTypes
+        installed?: boolean
+        details?: AppDetails | ToolDetails
+        validation_status?: {
+            file_exists?: boolean
+            registry_valid?: boolean
+            path_exists?: boolean
         }
     }
 }
@@ -43,14 +35,52 @@ interface LibraryItemEmits {
 defineProps<LibraryItemProps>()
 defineEmits<LibraryItemEmits>()
 
-function formatTimestamp(timestamp) {
-    return new Date(timestamp * 1000).toLocaleDateString()
+function formatTimestamp(timestamp: bigint) {
+    return new Date(Number(timestamp) * 1000).toLocaleDateString()
 }
 
 function handleStatusClick(app: LibraryItemProps['item']) {
     if (validationRef.value) {
         validationRef.value.handleStatusClick(app)
     }
+}
+
+function getName(item: LibraryItemProps['item']) {
+    if (item.type === 'app' && item.details && 'info' in item.details) {
+        return (item.details as AppDetails).info.name || item.url
+    } else if (item.type === 'tool' && item.details && 'name' in item.details) {
+        return (item.details as ToolDetails).name || item.url
+    } else if (item.type === 'url') {
+        return item.url
+    }
+    return item.url
+}
+
+function getIcon(item: LibraryItemProps['item']) {
+    if (item.type === 'app' && item.details && 'info' in item.details) {
+        return (item.details as AppDetails).info.icon
+    } else if (item.type === 'tool' && item.details && 'icon' in item.details) {
+        return ''
+    }
+    return ''
+}
+
+function getVersion(item: LibraryItemProps['item']) {
+    if (item.type === 'app' && item.details && 'info' in item.details) {
+        return (item.details as AppDetails).info.version
+    } else if (item.type === 'tool' && item.details && 'version' in item.details) {
+        return ''
+    }
+    return ''
+}
+
+function getInstallPath(item: LibraryItemProps['item']) {
+    if (item.type === 'app' && item.details && 'install_path' in item.details) {
+        return (item.details as AppDetails).install_path
+    } else if (item.type === 'tool' && item.details && 'install_path' in item.details) {
+        return (item.details as ToolDetails).install_path
+    }
+    return ''
 }
 </script>
 
@@ -61,8 +91,7 @@ function handleStatusClick(app: LibraryItemProps['item']) {
             <div class="mr-4 flex items-center justify-center">
                 <div
                     class="flex size-10 items-center justify-center overflow-hidden rounded-lg bg-surface-50 dark:bg-surface-800">
-                    <img v-if="item.details.info.icon" :src="item.details.info.icon" class="size-8 object-contain"
-                        alt="App Icon" />
+                    <img v-if="getIcon(item)" :src="getIcon(item)" class="size-8 object-contain" alt="App Icon" />
                     <span v-else-if="item.type === 'url'" class="mir-link text-2xl"></span>
                     <span v-else-if="item.type === 'tool'" class="mir-folder_zip text-2xl"></span>
                     <span v-else class="mir-apps text-2xl"></span>
@@ -71,17 +100,21 @@ function handleStatusClick(app: LibraryItemProps['item']) {
 
             <div class="min-w-0 flex-1">
                 <div class="mb-2 flex flex-col">
-                    <span class="truncate text-sm font-medium">{{ item.details.info.name || item.url }}</span>
+                    <span class="truncate text-sm font-medium">{{ getName(item) }}</span>
                     <div v-if="item.type === 'app'"
                         class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                        <span>{{ item.details.info.version || t('cls.install.app.unknown_version') }}</span>
+                        <span>{{ getVersion(item) || t('cls.install.app.unknown_version') }}</span>
+                    </div>
+                    <div v-else-if="item.type === 'tool'"
+                        class="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                        <span>{{ getVersion(item) || t('cls.install.app.unknown_version') }}</span>
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-1 text-xs">
                     <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
-                    <span v-if="item.details.install_path" class="break-all opacity-75">{{
-                        item.details.install_path }}</span>
+                    <span v-if="getInstallPath(item)" class="break-all opacity-75">{{
+                        getInstallPath(item) }}</span>
                 </div>
             </div>
 
