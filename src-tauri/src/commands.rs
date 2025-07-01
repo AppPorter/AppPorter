@@ -67,6 +67,14 @@ pub enum Command<'a> {
         timestamp: i64,
         zip_path: &'a str,
     },
+    ModifyApp {
+        new_app: App,
+        timestamp: i64,
+    },
+    ModifyTool {
+        new_tool: Tool,
+        timestamp: i64,
+    },
 
     OpenApp {
         path: &'a str,
@@ -149,6 +157,15 @@ impl<'a> Command<'a> {
                 zip_path,
             } => {
                 json!(reinstall_tool(timestamp, zip_path).await?)
+            }
+            ModifyApp { new_app, timestamp } => {
+                json!(modify_app(new_app, timestamp).await?)
+            }
+            ModifyTool {
+                new_tool,
+                timestamp,
+            } => {
+                json!(modify_tool(new_tool, timestamp).await?)
             }
 
             OpenApp { path } => json!(open_app(path).await?),
