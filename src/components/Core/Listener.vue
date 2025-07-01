@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { generalStore, installConfig, libraryStore, window as tauriWindow } from '@/main'
+import { generalStore, installConfig, libraryStore, window as tauriWindow, triggerUninstall } from '@/main'
 import { goTo } from '@/router'
-import type { InstallTypes } from '@/stores/library'
 import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
-import { inject, onMounted } from 'vue'
-
-const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
+import { onMounted } from 'vue'
 
 function showWindow() {
     tauriWindow.show()
