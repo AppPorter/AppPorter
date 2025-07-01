@@ -43,7 +43,7 @@ async function selectIcon() {
       originalIcon = icon.value
     }
 
-    const base64Icon = await exec('ConvertIconToBase64', {
+    const base64Icon = await exec<string>('ConvertIconToBase64', {
       path: selected
     })
 

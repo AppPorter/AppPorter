@@ -1,1 +1,2 @@
-ignores: ["prettier-plugin-tailwindcss"]
+ignores: ['prettier-plugin-tailwindcss']
+skip-missing: true
