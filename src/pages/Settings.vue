@@ -121,34 +121,34 @@ const githubIcon = computed(() => {
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-tune text-xl"></span>
-            <h3 class="font-medium">{{ t('ui.settingsStore.basic') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.basic') }}</h3>
           </div>
         </template>
         <div class="space-y-2">
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.settingsStore.basic.language') }}</label>
+            <label>{{ t('cls.settings.basic.language') }}</label>
             <Select v-model="settingsStore.language" :options="languageOptions" optionLabel="label" optionValue="value"
               class="w-48" size="small" />
           </div>
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.settingsStore.basic.theme') }}</label>
+            <label>{{ t('cls.settings.basic.theme') }}</label>
             <Select v-model="settingsStore.theme" :options="themeOptions" optionLabel="label" optionValue="value"
               class="w-48" size="small" />
           </div>
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.settingsStore.basic.minimize_tray') }}</label>
+            <label>{{ t('cls.settings.basic.minimize_tray') }}</label>
             <ToggleSwitch v-model="settingsStore.minimize_to_tray_on_close" />
           </div>
           <div class="flex h-9 items-center justify-between pl-4"
             :class="{ 'opacity-60': !settingsStore.minimize_to_tray_on_close }">
             <div class="flex items-center gap-2">
               <div class="h-4 w-px bg-gray-300 dark:bg-gray-600"></div>
-              <label class="text-sm">{{ t('cls.settingsStore.basic.auto_startup') }}</label>
+              <label class="text-sm">{{ t('cls.settings.basic.auto_startup') }}</label>
             </div>
             <ToggleSwitch v-model="settingsStore.auto_startup" :disabled="!settingsStore.minimize_to_tray_on_close" />
           </div>
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('cls.settingsStore.basic.context_menu') }}</label>
+            <label>{{ t('cls.settings.basic.context_menu') }}</label>
             <ToggleSwitch v-model="settingsStore.context_menu" />
           </div>
         </div>
@@ -158,12 +158,12 @@ const githubIcon = computed(() => {
         <template #header>
           <div class="flex items-center gap-2">
             <span class="mir-install_desktop text-xl"></span>
-            <h3 class="font-medium">{{ t('ui.settingsStore.install.app') }}</h3>
+            <h3 class="font-medium">{{ t('ui.settings.install.app') }}</h3>
           </div>
         </template>
         <div class="space-y-2">
           <div class="flex h-9 items-center justify-between">
-            <label>{{ t('ui.settingsStore.default_install_mode') }}</label>
+            <label>{{ t('ui.settings.default_install_mode') }}</label>
             <SelectButton v-model="settingsStore.app_install.current_user_only" :options="installModeOptions"
               optionLabel="label" optionValue="value" :allowEmpty="false" size="small" />
           </div>
