@@ -3,25 +3,15 @@ import { defineStore } from 'pinia'
 import type { AppDetails } from '#/AppDetails'
 import type { ToolDetails } from '#/ToolDetails'
 
-type Pages =
-  | 'Home'
-  | 'Install_App_Config'
-  | 'Install_App_Progress'
-  | 'Install_Tool_Config'
-  | 'Install_Tool_Progress'
-
 interface InstallConfig {
-  page: Pages
-  show_preview_drawer: boolean
-
   zip_path: string
-  timestamp: number
+  timestamp: bigint
   url: string
   archive_password: string
   file_tree: FileTreeNode[]
   temp: {
     zip_path: string
-    timestamp: number
+    timestamp: bigint
     url: string
     archive_password: string
     file_tree: FileTreeNode[]
@@ -35,17 +25,14 @@ interface InstallConfig {
 
 export const InstallConfigStore = defineStore('install_config', {
   state: (): InstallConfig => ({
-    page: 'Home',
-    show_preview_drawer: false,
-
     zip_path: '',
-    timestamp: 0,
+    timestamp: BigInt(0),
     url: '',
     archive_password: '',
     file_tree: [],
     temp: {
       zip_path: '',
-      timestamp: 0,
+      timestamp: BigInt(0),
       url: '',
       archive_password: '',
       file_tree: [],
@@ -79,7 +66,7 @@ export const InstallConfigStore = defineStore('install_config', {
   actions: {
     setTempData(data: {
       zip_path?: string
-      timestamp?: number
+      timestamp?: bigint
       url?: string
       archive_password?: string
       file_tree?: FileTreeNode[]
@@ -94,7 +81,7 @@ export const InstallConfigStore = defineStore('install_config', {
     clearTempData() {
       this.temp = {
         zip_path: '',
-        timestamp: 0,
+        timestamp: BigInt(0),
         url: '',
         archive_password: '',
         file_tree: [],

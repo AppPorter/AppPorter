@@ -36,23 +36,14 @@ export const LibraryStore = defineStore('library', {
       return this.apps.some((app) => app.url === url) || this.tools.some((tool) => tool.url === url)
     },
 
-    hasApp(url: string): boolean {
-      return this.apps.some((app) => app.url === url)
+    getByTimestamp(timestamp: bigint) {
+      return (
+        this.installedApps.find((app) => app.timestamp === timestamp) ||
+        this.installedTools.find((tool) => tool.timestamp === timestamp)
+      )
     },
 
-    hasTool(url: string): boolean {
-      return this.tools.some((tool) => tool.url === url)
-    },
-
-    getAppByTimestamp(timestamp: bigint) {
-      return this.installedApps.find((app) => app.timestamp === timestamp)
-    },
-
-    getToolByTimestamp(timestamp: bigint) {
-      return this.installedTools.find((tool) => tool.timestamp === timestamp)
-    },
-
-    async executeUninstall(apptype: InstallTypes, timestamp: number) {
+    async executeUninstall(apptype: InstallTypes, timestamp: bigint) {
       switch (apptype) {
         case 'app':
           await exec('UninstallApp', { timestamp })
@@ -65,12 +56,8 @@ export const LibraryStore = defineStore('library', {
       await this.loadLibrary()
     },
 
-    async removeApp(timestamp: bigint) {
+    async remove(timestamp: bigint) {
       this.apps = this.apps.filter((app) => app.timestamp !== timestamp)
-      await this.saveLibrary()
-    },
-
-    async removeTool(timestamp: bigint) {
       this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
       await this.saveLibrary()
     },

@@ -28,7 +28,8 @@ onMounted(async () => {
                 outlined: true,
             },
             accept: async () => {
-                await settings.acknowledgeFirstRun()
+                this.first_run = false
+                await this.saveSettings()
             },
             reject: () => {
                 exec('Exit', {

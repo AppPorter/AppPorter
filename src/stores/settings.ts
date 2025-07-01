@@ -73,8 +73,8 @@ export const SettingsStore = defineStore('settings', {
     },
 
     async updateBasicSettingsChanged() {
-      const { EnvStore } = await import('./env')
-      const env = EnvStore()
+      const { GeneralStore } = await import('./general')
+      const generalStore = GeneralStore()
 
       const currentBasicSettings = {
         language: this.language,
@@ -82,20 +82,20 @@ export const SettingsStore = defineStore('settings', {
         minimize_to_tray_on_close: this.minimize_to_tray_on_close,
       }
 
-      if (env.initialSettings) {
+      if (generalStore.initialSettings) {
         const initialBasicSettings = {
-          language: env.initialSettings.language,
-          theme: env.initialSettings.theme,
-          minimize_to_tray_on_close: env.initialSettings.minimize_to_tray_on_close,
+          language: generalStore.initialSettings.language,
+          theme: generalStore.initialSettings.theme,
+          minimize_to_tray_on_close: generalStore.initialSettings.minimize_to_tray_on_close,
         }
-        env.isBasicSettingsChanged =
+        generalStore.isBasicSettingsChanged =
           JSON.stringify(currentBasicSettings) !== JSON.stringify(initialBasicSettings)
       }
     },
 
     async updateThemeMode() {
-      const { EnvStore } = await import('./env')
-      const env = EnvStore()
+      const { GeneralStore } = await import('./general')
+      const generalStore = GeneralStore()
 
       const isDarkMode =
         this.theme === 'dark' ||
@@ -107,13 +107,13 @@ export const SettingsStore = defineStore('settings', {
         document.documentElement.classList.remove('dark')
       }
 
-      env.isDarkMode = isDarkMode
+      generalStore.isDarkMode = isDarkMode
 
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
 
       if (this.theme === 'system') {
         mediaQuery.addEventListener('change', (event: MediaQueryListEvent) => {
-          env.isDarkMode = event.matches
+          generalStore.isDarkMode = event.matches
 
           if (event.matches) {
             document.documentElement.classList.add('dark')
@@ -146,11 +146,6 @@ export const SettingsStore = defineStore('settings', {
         this.unlistenThemeColor()
         this.unlistenThemeColor = null
       }
-    },
-
-    async acknowledgeFirstRun() {
-      this.first_run = false
-      await this.saveSettings()
     },
   },
 })
