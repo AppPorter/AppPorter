@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { exec } from '@/exec'
 import { libraryStore } from '@/main'
+import Button from 'primevue/button'
 import DataView from 'primevue/dataview'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
+import Select from 'primevue/select'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import LibraryContextMenu from './components/LibraryContextMenu.vue'
-import LibraryHeader from './components/LibraryHeader.vue'
 import LibraryItem from './components/LibraryItem.vue'
 import LibraryValidation from './components/LibraryValidation.vue'
 
@@ -25,6 +29,26 @@ const urls = computed(() => libraryStore.urls)
 
 const sortKey = ref('name')
 const sortOrder = ref(1)
+
+const sortOptions = [
+  { label: t('cls.sort.name'), value: 'name' },
+  { label: t('cls.sort.publisher'), value: 'publisher' },
+  { label: t('cls.sort.date'), value: 'timestamp' },
+]
+
+const currentSortKey = computed({
+  get: () => sortKey.value,
+  set: (value: string) => sortKey.value = value
+})
+
+const currentSearchValue = computed({
+  get: () => filters.value,
+  set: (value: string) => filters.value = value
+})
+
+function toggleSortOrder() {
+  sortOrder.value = sortOrder.value * -1
+}
 
 const sortedApps = computed(() => {
   const allApps = [...apps.value]
@@ -125,7 +149,33 @@ onMounted(() => {
   <div class="flex size-full flex-col overflow-auto">
     <Panel class="mb-4 w-full shadow-sm">
       <template #header>
-        <LibraryHeader v-model:sort-key="sortKey" v-model:sort-order="sortOrder" v-model:search-value="filters" />
+        <div class="flex w-full flex-wrap items-center justify-between gap-4">
+          <div class="flex items-center gap-2">
+            <span class="mir-apps text-xl"></span>
+            <div class="min-w-32">
+              <h2 class="text-lg font-medium">{{ t('ui.library.all_apps') }}</h2>
+              <p class="mt-0.5 text-xs">{{ t('ui.library.description') }}</p>
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center divide-x divide-surface-200 dark:divide-surface-700">
+            <div class="flex items-center gap-2 px-4">
+              <Select v-model="currentSortKey" :options="sortOptions" class="w-40 text-sm" optionLabel="label"
+                optionValue="value" size="small" />
+              <Button icon="mir-swap_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
+                @click="toggleSortOrder" />
+            </div>
+
+            <div class="pl-4">
+              <IconField>
+                <InputIcon>
+                  <i class="mir-search" />
+                </InputIcon>
+                <InputText v-model="currentSearchValue" :placeholder="t('g.search')" class="h-8 text-sm" />
+              </IconField>
+            </div>
+          </div>
+        </div>
       </template>
 
       <DataView :value="allItems" :loading="loading" :paginator="showPaginator" :rows="100"
