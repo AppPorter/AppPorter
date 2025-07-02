@@ -11,15 +11,7 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const drawerState = computed({
-    get: () => generalStore.drawer.reinstall,
-    set: (val: [boolean, string]) => generalStore.drawer.reinstall = val
-})
-const visible = computed({
-    get: () => drawerState.value[0],
-    set: v => drawerState.value = [v, drawerState.value[1]]
-})
-const appId = computed(() => drawerState.value[1])
+const appId = computed(() => generalStore.drawer.reinstall[1])
 const zipPath = ref('')
 const inputError = ref(false)
 const currentApp = ref<(App & { type: 'app' }) | (Tool & { type: 'tool' })>()
@@ -69,20 +61,13 @@ async function handleReinstall() {
             zip_path: zipPath.value
         })
     }
-
-    visible.value = false
-    drawerState.value = [false, '']
+    generalStore.drawer.reinstall = [false, '']
 }
-
-function show(app: (App & { type: 'app' }) | (Tool & { type: 'tool' })) {
-    drawerState.value = [true, app.id]
-}
-
-defineExpose({ show })
 </script>
 
 <template>
-    <Drawer v-model:visible="visible" position="bottom" :style="{ height: '95vh' }" class="rounded-lg">
+    <Drawer v-model:visible="generalStore.drawer.reinstall[0]" position="bottom" :style="{ height: '95vh' }"
+        class="rounded-lg">
         <template #header>
             <div class="flex items-center gap-2">
                 <span class="mir-refresh text-xl"></span>
@@ -107,7 +92,7 @@ defineExpose({ show })
             </div>
 
             <div class="flex justify-end gap-2">
-                <Button @click="visible = false" severity="secondary" outlined class="h-9 px-4"
+                <Button @click="generalStore.drawer.reinstall[0] = false" severity="secondary" outlined class="h-9 px-4"
                     :label="t('g.cancel')" />
                 <Button @click="handleReinstall" :disabled="!zipPath" severity="primary" class="h-9 px-6"
                     icon="mir-refresh" :label="t('g.reinstall')" />
