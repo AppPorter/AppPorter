@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
-import { goTo } from '@/router'
 import { exec } from '@/exec'
+import { generalStore, installConfig, settingsStore } from '@/main'
+import { goTo } from '@/router'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Checkbox from 'primevue/checkbox'
@@ -10,11 +11,11 @@ import Panel from 'primevue/panel'
 import { useConfirm } from 'primevue/useconfirm'
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { generalStore, installConfig, settingsStore } from '@/main'
 
 const { t } = useI18n()
 const { tool_install } = settingsStore
 const confirm = useConfirm()
+const parent_install_path = ref('')
 
 generalStore.page = 'Install_Tool_Config'
 
@@ -24,7 +25,7 @@ const nameError = ref(false)
 const directoryDrawerVisible = ref(false)
 
 const formatted_final_path = computed(() => {
-    const parentPath = installConfig.tool_details.install_path
+    const parentPath = parent_install_path.value
     const toolName = installConfig.tool_details.name
 
     if (!parentPath || !toolName) return ''
@@ -33,7 +34,7 @@ const formatted_final_path = computed(() => {
 })
 
 onMounted(async () => {
-    installConfig.tool_details.install_path = tool_install.install_path
+    parent_install_path.value = tool_install.install_path
     installConfig.tool_details.add_to_path[0] = tool_install.add_to_path
     installConfig.tool_details.add_to_path[1] = ''
 
@@ -54,7 +55,7 @@ async function select_extract_path() {
         multiple: false,
     })
     if (selected) {
-        installConfig.tool_details.install_path = String(selected)
+        parent_install_path.value = String(selected)
         pathError.value = false
     }
 }
@@ -64,26 +65,23 @@ async function handleInstallClick() {
     nameError.value = false
 
     nameError.value = !installConfig.tool_details.name
-    pathError.value = !installConfig.tool_details.install_path
-
+    pathError.value = !parent_install_path.value
     try {
-        const validatedPath = (await exec('ValidatePath', {
-            path: installConfig.tool_details.install_path,
+        const validatedPath = (await exec<string>('ValidatePath', {
+            path: parent_install_path.value,
         }))
-
-        installConfig.tool_details.install_path = `${validatedPath}\\${installConfig.tool_details.name}`
+        parent_install_path.value = validatedPath
+        installConfig.tool_details.install_path = formatted_final_path.value
     } catch (error) {
         globalThis.$errorHandler.showError(error)
         pathError.value = true
     }
-
     if (nameError.value || pathError.value) {
         return
     }
-
     try {
-        await exec('ValidateInstallPath', {
-            path: installConfig.tool_details.install_path,
+        await exec('ValidatePath', {
+            path: parent_install_path.value,
         })
         await new Promise((resolve, reject) => {
             confirm.require({
@@ -133,10 +131,10 @@ async function handleInstallClick() {
                 })
             })
         } else {
+            globalThis.$errorHandler.showError(error)
             return
         }
     }
-
     goTo('/Install/Tool/Progress')
 }
 </script>
@@ -179,8 +177,8 @@ async function handleInstallClick() {
                                 }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
-                                        <InputText v-model="installConfig.tool_details.install_path"
-                                            :placeholder="t('g.browse')" class="h-8 w-full text-sm" :invalid="pathError"
+                                        <InputText v-model="parent_install_path" :placeholder="t('g.browse')"
+                                            class="h-8 w-full text-sm" :invalid="pathError"
                                             @input="pathError = false" />
                                         <Button class="h-8 w-36" severity="secondary" @click="select_extract_path"
                                             icon="mir-folder_open" :label="t('g.browse')" />
