@@ -13,11 +13,9 @@ import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
 import ContextMenu from './components/ContextMenu.vue'
 import Item from './components/Item.vue'
-import Validation from './components/Validation.vue'
 
 const { t } = useI18n()
 const contextMenu = ref()
-const validation = ref()
 const selectedApp = ref()
 const filters = ref()
 const loading = ref(false)
@@ -200,7 +198,5 @@ onMounted(() => {
     </Panel>
 
     <ContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp" @load-library="loadLibrary" />
-
-    <Validation ref="validation" :app="selectedApp" @load-library="loadLibrary" />
   </div>
 </template>

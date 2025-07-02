@@ -40,6 +40,8 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
         return
     }
 
+    appToValidate.value = app
+
     const validation = app.validation_status || {}
     const fileExists = validation?.file_exists
     const pathExists = validation?.path_exists
