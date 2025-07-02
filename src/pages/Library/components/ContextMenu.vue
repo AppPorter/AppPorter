@@ -81,7 +81,7 @@ const menuItems = computed(() => {
         ]
     }
 
-    return [
+    const items = [
         {
             label: t('cls.install.self'),
             icon: 'mir-install_desktop',
@@ -107,13 +107,28 @@ const menuItems = computed(() => {
             visible: props.selectedApp ? (props.selectedApp.installed && props.selectedApp.type === 'app' && props.selectedApp.details.config.create_registry_key) : false,
         },
         {
+            label: t('g.modify'),
+            icon: 'mir-edit',
+            command: () => handleModify(),
+            visible: props.selectedApp ? (props.selectedApp.installed && (props.selectedApp.type === 'app' || props.selectedApp.type === 'tool')) : false,
+        },
+        {
             label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
             icon: 'mir-delete',
             command: () => generalStore.drawer.uninstall = [true, props.selectedApp!.id],
             visible: !!props.selectedApp,
         },
     ]
+    return items
 })
+function handleModify() {
+    if (!props.selectedApp) return
+    if (props.selectedApp.type === 'app') {
+        generalStore.drawer.app_modify = [true, props.selectedApp.id]
+    } else if (props.selectedApp.type === 'tool') {
+        generalStore.drawer.tool_modify = [true, props.selectedApp.id]
+    }
+}
 
 async function previewUrl() {
     if (!props.selectedApp) return

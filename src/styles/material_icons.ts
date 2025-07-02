@@ -1,4 +1,3 @@
-// Material icon names used throughout the application
 const USED_ICONS = [
   'settings',
   'tune',
@@ -49,6 +48,7 @@ const USED_ICONS = [
   'star',
   'rule',
   'reset_image',
+  'edit',
 ] as const
 
 /**
@@ -70,6 +70,5 @@ export function generateMaterialIconsClasses() {
 
   document.head.appendChild(style)
 
-  // Return cleanup function
   return () => style.remove()
 }

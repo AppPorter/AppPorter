@@ -14,6 +14,8 @@ import { generateMaterialIconsClasses } from '@/styles/material_icons.ts'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import AppModify from './components/Drawer/AppModify.vue'
+import ToolModify from './components/Drawer/ToolModify.vue'
 import { trayIcon } from './main.ts'
 
 const errorHandler = ref()
@@ -79,5 +81,7 @@ onBeforeMount(() => {
     <Uninstall />
     <Reinstall />
     <DirectorySelector />
+    <AppModify />
+    <ToolModify />
   </div>
 </template>

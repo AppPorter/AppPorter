@@ -13,6 +13,8 @@ interface Drawer {
   preview: boolean
   reinstall: [boolean, string]
   uninstall: [boolean, string]
+  app_modify: [boolean, string]
+  tool_modify: [boolean, string]
 }
 
 interface General {
@@ -32,6 +34,8 @@ export const GeneralStore = defineStore('general', {
       uninstall: [false, ''],
       directory_selector: [false, ''],
       reinstall: [false, ''],
+      app_modify: [false, ''],
+      tool_modify: [false, ''],
     },
 
     initialSettings: null,
