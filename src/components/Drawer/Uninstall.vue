@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { generalStore, libraryStore } from '@/main'
-import type { InstallTypes } from '@/stores/library'
+import type { ItemTypes } from '@/stores/library'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
@@ -14,7 +14,7 @@ const visible = computed({
     set: v => drawerState.value = [v, drawerState.value[1]]
 })
 const appId = computed(() => drawerState.value[1])
-const appInfo = ref<{ apptype: InstallTypes, id: string } | null>(null)
+const appInfo = ref<{ apptype: ItemTypes, id: string } | null>(null)
 const app = ref()
 watch(appId, async (id) => {
     if (id) {
@@ -28,7 +28,7 @@ watch(appId, async (id) => {
 const loading = ref(false)
 const error = ref('')
 
-function show(apptype: InstallTypes, id: string) {
+function show(apptype: ItemTypes, id: string) {
     drawerState.value = [true, id]
     error.value = ''
 }
