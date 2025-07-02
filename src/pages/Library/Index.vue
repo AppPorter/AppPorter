@@ -11,9 +11,9 @@ import Select from 'primevue/select'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import LibraryContextMenu from './components/LibraryContextMenu.vue'
-import LibraryItem from './components/LibraryItem.vue'
-import LibraryValidation from './components/LibraryValidation.vue'
+import LibraryContextMenu from './components/ContextMenu.vue'
+import LibraryItem from './components/Item.vue'
+import LibraryValidation from './components/Validation.vue'
 
 const { t } = useI18n()
 const contextMenu = ref()

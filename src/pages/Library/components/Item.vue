@@ -6,8 +6,8 @@ import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import LibraryStatusTag from './LibraryStatusTag.vue'
-import LibraryValidation from './LibraryValidation.vue'
+import LibraryStatusTag from './StatusTag.vue'
+import LibraryValidation from './Validation.vue'
 
 const { t } = useI18n()
 const validationRef = ref()
