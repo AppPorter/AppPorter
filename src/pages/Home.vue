@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { exec } from '@/exec'
+import { generalStore, installConfig } from '@/main'
 import { invoke } from '@tauri-apps/api/core'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
@@ -6,8 +8,6 @@ import InputText from 'primevue/inputtext'
 import Panel from 'primevue/panel'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { exec } from '@/exec'
-import { generalStore, installConfig } from '@/main'
 
 generalStore.page = 'Home'
 const { t } = useI18n()

@@ -14,11 +14,11 @@ import { createPinia } from 'pinia'
 import PrimeVue from 'primevue/config'
 import ConfirmationService from 'primevue/confirmationservice'
 import ToastService from 'primevue/toastservice'
-import { createApp, inject } from 'vue'
+import { createApp } from 'vue'
 import { EnvStore } from './stores/env'
 import { GeneralStore } from './stores/general'
 import { InstallConfigStore } from './stores/install_config'
-import { InstallTypes, LibraryStore } from './stores/library'
+import { LibraryStore } from './stores/library'
 
 document.addEventListener('contextmenu', (event) => event.preventDefault())
 
@@ -105,10 +105,5 @@ if (settingsStore.minimize_to_tray_on_close) {
   }
   trayIcon = await TrayIcon.new(trayOptions)
 }
-
-export const triggerUninstall = inject('triggerUninstall') as (
-  apptype: InstallTypes,
-  id: string
-) => Promise<void>
 
 app.mount('#app')

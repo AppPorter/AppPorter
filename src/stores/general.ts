@@ -1,5 +1,5 @@
-import { defineStore } from 'pinia'
 import { Settings } from '#/Settings'
+import { defineStore } from 'pinia'
 
 type Pages =
   | 'Home'
@@ -9,8 +9,10 @@ type Pages =
   | 'Install_Tool_Progress'
 
 interface Drawer {
+  directory_selector: [boolean, string]
   preview: boolean
-  uninstall: boolean
+  reinstall: [boolean, string]
+  uninstall: [boolean, string]
 }
 
 interface General {
@@ -26,8 +28,10 @@ export const GeneralStore = defineStore('general', {
   state: (): General => ({
     page: 'Home',
     drawer: {
-      preview: false,
-      uninstall: false,
+      preview: [false, ''],
+      uninstall: [false, ''],
+      directory_selector: [false, ''],
+      reinstall: [false, ''],
     },
 
     initialSettings: null,

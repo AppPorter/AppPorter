@@ -2,18 +2,37 @@
 import type { App } from '#/App'
 import type { Tool } from '#/Tool'
 import { exec } from '@/exec'
+import { generalStore, libraryStore } from '@/main'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
-import { ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const visible = ref(false)
+const drawerState = computed({
+    get: () => generalStore.drawer.reinstall,
+    set: (val: [boolean, string]) => generalStore.drawer.reinstall = val
+})
+const visible = computed({
+    get: () => drawerState.value[0],
+    set: v => drawerState.value = [v, drawerState.value[1]]
+})
+const appId = computed(() => drawerState.value[1])
 const zipPath = ref('')
 const inputError = ref(false)
 const currentApp = ref<(App & { type: 'app' }) | (Tool & { type: 'tool' })>()
+
+watch(appId, async (id) => {
+    if (id) {
+        currentApp.value = await libraryStore.getById(id)
+    } else {
+        currentApp.value = undefined
+    }
+    zipPath.value = ''
+    inputError.value = false
+})
 
 async function selectZipFile() {
     const selected = await open({
@@ -52,18 +71,14 @@ async function handleReinstall() {
     }
 
     visible.value = false
+    drawerState.value = [false, '']
 }
 
 function show(app: (App & { type: 'app' }) | (Tool & { type: 'tool' })) {
-    currentApp.value = app
-    zipPath.value = ''
-    inputError.value = false
-    visible.value = true
+    drawerState.value = [true, app.id]
 }
 
-defineExpose({
-    show
-})
+defineExpose({ show })
 </script>
 
 <template>

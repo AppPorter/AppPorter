@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AppDetails } from '#/AppDetails'
 import { ToolDetails } from '#/ToolDetails'
-import { InstallTypes } from '@/stores/library'
+import { ItemTypes } from '@/stores/library'
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { ref } from 'vue'
@@ -15,10 +15,10 @@ const validationRef = ref()
 interface LibraryItemProps {
     item: {
         id: string
-        timestamp_add: string
-        timestamp_update: string
+        timestamp_add?: string
+        timestamp_update?: string
         url: string
-        type?: InstallTypes
+        type: ItemTypes
         installed?: boolean
         details?: AppDetails | ToolDetails
         validation_status?: {
@@ -37,8 +37,11 @@ interface LibraryItemEmits {
 defineProps<LibraryItemProps>()
 defineEmits<LibraryItemEmits>()
 
-function formatTimestamp(timestamp: bigint) {
-    return new Date(Number(timestamp) * 1000).toLocaleDateString()
+function formatTimestamp(timestamp: string) {
+    if (!timestamp) return ''
+    const date = new Date(timestamp)
+    if (isNaN(date.getTime())) return ''
+    return date.toLocaleDateString()
 }
 
 function handleStatusClick(app: LibraryItemProps['item']) {
@@ -114,7 +117,7 @@ function getInstallPath(item: LibraryItemProps['item']) {
                 </div>
 
                 <div class="flex flex-col gap-1 text-xs">
-                    <span class="opacity-75">{{ formatTimestamp(item.timestamp) }}</span>
+                    <span class="opacity-75">{{ formatTimestamp(item.timestamp_add) }}</span>
                     <span v-if="getInstallPath(item)" class="break-all opacity-75">{{
                         getInstallPath(item) }}</span>
                 </div>

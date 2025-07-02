@@ -6,25 +6,19 @@ import ErrorHandler from '@/components/Core/ErrorHandler.vue'
 import Listener from '@/components/Core/Listener.vue'
 import NavigationBar from '@/components/Core/NavigationBar.vue'
 import WindowControls from '@/components/Core/WindowControls.vue'
-import PreviewDrawer from '@/components/Drawer/Preview.vue'
+import DirectorySelector from '@/components/Drawer/DirectorySelector.vue'
+import Preview from '@/components/Drawer/Preview.vue'
+import Reinstall from '@/components/Drawer/Reinstall.vue'
 import Uninstall from '@/components/Drawer/Uninstall.vue'
 import { generateMaterialIconsClasses } from '@/styles/material_icons.ts'
 import ConfirmDialog from 'primevue/confirmdialog'
-import { computed, onBeforeMount, onMounted, provide, ref } from 'vue'
+import { computed, onBeforeMount, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { trayIcon } from './main.ts'
-import { InstallTypes } from './stores/library.ts'
 
 const errorHandler = ref()
 const dismissWarning = ref(false)
 const contextMenu = ref()
-const uninstallComponent = ref()
-
-const triggerUninstall = async (apptype: InstallTypes, timestamp: number) => {
-  await uninstallComponent.value?.confirmAndUninstall(apptype, timestamp)
-}
-
-provide('triggerUninstall', triggerUninstall)
 
 const route = useRoute()
 const cachedComponents = computed(() => {
@@ -81,8 +75,9 @@ onBeforeMount(() => {
 
     <ContextMenu ref="contextMenu" />
 
-    <PreviewDrawer />
-
-    <Uninstall ref="uninstallComponent" />
+    <Preview />
+    <Uninstall />
+    <Reinstall />
+    <DirectorySelector />
   </div>
 </template>

@@ -5,16 +5,23 @@ import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const visible = computed({
+const drawerState = computed({
     get: () => generalStore.drawer.uninstall,
-    set: v => generalStore.drawer.uninstall = v
+    set: (val: [boolean, string]) => generalStore.drawer.uninstall = val
 })
+const visible = computed({
+    get: () => drawerState.value[0],
+    set: v => drawerState.value = [v, drawerState.value[1]]
+})
+const appId = computed(() => drawerState.value[1])
 const appInfo = ref<{ apptype: InstallTypes, id: string } | null>(null)
 const app = ref()
-watch(appInfo, async (val) => {
-    if (val) {
-        app.value = await libraryStore.getById(val.id)
+watch(appId, async (id) => {
+    if (id) {
+        appInfo.value = { apptype: 'app', id }
+        app.value = await libraryStore.getById(id)
     } else {
+        appInfo.value = null
         app.value = null
     }
 })
@@ -22,9 +29,8 @@ const loading = ref(false)
 const error = ref('')
 
 function show(apptype: InstallTypes, id: string) {
-    appInfo.value = { apptype, id }
+    drawerState.value = [true, id]
     error.value = ''
-    visible.value = true
 }
 
 async function handleUninstall() {
@@ -36,6 +42,7 @@ async function handleUninstall() {
         await libraryStore.remove(appInfo.value.id)
     }
     visible.value = false
+    drawerState.value = [false, '']
 }
 
 defineExpose({ show })

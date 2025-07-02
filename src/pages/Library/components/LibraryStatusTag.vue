@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { InstallTypes } from '@/stores/library'
+import { ItemTypes } from '@/stores/library'
 import Tag from 'primevue/tag'
 import { useI18n } from 'vue-i18n'
 
@@ -7,7 +7,7 @@ const { t } = useI18n()
 
 interface LibraryStatusTagProps {
     item: {
-        type?: InstallTypes
+        type: ItemTypes
         installed?: boolean
         validation_status?: {
             file_exists?: boolean
@@ -114,7 +114,7 @@ function getLibraryStatus(data: LibraryStatusTagProps['item']) {
 
 <template>
     <Tag v-if="tagType === 'type'" :value="getLibraryType(item).value" :severity="getLibraryType(item).severity"
-        class="flex cursor-pointer items-center gap-1 text-xs" @click="$emit('click', item)">
+        class="flex cursor-pointer items-center gap-1 text-xs">
         <template #icon>
             <span :class="getLibraryType(item).icon + ' align-middle leading-none text-base'" />
         </template>

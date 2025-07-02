@@ -2,7 +2,7 @@
 import type { AppDetails } from '#/AppDetails'
 import type { ToolDetails } from '#/ToolDetails'
 import { exec } from '@/exec'
-import { libraryStore, triggerUninstall } from '@/main'
+import { generalStore, libraryStore } from '@/main'
 import Menu from 'primevue/menu'
 import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
@@ -109,7 +109,7 @@ const menuItems = computed(() => {
         {
             label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
             icon: 'mir-delete',
-            command: () => triggerUninstall(props.selectedApp!.type, props.selectedApp!.id),
+            command: () => generalStore.drawer.uninstall = [true, props.selectedApp!.id],
             visible: !!props.selectedApp,
         },
     ]

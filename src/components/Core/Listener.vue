@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { exec } from '@/exec'
-import { generalStore, installConfig, libraryStore, window as tauriWindow, triggerUninstall } from '@/main'
-import { goTo } from '@/router'
+import { generalStore, installConfig, window as tauriWindow } from '@/main'
 import { listen } from '@tauri-apps/api/event'
 import { onMounted } from 'vue'
 
@@ -34,9 +33,7 @@ onMounted(async () => {
     })
 
     await listen('uninstall_app', async (event) => {
-        goTo('/Library')
-        await libraryStore.loadLibrary()
-        await triggerUninstall('app', event.payload as number)
+        generalStore.drawer.uninstall = [true, event.payload as string]
         showWindow()
     })
 

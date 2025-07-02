@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { AppDetails } from '#/AppDetails'
 import { ToolDetails } from '#/ToolDetails'
-import ReinstallDrawer from '@/components/Drawer/Reinstall.vue'
 import { exec } from '@/exec'
-import { triggerUninstall } from '@/main'
-import type { InstallTypes } from '@/stores/library'
+import { generalStore } from '@/main'
+import type { ItemTypes } from '@/stores/library'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import { ref } from 'vue'
@@ -13,9 +12,9 @@ import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
 
 interface LibraryValidationProps {
-    app?: {
+    app: {
         id: string
-        type?: InstallTypes
+        type: ItemTypes
         installed?: boolean
         details?: AppDetails | ToolDetails
         validation_status?: {
@@ -35,7 +34,6 @@ const emit = defineEmits<LibraryValidationEmits>()
 
 const appToValidate = ref()
 const showDialog = ref(false)
-const reinstallDrawer = ref()
 
 function handleStatusClick(app: LibraryValidationProps['app']) {
     if (!app?.installed) {
@@ -62,10 +60,10 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await triggerUninstall(appToValidate.value.type, appToValidate.value.id)
+        generalStore.drawer.uninstall = [true, appToValidate.value.id]
         showDialog.value = false
     } else if (action === 'reinstall') {
-        reinstallDrawer.value?.show(appToValidate.value)
+        generalStore.drawer.reinstall = [true, appToValidate.value.id]
         showDialog.value = false
     } else {
         const commandName = appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool'
@@ -141,6 +139,4 @@ defineExpose({
             </div>
         </div>
     </Dialog>
-
-    <ReinstallDrawer ref="reinstallDrawer" />
 </template>

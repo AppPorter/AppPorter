@@ -4,7 +4,7 @@ import type { Tool } from '#/Tool'
 import { exec } from '@/exec'
 import { defineStore } from 'pinia'
 
-export type InstallTypes = 'app' | 'tool' | 'url'
+export type ItemTypes = 'app' | 'tool' | 'url'
 
 export const LibraryStore = defineStore('library', {
   state: (): Library => ({
@@ -51,7 +51,7 @@ export const LibraryStore = defineStore('library', {
       return null
     },
 
-    async executeUninstall(apptype: InstallTypes, id: string) {
+    async executeUninstall(apptype: ItemTypes, id: string) {
       switch (apptype) {
         case 'app':
           await exec('UninstallApp', { id })

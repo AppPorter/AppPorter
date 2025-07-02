@@ -152,6 +152,6 @@ onMounted(() => {
     <LibraryContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
       @load-library="loadLibrary" />
 
-    <LibraryValidation ref="validation" @load-library="loadLibrary" />
+    <LibraryValidation ref="validation" :app="selectedApp" @load-library="loadLibrary" />
   </div>
 </template>
