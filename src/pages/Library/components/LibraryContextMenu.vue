@@ -1,34 +1,32 @@
 <script setup lang="ts">
 import type { AppDetails } from '#/AppDetails'
 import type { ToolDetails } from '#/ToolDetails'
-import type { InstallTypes } from '@/stores/library'
 import { exec } from '@/exec'
+import { libraryStore, triggerUninstall } from '@/main'
 import Menu from 'primevue/menu'
-import { computed, inject, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { libraryStore } from '@/main'
 
 const { t } = useI18n()
-const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
 
 interface LibraryContextMenuProps {
     selectedApp?:
     | {
-        timestamp: number
+        id: string
         url: string
         type: 'app'
         installed: boolean
         details: AppDetails
     }
     | {
-        timestamp: number
+        id: string
         url: string
         type: 'tool'
         installed: boolean
         details: ToolDetails
     }
     | {
-        timestamp: number
+        id: string
         url: string
         type: 'url'
         installed: false
@@ -111,7 +109,7 @@ const menuItems = computed(() => {
         {
             label: props.selectedApp?.type === 'tool' ? t('g.delete') : (props.selectedApp?.installed ? t('cls.uninstall.self') : t('g.remove')),
             icon: 'mir-delete',
-            command: () => triggerUninstall(props.selectedApp!.type, Number(props.selectedApp!.timestamp)),
+            command: () => triggerUninstall(props.selectedApp!.type, props.selectedApp!.id),
             visible: !!props.selectedApp,
         },
     ]
@@ -154,7 +152,7 @@ async function openRegistry() {
 async function removeUrl() {
     if (!props.selectedApp || props.selectedApp.type !== 'url') return
 
-    libraryStore.urls = libraryStore.urls.filter(urlObj => Number(urlObj.timestamp) !== Number(props.selectedApp!.timestamp))
+    libraryStore.urls = libraryStore.urls.filter(urlObj => urlObj.id !== props.selectedApp!.id)
     await libraryStore.saveLibrary()
     emit('loadLibrary')
 }

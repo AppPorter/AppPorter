@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import type { App } from '#/App'
+import type { Tool } from '#/Tool'
+import { exec } from '@/exec'
 import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { exec } from '@/exec'
-import type { App } from '#/App'
-import type { Tool } from '#/Tool'
 
 const { t } = useI18n()
 const visible = ref(false)
@@ -41,12 +41,12 @@ async function handleReinstall() {
 
     if (currentApp.value.type === 'app') {
         await exec('ReinstallApp', {
-            timestamp: currentApp.value.timestamp,
+            id: currentApp.value.id,
             zip_path: zipPath.value
         })
     } else if (currentApp.value.type === 'tool') {
         await exec('ReinstallTool', {
-            timestamp: currentApp.value.timestamp,
+            id: currentApp.value.id,
             zip_path: zipPath.value
         })
     }

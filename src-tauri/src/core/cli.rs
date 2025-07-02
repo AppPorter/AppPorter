@@ -3,6 +3,7 @@ use anyhow::Result;
 use lazy_static::lazy_static;
 use tauri::{AppHandle, Emitter};
 use tokio::sync::broadcast;
+use uuid::Uuid;
 
 lazy_static! {
     pub static ref CHANNEL: (
@@ -39,15 +40,13 @@ pub async fn cli(app: &AppHandle) -> Result<()> {
                     .and_then(|ext| ext.to_str())
                 {
                     if SUPPORTED_EXTENSIONS.contains(&extension.to_lowercase().as_str()) {
-                        app.emit("preview", (value, chrono::Utc::now().timestamp()))?;
+                        app.emit("preview", (value, Uuid::new_v4().to_string()))?;
                     }
                 }
             }
             "uninstall_app" => {
-                let value = &args[2];
-                if let Ok(timestamp) = value.parse::<i64>() {
-                    app.emit("uninstall_app", timestamp)?;
-                }
+                let id = &args[2];
+                app.emit("uninstall_app", id)?;
             }
             _ => {}
         }

@@ -1,15 +1,16 @@
 <script setup lang="ts">
+import { FileTreeNode } from '#/FileTreeNode'
+import { Url } from '#/Url'
 import ExecutableSelector from '@/components/ZipPreview/ExecutableSelector.vue'
-import { goTo } from '@/router'
 import { exec } from '@/exec'
+import { generalStore, installConfig, libraryStore } from '@/main'
+import { goTo } from '@/router'
 import Button from 'primevue/button'
 import Dialog from 'primevue/dialog'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
 import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { generalStore, installConfig, libraryStore } from '@/main'
-import { FileTreeNode } from '#/FileTreeNode'
 
 const { t } = useI18n()
 const showPasswordDialog = ref(false)
@@ -66,10 +67,7 @@ async function handleSubscribe() {
 
     subscribeSuccess.value = false
 
-    // Add URL to subscribed URLs
-    const timestamp = await exec<bigint>('GetTimestamp')
-
-    libraryStore.urls.push({ url, timestamp })
+    libraryStore.urls.push(await exec<Url>('InitUrl', { config: {} as Url }))
     await libraryStore.saveLibrary()
 
     subscribeSuccess.value = true

@@ -102,5 +102,5 @@ pub struct ToolValidationStatus {
 pub struct Url {
     pub id: String,
     pub url: String,
-    pub timestamp: i64,
+    pub timestamp: String,
 }

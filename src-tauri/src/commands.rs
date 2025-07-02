@@ -32,6 +32,9 @@ pub enum Command<'a> {
     InitTool {
         config: Tool,
     },
+    InitUrl {
+        config: Url,
+    },
     Remove {
         id: &'a str,
     },
@@ -153,6 +156,10 @@ impl<'a> Command<'a> {
             InitTool { config } => {
                 let mut config = config;
                 json!(Library::init_tool(&mut config).await?)
+            }
+            InitUrl { config } => {
+                let mut config = config;
+                json!(Library::init_url(&mut config).await?)
             }
             Remove { id } => {
                 json!(Library::load().await?.remove(id).await?)

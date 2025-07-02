@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { exec } from '@/exec'
+import { libraryStore } from '@/main'
 import DataView from 'primevue/dataview'
 import Panel from 'primevue/panel'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -9,7 +10,6 @@ import LibraryContextMenu from './components/LibraryContextMenu.vue'
 import LibraryHeader from './components/LibraryHeader.vue'
 import LibraryItem from './components/LibraryItem.vue'
 import LibraryValidation from './components/LibraryValidation.vue'
-import { libraryStore } from '@/main'
 
 const { t } = useI18n()
 const contextMenu = ref()
@@ -37,8 +37,8 @@ const sortedApps = computed(() => {
       valueA = a.details.info.publisher.toLowerCase()
       valueB = b.details.info.publisher.toLowerCase()
     } else {
-      valueA = a.timestamp
-      valueB = b.timestamp
+      valueA = a.timestamp_add
+      valueB = b.timestamp_add
     }
     return sortOrder.value * (valueA < valueB ? -1 : valueA > valueB ? 1 : 0)
   })
@@ -52,8 +52,8 @@ const sortedTools = computed(() => {
       valueA = a.details.name.toLowerCase()
       valueB = b.details.name.toLowerCase()
     } else {
-      valueA = a.timestamp
-      valueB = b.timestamp
+      valueA = a.timestamp_add
+      valueB = b.timestamp_add
     }
     return sortOrder.value * (valueA < valueB ? -1 : valueA > valueB ? 1 : 0)
   })

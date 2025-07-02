@@ -2,4 +2,4 @@
 import type { AppDetails } from "./AppDetails";
 import type { AppValidationStatus } from "./AppValidationStatus";
 
-export type App = { timestamp: bigint, installed: boolean, url: string, archive_password: string, details: AppDetails, validation_status: AppValidationStatus, };
+export type App = { id: string, timestamp_add: string, timestamp_update: string, installed: boolean, url: string, archive_password: string, details: AppDetails, validation_status: AppValidationStatus, };

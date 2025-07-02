@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { exec } from '@/exec'
 import { generalStore, installConfig, libraryStore, window as tauriWindow, triggerUninstall } from '@/main'
 import { goTo } from '@/router'
-import { exec } from '@/exec'
 import { listen } from '@tauri-apps/api/event'
 import { onMounted } from 'vue'
 
@@ -16,7 +16,7 @@ onMounted(async () => {
         const payload = event.payload as { zip_path: string; timestamp: number }
 
         installConfig.temp.zip_path = payload[0]
-        installConfig.temp.timestamp = payload[1]
+        installConfig.temp.id = payload[1]
 
         generalStore.drawer.preview = true
         showWindow()
@@ -26,7 +26,7 @@ onMounted(async () => {
         const payload = event.payload as { zip_path: string; timestamp: number; url: string }
 
         installConfig.temp.zip_path = payload[0]
-        installConfig.temp.timestamp = payload[1]
+        installConfig.temp.id = payload[1]
         installConfig.temp.url = payload[2]
 
         generalStore.drawer.preview = true

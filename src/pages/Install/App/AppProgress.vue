@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { goTo } from '@/router'
 import { exec } from '@/exec'
+import { generalStore, installConfig } from '@/main'
+import { goTo } from '@/router'
 import { listen } from '@tauri-apps/api/event'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { generalStore, installConfig } from '@/main'
 
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
@@ -74,7 +74,7 @@ onMounted(async () => {
     let result = await exec('InstallApp', {
       config: {
         app: {
-          timestamp: installConfig.timestamp,
+          id: installConfig.id,
           installed: false,
           url: installConfig.url,
           archive_password: installConfig.archive_password,

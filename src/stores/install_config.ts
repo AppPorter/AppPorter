@@ -12,6 +12,7 @@ interface InstallConfig {
   archive_password: string
   file_tree: FileTreeNode[]
   temp: {
+    id: string
     zip_path: string
     timestamp_add: string
     timestamp_update: string
@@ -36,6 +37,7 @@ export const InstallConfigStore = defineStore('install_config', {
     archive_password: '',
     file_tree: [],
     temp: {
+      id: '',
       zip_path: '',
       timestamp_add: '',
       timestamp_update: '',

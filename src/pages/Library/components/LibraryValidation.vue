@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import type { InstallTypes } from '@/stores/library'
-import { exec } from '@/exec'
-import { inject, ref } from 'vue'
-import { useI18n } from 'vue-i18n'
-import ReinstallDrawer from '@/components/Drawer/ReinstallDrawer.vue'
-import Dialog from 'primevue/dialog'
-import Button from 'primevue/button'
 import { AppDetails } from '#/AppDetails'
 import { ToolDetails } from '#/ToolDetails'
+import ReinstallDrawer from '@/components/Drawer/ReinstallDrawer.vue'
+import { exec } from '@/exec'
+import { triggerUninstall } from '@/main'
+import type { InstallTypes } from '@/stores/library'
+import Button from 'primevue/button'
+import Dialog from 'primevue/dialog'
+import { ref } from 'vue'
+import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const triggerUninstall = inject('triggerUninstall') as (apptype: InstallTypes, timestamp: number) => Promise<void>
 
 interface LibraryValidationProps {
     app?: {
-        timestamp: number | bigint
+        id: string
         type?: InstallTypes
         installed?: boolean
         details?: AppDetails | ToolDetails
@@ -42,11 +42,6 @@ function handleStatusClick(app: LibraryValidationProps['app']) {
         return
     }
 
-    appToValidate.value = {
-        ...app,
-        timestamp: typeof app.timestamp === 'bigint' ? Number(app.timestamp) : app.timestamp
-    }
-
     const validation = app.validation_status || {}
     const fileExists = validation?.file_exists
     const pathExists = validation?.path_exists
@@ -67,7 +62,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
     if (!appToValidate.value) return
 
     if (action === 'uninstall') {
-        await triggerUninstall(appToValidate.value.type, typeof appToValidate.value.timestamp === 'bigint' ? Number(appToValidate.value.timestamp) : appToValidate.value.timestamp)
+        await triggerUninstall(appToValidate.value.type, appToValidate.value.id)
         showDialog.value = false
     } else if (action === 'reinstall') {
         reinstallDrawer.value?.show(appToValidate.value)
@@ -76,7 +71,7 @@ async function handleValidationAction(action: 'reinstall' | 'repair' | 'uninstal
         const commandName = appToValidate.value.type === 'app' ? 'RepairApp' : 'RepairTool'
 
         await exec(commandName, {
-            timestamp: typeof appToValidate.value.timestamp === 'bigint' ? Number(appToValidate.value.timestamp) : appToValidate.value.timestamp,
+            id: appToValidate.value.id,
         })
         emit('loadLibrary')
         showDialog.value = false

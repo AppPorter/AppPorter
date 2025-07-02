@@ -2,4 +2,4 @@
 import type { ToolDetails } from "./ToolDetails";
 import type { ToolValidationStatus } from "./ToolValidationStatus";
 
-export type Tool = { timestamp: bigint, installed: boolean, url: string, archive_password: string, details: ToolDetails, validation_status: ToolValidationStatus, };
+export type Tool = { id: string, timestamp_add: string, timestamp_update: string, installed: boolean, url: string, archive_password: string, details: ToolDetails, validation_status: ToolValidationStatus, };

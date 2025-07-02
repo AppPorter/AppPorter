@@ -108,7 +108,7 @@ if (settingsStore.minimize_to_tray_on_close) {
 
 export const triggerUninstall = inject('triggerUninstall') as (
   apptype: InstallTypes,
-  timestamp: number
+  id: string
 ) => Promise<void>
 
 app.mount('#app')

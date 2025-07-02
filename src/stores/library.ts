@@ -43,6 +43,13 @@ export const LibraryStore = defineStore('library', {
     async getTool(id: string) {
       return await exec<Tool>('GetTool', { id })
     },
+    async getById(id: string) {
+      const app = this.apps.find((a) => a.id === id)
+      if (app) return app
+      const tool = this.tools.find((t) => t.id === id)
+      if (tool) return tool
+      return null
+    },
 
     async executeUninstall(apptype: InstallTypes, id: string) {
       switch (apptype) {

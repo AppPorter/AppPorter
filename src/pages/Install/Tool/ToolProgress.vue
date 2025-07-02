@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { goTo } from '@/router'
 import { exec } from '@/exec'
+import { generalStore, installConfig } from '@/main'
+import { goTo } from '@/router'
 import { listen } from '@tauri-apps/api/event'
 import Button from 'primevue/button'
 import Panel from 'primevue/panel'
@@ -8,7 +9,6 @@ import ProgressBar from 'primevue/progressbar'
 import Tooltip from 'primevue/tooltip'
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { generalStore, installConfig } from '@/main'
 
 const progressMode = ref<'indeterminate' | 'determinate'>('indeterminate')
 const extractProgress = ref(0)
@@ -53,7 +53,7 @@ onMounted(async () => {
         const result = await exec<string>('InstallTool', {
             config: {
                 tool: {
-                    timestamp: installConfig.timestamp,
+                    id: installConfig.id,
                     installed: false,
                     url: installConfig.url,
                     archive_password: installConfig.archive_password,
@@ -142,7 +142,7 @@ async function handleCopyInstallPath() {
                                     <div class="flex items-center gap-2">
                                         <span class="mir-folder text-sm"></span>
                                         <span class="text-sm font-medium">{{ t('cls.install.config.install_path')
-                                        }}</span>
+                                            }}</span>
                                     </div>
                                     <Button outlined v-tooltip.top="t('ui.install.progress.copy_path')" class="h-7 w-8"
                                         :icon="installPathCopied ? 'mir-check' : 'mir-content_copy'"

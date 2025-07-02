@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { AppDetails } from '#/AppDetails'
+import { ToolDetails } from '#/ToolDetails'
 import { InstallTypes } from '@/stores/library'
 import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
@@ -6,15 +8,15 @@ import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import LibraryStatusTag from './LibraryStatusTag.vue'
 import LibraryValidation from './LibraryValidation.vue'
-import { AppDetails } from '#/AppDetails'
-import { ToolDetails } from '#/ToolDetails'
 
 const { t } = useI18n()
 const validationRef = ref()
 
 interface LibraryItemProps {
     item: {
-        timestamp: bigint
+        id: string
+        timestamp_add: string
+        timestamp_update: string
         url: string
         type?: InstallTypes
         installed?: boolean

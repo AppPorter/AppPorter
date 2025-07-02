@@ -1,6 +1,6 @@
 use super::{AppValidationStatus, Library, ToolValidationStatus};
-use crate::configs::ConfigFile;
 use crate::configs::library::{App, Tool};
+use crate::configs::{ConfigFile, Url};
 use anyhow::Result;
 use uuid::Uuid;
 
@@ -23,6 +23,13 @@ impl Library {
             config.timestamp_add = chrono::Utc::now().to_rfc3339();
         }
         config.timestamp_update = chrono::Utc::now().to_rfc3339();
+        Ok(())
+    }
+    pub async fn init_url(config: &mut Url) -> Result<()> {
+        if config.id.is_empty() {
+            config.id = Uuid::new_v4().to_string();
+        }
+        config.timestamp = chrono::Utc::now().to_rfc3339();
         Ok(())
     }
 

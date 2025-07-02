@@ -1,23 +1,28 @@
 <script setup lang="ts">
-import { libraryStore } from '@/main'
-import { GeneralStore } from '@/stores/general'
+import { generalStore, libraryStore } from '@/main'
 import type { InstallTypes } from '@/stores/library'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const generalStore = GeneralStore()
 const visible = computed({
     get: () => generalStore.drawer.uninstall,
     set: v => generalStore.drawer.uninstall = v
 })
-const appInfo = ref<{ apptype: InstallTypes, timestamp: bigint } | null>(null)
-const app = computed(() => appInfo.value ? libraryStore.getByTimestamp(appInfo.value.timestamp) : null)
+const appInfo = ref<{ apptype: InstallTypes, id: string } | null>(null)
+const app = ref()
+watch(appInfo, async (val) => {
+    if (val) {
+        app.value = await libraryStore.getById(val.id)
+    } else {
+        app.value = null
+    }
+})
 const loading = ref(false)
 const error = ref('')
 
-function show(apptype: InstallTypes, timestamp: bigint) {
-    appInfo.value = { apptype, timestamp }
+function show(apptype: InstallTypes, id: string) {
+    appInfo.value = { apptype, id }
     error.value = ''
     visible.value = true
 }
@@ -26,9 +31,9 @@ async function handleUninstall() {
     if (!app.value || !appInfo.value) return
     loading.value = true
     if (app.value.installed) {
-        await libraryStore.executeUninstall(appInfo.value.apptype, appInfo.value.timestamp)
+        await libraryStore.executeUninstall(appInfo.value.apptype, appInfo.value.id)
     } else {
-        await libraryStore.remove(appInfo.value.timestamp)
+        await libraryStore.remove(appInfo.value.id)
     }
     visible.value = false
 }
