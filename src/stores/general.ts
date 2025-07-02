@@ -28,7 +28,7 @@ export const GeneralStore = defineStore('general', {
   state: (): General => ({
     page: 'Home',
     drawer: {
-      preview: [false, ''],
+      preview: false,
       uninstall: [false, ''],
       directory_selector: [false, ''],
       reinstall: [false, ''],
