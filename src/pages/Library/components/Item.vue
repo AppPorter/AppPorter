@@ -6,8 +6,8 @@ import Button from 'primevue/button'
 import ConfirmDialog from 'primevue/confirmdialog'
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import LibraryStatusTag from './StatusTag.vue'
-import LibraryValidation from './Validation.vue'
+import StatusTag from './StatusTag.vue'
+import Validation from './Validation.vue'
 
 const { t } = useI18n()
 const validationRef = ref()
@@ -124,14 +124,14 @@ function getInstallPath(item: LibraryItemProps['item']) {
             </div>
 
             <div class="mr-2 flex items-center gap-2">
-                <LibraryStatusTag :item="item" tag-type="type" @click="handleStatusClick(item)" />
-                <LibraryStatusTag :item="item" tag-type="status" @click="handleStatusClick(item)" />
+                <StatusTag :item="item" tag-type="type" @click="handleStatusClick(item)" />
+                <StatusTag :item="item" tag-type="status" @click="handleStatusClick(item)" />
             </div>
 
             <Button icon="mir-more_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="$emit('contextMenu', { originalEvent: $event, data: item })" />
         </div>
-        <LibraryValidation ref="validationRef" :app="item" @load-library="$emit('loadLibrary')" />
+        <Validation ref="validationRef" :app="item" @load-library="$emit('loadLibrary')" />
 
         <ConfirmDialog />
     </div>

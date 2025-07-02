@@ -11,9 +11,9 @@ import Select from 'primevue/select'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
-import LibraryContextMenu from './components/ContextMenu.vue'
-import LibraryItem from './components/Item.vue'
-import LibraryValidation from './components/Validation.vue'
+import ContextMenu from './components/ContextMenu.vue'
+import Item from './components/Item.vue'
+import Validation from './components/Validation.vue'
 
 const { t } = useI18n()
 const contextMenu = ref()
@@ -184,7 +184,7 @@ onMounted(() => {
         dataKey="timestamp">
         <template #list="{ items }">
           <div class="grid">
-            <LibraryItem v-for="item in items" :key="String(item.timestamp) + (item._type || '')" :item="item"
+            <Item v-for="item in items" :key="String(item.timestamp) + (item._type || '')" :item="item"
               @contextMenu="showContextMenu" />
           </div>
         </template>
@@ -199,9 +199,8 @@ onMounted(() => {
       </DataView>
     </Panel>
 
-    <LibraryContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp"
-      @load-library="loadLibrary" />
+    <ContextMenu ref="contextMenu" :selected-app="selectedApp" @install-app="installApp" @load-library="loadLibrary" />
 
-    <LibraryValidation ref="validation" :app="selectedApp" @load-library="loadLibrary" />
+    <Validation ref="validation" :app="selectedApp" @load-library="loadLibrary" />
   </div>
 </template>
