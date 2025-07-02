@@ -139,6 +139,7 @@ dependencies = [
  "tokio-tungstenite",
  "toml",
  "ts-rs",
+ "uuid",
  "windows-registry",
 ]
 
