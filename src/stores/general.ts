@@ -10,6 +10,7 @@ type Pages =
 
 interface Drawer {
   preview: boolean
+  uninstall: boolean
 }
 
 interface General {
@@ -26,6 +27,7 @@ export const GeneralStore = defineStore('general', {
     page: 'Home',
     drawer: {
       preview: false,
+      uninstall: false,
     },
 
     initialSettings: null,

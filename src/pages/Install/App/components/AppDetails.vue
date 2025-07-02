@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { InstallConfigStore } from '@/stores/install_config';
 import { exec } from '@/exec'
 import { open } from '@tauri-apps/plugin-dialog';
 import { storeToRefs } from 'pinia';
