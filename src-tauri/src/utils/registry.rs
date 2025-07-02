@@ -30,7 +30,7 @@ pub fn create_registry_entries(config: &App) -> Result<()> {
         format!(
             "\"{}\" uninstall {}",
             env::current_exe()?.to_string_lossy(),
-            config.timestamp
+            config.id
         ),
     )?;
     Ok(())

@@ -2,13 +2,12 @@ use crate::{configs::Library, utils::*};
 use anyhow::{Result, anyhow};
 use mslnk::ShellLink;
 
-pub async fn repair_app(timestamp: i64) -> Result<()> {
+pub async fn repair_app(id: &str) -> Result<()> {
     let library = Library::load().await?;
     let config = library
-        .apps
-        .iter()
-        .find(|app| app.timestamp == timestamp)
-        .ok_or(anyhow!("App not found in library"))?;
+        .get_app(id)
+        .await
+        .ok_or(anyhow!("App with ID {} not found", id))?;
 
     if config.details.config.create_desktop_shortcut {
         remove_desktop_shortcut(&config.details.info.name).await?;
@@ -20,7 +19,7 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     }
 
     if config.details.config.custom_icon {
-        remove_custom_icon(&config.details.info.name, timestamp).await?;
+        remove_custom_icon(&config.details.info.name, id).await?;
     }
 
     if config.details.config.create_registry_key {
@@ -38,7 +37,7 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     if config.details.config.custom_icon {
         let icon_path = convert_base64_to_ico(
             &config.details.info.icon,
-            &format!("{}-{}", config.details.info.name, timestamp),
+            &format!("{}-{}", config.details.info.name, id),
         )
         .await?;
         shell_link.set_icon_location(Some(icon_path));
@@ -58,7 +57,7 @@ pub async fn repair_app(timestamp: i64) -> Result<()> {
     }
 
     if config.details.config.create_registry_key {
-        create_registry_entries(config)?;
+        create_registry_entries(&config)?;
     }
 
     if config.details.config.add_to_path.0 {

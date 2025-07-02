@@ -1,17 +1,20 @@
-import { FileTreeNode } from '#/FileTreeNode'
-import { defineStore } from 'pinia'
 import type { AppDetails } from '#/AppDetails'
+import { FileTreeNode } from '#/FileTreeNode'
 import type { ToolDetails } from '#/ToolDetails'
+import { defineStore } from 'pinia'
 
 interface InstallConfig {
+  id: string
   zip_path: string
-  timestamp: bigint
+  timestamp_add: string
+  timestamp_update: string
   url: string
   archive_password: string
   file_tree: FileTreeNode[]
   temp: {
     zip_path: string
-    timestamp: bigint
+    timestamp_add: string
+    timestamp_update: string
     url: string
     archive_password: string
     file_tree: FileTreeNode[]
@@ -25,14 +28,17 @@ interface InstallConfig {
 
 export const InstallConfigStore = defineStore('install_config', {
   state: (): InstallConfig => ({
+    id: '',
     zip_path: '',
-    timestamp: BigInt(0),
+    timestamp_add: '',
+    timestamp_update: '',
     url: '',
     archive_password: '',
     file_tree: [],
     temp: {
       zip_path: '',
-      timestamp: BigInt(0),
+      timestamp_add: '',
+      timestamp_update: '',
       url: '',
       archive_password: '',
       file_tree: [],
@@ -65,14 +71,18 @@ export const InstallConfigStore = defineStore('install_config', {
 
   actions: {
     setTempData(data: {
+      id?: string
       zip_path?: string
-      timestamp?: bigint
+      timestamp_add?: string
+      timestamp_update?: string
       url?: string
       archive_password?: string
       file_tree?: FileTreeNode[]
     }) {
+      if (data.id !== undefined) this.temp.id = data.id
       if (data.zip_path !== undefined) this.temp.zip_path = data.zip_path
-      if (data.timestamp !== undefined) this.temp.timestamp = data.timestamp
+      if (data.timestamp_add !== undefined) this.temp.timestamp_add = data.timestamp_add
+      if (data.timestamp_update !== undefined) this.temp.timestamp_update = data.timestamp_update
       if (data.url !== undefined) this.temp.url = data.url
       if (data.archive_password !== undefined) this.temp.archive_password = data.archive_password
       if (data.file_tree !== undefined) this.temp.file_tree = data.file_tree
@@ -80,8 +90,10 @@ export const InstallConfigStore = defineStore('install_config', {
 
     clearTempData() {
       this.temp = {
+        id: '',
         zip_path: '',
-        timestamp: BigInt(0),
+        timestamp_add: '',
+        timestamp_update: '',
         url: '',
         archive_password: '',
         file_tree: [],
@@ -89,8 +101,10 @@ export const InstallConfigStore = defineStore('install_config', {
     },
 
     confirmTempData() {
+      this.id = this.temp.id
       this.zip_path = this.temp.zip_path
-      this.timestamp = this.temp.timestamp
+      this.timestamp_add = this.temp.timestamp_add
+      this.timestamp_update = this.temp.timestamp_update
       this.url = this.temp.url
       this.archive_password = this.temp.archive_password
       this.file_tree = this.temp.file_tree

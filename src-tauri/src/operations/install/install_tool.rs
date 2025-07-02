@@ -17,11 +17,8 @@ pub struct ToolInstallConfig {
 }
 
 pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<String> {
-    let mut config = config.clone();
-
-    if config.tool.timestamp == 0 {
-        config.tool.timestamp = chrono::Utc::now().timestamp();
-    }
+    let mut config = config;
+    Library::init_tool(&mut config.tool).await?;
 
     app.emit("tool_install_progress", 0)?;
 
@@ -52,9 +49,7 @@ pub async fn install_tool(config: ToolInstallConfig, app: &AppHandle) -> Result<
     }
 
     let mut app_list = Library::load().await?;
-    app_list
-        .update_tool_list_from_config(config.tool.clone())
-        .await?;
+    app_list.add_tool(config.tool.clone()).await?;
 
     app.emit("tool_install_progress", 101)?;
 

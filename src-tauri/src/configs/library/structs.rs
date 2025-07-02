@@ -14,7 +14,9 @@ pub struct Library {
 #[ts(export)]
 #[serde(default)]
 pub struct App {
-    pub timestamp: i64,
+    pub id: String,
+    pub timestamp_add: String,
+    pub timestamp_update: String,
     pub installed: bool,
     pub url: String,
     pub archive_password: String,
@@ -67,7 +69,9 @@ pub struct AppValidationStatus {
 #[ts(export)]
 #[serde(default)]
 pub struct Tool {
-    pub timestamp: i64,
+    pub id: String,
+    pub timestamp_add: String,
+    pub timestamp_update: String,
     pub installed: bool,
     pub url: String,
     pub archive_password: String,
@@ -96,6 +100,7 @@ pub struct ToolValidationStatus {
 #[ts(export)]
 #[serde(default)]
 pub struct Url {
+    pub id: String,
     pub url: String,
     pub timestamp: i64,
 }

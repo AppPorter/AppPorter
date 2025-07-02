@@ -4,14 +4,12 @@ use anyhow::{Result, anyhow};
 use std::path::Path;
 use tokio::fs as tokio_fs;
 
-pub async fn modify_tool(new_tool: Tool, timestamp: i64) -> Result<()> {
+pub async fn modify_tool(new_tool: Tool, id: &str) -> Result<()> {
     let mut library = Library::load().await?;
     let old_tool = library
-        .tools
-        .iter()
-        .find(|t| t.timestamp == timestamp)
-        .ok_or(anyhow!("Tool not found in library"))?
-        .clone();
+        .get_tool(id)
+        .await
+        .ok_or(anyhow!("Tool with ID {} not found", id))?;
 
     if old_tool.details.install_path != new_tool.details.install_path
         && Path::new(&old_tool.details.install_path).exists()
@@ -35,7 +33,7 @@ pub async fn modify_tool(new_tool: Tool, timestamp: i64) -> Result<()> {
         }
     }
 
-    if let Some(tool) = library.tools.iter_mut().find(|t| t.timestamp == timestamp) {
+    if let Some(tool) = library.tools.iter_mut().find(|t| t.id == id) {
         *tool = new_tool;
     }
     library.save().await?;

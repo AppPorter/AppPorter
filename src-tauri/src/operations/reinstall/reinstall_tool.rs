@@ -5,21 +5,17 @@ use crate::{
 use anyhow::{Result, anyhow};
 use fs_extra::dir::move_dir;
 
-pub async fn reinstall_tool(timestamp: i64, zip_path: &str) -> Result<()> {
+pub async fn reinstall_tool(id: &str, zip_path: &str) -> Result<()> {
     let library = Library::load().await?;
     let tool_config = library
-        .tools
-        .iter()
-        .find(|tool| tool.timestamp == timestamp)
-        .ok_or(anyhow!("Tool not found in library"))?;
+        .get_tool(id)
+        .await
+        .ok_or(anyhow!("Tool with ID {} not found", id))?;
 
     let temp_dir = std::env::temp_dir()
         .join("AppPorter")
         .join("reinstall")
-        .join(format!(
-            "{}-{}",
-            tool_config.details.name, tool_config.timestamp
-        ));
+        .join(format!("{}-{}", tool_config.details.name, tool_config.id));
 
     tokio::fs::create_dir_all(&temp_dir).await?;
     extract_archive_files(
@@ -42,7 +38,7 @@ pub async fn reinstall_tool(timestamp: i64, zip_path: &str) -> Result<()> {
             .content_only(true),
     )?;
 
-    repair_tool(timestamp).await?;
+    repair_tool(id).await?;
 
     Ok(())
 }

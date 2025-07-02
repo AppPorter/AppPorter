@@ -22,11 +22,8 @@ pub struct AppInstallConfig {
 }
 
 pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(String, String)> {
-    let mut config = config.clone();
-
-    if config.app.timestamp == 0 {
-        config.app.timestamp = chrono::Utc::now().timestamp();
-    }
+    let mut config = config;
+    Library::init_app(&mut config.app).await?;
 
     app.emit("app_install_progress", 0)?;
 
@@ -50,7 +47,7 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     if config.app.details.config.custom_icon {
         let icon_path = convert_base64_to_ico(
             &config.app.details.info.icon,
-            &format!("{}-{}", config.app.details.info.name, config.app.timestamp),
+            &format!("{}-{}", config.app.details.info.name, config.app.id),
         )
         .await?;
         shell_link.set_icon_location(Some(icon_path));
@@ -99,9 +96,7 @@ pub async fn install_app(config: AppInstallConfig, app: &AppHandle) -> Result<(S
     }
 
     let mut app_list = Library::load().await?;
-    app_list
-        .update_app_list_from_config(config.app.clone())
-        .await?;
+    app_list.add_app(config.app.clone()).await?;
 
     app.emit("app_install_progress", 101)?;
 

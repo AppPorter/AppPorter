@@ -1,6 +1,8 @@
+import type { App } from '#/App'
+import type { Library } from '#/Library'
+import type { Tool } from '#/Tool'
 import { exec } from '@/exec'
 import { defineStore } from 'pinia'
-import type { Library } from '#/Library'
 
 export type InstallTypes = 'app' | 'tool' | 'url'
 
@@ -25,41 +27,39 @@ export const LibraryStore = defineStore('library', {
       const result = await exec<Library>('LoadLibrary')
       this.$patch(result)
     },
-
     async saveLibrary() {
       await exec('SaveLibrary', {
         library: this.$state,
       })
     },
 
-    hasLink(url: string): boolean {
-      return this.apps.some((app) => app.url === url) || this.tools.some((tool) => tool.url === url)
+    async hasLink(url: string): Promise<boolean> {
+      return await exec<boolean>('HasLink', { url })
     },
 
-    getByTimestamp(timestamp: bigint) {
-      return (
-        this.installedApps.find((app) => app.timestamp === timestamp) ||
-        this.installedTools.find((tool) => tool.timestamp === timestamp)
-      )
+    async getApp(id: string) {
+      return await exec<App>('GetApp', { id })
+    },
+    async getTool(id: string) {
+      return await exec<Tool>('GetTool', { id })
     },
 
-    async executeUninstall(apptype: InstallTypes, timestamp: bigint) {
+    async executeUninstall(apptype: InstallTypes, id: string) {
       switch (apptype) {
         case 'app':
-          await exec('UninstallApp', { timestamp })
+          await exec('UninstallApp', { id })
           break
         case 'tool':
-          await exec('UninstallTool', { timestamp })
+          await exec('UninstallTool', { id })
           break
       }
 
       await this.loadLibrary()
     },
 
-    async remove(timestamp: bigint) {
-      this.apps = this.apps.filter((app) => app.timestamp !== timestamp)
-      this.tools = this.tools.filter((tool) => tool.timestamp !== timestamp)
-      await this.saveLibrary()
+    async remove(id: string) {
+      await exec('Remove', { id })
+      await this.loadLibrary()
     },
   },
 })

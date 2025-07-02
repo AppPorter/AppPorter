@@ -1,6 +1,6 @@
 use crate::{configs::*, core::*, operations::*, utils::*};
 use Command::*;
-use anyhow::Result;
+use anyhow::{Result, anyhow};
 use serde::Deserialize;
 use serde_json::to_string;
 use tauri::AppHandle;
@@ -26,6 +26,25 @@ pub enum Command<'a> {
         library: Library,
     },
 
+    InitApp {
+        config: App,
+    },
+    InitTool {
+        config: Tool,
+    },
+    Remove {
+        id: &'a str,
+    },
+    HasLink {
+        url: &'a str,
+    },
+    GetApp {
+        id: &'a str,
+    },
+    GetTool {
+        id: String,
+    },
+
     Cli,
     RegisterContextMenu,
     UnregisterContextMenu,
@@ -48,32 +67,32 @@ pub enum Command<'a> {
         config: ToolInstallConfig,
     },
     UninstallApp {
-        timestamp: i64,
+        id: String,
     },
     UninstallTool {
-        timestamp: i64,
+        id: String,
     },
     RepairApp {
-        timestamp: i64,
+        id: String,
     },
     RepairTool {
-        timestamp: i64,
+        id: String,
     },
     ReinstallApp {
-        timestamp: i64,
+        id: String,
         zip_path: &'a str,
     },
     ReinstallTool {
-        timestamp: i64,
+        id: String,
         zip_path: &'a str,
     },
     ModifyApp {
         new_app: App,
-        timestamp: i64,
+        id: String,
     },
     ModifyTool {
         new_tool: Tool,
-        timestamp: i64,
+        id: String,
     },
 
     OpenApp {
@@ -127,6 +146,37 @@ impl<'a> Command<'a> {
             LoadLibrary => json!(Library::load().await?),
             SaveLibrary { library } => json!(library.save().await?),
 
+            InitApp { config } => {
+                let mut config = config;
+                json!(Library::init_app(&mut config).await?)
+            }
+            InitTool { config } => {
+                let mut config = config;
+                json!(Library::init_tool(&mut config).await?)
+            }
+            Remove { id } => {
+                json!(Library::load().await?.remove(id).await?)
+            }
+            HasLink { url } => json!(Library::load().await?.has_link(url).await),
+            GetApp { id } => {
+                json!(
+                    Library::load()
+                        .await?
+                        .get_app(id)
+                        .await
+                        .ok_or(anyhow!("App with ID '{}' not found", id))?
+                )
+            }
+            GetTool { id } => {
+                json!(
+                    Library::load()
+                        .await?
+                        .get_tool(&id)
+                        .await
+                        .ok_or(anyhow!("Tool with ID '{}' not found", id))?
+                )
+            }
+
             Cli => json!(cli(&app).await?),
             RegisterContextMenu => json!(register_context_menu()?),
             UnregisterContextMenu => json!(unregister_context_menu()?),
@@ -142,30 +192,21 @@ impl<'a> Command<'a> {
             InstallTool { config } => {
                 json!(install_tool(config, &app).await?)
             }
-            UninstallApp { timestamp } => json!(uninstall_app(timestamp).await?),
-            UninstallTool { timestamp } => json!(uninstall_tool(timestamp).await?),
-            RepairApp { timestamp } => json!(repair_app(timestamp).await?),
-            RepairTool { timestamp } => json!(repair_tool(timestamp).await?),
-            ReinstallApp {
-                timestamp,
-                zip_path,
-            } => {
-                json!(reinstall_app(timestamp, zip_path).await?)
+            UninstallApp { id } => json!(uninstall_app(&id).await?),
+            UninstallTool { id } => json!(uninstall_tool(&id).await?),
+            RepairApp { id } => json!(repair_app(&id).await?),
+            RepairTool { id } => json!(repair_tool(&id).await?),
+            ReinstallApp { id, zip_path } => {
+                json!(reinstall_app(&id, zip_path).await?)
             }
-            ReinstallTool {
-                timestamp,
-                zip_path,
-            } => {
-                json!(reinstall_tool(timestamp, zip_path).await?)
+            ReinstallTool { id, zip_path } => {
+                json!(reinstall_tool(&id, zip_path).await?)
             }
-            ModifyApp { new_app, timestamp } => {
-                json!(modify_app(new_app, timestamp).await?)
+            ModifyApp { new_app, id } => {
+                json!(modify_app(new_app, &id).await?)
             }
-            ModifyTool {
-                new_tool,
-                timestamp,
-            } => {
-                json!(modify_tool(new_tool, timestamp).await?)
+            ModifyTool { new_tool, id } => {
+                json!(modify_tool(new_tool, &id).await?)
             }
 
             OpenApp { path } => json!(open_app(path).await?),
@@ -194,7 +235,7 @@ impl<'a> Command<'a> {
             GetArchiveTree { path, password } => {
                 json!(get_archive_tree(path, password).await?)
             }
-            GetTimestamp => json!(chrono::Utc::now().timestamp()),
+            GetTimestamp => json!(chrono::Utc::now().to_rfc3339()),
             DetermineInputType { input } => json!(determine_input_type(input).await?),
         }
     }

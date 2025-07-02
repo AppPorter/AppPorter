@@ -4,20 +4,19 @@ use crate::operations::{extract_archive_files, repair_app};
 use anyhow::{Result, anyhow};
 use fs_extra::dir::move_dir;
 
-pub async fn reinstall_app(timestamp: i64, zip_path: &str) -> Result<()> {
+pub async fn reinstall_app(id: &str, zip_path: &str) -> Result<()> {
     let library = Library::load().await?;
     let app_config = library
-        .apps
-        .iter()
-        .find(|app| app.timestamp == timestamp)
-        .ok_or(anyhow!("App not found in library"))?;
+        .get_app(id)
+        .await
+        .ok_or(anyhow!("App with ID {} not found", id))?;
 
     let temp_dir = std::env::temp_dir()
         .join("AppPorter")
         .join("Reinstall")
         .join(format!(
             "{}-{}",
-            app_config.details.info.name, app_config.timestamp
+            app_config.details.info.name, app_config.id
         ));
 
     tokio::fs::create_dir_all(&temp_dir).await?;
@@ -41,7 +40,7 @@ pub async fn reinstall_app(timestamp: i64, zip_path: &str) -> Result<()> {
             .content_only(true),
     )?;
 
-    repair_app(timestamp).await?;
+    repair_app(id).await?;
 
     Ok(())
 }

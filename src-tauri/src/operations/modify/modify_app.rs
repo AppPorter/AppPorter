@@ -10,14 +10,12 @@ use anyhow::{Result, anyhow};
 use mslnk::ShellLink;
 use std::path::Path;
 
-pub async fn modify_app(new_app: App, timestamp: i64) -> Result<()> {
+pub async fn modify_app(new_app: App, id: &str) -> Result<()> {
     let mut library = Library::load().await?;
     let old_app = library
-        .apps
-        .iter()
-        .find(|a| a.timestamp == timestamp)
-        .ok_or(anyhow!("App not found in library"))?
-        .clone();
+        .get_app(id)
+        .await
+        .ok_or(anyhow!("App with ID {} not found", id))?;
 
     if old_app.details.install_path != new_app.details.install_path
         && Path::new(&old_app.details.install_path).exists()
@@ -58,7 +56,7 @@ pub async fn modify_app(new_app: App, timestamp: i64) -> Result<()> {
             if new_app.details.config.custom_icon {
                 let icon_path = convert_base64_to_ico(
                     &new_app.details.info.icon,
-                    &format!("{}-{}", new_app.details.info.name, new_app.timestamp),
+                    &format!("{}-{}", new_app.details.info.name, new_app.id),
                 )
                 .await?;
                 shell_link.set_icon_location(Some(icon_path));
@@ -83,7 +81,7 @@ pub async fn modify_app(new_app: App, timestamp: i64) -> Result<()> {
             if new_app.details.config.custom_icon {
                 let icon_path = convert_base64_to_ico(
                     &new_app.details.info.icon,
-                    &format!("{}-{}", new_app.details.info.name, new_app.timestamp),
+                    &format!("{}-{}", new_app.details.info.name, new_app.id),
                 )
                 .await?;
                 shell_link.set_icon_location(Some(icon_path));
@@ -101,12 +99,12 @@ pub async fn modify_app(new_app: App, timestamp: i64) -> Result<()> {
         || old_app.details.info.icon != new_app.details.info.icon
     {
         if old_app.details.config.custom_icon {
-            remove_custom_icon(&old_app.details.info.name, old_app.timestamp).await?;
+            remove_custom_icon(&old_app.details.info.name, &old_app.id).await?;
         }
         if new_app.details.config.custom_icon {
             let _ = convert_base64_to_ico(
                 &new_app.details.info.icon,
-                &format!("{}-{}", new_app.details.info.name, new_app.timestamp),
+                &format!("{}-{}", new_app.details.info.name, new_app.id),
             )
             .await?;
         }
@@ -124,7 +122,7 @@ pub async fn modify_app(new_app: App, timestamp: i64) -> Result<()> {
         }
     }
 
-    if let Some(app) = library.apps.iter_mut().find(|a| a.timestamp == timestamp) {
+    if let Some(app) = library.apps.iter_mut().find(|a| a.id == id) {
         *app = new_app;
     }
     library.save().await?;

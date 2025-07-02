@@ -66,13 +66,13 @@ pub async fn remove_start_menu_shortcut(current_user_only: bool, app_name: &str)
     Ok(())
 }
 
-pub async fn remove_custom_icon(app_name: &str, timestamp: i64) -> Result<()> {
+pub async fn remove_custom_icon(app_name: &str, id: &str) -> Result<()> {
     let icons_dir = dirs::config_local_dir()
         .ok_or(anyhow!("Failed to get local config directory"))?
         .join("AppPorter")
         .join("icons");
 
-    let icon_filename = format!("{app_name}-{timestamp}.ico");
+    let icon_filename = format!("{app_name}-{id}.ico");
     let icon_path = icons_dir.join(&icon_filename);
 
     if icon_path.exists() {

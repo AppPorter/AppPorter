@@ -8,13 +8,12 @@ use anyhow::{Result, anyhow};
 use std::path::Path;
 use tokio::fs;
 
-pub async fn uninstall_app(timestamp: i64) -> Result<()> {
+pub async fn uninstall_app(id: &str) -> Result<()> {
     let mut library = Library::load().await?;
     let app_config = library
-        .apps
-        .iter()
-        .find(|app| app.timestamp == timestamp)
-        .ok_or(anyhow!("App not found in library"))?;
+        .get_app(id)
+        .await
+        .ok_or(anyhow!("App with ID {} not found", id))?;
 
     let app_path = &app_config.details.install_path;
     if Path::new(app_path).exists() {
@@ -34,7 +33,7 @@ pub async fn uninstall_app(timestamp: i64) -> Result<()> {
     }
 
     if app_config.details.config.custom_icon {
-        remove_custom_icon(&app_config.details.info.name, timestamp).await?;
+        remove_custom_icon(&app_config.details.info.name, id).await?;
     }
 
     if app_config.details.config.create_registry_key {
@@ -51,7 +50,7 @@ pub async fn uninstall_app(timestamp: i64) -> Result<()> {
         )?;
     }
 
-    library.update_app_list_after_uninstall(timestamp).await?;
+    library.uninstall_app(id).await?;
 
     Ok(())
 }
