@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { AppDetails } from '#/AppDetails'
 import { ToolDetails } from '#/ToolDetails'
-import ReinstallDrawer from '@/components/Drawer/ReinstallDrawer.vue'
+import ReinstallDrawer from '@/components/Drawer/Reinstall.vue'
 import { exec } from '@/exec'
 import { triggerUninstall } from '@/main'
 import type { InstallTypes } from '@/stores/library'

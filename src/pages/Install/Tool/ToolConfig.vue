@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelectorDrawer.vue'
+import DirectorySelectorDrawer from '@/components/Drawer/DirectorySelector.vue'
 import { exec } from '@/exec'
 import { generalStore, installConfig, settingsStore } from '@/main'
 import { goTo } from '@/router'
@@ -174,7 +174,7 @@ async function handleInstallClick() {
 
                             <div class="flex items-center gap-2">
                                 <label class="w-24 text-sm font-medium">{{ t('cls.install.config.install_path')
-                                }}</label>
+                                    }}</label>
                                 <div class="w-full">
                                     <div class="flex items-center gap-2">
                                         <InputText v-model="parent_install_path" :placeholder="t('g.browse')"
@@ -200,7 +200,7 @@ async function handleInstallClick() {
                                                     :binary="true" inputId="add_to_path" />
                                                 <label for="add_to_path" class="text-sm">{{
                                                     t('cls.install.shortcuts.add_to_path')
-                                                }}</label>
+                                                    }}</label>
                                             </div>
                                             <div v-if="installConfig.tool_details.add_to_path[0]" class="ml-6 mt-1">
                                                 <div class="flex gap-2">
