@@ -7,20 +7,35 @@ import { open } from '@tauri-apps/plugin-dialog'
 import Button from 'primevue/button'
 import Drawer from 'primevue/drawer'
 import InputText from 'primevue/inputtext'
-import { computed, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 
 const { t } = useI18n()
-const appId = computed(() => generalStore.drawer.reinstall[1])
+const itemId = ref()
+const itemType = ref<'app' | 'tool' | null>()
+const item = ref<App | Tool | null>(null)
 const zipPath = ref('')
 const inputError = ref(false)
-const currentApp = ref<(App & { type: 'app' }) | (Tool & { type: 'tool' })>()
 
-watch(appId, async (id) => {
+watch(() => generalStore.drawer.reinstall[1], async (id) => {
     if (id) {
-        currentApp.value = await libraryStore.getById(id)
+        itemId.value = id
+        try {
+            const app = await libraryStore.getApp(id)
+            if (app) {
+                itemType.value = 'app'
+                item.value = app
+            }
+        } catch {
+            const tool = await libraryStore.getTool(id)
+            if (tool) {
+                itemType.value = 'tool'
+                item.value = tool
+            }
+        }
     } else {
-        currentApp.value = undefined
+        itemType.value = null
+        item.value = null
     }
     zipPath.value = ''
     inputError.value = false
@@ -49,15 +64,15 @@ async function handleReinstall() {
         inputError.value = true
         return
     }
-
-    if (currentApp.value.type === 'app') {
+    if (!item.value || !itemType.value) return
+    if (itemType.value === 'app') {
         await exec('ReinstallApp', {
-            id: currentApp.value.id,
+            id: item.value.id,
             zip_path: zipPath.value
         })
-    } else if (currentApp.value.type === 'tool') {
+    } else if (itemType.value === 'tool') {
         await exec('ReinstallTool', {
-            id: currentApp.value.id,
+            id: item.value.id,
             zip_path: zipPath.value
         })
     }
@@ -73,8 +88,9 @@ async function handleReinstall() {
                 <span class="mir-refresh text-xl"></span>
                 <div>
                     <h3 class="text-lg font-medium">{{ t('g.reinstall') }}</h3>
-                    <p class="mt-0.5 text-xs text-surface-500" v-if="currentApp">
-                        {{ currentApp.type === 'app' ? currentApp.details.info.name : currentApp.details.name }}
+                    <p class="mt-0.5 text-xs text-surface-500" v-if="item">
+                        <span v-if="itemType === 'app'">{{ (item as App).details.info?.name }}</span>
+                        <span v-else-if="itemType === 'tool'">{{ (item as Tool).details.name }}</span>
                     </p>
                 </div>
             </div>
