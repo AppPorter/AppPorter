@@ -22,6 +22,7 @@ pub struct App {
     pub archive_password: String,
     pub details: AppDetails,
     pub validation_status: AppValidationStatus,
+    pub update_status: UpdateStatus,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
@@ -77,6 +78,7 @@ pub struct Tool {
     pub archive_password: String,
     pub details: ToolDetails,
     pub validation_status: ToolValidationStatus,
+    pub update_status: UpdateStatus,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
@@ -94,6 +96,17 @@ pub struct ToolDetails {
 pub struct ToolValidationStatus {
     pub file_exists: bool,
     pub path_exists: bool,
+}
+
+#[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]
+#[ts(export)]
+#[serde(default)]
+pub struct UpdateStatus {
+    pub update_available: bool,
+    pub last_final_url: String,
+    pub last_etag: String,
+    pub last_modify: String,
+    pub last_check: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, Default, Clone, PartialEq, Eq, TS)]

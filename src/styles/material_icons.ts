@@ -49,6 +49,7 @@ const USED_ICONS = [
   'rule',
   'reset_image',
   'edit',
+  'update',
 ] as const
 
 /**

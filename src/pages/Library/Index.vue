@@ -124,6 +124,13 @@ async function installApp() {
   loading.value = false
 }
 
+async function checkUpdates() {
+  loading.value = true
+  await exec('CheckForUpdates')
+  await libraryStore.loadLibrary()
+  loading.value = false
+}
+
 const showContextMenu = (event: { originalEvent: Event; data: unknown }) => {
   selectedApp.value = event.data
   contextMenu.value?.show(event.originalEvent)
@@ -158,7 +165,9 @@ onMounted(() => {
 
           <div class="flex flex-wrap items-center divide-x divide-surface-200 dark:divide-surface-700">
             <div class="flex items-center gap-2 px-4">
-              <Select v-model="currentSortKey" :options="sortOptions" class="w-40 text-sm" optionLabel="label"
+              <Button icon="mir-update" outlined severity="secondary" class="h-8 shadow-sm" :loading="loading"
+                @click="checkUpdates" :label="t('g.check_updates')" />
+              <Select v-model="currentSortKey" :options="sortOptions" class="max-w-40 text-sm" optionLabel="label"
                 optionValue="value" size="small" />
               <Button icon="mir-swap_vert" outlined severity="secondary" class="size-8 p-0 shadow-sm"
                 @click="toggleSortOrder" />

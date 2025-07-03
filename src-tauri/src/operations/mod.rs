@@ -7,6 +7,7 @@ pub mod preview;
 pub mod reinstall;
 pub mod repair;
 pub mod uninstall;
+pub mod update;
 pub mod validation;
 pub mod zip_preview;
 
@@ -19,5 +20,6 @@ pub use preview::*;
 pub use reinstall::*;
 pub use repair::*;
 pub use uninstall::*;
+pub use update::*;
 pub use validation::*;
 pub use zip_preview::*;

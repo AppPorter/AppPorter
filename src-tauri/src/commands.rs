@@ -136,6 +136,7 @@ pub enum Command<'a> {
     DetermineInputType {
         input: &'a str,
     },
+    CheckForUpdates,
 }
 
 impl<'a> Command<'a> {
@@ -244,6 +245,9 @@ impl<'a> Command<'a> {
             }
             GetTimestamp => json!(chrono::Utc::now().to_rfc3339()),
             DetermineInputType { input } => json!(determine_input_type(input).await?),
+            CheckForUpdates => {
+                json!(check_for_updates().await?)
+            }
         }
     }
 }
